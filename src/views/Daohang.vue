@@ -1,8 +1,12 @@
 <template>
   <div>
-    <div><a to="/equipment">设备</a></div>
-    <div><a to="/person">人员</a></div>
-    <div><a to="/supplier">供应商</a></div>
-    <div><a to="/customer">客户</a></div>
+    <br>
+    <div><router-link to="/equipment/add">设备资料维护</router-link></div>
+    <br>
+    <div><router-link to="/person/add">人员</router-link></div>
+    <br>
+    <div><router-link to="/supplier/add">供应商</router-link></div>
+    <br>
+    <div><router-link to="/customer/add">客户资料录入</router-link></div>
   </div>
 </template>

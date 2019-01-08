@@ -304,7 +304,8 @@ export default {
               trigger: 'blur'
             }
             ] },
-          { legend: '技术资料',
+          {
+            legend: '技术资料',
             fields: [
               {
                 type: 'input',

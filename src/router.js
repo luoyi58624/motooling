@@ -26,19 +26,24 @@ export default new Router({
       component: () => import('./views/Daohang.vue')
     },
     {
-      path: '/equipment',
+      path: '/equipment/add',
       name: 'equipment',
       component: () => import('./views/Equipment/add.vue')
     },
     {
-      path: '/person',
+      path: '/person/add',
       name: 'person',
       component: () => import('./views/Person/add.vue')
     },
     {
-      path: '/supplier',
+      path: '/supplier/add',
       name: 'supplier',
       component: () => import('./views/Supplier/add.vue')
+    },
+    {
+      path: '/customer/add',
+      name: 'customer',
+      component: () => import('./views/Customer/add.vue')
     }
 
   ]
