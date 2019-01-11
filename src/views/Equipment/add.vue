@@ -53,7 +53,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -66,7 +65,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -79,7 +77,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -92,7 +89,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -105,7 +101,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -120,7 +115,6 @@ export default {
                   }
                 },
                 rules: {
-                  required: true,
                   uploaded: (val, config) => {
                     return Promise.all(val.map((file, i) => {
                       return new Promise((resolve, reject) => {
@@ -152,7 +146,6 @@ export default {
                 modelKey: 'textareaValue',
                 label: '设备参数',
                 rules: {
-                  required: true
                 },
                 // debounce validate
                 // if set to true, the default debounce time will be 200(ms)
@@ -163,7 +156,6 @@ export default {
                 modelKey: 'textareaValue',
                 label: '售后服务信息',
                 rules: {
-                  required: true
                 },
                 // debounce validate
                 // if set to true, the default debounce time will be 200(ms)
@@ -177,7 +169,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -190,7 +181,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -203,7 +193,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -213,7 +202,6 @@ export default {
                 modelKey: 'switchValue',
                 label: '是否开放Sourcing',
                 rules: {
-                  required: true
                 }
               },
               {
@@ -224,7 +212,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -237,7 +224,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -250,7 +236,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -266,7 +251,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -277,7 +261,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -288,7 +271,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -299,7 +281,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -310,7 +291,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -321,7 +301,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -334,7 +313,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -347,7 +325,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -363,7 +340,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -376,7 +352,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -389,7 +364,6 @@ export default {
                   options: [1, 2, 3, 4]
                 },
                 rules: {
-                  required: true
                 }
               }
 
@@ -402,7 +376,6 @@ export default {
                 modelKey: 'textareaValue',
                 label: '备注',
                 rules: {
-                  required: true
                 },
                 // debounce validate
                 // if set to true, the default debounce time will be 200(ms)

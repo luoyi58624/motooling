@@ -62,7 +62,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -75,7 +74,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -88,7 +86,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -101,7 +98,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -118,7 +114,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -131,7 +126,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -144,7 +138,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -157,7 +150,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -170,7 +162,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -186,7 +177,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -197,7 +187,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -208,7 +197,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -219,7 +207,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -230,7 +217,6 @@ export default {
                 options: [1, 2, 3, 4]
               },
               rules: {
-                required: true
               }
             },
             {
@@ -241,7 +227,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -254,7 +239,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -267,7 +251,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -285,7 +268,6 @@ export default {
                   }
                 },
                 rules: {
-                  required: true,
                   uploaded: (val, config) => {
                     return Promise.all(val.map((file, i) => {
                       return new Promise((resolve, reject) => {
@@ -321,7 +303,6 @@ export default {
                   }
                 },
                 rules: {
-                  required: true,
                   uploaded: (val, config) => {
                     return Promise.all(val.map((file, i) => {
                       return new Promise((resolve, reject) => {
@@ -360,7 +341,6 @@ export default {
                   options: ['成品工装', '模胚', '毛胚', '库存原料', '标准件', '工量具', '辅料', '办公用品', '刀具', '外协加工']
                 },
                 rules: {
-                  required: true
                 }
               }
             ]

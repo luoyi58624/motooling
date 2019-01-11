@@ -62,7 +62,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -75,7 +74,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -88,7 +86,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -101,7 +98,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -114,7 +110,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -127,7 +122,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -140,7 +134,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -153,7 +146,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -166,7 +158,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -179,7 +170,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -192,7 +182,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -205,7 +194,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -218,7 +206,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -231,7 +218,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -244,7 +230,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -257,7 +242,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -273,7 +257,6 @@ export default {
                   }
                 },
                 rules: {
-                  required: true,
                   uploaded: (val, config) => {
                     return Promise.all(val.map((file, i) => {
                       return new Promise((resolve, reject) => {
@@ -308,7 +291,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -323,7 +305,6 @@ export default {
                   }
                 },
                 rules: {
-                  required: true,
                   uploaded: (val, config) => {
                     return Promise.all(val.map((file, i) => {
                       return new Promise((resolve, reject) => {
@@ -358,7 +339,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -373,7 +353,6 @@ export default {
                   }
                 },
                 rules: {
-                  required: true,
                   uploaded: (val, config) => {
                     return Promise.all(val.map((file, i) => {
                       return new Promise((resolve, reject) => {
@@ -408,7 +387,6 @@ export default {
                   placeholder: '请输入'
                 },
                 rules: {
-                  required: true
                 },
                 // validating when blur
                 trigger: 'blur'
@@ -423,7 +401,6 @@ export default {
                   }
                 },
                 rules: {
-                  required: true,
                   uploaded: (val, config) => {
                     return Promise.all(val.map((file, i) => {
                       return new Promise((resolve, reject) => {
@@ -461,7 +438,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -474,7 +450,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -487,7 +462,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -500,7 +474,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -513,7 +486,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -529,7 +501,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -542,7 +513,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -555,7 +525,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -568,7 +537,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -581,7 +549,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -597,7 +564,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -610,7 +576,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -623,7 +588,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -636,7 +600,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -650,7 +613,6 @@ export default {
                 }
               },
               rules: {
-                required: true,
                 uploaded: (val, config) => {
                   return Promise.all(val.map((file, i) => {
                     return new Promise((resolve, reject) => {
@@ -689,7 +651,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -702,7 +663,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -715,7 +675,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -728,7 +687,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -741,7 +699,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -754,7 +711,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
@@ -767,7 +723,6 @@ export default {
                 placeholder: '请输入'
               },
               rules: {
-                required: true
               },
               // validating when blur
               trigger: 'blur'
