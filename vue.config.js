@@ -13,5 +13,20 @@ module.exports = {
       postCompile: true,
       theme: false
     }
+  },
+  devServer: {
+    // proxy: 'http://localhost:4000'
+    proxy: {
+      '/invitation': {
+        target: 'http://192.168.2.136:8808/',
+        ws: true,
+        changeOrigin: true
+      },
+      '/foo': {
+        target: 'http://192.168.182.23/foo'
+      }
+    }
   }
 }
+
+// http://192.168.2.136:8808/invitation/pushSMS/phoneCodeSend
