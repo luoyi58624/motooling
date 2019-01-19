@@ -15,6 +15,27 @@
   </template>
 
 <script>
+// import { uploadFile } from '@/api/upload.js'
+// import request from '@/utils/request'
+import { encryption, decrypt } from '@/utils/crypt'
+import md5 from 'md5'
+// import { strToBinary } from '@/utils/utils'
+
+const token = ''
+// const token = 'a04742ac-2307-46b4-8b58-071a93dd28b3'
+const timestamp = '1547621396'
+const md5String = md5(token + timestamp + 'Motooling')
+
+console.log(md5String)
+
+const req = {
+  token: token,
+  md5: md5String,
+  timestamp: timestamp,
+  data: {}
+}
+
+const encryptionData = encryption(JSON.stringify(req))
 export default {
   data () {
     return {
@@ -251,33 +272,70 @@ export default {
                 type: 'upload',
                 modelKey: 'uploadValue1',
                 label: '身份证原件',
+                props: {
+                  // action:{
+                  //   target:'https://upload.oonnnoo.com/upload',
+                  //   fileName:'upfile'
+                  // },
+                  action: {
+                    target: '/img/uploadImg',
+                    fileName: 'imgFile',
+                    data: {
+                      paramsData: encryptionData
+                    },
+                    checkSuccess: (res, file) => {
+                      console.log('res',res)
+                      let rdata = JSON.parse(decrypt(res.resultData))
+                      if (rdata.status === 0) {
+                        // this.uploadValue1 = rdata.url
+                        return true
+                      }
+                    }
+                  },
+                  max: 2
+                },
                 events: {
                   'file-removed': (...args) => {
                     console.log('file removed', args)
+                  },
+                  'files-added': (...args) => {
+                    console.log('add', args)
+                  },
+                  'file-submitted': (file) => {
+                    // var form = new FormData()
+                    // form.append('upfile', file.file)
+                    // var up2 = uploadFile(form)
+                    // console.log('up2', up2)
+                    console.log('file-submitted-file', file)
                   }
+
                 },
-                rules: {
-                  uploaded: (val, config) => {
-                    return Promise.all(val.map((file, i) => {
-                      return new Promise((resolve, reject) => {
-                        if (file.uploadedUrl) {
-                          return resolve()
-                        }
-                        // fake request
-                        setTimeout(() => {
-                          if (i % 2) {
-                            reject(new Error())
-                          } else {
-                            file.uploadedUrl = 'uploaded/url'
-                            resolve()
-                          }
-                        }, 1000)
-                      })
-                    })).then(() => {
-                      return true
-                    })
-                  }
-                },
+                // rules: {
+                //   uploaded: (val, config) => {
+                //     return Promise.all(val.map((file, i) => {
+                //       return new Promise((resolve, reject) => {
+                //         console.log(file)
+                //         uploadFile(
+
+                //         )
+                //         if (file.uploadedUrl) {
+                //           return resolve()
+                //         }
+                //         // // fake request
+                //         // setTimeout(() => {
+                //         //   if (i % 2) {
+                //         //     reject(new Error())
+                //         //   } else {
+                //         //     file.uploadedUrl = 'uploaded/url'
+                //         //     resolve()
+                //         //   }
+                //         // }, 1000)
+                //       })
+                //     })).then(() => {
+                //       return true
+                //     })
+                //   }
+                // },
                 messages: {
                   uploaded: '上传失败'
                 }
@@ -748,9 +806,10 @@ export default {
     }
   },
   methods: {
-    submitHandler (e) {
+    submitHandler (e, model) {
       e.preventDefault()
       console.log('submit', e)
+      console.log('submitmodel', model)
     },
     validateHandler (result) {
       this.validity = result.validity

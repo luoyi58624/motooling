@@ -38,7 +38,6 @@ export default {
   },
   methods: {
     getCode () {
-      console.log('getCode22')
       getPhoneCode(this.loginData.mobile, 1)
     }
   }

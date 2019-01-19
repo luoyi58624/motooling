@@ -22,8 +22,8 @@ module.exports = {
         ws: true,
         changeOrigin: true
       },
-      '/foo': {
-        target: 'http://192.168.182.23/foo'
+      '/img': {
+        target: 'http://192.168.2.136:8808/'
       }
     }
   }
