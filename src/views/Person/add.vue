@@ -1,830 +1,208 @@
 <template>
-    <div>
-      <div class="tips">
-        xxx:欢迎您加入Motooling! 请如实填写以下信息，以便您使用简单、快捷的办公方式
-      </div>
-      <cube-form
-      :model="model"
-      :schema="schema"
-      :immediate-validate="false"
-      :options="options"
-      @validate="validateHandler"
-      @submit="submitHandler">
-      </cube-form>
+  <div>
+    <div class="tips">
+      xxx:欢迎您加入Motooling! 请如实填写以下信息，以便您使用简单、快捷的办公方式
     </div>
-  </template>
+    <cu-input label="隶属部门" v-model="submitmodel.userInfo.username" placeholder="输入" >
+    </cu-input>
+    <cu-input label="职务" v-model="submitmodel.userInfo.positionName" placeholder="输入" >
+    </cu-input>
+    <cu-input label="姓名" v-model="submitmodel.userInfo.positionName" placeholder="输入" >
+    </cu-input>
+    <cu-input label="工薪等级" v-model="submitmodel.userInfo.positionName" placeholder="输入" >
+    </cu-input>
+    <cu-input label="性别" v-model="submitmodel.userInfo.positionName" placeholder="输入" >
+    </cu-input>
+    <cu-input label="姓名" v-model="submitmodel.userInfo.positionName" placeholder="输入" >
+    </cu-input>
+    <cu-input label="民族" v-model="submitmodel.userInfo.positionName" placeholder="输入" >
+    </cu-input>
+    <cu-input label="籍贯" v-model="submitmodel.userInfo.positionName" placeholder="输入" >
+    </cu-input>
+    <cu-input label="户籍地址" v-model="submitmodel.userInfo.positionName" placeholder="输入" >
+    </cu-input>
+    <div>
+      <!-- <cube-input v-model="value" placeholder="请输入" type="text">
+      </cube-input> -->
+      <!-- <cu-input v-model="test" placeholder="输入" label="test"> -->
+      <!-- </cu-input> -->
+    </div>
+
+    <div>
+      <div>家庭成员</div>
+      <div>
+        <!-- <div v-for="(item,index) in list" :key="index">
+          <cu-input :label="item.label" :placeholder="item.placeholder" v-model="item.value">
+          </cu-input>
+        </div> -->
+        <input-group :fields="fields.familyListField"></input-group>
+      </div>
+    </div>
+    <div>
+      <div>学历</div>
+      <div v-for="list in educationListFields">
+        <div v-for="(item,index) in list" :key="index">
+          <cu-input :label="item.label" :placeholder="item.placeholder">
+          </cu-input>
+        </div>
+      </div>
+      <div @click="addList(educationListFields,fields.educationListField)">增加学历</div>
+    </div>
+    <cube-button type="button" @click="submit">Submit Button</cube-button>
+  </div>
+</template>
 
 <script>
-// import { uploadFile } from '@/api/upload.js'
-// import request from '@/utils/request'
-import { encryption, decrypt } from '@/utils/crypt'
-import md5 from 'md5'
-// import { strToBinary } from '@/utils/utils'
+import CuInput from '@/components/input/Input'
+import InputGroup from '@/components/input/InputGroup'
 
-const token = ''
-// const token = 'a04742ac-2307-46b4-8b58-071a93dd28b3'
-const timestamp = '1547621396'
-const md5String = md5(token + timestamp + 'Motooling')
-
-console.log(md5String)
-
-const req = {
-  token: token,
-  md5: md5String,
-  timestamp: timestamp,
-  data: {}
-}
-
-const encryptionData = encryption(JSON.stringify(req))
 export default {
   data () {
     return {
-      validity: {},
-      valid: undefined,
-      model: {
-        checkboxValue: false,
-        checkboxGroupValue: [],
-        inputValue: '',
-        radioValue: '',
-        rateValue: 0,
-        selectValue: 2018,
-        switchValue: true,
-        textareaValue: '',
-        uploadValue1: [],
-        uploadValue2: [],
-        uploadValue3: [],
-        uploadValue4: [],
-        uploadValue5: []
-
-      },
-      schema: {
-        groups: [
-          {
-            legend: '基本信息',
-            fields: [
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '隶属部门',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                  required: true
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '职务',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '姓名',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '英文名',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '工薪等级',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '性别',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '民族',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '籍贯',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '户籍地址',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '现居地址',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '是否已婚',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '政治面貌',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '联系电话',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '员工卡号',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '入职日期',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '身份证号',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '出生日期',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-
-              {
-                type: 'upload',
-                modelKey: 'uploadValue1',
-                label: '身份证原件',
-                props: {
-                  // action:{
-                  //   target:'https://upload.oonnnoo.com/upload',
-                  //   fileName:'upfile'
-                  // },
-                  action: {
-                    target: '/img/uploadImg',
-                    fileName: 'imgFile',
-                    data: {
-                      paramsData: encryptionData
-                    },
-                    checkSuccess: (res, file) => {
-                      console.log('res',res)
-                      let rdata = JSON.parse(decrypt(res.resultData))
-                      if (rdata.status === 0) {
-                        // this.uploadValue1 = rdata.url
-                        return true
-                      }
-                    }
-                  },
-                  max: 2
-                },
-                events: {
-                  'file-removed': (...args) => {
-                    console.log('file removed', args)
-                  },
-                  'files-added': (...args) => {
-                    console.log('add', args)
-                  },
-                  'file-submitted': (file) => {
-                    // var form = new FormData()
-                    // form.append('upfile', file.file)
-                    // var up2 = uploadFile(form)
-                    // console.log('up2', up2)
-                    console.log('file-submitted-file', file)
-                  }
-
-                },
-                // rules: {
-                //   uploaded: (val, config) => {
-                //     return Promise.all(val.map((file, i) => {
-                //       return new Promise((resolve, reject) => {
-                //         console.log(file)
-                //         uploadFile(
-
-                //         )
-                //         if (file.uploadedUrl) {
-                //           return resolve()
-                //         }
-                //         // // fake request
-                //         // setTimeout(() => {
-                //         //   if (i % 2) {
-                //         //     reject(new Error())
-                //         //   } else {
-                //         //     file.uploadedUrl = 'uploaded/url'
-                //         //     resolve()
-                //         //   }
-                //         // }, 1000)
-                //       })
-                //     })).then(() => {
-                //       return true
-                //     })
-                //   }
-                // },
-                messages: {
-                  uploaded: '上传失败'
-                }
-              },
-
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '社保卡号',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'upload',
-                modelKey: 'uploadValue2',
-                label: '社保卡原件',
-                events: {
-                  'file-removed': (...args) => {
-                    console.log('file removed', args)
-                  }
-                },
-                rules: {
-                  uploaded: (val, config) => {
-                    return Promise.all(val.map((file, i) => {
-                      return new Promise((resolve, reject) => {
-                        if (file.uploadedUrl) {
-                          return resolve()
-                        }
-                        // fake request
-                        setTimeout(() => {
-                          if (i % 2) {
-                            reject(new Error())
-                          } else {
-                            file.uploadedUrl = 'uploaded/url'
-                            resolve()
-                          }
-                        }, 1000)
-                      })
-                    })).then(() => {
-                      return true
-                    })
-                  }
-                },
-                messages: {
-                  uploaded: '上传失败'
-                }
-              },
-
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '公积金号',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'upload',
-                modelKey: 'uploadValue3',
-                label: '公积金原件',
-                events: {
-                  'file-removed': (...args) => {
-                    console.log('file removed', args)
-                  }
-                },
-                rules: {
-                  uploaded: (val, config) => {
-                    return Promise.all(val.map((file, i) => {
-                      return new Promise((resolve, reject) => {
-                        if (file.uploadedUrl) {
-                          return resolve()
-                        }
-                        // fake request
-                        setTimeout(() => {
-                          if (i % 2) {
-                            reject(new Error())
-                          } else {
-                            file.uploadedUrl = 'uploaded/url'
-                            resolve()
-                          }
-                        }, 1000)
-                      })
-                    })).then(() => {
-                      return true
-                    })
-                  }
-                },
-                messages: {
-                  uploaded: '上传失败'
-                }
-              },
-
-              {
-                type: 'input',
-                modelKey: 'inputValue',
-                label: '工资卡号',
-                props: {
-                  placeholder: '请输入'
-                },
-                rules: {
-                },
-                // validating when blur
-                trigger: 'blur'
-              },
-              {
-                type: 'upload',
-                modelKey: 'uploadValue4',
-                label: '工资卡原件',
-                events: {
-                  'file-removed': (...args) => {
-                    console.log('file removed', args)
-                  }
-                },
-                rules: {
-                  uploaded: (val, config) => {
-                    return Promise.all(val.map((file, i) => {
-                      return new Promise((resolve, reject) => {
-                        if (file.uploadedUrl) {
-                          return resolve()
-                        }
-                        // fake request
-                        setTimeout(() => {
-                          if (i % 2) {
-                            reject(new Error())
-                          } else {
-                            file.uploadedUrl = 'uploaded/url'
-                            resolve()
-                          }
-                        }, 1000)
-                      })
-                    })).then(() => {
-                      return true
-                    })
-                  }
-                },
-                messages: {
-                  uploaded: '上传失败'
-                }
-              }
-
-            ] },
-          {
-            legend: '家庭成员',
-            fields: [{
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '姓名',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '关系',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '联系电话',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '工作单位',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '现居地址',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            }]
+      // test: 'testvalue',
+      input: 123,
+      value: '',
+      fields: {
+        familyListField: {
+          name: {
+            label: '姓名',
+            placeholder: '请输入',
+            value: ''
           },
-          {
-            legend: '遇事紧急联系人',
-            fields: [{
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '姓名',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '关系',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '联系电话',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '工作单位',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '现居地址',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            }]
+          relation: {
+            label: '关系',
+            placeholder: '请输入',
+            value: ''
           },
-          {
-            legend: '学历情况',
-            fields: [{
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '学历',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '毕业学院',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '专业',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '毕业时间',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            }, {
-              type: 'upload',
-              modelKey: 'uploadValue5',
-              label: '毕业证/学位证原件',
-              events: {
-                'file-removed': (...args) => {
-                  console.log('file removed', args)
-                }
-              },
-              rules: {
-                uploaded: (val, config) => {
-                  return Promise.all(val.map((file, i) => {
-                    return new Promise((resolve, reject) => {
-                      if (file.uploadedUrl) {
-                        return resolve()
-                      }
-                      // fake request
-                      setTimeout(() => {
-                        if (i % 2) {
-                          reject(new Error())
-                        } else {
-                          file.uploadedUrl = 'uploaded/url'
-                          resolve()
-                        }
-                      }, 1000)
-                    })
-                  })).then(() => {
-                    return true
-                  })
-                }
-              },
-              messages: {
-                uploaded: '上传失败'
-              }
-            }
-
-            ]
+          phone: {
+            label: '联系方式',
+            placeholder: '请输入',
+            value: ''
           },
-          {
-            legend: '工作经历',
-            fields: [{
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '工作单位',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '最高职位',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '就职时间',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '离职原因',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '工作地址',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '证明人',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            },
-            {
-              type: 'input',
-              modelKey: 'inputValue',
-              label: '证明人联系电话',
-              props: {
-                placeholder: '请输入'
-              },
-              rules: {
-              },
-              // validating when blur
-              trigger: 'blur'
-            }
-
-            ]
+          workUnit: {
+            label: '工作单位',
+            placeholder: '请输入',
+            value: ''
           },
-
-          {
-            fields: [
-              {
-                type: 'submit',
-                label: '提交'
-              }
-            ]
+          currentAddress: {
+            label: '现居地址',
+            placeholder: '请输入',
+            value: ''
           }
-        ]
-      },
-      options: {
-        scrollToInvalidField: true,
-        layout: 'standard' // classic fresh
+        },
+        educationListField: {
+          education: {
+            label: '学历',
+            placeholder: '请输入',
+            value: '132'
+          },
+          graduationSchool: {
+            label: '毕业学校',
+            placeholder: '请输入',
+            value: '333'
+          },
+          major: {
+            label: '专业',
+            placeholder: '请输入',
+            value: ''
+          },
+          graduationTime: {
+            label: '毕业时间',
+            placeholder: '请输入',
+            value: ''
+          },
+          coverImg: {
+            label: '证件封面',
+            placeholder: '请输入',
+            value: ''
+          },
+          credentialNoImg: {
+            label: '证件号页',
+            placeholder: '请输入',
+            value: ''
+          }
+        } },
+      familyListFields: [],
+      educationListFields: [],
+      submitmodel: {
+        userInfo: {
+          username: '',
+          mobile: '',
+          positionName: ''
+        },
+        familyList: [{
+          name: '',
+          relation: ''
+        }]
+
       }
     }
   },
   methods: {
-    submitHandler (e, model) {
-      e.preventDefault()
-      console.log('submit', e)
-      console.log('submitmodel', model)
+    show () {},
+    addList (target, source) {
+      target.push(source)
     },
-    validateHandler (result) {
-      this.validity = result.validity
-      this.valid = result.valid
-      console.log('validity', result.validity, result.valid, result.dirty, result.firstInvalidFieldIndex)
+    submit () {
+      console.log(this.submitmodel)
+      // console.log(this.fields.familyListField)
+      // console.log(this.fields.educationListField)
+      // console.log(this.test)
+    },
+    change (e) {
+      console.log(e)
     }
+  },
+  // computed: {
+  //   submitmodel: function () {
+  //     return {
+
+  //     }
+  //   },
+  // },
+  beforeMount () {
+    this.familyListFields = [this.fields.familyListField]
+    this.educationListFields = [this.fields.educationListField]
+  },
+  components: {
+    CuInput,
+    InputGroup
   }
 }
+
 </script>
 
 <style scoped>
-  .tips{
+  .tips {
     font-size: 16px;
     line-height: 1.4;
     padding: 10px;
     text-indent: 2em;
   }
+
+  .constom-input {
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .constom-input_label {
+    font-size: 16px;
+    width: 100px;
+    padding-right: 10px;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .constom-input_content {
+    flex: 1
+  }
+
+  .cube-input::after {
+    display: none
+  }
+
 </style>

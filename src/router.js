@@ -41,6 +41,11 @@ export default new Router({
       component: () => import('./views/Person/add.vue')
     },
     {
+      path: '/person/addbackups',
+      name: 'person11',
+      component: () => import('./views/Person/add-backup.vue')
+    },
+    {
       path: '/supplier/add',
       name: 'supplier',
       component: () => import('./views/Supplier/add.vue')
