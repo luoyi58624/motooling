@@ -22,31 +22,34 @@
     <cu-input label="户籍地址" v-model="submitmodel.userInfo.positionName" placeholder="输入" >
     </cu-input>
     <div>
-      <!-- <cube-input v-model="value" placeholder="请输入" type="text">
-      </cube-input> -->
-      <!-- <cu-input v-model="test" placeholder="输入" label="test"> -->
-      <!-- </cu-input> -->
-    </div>
-
-    <div>
       <div>家庭成员</div>
-      <div>
-        <!-- <div v-for="(item,index) in list" :key="index">
-          <cu-input :label="item.label" :placeholder="item.placeholder" v-model="item.value">
-          </cu-input>
-        </div> -->
-        <input-group :fields="fields.familyListField"></input-group>
-      </div>
+        <div v-for="(val, key) in submitmodel.familyList">
+          <div v-for="(item,index) in fields.familyListField">
+            <cu-input :label="item.label" v-model="submitmodel.familyList[key][item.name]" placeholder="输入">
+            </cu-input>
+          </div>
+        </div>
+        <div @click="addList(submitmodel.familyList)">继续添加家庭成员</div>
     </div>
+    <div>
+        <div>遇事紧急联系人</div>
+          <div v-for="(val, key) in submitmodel.urgentContactsList">
+            <div v-for="(item,index) in fields.urgentContactsListField">
+              <cu-input :label="item.label" v-model="submitmodel.urgentContactsList[key][item.name]" placeholder="输入">
+              </cu-input>
+            </div>
+          </div>
+          <div @click="addList(submitmodel.urgentContactsList)">继续添加遇事紧急联系人</div>
+      </div>
     <div>
       <div>学历</div>
-      <div v-for="list in educationListFields">
-        <div v-for="(item,index) in list" :key="index">
-          <cu-input :label="item.label" :placeholder="item.placeholder">
+      <div v-for="(val, key) in submitmodel.educationList">
+        <div v-for="(item,index) in fields.educationListField">
+          <cu-input :label="item.label" v-model="submitmodel.educationList[key][item.name]" placeholder="输入">
           </cu-input>
         </div>
       </div>
-      <div @click="addList(educationListFields,fields.educationListField)">增加学历</div>
+      <div @click="addList(submitmodel.educationList)">继续添加学历</div>
     </div>
     <cube-button type="button" @click="submit">Submit Button</cube-button>
   </div>
@@ -54,7 +57,7 @@
 
 <script>
 import CuInput from '@/components/input/Input'
-import InputGroup from '@/components/input/InputGroup'
+// import InputGroup from '@/components/input/InputGroup'
 
 export default {
   data () {
@@ -63,65 +66,92 @@ export default {
       input: 123,
       value: '',
       fields: {
-        familyListField: {
-          name: {
+
+        familyListField: [
+          {
+            name: 'name',
             label: '姓名',
-            placeholder: '请输入',
-            value: ''
+            placeholder: '请输入'
           },
-          relation: {
+          {
+            name: 'relation',
             label: '关系',
             placeholder: '请输入',
             value: ''
           },
-          phone: {
+          {
+            name: 'phone',
             label: '联系方式',
             placeholder: '请输入',
             value: ''
           },
-          workUnit: {
+          { name: 'workUnit',
             label: '工作单位',
             placeholder: '请输入',
             value: ''
           },
-          currentAddress: {
+          {
+            name: 'currentAddress',
             label: '现居地址',
             placeholder: '请输入',
             value: ''
           }
-        },
-        educationListField: {
-          education: {
+        ],
+        educationListField: [
+          { name: 'education',
             label: '学历',
             placeholder: '请输入',
             value: '132'
           },
-          graduationSchool: {
+          {
+            name: 'graduationSchool',
             label: '毕业学校',
             placeholder: '请输入',
             value: '333'
           },
-          major: {
+          {
+            name: 'major',
             label: '专业',
             placeholder: '请输入',
             value: ''
           },
-          graduationTime: {
+          { name: 'graduationTime',
             label: '毕业时间',
             placeholder: '请输入',
             value: ''
           },
-          coverImg: {
+          { name: 'coverImg',
             label: '证件封面',
             placeholder: '请输入',
             value: ''
           },
-          credentialNoImg: {
+          { name: 'credentialNoImg',
             label: '证件号页',
             placeholder: '请输入',
             value: ''
-          }
-        } },
+          }],
+        urgentContactsListField:
+            [{
+              name: 'name',
+              label: '姓名'
+            }, {
+              name: 'relation',
+              label: '关系',
+              placeholder: '请输入'
+            }, {
+              name: 'phone',
+              label: '联系电话',
+              placeholder: '请输入'
+            }, {
+              name: 'workUnit',
+              label: '工作单位',
+              placeholder: '请输入'
+            }, {
+              name: 'currentAddress',
+              label: '现居地址',
+              placeholder: '请输入'
+            }]
+      },
       familyListFields: [],
       educationListFields: [],
       submitmodel: {
@@ -130,43 +160,38 @@ export default {
           mobile: '',
           positionName: ''
         },
-        familyList: [{
-          name: '',
-          relation: ''
-        }]
-
+        familyList: [
+          {}
+        ],
+        educationList: [
+          {}
+        ],
+        urgentContactsList: [{}]
       }
     }
   },
   methods: {
     show () {},
-    addList (target, source) {
-      target.push(source)
+    addList (target) {
+      // target.push(source)
+      target.push({})
     },
     submit () {
       console.log(this.submitmodel)
-      // console.log(this.fields.familyListField)
-      // console.log(this.fields.educationListField)
-      // console.log(this.test)
+      console.log(JSON.stringify(this.submitmodel))
     },
     change (e) {
       console.log(e)
     }
   },
-  // computed: {
-  //   submitmodel: function () {
-  //     return {
-
-  //     }
-  //   },
-  // },
   beforeMount () {
-    this.familyListFields = [this.fields.familyListField]
-    this.educationListFields = [this.fields.educationListField]
+    // this.submitmodel.familyList=[...this.fields.familyListField].fill({})
+    // this.familyListFields = [this.fields.familyListField]
+    // this.educationListFields = [this.fields.educationListField]
   },
   components: {
-    CuInput,
-    InputGroup
+    CuInput
+    // InputGroup
   }
 }
 
