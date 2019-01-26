@@ -12,6 +12,10 @@
       免冠照片
     </div>
     </cu-upload>
+    <cu-input label="验证码" v-model="submitmodel.phoneCode" placeholder="输入" >
+    </cu-input>
+    <cu-input label="手机" v-model="submitmodel.mobile" placeholder="输入" >
+    </cu-input>
     <cu-picker :pickerData="depList" @select="select" @cancel="cancel"
     :alias="depAlias">
       <div slot="label">
@@ -343,6 +347,8 @@ export default {
       educationListFields: [],
       // 待提交至后端的表单数据
       submitmodel: {
+        phoneCode:'',
+        mobile:'',
         userInfo: {
           referee: '456',
           // uid: '123',
