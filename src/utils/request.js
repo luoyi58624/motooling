@@ -24,18 +24,19 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   response => {
-    console.log(response)
     response.data.resultData = decrypt(response.data.resultData)
     console.log(response)
     return (response)
   },
   error => {
-    console.log('err' + error)
+    console.warn('err: ' + error)
+    // console.log('this', this)
     // this.toast = this.$createToast({
     //   txt: 'Plain txt',
     //   type: 'txt'
     // })
     // this.toast.show()
+    Promise.reject(error)
   }
 )
 

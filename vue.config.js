@@ -18,12 +18,12 @@ module.exports = {
     // proxy: 'http://localhost:4000'
     proxy: {
       '/invitation': {
-        target: 'http://192.168.2.136:8808/',
+        target: 'http://192.168.2.121:8808/',
         ws: true,
         changeOrigin: true
       },
       '/img': {
-        target: 'http://192.168.2.136:8808/'
+        target: 'http://192.168.2.121:8808/'
       }
     }
   }
