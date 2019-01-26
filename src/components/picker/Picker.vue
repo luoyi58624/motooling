@@ -26,9 +26,10 @@ export default {
           text: 'text'
         }
       }
-    },title:{
-      type:String,
-      default:'请选择'
+    },
+    title: {
+      type: String,
+      default: '请选择'
     }
   },
   data () {
@@ -64,7 +65,7 @@ export default {
       this.select.val = selectedVal.join(',')
       this.select.index = selectedIndex.join(',')
       this.select.Text = selectedText.join(',')
-      this.$emit('select', this.select)
+      this.$emit('select', this.select, selectedVal, selectedIndex, selectedText)
 
       // this.submitmodel.userInfo.depId = selectedVal.join(',')
       // this.submitmodel.userInfo.depName = selectedText.join(',')
