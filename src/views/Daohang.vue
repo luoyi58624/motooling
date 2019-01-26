@@ -8,5 +8,9 @@
     <div><router-link to="/supplier/add">供应商</router-link></div>
     <br>
     <div><router-link to="/customer/add">客户资料录入</router-link></div>
+    <br>
+    <div><router-link to="/login">登录</router-link></div>
+    <br>
+    <div><router-link to="/wxlogin">微信登录</router-link></div>
   </div>
 </template>

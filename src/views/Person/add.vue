@@ -199,7 +199,7 @@ export default {
         text: 'name'
       },
       // 部门列表
-      depList:[],
+      depList: [],
 
       genderList: [
         { text: '未知', value: '0' },
@@ -536,33 +536,29 @@ export default {
     }
   },
   created () {
-
-
     let fullPath = this.$router.currentRoute.fullPath
     var self = this
     if (sessionStorage.getItem('isLogin') != 1) {
       sessionStorage.setItem('nextpage', fullPath)
       self.$router.replace('/login?next=' + fullPath)
-    }else{
+    } else {
       this.submitmodel.userInfo.uid = getUrlQueryString('uid')
       this.submitmodel.userInfo.referee = getUrlQueryString('referee')
       let loginData = sessionStorage.getItem('loginData')
-      this.submitmodel.phoneCode=''
-      this.submitmodel.phone=''
+      this.submitmodel.phoneCode = ''
+      this.submitmodel.phone = ''
       userSelectList()
-      .then(
-        function (res) {
-          console.log(res)
-          let userSelectListData = JSON.parse(res.data.resultData)
-          self.depList = userSelectListData.data.depList
-          self.positionList = userSelectListData.data.positionList
-        }
-      ).catch(function (err) {
-        console.log(err)
-      })
+        .then(
+          function (res) {
+            console.log(res)
+            let userSelectListData = JSON.parse(res.data.resultData)
+            self.depList = userSelectListData.data.depList
+            self.positionList = userSelectListData.data.positionList
+          }
+        ).catch(function (err) {
+          console.log(err)
+        })
     }
-
-
   },
   beforeMount () {
     // this.submitmodel.familyList=[...this.fields.familyListField].fill({})

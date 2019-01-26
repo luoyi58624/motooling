@@ -6,14 +6,14 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  base:'/mthtml',
+  base: '/mthtml',
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   // redirect: '/daohang'
-    //   // component: Home
-    // },
+    {
+      path: '/',
+      name: 'home',
+      redirect: '/daohang'
+    //   component: Home
+    },
     {
       path: '/about',
       name: 'about',
@@ -28,7 +28,17 @@ export default new Router({
       component: () => import('./views/Login.vue')
     },
     {
-      path: '/',
+      path: '/wxlogin',
+      name: 'wxlogin',
+      component: () => import('./views/wxLogin.vue')
+    },
+    {
+      path: '/wxLoginSuccess',
+      name: 'wxLoginSuccess',
+      component: () => import('./views/wxLoginSuccess.vue')
+    },
+    {
+      path: '/daohang',
       name: 'daohang',
       component: () => import('./views/Daohang.vue')
     },

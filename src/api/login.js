@@ -57,3 +57,25 @@ export function getUserInfo (token) {
     params: { token }
   })
 }
+
+export function postWxCode (mobile, type = 1) {
+  const req = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: {
+      mobile: mobile,
+      type: type
+    }
+  }
+
+  let data = {
+    paramsData: encryption(JSON.stringify(req))
+  }
+
+  return request({
+    url: '/invitation/pushSMS/phoneCodeSend',
+    method: 'post',
+    data
+  })
+}
