@@ -25,7 +25,6 @@
     </cu-picker>
     <cu-input label="购买日期" v-model="submitmodel.device.buyDate" placeholder="输入" >
     </cu-input>
-
     <cu-upload
     @file-success="deviceImgsSuccess"
     @file-remove="deviceImgsRemove"

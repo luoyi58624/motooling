@@ -15,14 +15,14 @@
       </cube-input>
     </div>
     <div class="group">
-      <cube-button>进入</cube-button>
-      <button @click="getCode">点击</button>
+      <cube-button @click="login">进入</cube-button>
     </div>
   </div>
 </template>
 
 <script>
 import { getPhoneCode } from '@/api/login'
+import { getUser } from '@/api/person/User.js'
 export default {
   data () {
     return {
@@ -39,16 +39,33 @@ export default {
   methods: {
     getCode () {
       getPhoneCode(this.loginData.mobile, 1)
-      .then(function(res){
-        console.log(res)
-        let resData = JSON.parse(res.data.resultData)
-        sessionStorage.setItem('loginData',JSON.stringify(this.loginData))
-        sessionStorage.setItem('code',JSON.stringify(resData))
-      })
-      // data":{"phoneCode":"255392"},
-      .catch(err=>{
-        console.log(err)
-      })
+        .then(function (res) {
+          console.log(res)
+          let resData = JSON.parse(res.data.resultData)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+
+    login () {
+      var self = this
+      getUser(this.loginData)
+        .then(function (res) {
+          let rdata = JSON.parse(res.data.resultData)
+          console.log(rdata)
+          if (rdata.code === '000000') {
+            let next = self.$router.currentRoute.query.next
+            sessionStorage.setItem('isLogin', 1)
+            sessionStorage.setItem('loginData', JSON.stringify(self.loginData))
+            sessionStorage.setItem('userData', JSON.stringify(rdata.data))
+            self.$router.replace(next)
+          } else {
+          }
+        })
+        .catch(function (err) {
+          console.log(err)
+        })
     }
   }
 }

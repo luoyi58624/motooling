@@ -5,13 +5,15 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
+  base:'/mthtml',
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      redirect: '/daohang'
-      // component: Home
-    },
+    // {
+    //   path: '/',
+    //   name: 'home',
+    //   // redirect: '/daohang'
+    //   // component: Home
+    // },
     {
       path: '/about',
       name: 'about',
@@ -26,7 +28,7 @@ export default new Router({
       component: () => import('./views/Login.vue')
     },
     {
-      path: '/daohang',
+      path: '/',
       name: 'daohang',
       component: () => import('./views/Daohang.vue')
     },
