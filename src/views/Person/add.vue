@@ -5,8 +5,8 @@
     </div>
     <!-- 免冠照 -->
     <cu-upload
-    @file-success="fileSuccess1"
-    @file-remove="fileRemove1"
+    @file-success="avatarSuccess"
+    @file-remove="avatarRemove"
     :max='1'>
     <div slot="label">
       免冠照片
@@ -33,8 +33,11 @@
     </cu-input>
     <cu-input label="姓名" v-model="submitmodel.userInfo.username" placeholder="输入" >
     </cu-input>
-    <cu-input label="性别" v-model="submitmodel.userInfo.gender" placeholder="输入" >
-    </cu-input>
+    <cu-picker :pickerData="genderList" @select="genderSelect" @cancel="genderCancel">
+      <div slot="label">
+        性别
+      </div>
+    </cu-picker>
     <cu-input label="工作姓名" v-model="submitmodel.userCompanyInfo.workName" placeholder="输入" >
     </cu-input>
     <cu-input label="工薪等级" v-model="submitmodel.userCompanyInfo.wagesLevel" placeholder="输入" >
@@ -62,25 +65,25 @@
     </cu-input>
     <cu-input label="出生日期" v-model="submitmodel.userInfo.birthday" placeholder="输入" >
     </cu-input>
-    <cu-input label="身份证号" v-model="submitmodel.userInfo.idNo" placeholder="输入" >
+    <cu-input label="身份证号" v-model="submitmodel.idCard.idNo" placeholder="输入" >
     </cu-input>
     <cu-upload
-    @file-success="fileSuccess2"
-    @file-remove="fileRemove2"
+    @file-success="idCardcertificatesFaceImgSuccess"
+    @file-remove="idCardcertificatesFaceImgRemove"
     :max='1'>
     <div slot="label">身份证原件正面</div>
     </cu-upload>
     <cu-upload
-    @file-success="fileSuccess3"
-    @file-remove="fileRemove3"
+    @file-success="idCardcertificatesBackImgSuccess"
+    @file-remove="idCardcertificatesBackImgRemove"
     :max='1'>
     <div slot="label">身份证反面</div>
     </cu-upload>
     <cu-input label="社保卡号" v-model="submitmodel.socialSecurity.number" placeholder="输入" >
     </cu-input>
     <cu-upload
-    @file-success="fileSuccess3"
-    @file-remove="fileRemove3"
+    @file-success="socialSecuritycertificatesFaceImgSuccess"
+    @file-remove="socialSecuritycertificatesFaceImgRemove"
     :max='1'>
     <div slot="label">社保卡原件</div>
     </cu-upload>
@@ -88,16 +91,16 @@
     <cu-input label="公积金号" v-model="submitmodel.accumulation.number" placeholder="输入" >
     </cu-input>
     <cu-upload
-    @file-success="fileSuccess4"
-    @file-remove="fileRemove4"
+    @file-success="accumulationcertificatesFaceImgSuccess"
+    @file-remove="accumulationcertificatesFaceImgRemove"
     :max='1'>
     <div slot="label">公积金卡原件</div>
     </cu-upload>
     <cu-input label="工资卡号" v-model="submitmodel.salary.number" placeholder="输入" >
     </cu-input>
     <cu-upload
-    @file-success="fileSuccess5"
-    @file-remove="fileRemove5"
+    @file-success="salarycertificatesFaceImgSuccess"
+    @file-remove="salarycertificatesFaceImgRemove"
     :max='1'>
     <div slot="label">工资卡原件</div>
     </cu-upload>
@@ -174,49 +177,35 @@
 import CuInput from '@/components/input/Input'
 import CuUpload from '@/components/upload/Upload'
 import CuPicker from '@/components/picker/Picker'
-import { addUser, userSelectList } from '@/api/Person/adduser.js'
+import { addUser, userSelectList } from '@/api/person/User.js'
 import { getUrlQueryString } from '@/utils/utils.js'
-import {nationList} from  '@/data/nations.js'
+import { nationList } from '@/data/nations.js'
 export default {
   data () {
     return {
       // test: 'testvalue',
       input: 123,
       value: '',
-      nationList:nationList,
+      nationList: nationList,
       // 职位列表
       // positionList:[],
-      positionList: [
-        { 'isUse': true, 'isDefault': '0', 'code': '1', 'name': 'CEO' },
-        { 'isUse': true, 'isDefault': '0', 'code': '3', 'name': '总经理' },
-        { 'isUse': true, 'isDefault': '0', 'code': '2', 'name': '总裁' },
-        { 'isUse': true, 'isDefault': '0', 'code': '6', 'name': '职员' },
-        { 'isUse': true, 'isDefault': '0', 'code': '4', 'name': '部门经理' },
-        { 'isUse': true, 'isDefault': '0', 'code': '5', 'name': '项目经理' }
-      ],
+      positionList: [],
       depAlias: {
         value: 'depId',
         text: 'depName'
       },
-      positionAlias:{
+      positionAlias: {
         value: 'code',
         text: 'name'
       },
-
       // 部门列表
-      // depList:[],
-      depList: [
-        { 'depPic': ' ', 'depId': 1, 'depNameEn': 'Marketing Department', 'depName': '市场部' },
-        { 'depPic': ' ', 'depId': 2, 'depNameEn': 'Design Department', 'depName': '设计部' },
-        { 'depPic': ' ', 'depId': 3, 'depNameEn': 'Purchasing Department', 'depName': '采购部' },
-        { 'depPic': ' ', 'depId': 4, 'depNameEn': 'Production Department', 'depName': '生产部' },
-        { 'depPic': ' ', 'depId': 5, 'depNameEn': 'Storehouse', 'depName': '仓库' },
-        { 'depPic': ' ', 'depId': 6, 'depNameEn': 'QC Department', 'depName': '质检部' },
-        { 'depPic': ' ', 'depId': 7, 'depNameEn': 'Office Manager', 'depName': '总经办' },
-        { 'depPic': ' ', 'depId': 8, 'depNameEn': '', 'depName': '人工小组一' },
-        { 'depPic': ' ', 'depId': 9, 'depNameEn': '', 'depName': '机器小组一' }
-      ],
+      depList:[],
 
+      genderList: [
+        { text: '未知', value: '0' },
+        { text: '男', value: '1' },
+        { text: '女', value: '2' }
+      ],
       fields: {
         familyListField: [
           {
@@ -347,20 +336,21 @@ export default {
       educationListFields: [],
       // 待提交至后端的表单数据
       submitmodel: {
-        phoneCode:'',
-        mobile:'',
+        phoneCode: '',
+        mobile: '',
         userInfo: {
           referee: '456',
           // uid: '123',
           username: '李',
           mobile: '18565705036',
-          positionName: '',
           avatar: '',
           depId: '1',
           depName: '市场部',
           positionName: '总经理',
           positionCode: '3',
           gender: 0
+        },
+        idCard: {
         },
         userCompanyInfo: {
           workName: '李工作'
@@ -388,57 +378,87 @@ export default {
     positionCancel () {
       console.log('cancel')
     },
-    depSelect(){
+    select () {},
+    cancel () {
+    },
+    depSelect () {
 
     },
-    depCancel(){
+    depCancel () {
 
     },
-    nationSelect(){
-      console.log('nationSelect')
-      console.log(nationList)
+    nationSelect (selected, selectedVal, selectedIndex, selectedText) {
+      this.submitmodel.userCompanyInfo.nation = selectedVal.join(',')
     },
-    nationCancel(){
+    nationCancel () {
+      // this.submitmodel.userCompanyInfo.nation = ''
+    },
 
+    genderSelect (selected, selectedVal, selectedIndex, selectedText) {
+      this.submitmodel.userInfo.gender = selectedVal.join(',')
+    },
+    genderCancel () {
+      // this.submitmodel.userInfo.gender = ''
     },
     // 第一个参数为URL集合
     // 第二个参数 解密后的返回值，
     // 第三个参数：文件对象
-    fileSuccess1 (res, file) {
+
+    avatarSuccess (res, file) {
       // console.log(res)
       this.submitmodel.userInfo.avatar = res.toString()
     },
-    fileRemove1 (res, file) {
+    avatarRemove (res, file) {
       this.submitmodel.userInfo.avatar = ''
     },
-    fileSuccess2 (res, file) {
+    // idCard: {
+    idCardcertificatesFaceImgSuccess (res, file) {
       // console.log(res)
-      this.submitmodel.userInfo.avatar = res.toString()
+      this.submitmodel.idCard.certificatesFaceImg = res.toString()
     },
-    fileRemove2 (res, file) {
-      this.submitmodel.userInfo.avatar = ''
+    idCardcertificatesFaceImgRemove (res, file) {
+      this.submitmodel.idCard.certificatesFaceImg = ''
     },
-    fileSuccess3 (res, file) {
+    idCardcertificatesBackImgSuccess (res, file) {
       // console.log(res)
-      this.submitmodel.userInfo.avatar = res.toString()
+      this.submitmodel.idCard.certificatesBackImg = res.toString()
     },
-    fileRemove3 (res, file) {
-      this.submitmodel.userInfo.avatar = ''
+    idCardcertificatesBackImgRemove (res, file) {
+      this.submitmodel.idCard.certificatesBackImg = ''
     },
-    fileSuccess4 (res, file) {
+    // },
+    // 社保卡
+    // socialSecurity: {
+    socialSecuritycertificatesFaceImgSuccess (res, file) {
       // console.log(res)
-      this.submitmodel.userInfo.avatar = res.toString()
+      this.submitmodel.socialSecurity.certificatesFaceImg = res.toString()
     },
-    fileRemove4 (res, file) {
-      this.submitmodel.userInfo.avatar = ''
+    socialSecuritycertificatesFaceImgRemove (res, file) {
+      this.submitmodel.socialSecurity.certificatesFaceImg = ''
     },
-    fileSuccess5 (res, file) {
+    // },
+    // 公积金
+    // accumulation: {
+    accumulationcertificatesFaceImgSuccess (res, file) {
       // console.log(res)
-      this.submitmodel.userInfo.avatar = res.toString()
+      this.submitmodel.accumulation.certificatesFaceImg = res.toString()
     },
-    fileRemove5 (res, file) {
-      this.submitmodel.userInfo.avatar = ''
+    accumulationcertificatesFaceImgRemove (res, file) {
+      this.submitmodel.accumulation.certificatesFaceImg = ''
     },
+
+    // },
+    // 工资卡
+    // salary: {
+    salarycertificatesFaceImgSuccess (res, file) {
+      // console.log(res)
+      this.submitmodel.salary.certificatesFaceImg = res.toString()
+    },
+    salarycertificatesFaceImgRemove (res, file) {
+      this.submitmodel.salary.certificatesFaceImg = ''
+    },
+    // },
+
     showPicker1 () {
       console.log(123)
       if (!this.picker1) {
@@ -516,20 +536,33 @@ export default {
     }
   },
   created () {
-    // this.submitmodel.userInfo.uid = getUrlQueryString('uid')
-    // this.submitmodel.userInfo.referee = getUrlQueryString('referee')
+
+
+    let fullPath = this.$router.currentRoute.fullPath
     var self = this
-    userSelectList()
-    .then(
-      function (res) {
-        console.log(res)
-        let userSelectListData = JSON.parse(res.data.resultData)
-        self.depList = userSelectListData.data.depList
-        self.positionList = userSelectListData.data.positionList
-      }
-    ).catch(function (err) {
-      console.log(err)
-    })
+    if (sessionStorage.getItem('isLogin') != 1) {
+      sessionStorage.setItem('nextpage', fullPath)
+      self.$router.replace('/login?next=' + fullPath)
+    }else{
+      this.submitmodel.userInfo.uid = getUrlQueryString('uid')
+      this.submitmodel.userInfo.referee = getUrlQueryString('referee')
+      let loginData = sessionStorage.getItem('loginData')
+      this.submitmodel.phoneCode=''
+      this.submitmodel.phone=''
+      userSelectList()
+      .then(
+        function (res) {
+          console.log(res)
+          let userSelectListData = JSON.parse(res.data.resultData)
+          self.depList = userSelectListData.data.depList
+          self.positionList = userSelectListData.data.positionList
+        }
+      ).catch(function (err) {
+        console.log(err)
+      })
+    }
+
+
   },
   beforeMount () {
     // this.submitmodel.familyList=[...this.fields.familyListField].fill({})
