@@ -31,9 +31,9 @@ export default new Router({
       component: () => import('./views/Daohang.vue')
     },
     {
-      path: '/equipment/add',
-      name: 'equipment',
-      component: () => import('./views/Equipment/add.vue')
+      path: '/device/add',
+      name: 'device',
+      component: () => import('./views/Device/add.vue')
     },
     {
       path: '/person/add',

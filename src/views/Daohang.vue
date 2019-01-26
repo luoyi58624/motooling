@@ -1,7 +1,7 @@
 <template>
   <div>
     <br>
-    <div><router-link to="/equipment/add">设备资料维护</router-link></div>
+    <div><router-link to="/device/add">设备资料维护</router-link></div>
     <br>
     <div><router-link to="/person/add">人员</router-link></div>
     <br>
