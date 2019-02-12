@@ -14,6 +14,7 @@ export function getUser (params) {
     timestamp: timestamp,
     data: params
   }
+  console.log(req)
   let data = {
     paramsData: encryption(JSON.stringify(req))
   }

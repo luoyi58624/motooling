@@ -1,8 +1,6 @@
 <template>
-    <div class="login">
-      <div>
-        微信登录成功
-      </div>
+    <div>
+      跳转中。。。
     </div>
   </template>
 
@@ -23,13 +21,39 @@ export default {
   },
   methods: {
     submitCode () {
+      let self = this
       let param = {
         code: this.code,
         companyId: this.companyId
       }
       postWxCode(param)
         .then(function (res) {
-          console.log(res)
+          let rdata = res.data.resultData
+          let resObj = JSON.parse(rdata)
+          console.log(resObj)
+          if (resObj.code !== '000000') {
+            alert(resObj.msg)
+            throw ({ code: resObj.code, msg: resObj.msg })
+          }
+          self.resString = res.data.resultData
+          sessionStorage.setItem('wechatInfo', JSON.stringify(resObj.data.wechatInfo))
+          sessionStorage.setItem('weburl', resObj.data.weburl)
+          if (resObj.data.statusCode === 0) {
+            alert('该企业没有站点')
+          } else if (resObj.data.statusCode === 1) {
+            // 登录成功
+            self.$router.replace('/person/add')
+          } else if (resObj.data.statusCode === 2) {
+            // 未绑定手机号
+            self.$router.replace('/wxBindPhone')
+          }else if (resObj.data.statusCode === 3) {
+            // 用户未审批
+            alert('用户信息需要管理员审批，请等待')
+            self.$router.replace('/')
+          }else{
+            alert(resObj.msg)
+            self.$router.replace('/')
+          }
         })
         .catch(function (err) {
           console.log(err)
@@ -38,33 +62,15 @@ export default {
   },
   created () {
     this.code = getUrlQueryString('code')
-    this.state = JSON.parse(decodeURIComponent(getUrlQueryString('state')))
+    this.state = decodeURIComponent(getUrlQueryString('state'))
     console.log(this.state)
-    this.companyId = this.state.companyId
+    this.companyId = this.state
+    this.submitCode()
   }
 }
 
 </script>
 
   <style scoped>
-    .logo-wrapper {
-      margin: auto;
-      text-align: center;
-      padding-top: 20px;
-    }
-
-    .logo {
-      width: 200px;
-      height: 200px;
-    }
-
-    .login {
-      height: 100%;
-      background: #efeff4;
-    }
-
-    .group {
-      margin-bottom: 20px;
-    }
 
   </style>

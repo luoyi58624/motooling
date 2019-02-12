@@ -3,7 +3,7 @@ import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
 // import { strToBinary } from '@/utils/utils'
 
-const token = 'a04742ac-2307-46b4-8b58-071a93dd28b3'
+const token = ''
 const timestamp = '1547621396'
 const md5String = md5(token + timestamp + 'Motooling')
 
@@ -19,13 +19,14 @@ export function getPhoneCode (mobile, type = 1) {
       type: type
     }
   }
+  console.log(JSON.stringify(req))
 
   let data = {
     paramsData: encryption(JSON.stringify(req))
   }
 
   return request({
-    url: '/invitation/pushSMS/phoneCodeSend',
+    url: '/mtH5/pushSMS/phoneCodeSend',
     method: 'post',
     data
   })
@@ -58,23 +59,40 @@ export function getUserInfo (token) {
   })
 }
 
-export function postWxCode (mobile, type = 1) {
+export function postWxCode (param) {
   const req = {
     token: token,
     md5: md5String,
     timestamp: timestamp,
-    data: {
-      mobile: mobile,
-      type: type
-    }
+    data: param
   }
+  console.log(req)
+  let data = {
+    paramsData: encryption(JSON.stringify(req))
+  }
+
+  return request({
+    url: 'http://192.168.2.121:8809/mtH5/wechat/access',
+    method: 'post',
+    data
+  })
+}
+
+export function wxBindPhone (param) {
+  const req = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: param
+  }
+  console.log(req)
 
   let data = {
     paramsData: encryption(JSON.stringify(req))
   }
 
   return request({
-    url: '/invitation/pushSMS/phoneCodeSend',
+    url: '/mtH5/wechat/bindPhone',
     method: 'post',
     data
   })

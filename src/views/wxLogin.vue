@@ -18,9 +18,9 @@ export default {
     return {
       state: '',
       companyId: '',
-      appid: 'wx18283c852fbb0e40',
+      appid: 'wx70214a3c12e8e576',
       wxLinkBase: 'https://open.weixin.qq.com/connect/oauth2/authorize',
-      redirect_uri: 'http://www.motooling.com:8080/mthtml/wxloginSuccess'
+      redirect_uri: 'http://www.motooling.com/mthtml/wxloginSuccess'
     }
   },
   computed: {
@@ -34,7 +34,9 @@ export default {
   created () {
     this.companyId = getUrlQueryString('companyId')
     if (this.companyId) {
-      this.state = JSON.stringify({ companyId: this.companyId })
+      this.state = this.companyId
+    } else {
+      this.state = 35
     }
   }
 }

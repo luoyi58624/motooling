@@ -17,9 +17,6 @@
     <div class="group">
       <cube-button @click="login">进入</cube-button>
     </div>
-    <div>
-      微信登录
-    </div>
   </div>
 </template>
 

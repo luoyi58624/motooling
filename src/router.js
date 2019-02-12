@@ -33,6 +33,11 @@ export default new Router({
       component: () => import('./views/wxLogin.vue')
     },
     {
+      path: '/wxbindphone',
+      name: 'wxbindphone',
+      component: () => import('./views/wxBindPhone.vue')
+    },
+    {
       path: '/wxLoginSuccess',
       name: 'wxLoginSuccess',
       component: () => import('./views/wxLoginSuccess.vue')

@@ -22,6 +22,11 @@ module.exports = {
         ws: true,
         changeOrigin: true
       },
+      '/mtH5': {
+        target: 'http://192.168.2.121:8809/',
+        ws: true,
+        changeOrigin: true
+      },
       '/img': {
         target: 'http://192.168.2.121:8808/'
       }

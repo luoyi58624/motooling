@@ -539,8 +539,8 @@ export default {
     let fullPath = this.$router.currentRoute.fullPath
     var self = this
     if (sessionStorage.getItem('isLogin') != 1) {
-      sessionStorage.setItem('nextpage', fullPath)
-      self.$router.replace('/login?next=' + fullPath)
+      // sessionStorage.setItem('nextpage', fullPath)
+      // self.$router.replace('/login?next=' + fullPath)
     } else {
       this.submitmodel.userInfo.uid = getUrlQueryString('uid')
       this.submitmodel.userInfo.referee = getUrlQueryString('referee')
