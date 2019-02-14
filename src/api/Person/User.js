@@ -1,7 +1,8 @@
 import request from '@/utils/request'
+import { WEBURL, BASEURL } from '@/utils/utils.js'
 import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
-const token = ''
+const token = localStorage.getItem('token') || ''
 const timestamp = '1547621396'
 const md5String = md5(token + timestamp + 'Motooling')
 
@@ -19,7 +20,7 @@ export function getUser (params) {
     paramsData: encryption(JSON.stringify(req))
   }
   return request({
-    url: '/invitation/person/validatePhone',
+    url: WEBURL + '/mtH5/invitationPerson/userInfo',
     method: 'post',
     data
   })
@@ -36,7 +37,7 @@ export function addUser (params) {
     paramsData: encryption(JSON.stringify(req))
   }
   return request({
-    url: '/invitation/person/addUser',
+    url: WEBURL + '/mtH5/invitationPerson/addUser',
     method: 'post',
     data
   })
@@ -53,7 +54,7 @@ export function userSelectList (params) {
     paramsData: encryption(JSON.stringify(req))
   }
   return request({
-    url: '/invitation/person/userSelectList',
+    url: WEBURL + '/mtH5/invitationPerson/userSelectList',
     method: 'post',
     data
   })

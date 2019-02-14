@@ -95,8 +95,8 @@ export default {
     if (sessionStorage.getItem('wechatInfo')) {
       this.submitmodel = JSON.parse(sessionStorage.getItem('wechatInfo'))
     }
-    if (sessionStorage.getItem('weburl')) {
-      this.submitmodel.webUrl = sessionStorage.getItem('weburl')
+    if (localStorage.getItem('weburl')) {
+      this.submitmodel.webUrl = localStorage.getItem('weburl')
     }
   },
   components: {

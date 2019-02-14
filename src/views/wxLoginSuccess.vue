@@ -37,20 +37,25 @@ export default {
           }
           self.resString = res.data.resultData
           sessionStorage.setItem('wechatInfo', JSON.stringify(resObj.data.wechatInfo))
-          sessionStorage.setItem('weburl', resObj.data.weburl)
+
+
           if (resObj.data.statusCode === 0) {
             alert('该企业没有站点')
+            self.$router.replace('/')
           } else if (resObj.data.statusCode === 1) {
+            localStorage.setItem('token', resObj.data.user.token)
+            localStorage.setItem('weburl', resObj.data.weburl)
             // 登录成功
-            self.$router.replace('/person/add')
+            self.$router.replace('/person/add?uid=' + resObj.data.user.uid)
           } else if (resObj.data.statusCode === 2) {
             // 未绑定手机号
             self.$router.replace('/wxBindPhone')
-          }else if (resObj.data.statusCode === 3) {
+            localStorage.setItem('weburl', resObj.data.weburl)
+          } else if (resObj.data.statusCode === 3) {
             // 用户未审批
             alert('用户信息需要管理员审批，请等待')
             self.$router.replace('/')
-          }else{
+          } else {
             alert(resObj.msg)
             self.$router.replace('/')
           }

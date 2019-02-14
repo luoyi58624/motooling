@@ -1,23 +1,33 @@
 <template>
-    <div class="item constom-input border-bottom-1px">
-        <div class="constom-input_label">
-            <slot name="label"></slot>
-        </div>
-       <cube-upload
-       :action="action"
-       :simultaneous-uploads="1"
-       :max='max'
-       v-model="files"
-       @file-success="fileSuccess"
-       @file-removed="fileRemoved"
-       />
+  <div class="item constom-input border-bottom-1px">
+    <div class="constom-input_label">
+      <slot name="label"></slot>
     </div>
-   </template>
+    <div class="upload-file-list">
+      <div v-if="!isChange" class="initial-file-wrapper">
+          <img :src="initialFile" class="initial-file">
+        </div>
+        <div class="upload-wrapper">
+          <cube-upload ref="upload" :action="action" :simultaneous-uploads="1" :max='max' v-model="files" @files-added="addedHandler" @file-success="fileSuccess" @file-removed="fileRemoved">
+              <div class="clear-fix">
+                <cube-upload-file v-for="(file, i) in files" :file="file" :key="i"></cube-upload-file>
+                <cube-upload-btn :multiple="false">
+                  <div>
+                    <i>＋</i>
+                </div>
+              </cube-upload-btn>
+              </div>
+            </cube-upload>
+        </div>
+    </div>
+  </div>
+</template>
 <script>
 import { encryption, decrypt } from '@/utils/crypt'
+import { WEBURL, BASEURL } from '@/utils/utils.js'
 import md5 from 'md5'
 
-const token = ''
+const token = localStorage.getItem('token') || ''
 const timestamp = '1547621396'
 const md5String = md5(token + timestamp + 'Motooling')
 console.log(md5String)
@@ -27,6 +37,7 @@ const req = {
   timestamp: timestamp,
   data: {}
 }
+console.log(req)
 const encryptionData = encryption(JSON.stringify(req))
 
 export default {
@@ -35,18 +46,21 @@ export default {
     value: ''
   },
   props: {
+    initialFile: {
+      type: String
+    },
     action: {
       type: Object,
       default () {
         return {
-          target: '/img/uploadImg',
+          target: WEBURL + '/img/imgUpload',
           fileName: 'imgFile',
           data: {
             paramsData: encryptionData
           },
           checkSuccess: (res, file) => {
-            console.log('res', res)
             let rdata = JSON.parse(decrypt(res.resultData))
+            console.log('rdata', rdata)
             if (rdata.status === 0) {
               // this.uploadValue1 = rdata.url
               return true
@@ -67,10 +81,13 @@ export default {
     placeholder: String
   },
   data () {
+    // console.log(this.initialFile.split(','))
     return {
       // validity: {},
       // valid: undefined,
       // newValue: this.value
+      // files: this.initialFile.split(',')
+      isChange: false,
       files: []
     }
   },
@@ -90,9 +107,15 @@ export default {
     }
   },
   methods: {
+    addedHandler () {
+      const file = this.files[0]
+      file && this.$refs.upload.removeFile(file)
+      this.isChange = true
+    },
     fileSuccess (e) {
       // console.log(this.fileURLs)
       this.$emit('file-success', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
+      console.log(this.files)
     },
     fileRemoved (e) {
       // console.log(this.fileURLs)
@@ -107,31 +130,84 @@ export default {
 </script>
 
 <style scoped>
+  .upload-file-list{
+    position: relative;
+    height: 80px;
+  }
+  .initial-file-wrapper,.upload-wrapper{
+    position: absolute;
+    left: 0;
+  }
+  .initial-file{
+    width: 80px;
+    height: 80px;
+  }
+  .initial-file img{
+    width: 100%;
+    height: 100%;
 
-.constom-input{
-  display: flex;
-  align-items: center;
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top:10px;
-}
-.constom-input_label{
-  font-size: 16px;
-  width: 100px;
-  padding-right: 10px;
-  display: flex;
-  align-items: center;
-  word-wrap: break-word;
-  word-break: break-word;
-}
-.constom-input_content{
-  flex: 1
-}
-.cube-input::after{
-  display: none
-}
-.item{
-  display: flex;
-  align-items: center;
-}
+  }
+  .constom-input {
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+  }
+
+  .constom-input_label {
+    font-size: 16px;
+    width: 100px;
+    padding-right: 10px;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .constom-input_content {
+    flex: 1
+  }
+
+  .cube-input::after {
+    display: none
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+  }
+
+  .cube-upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+  .cube-upload-btn>div {
+    text-align: center;
+  }
+
+  .cube-upload-btn i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+    font-size: 32px;
+    line-height: 1;
+    font-style: normal;
+    color: #333;
+    /* background-color: #333; */
+    border-radius: 50%;
+  }
+   .cube-upload .cube-upload-btn,  .cube-upload .cube-upload-file{
+    margin: 0;
+    height: 80px;
+  }
+  .cube-upload .cube-upload-file+.cube-upload-btn{
+    margin-top: -80px;
+    opacity: 0;
+  }
 </style>

@@ -30,14 +30,25 @@ export default {
     title: {
       type: String,
       default: '请选择'
+    },
+    initialSelect: {
+      type: Object,
+      default () {
+        return {
+          val: '请选择',
+          Text: '请选择'
+        }
+      }
     }
   },
   data () {
+    console.log(this.initialSelect)
     return {
-      select: {
-        val: '请选择',
-        Text: '请选择'
-      },
+      select: this.initialSelect,
+      // select: {
+      //   val: '请选择',
+      //   Text: '请选择'
+      // },
       validity: {},
       valid: undefined,
       newValue: this.value
@@ -50,7 +61,6 @@ export default {
     },
     showPicker () {
       if (!this.picker1) {
-        console.log(this.depList)
         this.picker1 = this.$createPicker({
           title: this.title,
           data: [this.pickerData],

@@ -7,33 +7,37 @@
     <cu-upload
     @file-success="avatarSuccess"
     @file-remove="avatarRemove"
+    :initialFile="submitmodel.userInfo.avatar"
     :max='1'>
     <div slot="label">
       免冠照片
     </div>
     </cu-upload>
-    <cu-input label="验证码" v-model="submitmodel.phoneCode" placeholder="输入" >
-    </cu-input>
-    <cu-input label="手机" v-model="submitmodel.mobile" placeholder="输入" >
-    </cu-input>
-    <cu-picker :pickerData="depList" @select="select" @cancel="cancel"
-    :alias="depAlias">
+    <cu-picker :pickerData="depList" @select="depSelect" @cancel="depCancel"
+    :alias="depAlias"
+    :initialSelect="{val:submitmodel.userInfo.depId,Text:submitmodel.userInfo.depName}"
+    >
       <div slot="label">
         隶属部门
       </div>
     </cu-picker>
-    <cu-picker :pickerData="positionList" @select="select" @cancel="cancel" :alias="positionAlias">
+    <cu-picker :pickerData="positionList" @select="positionSelect" @cancel="positionCancel"
+    :alias="positionAlias"
+    :initialSelect="{val:submitmodel.userInfo.positionCode,Text:submitmodel.userInfo.positionName}"
+    >
       <div slot="label">
         职位
       </div>
     </cu-picker>
-    <!-- <cu-input label="uid" v-model="submitmodel.userInfo.uid" placeholder="输入" >
-    </cu-input> -->
+    <cu-input label="uid" v-model="submitmodel.userInfo.uid" placeholder="输入" >
+    </cu-input>
     <cu-input label="referee" v-model="submitmodel.userInfo.referee" placeholder="输入" >
     </cu-input>
     <cu-input label="姓名" v-model="submitmodel.userInfo.username" placeholder="输入" >
     </cu-input>
-    <cu-picker :pickerData="genderList" @select="genderSelect" @cancel="genderCancel">
+    <cu-picker :pickerData="genderList" @select="genderSelect" @cancel="genderCancel"
+    :initialSelect="{val:submitmodel.userInfo.gender,Text:submitmodel.userInfo.gender}"
+    >
       <div slot="label">
         性别
       </div>
@@ -44,7 +48,9 @@
     </cu-input>
     <!-- <cu-input label="" v-model="submitmodel.userCompanyInfo.nation" placeholder="输入" >
     </cu-input> -->
-    <cu-picker :pickerData="nationList" @select="nationSelect" @cancel="nationCancel">
+    <cu-picker :pickerData="nationList" @select="nationSelect" @cancel="nationCancel"
+    :initialSelect="{val:submitmodel.userInfo.nation,Text:submitmodel.userInfo.nation}"
+    >
       <div slot="label">
         民族
       </div>
@@ -53,8 +59,8 @@
     </cu-input>
     <cu-input label="户籍地址" v-model="submitmodel.userInfo.permanentAddress" placeholder="输入" >
     </cu-input>
-    <cu-input label="是否已婚" v-model="submitmodel.userCompanyInfo.isMarried" placeholder="输入" >
-    </cu-input>
+    <!-- <cu-input label="是否已婚" v-model="submitmodel.userCompanyInfo.isMarried" placeholder="输入" >
+    </cu-input> -->
     <cu-input label="政治面貌" v-model="submitmodel.userCompanyInfo.politicalOutlook" placeholder="输入" >
     </cu-input>
     <cu-input label="联系电话" v-model="submitmodel.userInfo.mobile" placeholder="输入" >
@@ -70,12 +76,14 @@
     <cu-upload
     @file-success="idCardcertificatesFaceImgSuccess"
     @file-remove="idCardcertificatesFaceImgRemove"
+    :initialFile="submitmodel.idCard.certificatesFaceImg"
     :max='1'>
     <div slot="label">身份证原件正面</div>
     </cu-upload>
     <cu-upload
     @file-success="idCardcertificatesBackImgSuccess"
     @file-remove="idCardcertificatesBackImgRemove"
+    :initialFile="submitmodel.idCard.certificatesBackImg"
     :max='1'>
     <div slot="label">身份证反面</div>
     </cu-upload>
@@ -84,6 +92,7 @@
     <cu-upload
     @file-success="socialSecuritycertificatesFaceImgSuccess"
     @file-remove="socialSecuritycertificatesFaceImgRemove"
+    :initialFile="submitmodel.socialSecurity.certificatesFaceImg"
     :max='1'>
     <div slot="label">社保卡原件</div>
     </cu-upload>
@@ -93,6 +102,7 @@
     <cu-upload
     @file-success="accumulationcertificatesFaceImgSuccess"
     @file-remove="accumulationcertificatesFaceImgRemove"
+    :initialFile="submitmodel.accumulation.certificatesFaceImg"
     :max='1'>
     <div slot="label">公积金卡原件</div>
     </cu-upload>
@@ -101,6 +111,7 @@
     <cu-upload
     @file-success="salarycertificatesFaceImgSuccess"
     @file-remove="salarycertificatesFaceImgRemove"
+    :initialFile="submitmodel.salary.certificatesFaceImg"
     :max='1'>
     <div slot="label">工资卡原件</div>
     </cu-upload>
@@ -177,7 +188,7 @@
 import CuInput from '@/components/input/Input'
 import CuUpload from '@/components/upload/Upload'
 import CuPicker from '@/components/picker/Picker'
-import { addUser, userSelectList } from '@/api/person/User.js'
+import { addUser, getUser, userSelectList } from '@/api/person/User.js'
 import { getUrlQueryString } from '@/utils/utils.js'
 import { nationList } from '@/data/nations.js'
 export default {
@@ -202,9 +213,9 @@ export default {
       depList: [],
 
       genderList: [
-        { text: '未知', value: '0' },
-        { text: '男', value: '1' },
-        { text: '女', value: '2' }
+        { text: '未知', value: 0 },
+        { text: '男', value: 1 },
+        { text: '女', value: 2 }
       ],
       fields: {
         familyListField: [
@@ -336,11 +347,11 @@ export default {
       educationListFields: [],
       // 待提交至后端的表单数据
       submitmodel: {
-        phoneCode: '',
-        mobile: '',
+        // phoneCode: '',
+        // mobile: '',
         userInfo: {
-          referee: '456',
-          // uid: '123',
+          referee: 456,
+          uid: 123,
           username: '李',
           mobile: '18565705036',
           avatar: '',
@@ -371,23 +382,24 @@ export default {
       console.log(JSON.stringify(this.depList))
       console.log(JSON.stringify(this.positionList))
     },
-    positionSelect (val) {
-      console.log('select')
-      console.log(val)
+    positionSelect (selected, selectedVal, selectedIndex, selectedText) {
+      console.log(selectedVal)
+      this.submitmodel.userInfo.positionCode = selectedVal.join(',')
+      this.submitmodel.userInfo.positionName = selectedText.join(',')
     },
     positionCancel () {
       console.log('cancel')
     },
-    select () {},
-    cancel () {
-    },
-    depSelect () {
-
+    depSelect (selected, selectedVal, selectedIndex, selectedText) {
+      console.log(selectedVal)
+      this.submitmodel.userInfo.depId = selectedVal.join(',')
+      this.submitmodel.userInfo.depName = selectedText.join(',')
     },
     depCancel () {
 
     },
     nationSelect (selected, selectedVal, selectedIndex, selectedText) {
+      console.log(selectedVal)
       this.submitmodel.userCompanyInfo.nation = selectedVal.join(',')
     },
     nationCancel () {
@@ -457,66 +469,6 @@ export default {
     salarycertificatesFaceImgRemove (res, file) {
       this.submitmodel.salary.certificatesFaceImg = ''
     },
-    // },
-
-    showPicker1 () {
-      console.log(123)
-      if (!this.picker1) {
-        console.log(this.depList)
-        this.picker1 = this.$createPicker({
-          title: 'Picker',
-          data: [this.depList],
-          alias: {
-            value: 'depId',
-            text: 'depName'
-          },
-          onSelect: this.selectHandle1,
-          onCancel: this.cancelHandle1
-        })
-      }
-      this.picker1.show()
-    },
-    showPicker2 () {
-      console.log(123)
-      if (!this.picker2) {
-        console.log(this.positionList)
-        this.picker2 = this.$createPicker({
-          title: 'Picker',
-          data: [this.positionList],
-          alias: {
-            value: 'code',
-            text: 'name'
-          },
-          onSelect: this.selectHandle2,
-          onCancel: this.cancelHandle2
-        })
-      }
-      this.picker2.show()
-    },
-    selectHandle1 (selectedVal, selectedIndex, selectedText) {
-      this.submitmodel.userInfo.depId = selectedVal.join(',')
-      this.submitmodel.userInfo.depName = selectedText.join(',')
-      console.log(this.submitmodel.userInfo.depId)
-    },
-    cancelHandle1 () {
-      this.$createToast({
-        type: 'correct',
-        txt: 'Picker canceled',
-        time: 1000
-      }).show()
-    },
-    selectHandle2 (selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal)
-      this.submitmodel.userInfo.positionCode = selectedVal.join(',')
-      this.submitmodel.userInfo.positionName = selectedText.join(',')
-    },
-    cancelHandle2 () {
-      this.$createToast({
-        type: 'correct',
-        txt: 'Picker canceled',
-        time: 1000
-      }).show()
-    },
     // 增加子列表
     addList (target) {
       target.push({})
@@ -525,9 +477,23 @@ export default {
     deleteList (target, index) {
       target.splice(index, 1)
     },
+    getUserInfo () {
+      let self = this
+      getUser({ uid: this.submitmodel.userInfo.uid })
+        .then(
+          function (res) {
+            console.log(res.data.resultData)
+            let rdata = JSON.parse(res.data.resultData)
+            console.log(rdata.data)
+            Object.assign(self.submitmodel, rdata.data)
+            // self.submitmodel = rdata.data
+            console.log(self.submitmodel)
+          }
+        )
+    },
     submit () {
       console.log(this.submitmodel)
-      console.log(JSON.stringify(this.submitmodel))
+      // console.log(JSON.stringify(this.submitmodel))
       addUser(this.submitmodel).then(function (res) {
         console.log(res)
       }).catch(function (err) {
@@ -538,15 +504,17 @@ export default {
   created () {
     let fullPath = this.$router.currentRoute.fullPath
     var self = this
-    if (sessionStorage.getItem('isLogin') != 1) {
+    if (!localStorage.getItem('token')) {
       // sessionStorage.setItem('nextpage', fullPath)
       // self.$router.replace('/login?next=' + fullPath)
+      alert('请登录')
     } else {
-      this.submitmodel.userInfo.uid = getUrlQueryString('uid')
+      this.submitmodel.userInfo.uid = parseInt(getUrlQueryString('uid'))
       this.submitmodel.userInfo.referee = getUrlQueryString('referee')
-      let loginData = sessionStorage.getItem('loginData')
-      this.submitmodel.phoneCode = ''
-      this.submitmodel.phone = ''
+      // let loginData = sessionStorage.getItem('loginData')
+      // this.submitmodel.phoneCode = ''
+      // this.submitmodel.phone = ''
+      this.getUserInfo()
       userSelectList()
         .then(
           function (res) {

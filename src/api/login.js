@@ -1,9 +1,10 @@
 import request from '@/utils/request'
+import { WEBURL, BASEURL } from '@/utils/utils.js'
 import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
 // import { strToBinary } from '@/utils/utils'
 
-const token = ''
+const token = localStorage.getItem('token') || ''
 const timestamp = '1547621396'
 const md5String = md5(token + timestamp + 'Motooling')
 
@@ -26,36 +27,9 @@ export function getPhoneCode (mobile, type = 1) {
   }
 
   return request({
-    url: '/mtH5/pushSMS/phoneCodeSend',
+    url: BASEURL + '/mtH5/pushSMS/phoneCodeSend',
     method: 'post',
     data
-  })
-}
-
-export function loginByUsername (username, password) {
-  const data = {
-    username,
-    password
-  }
-  return request({
-    url: '/login/login',
-    method: 'post',
-    data
-  })
-}
-
-export function logout () {
-  return request({
-    url: '/login/logout',
-    method: 'post'
-  })
-}
-
-export function getUserInfo (token) {
-  return request({
-    url: '/user/info',
-    method: 'get',
-    params: { token }
   })
 }
 
@@ -72,7 +46,7 @@ export function postWxCode (param) {
   }
 
   return request({
-    url: 'http://192.168.2.121:8809/mtH5/wechat/access',
+    url: BASEURL + '/mtH5/wechat/access',
     method: 'post',
     data
   })
@@ -92,7 +66,7 @@ export function wxBindPhone (param) {
   }
 
   return request({
-    url: '/mtH5/wechat/bindPhone',
+    url: BASEURL + '/mtH5/wechat/bindPhone',
     method: 'post',
     data
   })

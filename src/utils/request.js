@@ -5,7 +5,7 @@ import { decrypt } from '@/utils/crypt'
 const instance = axios.create({
   // baseURL: process.env.base_API,
   // baseURL: 'http://192.168.2.136:8808',
-  baseURL: 'http://127.0.0.1:8080',
+  // baseURL: 'http://www.motooling.com:8080',
   timeout: 5000
 })
 

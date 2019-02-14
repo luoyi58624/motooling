@@ -16,3 +16,8 @@ export function getUrlQueryString (name) {
   }
   return null
 }
+
+// 获取URL中查询参数
+export const WEBURL = localStorage.getItem('weburl')
+
+export const BASEURL = 'http://192.168.2.125:8809'
