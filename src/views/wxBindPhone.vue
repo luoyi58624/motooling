@@ -59,25 +59,34 @@ export default {
   },
   methods: {
     getCode () {
+      let self = this
       getPhoneCode(this.submitmodel.mobile, 1)
         .then(function (res) {
           console.log(res)
           // TODO 处理验证码倒计时
+          const toast = self.$createToast({
+            time: 2000,
+            txt: '获取验证码成功',
+            type: 'correct'
+          })
+          toast.show()
         })
         .catch(err => {
           console.log(err)
         })
     },
     submit () {
+      let self = this
       console.log('提交')
       wxBindPhone(this.submitmodel)
         .then(function (res) {
-          let rdata = JSON.parse(res.data.resultData)
+          let rdata = res.data
           console.log(rdata)
           if (rdata.status === 0) {
-            self.$router.replace('/person/add')
+            alert('提交成功')
+            self.$router.replace('/wxlogin')
           } else {
-            alert(rdata.msg)
+            alert('提交失败' + rdata.msg)
           }
         }).catch(err => {
           console.log(err)

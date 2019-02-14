@@ -41,6 +41,15 @@ export default {
       }
     }
   },
+  watch: {
+    initialSelect (curSelect, oldSelect) {
+      console.log(curSelect, oldSelect)
+      if (curSelect) {
+        this.initialSelect = curSelect
+        this.select = this.initialSelect
+      }
+    }
+  },
   data () {
     console.log(this.initialSelect)
     return {

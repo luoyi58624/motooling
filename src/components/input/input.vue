@@ -28,6 +28,15 @@ export default {
       newValue: this.value
     }
   },
+  watch: {
+    value (curSelect, oldSelect) {
+      console.log(curSelect, oldSelect)
+      if (curSelect) {
+        this.initialSelect = curSelect
+        this.newValue = curSelect
+      }
+    }
+  },
   methods: {
     handleInput (e) {
       this.$emit('input', e.target.value)

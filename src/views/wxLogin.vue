@@ -1,15 +1,7 @@
 <template>
-    <div class="login">
-      <div class="group">
-        <div class="logo-wrapper">
-          <img class="logo" alt="logo" src="../assets/logo.png">
-        </div>
-      </div>
-      <a :href="wxLoginLink">
-        微信登录
-      </a>
-    </div>
-  </template>
+  <div>
+  </div>
+</template>
 
 <script>
 import { getUrlQueryString } from '@/utils/utils.js'
@@ -38,6 +30,9 @@ export default {
     } else {
       this.state = 35
     }
+  },
+  mounted () {
+    window.location.href = this.wxLoginLink
   }
 }
 

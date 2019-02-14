@@ -1,8 +1,7 @@
 <template>
-    <div>
-      跳转中。。。
-    </div>
-  </template>
+  <div>
+  </div>
+</template>
 
 <script>
 import { postWxCode } from '@/api/login'
@@ -28,16 +27,14 @@ export default {
       }
       postWxCode(param)
         .then(function (res) {
-          let rdata = res.data.resultData
-          let resObj = JSON.parse(rdata)
+          let resObj = res.data
           console.log(resObj)
           if (resObj.code !== '000000') {
             alert(resObj.msg)
             throw ({ code: resObj.code, msg: resObj.msg })
           }
-          self.resString = res.data.resultData
+          self.resString = res.data
           sessionStorage.setItem('wechatInfo', JSON.stringify(resObj.data.wechatInfo))
-
 
           if (resObj.data.statusCode === 0) {
             alert('该企业没有站点')
@@ -76,6 +73,6 @@ export default {
 
 </script>
 
-  <style scoped>
+<style scoped>
 
-  </style>
+</style>

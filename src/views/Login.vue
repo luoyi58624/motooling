@@ -41,7 +41,7 @@ export default {
       getPhoneCode(this.loginData.mobile, 1)
         .then(function (res) {
           console.log(res)
-          let resData = JSON.parse(res.data.resultData)
+          let resData = res.data
         })
         .catch(err => {
           console.log(err)
@@ -52,7 +52,7 @@ export default {
       var self = this
       getUser(this.loginData)
         .then(function (res) {
-          let rdata = JSON.parse(res.data.resultData)
+          let rdata = res.data
           console.log(rdata)
           if (rdata.code === '000000') {
             let next = self.$router.currentRoute.query.next

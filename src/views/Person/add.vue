@@ -36,7 +36,7 @@
     <cu-input label="姓名" v-model="submitmodel.userInfo.username" placeholder="输入" >
     </cu-input>
     <cu-picker :pickerData="genderList" @select="genderSelect" @cancel="genderCancel"
-    :initialSelect="{val:submitmodel.userInfo.gender,Text:submitmodel.userInfo.gender}"
+    :initialSelect="{val:submitmodel.userInfo.gender,Text:genderText(submitmodel.userInfo.gender)}"
     >
       <div slot="label">
         性别
@@ -49,7 +49,7 @@
     <!-- <cu-input label="" v-model="submitmodel.userCompanyInfo.nation" placeholder="输入" >
     </cu-input> -->
     <cu-picker :pickerData="nationList" @select="nationSelect" @cancel="nationCancel"
-    :initialSelect="{val:submitmodel.userInfo.nation,Text:submitmodel.userInfo.nation}"
+    :initialSelect="{val:submitmodel.userInfo.nation,Text:submitmodel.userCompanyInfo.nation}"
     >
       <div slot="label">
         民族
@@ -350,21 +350,21 @@ export default {
         // phoneCode: '',
         // mobile: '',
         userInfo: {
-          referee: 456,
-          uid: 123,
-          username: '李',
-          mobile: '18565705036',
+          referee: 0,
+          uid: 0,
+          username: '',
+          mobile: '',
           avatar: '',
-          depId: '1',
-          depName: '市场部',
-          positionName: '总经理',
-          positionCode: '3',
+          depId: '',
+          depName: '',
+          positionName: '',
+          positionCode: '',
           gender: 0
         },
         idCard: {
         },
         userCompanyInfo: {
-          workName: '李工作'
+          workName: ''
         },
         familyList: [],
         educationList: [],
@@ -378,9 +378,17 @@ export default {
     }
   },
   methods: {
-    show () {
-      console.log(JSON.stringify(this.depList))
-      console.log(JSON.stringify(this.positionList))
+    genderText(val){
+      if(val===1){
+        return '男'
+      }else if(val===1){
+        return '女'
+      }else if(val ===0){
+        return '未定'
+      }else{
+        return '未定'
+      }
+
     },
     positionSelect (selected, selectedVal, selectedIndex, selectedText) {
       console.log(selectedVal)
@@ -482,9 +490,9 @@ export default {
       getUser({ uid: this.submitmodel.userInfo.uid })
         .then(
           function (res) {
-            console.log(res.data.resultData)
-            let rdata = JSON.parse(res.data.resultData)
-            console.log(rdata.data)
+            let rdata = res.data
+            console.log(res.data,rdata.data,self.submitmodel)
+
             Object.assign(self.submitmodel, rdata.data)
             // self.submitmodel = rdata.data
             console.log(self.submitmodel)
@@ -519,7 +527,7 @@ export default {
         .then(
           function (res) {
             console.log(res)
-            let userSelectListData = JSON.parse(res.data.resultData)
+            let userSelectListData = res.data
             self.depList = userSelectListData.data.depList
             self.positionList = userSelectListData.data.positionList
           }

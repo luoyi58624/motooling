@@ -9,16 +9,14 @@ const md5String = md5(token + timestamp + 'Motooling')
 console.log(md5String)
 
 export function getUser (params) {
-  const req = {
+  const data = {
     token: token,
     md5: md5String,
     timestamp: timestamp,
     data: params
   }
-  console.log(req)
-  let data = {
-    paramsData: encryption(JSON.stringify(req))
-  }
+  console.log(data)
+
   return request({
     url: WEBURL + '/mtH5/invitationPerson/userInfo',
     method: 'post',
@@ -27,15 +25,13 @@ export function getUser (params) {
 }
 
 export function addUser (params) {
-  const req = {
+  const data = {
     token: token,
     md5: md5String,
     timestamp: timestamp,
     data: params
   }
-  let data = {
-    paramsData: encryption(JSON.stringify(req))
-  }
+
   return request({
     url: WEBURL + '/mtH5/invitationPerson/addUser',
     method: 'post',
@@ -44,15 +40,13 @@ export function addUser (params) {
 }
 
 export function userSelectList (params) {
-  const req = {
+  const data = {
     token: token,
     md5: md5String,
     timestamp: timestamp,
     data: params
   }
-  let data = {
-    paramsData: encryption(JSON.stringify(req))
-  }
+
   return request({
     url: WEBURL + '/mtH5/invitationPerson/userSelectList',
     method: 'post',

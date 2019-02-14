@@ -189,7 +189,7 @@ export default {
     deviceSelectList()
       .then(
         function (res) {
-          let deviceSelectListData = JSON.parse(res.data.resultData)
+          let deviceSelectListData = res.data
           console.log(deviceSelectListData)
           self.deviceSelectListData = deviceSelectListData.data
         }

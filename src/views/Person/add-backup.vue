@@ -558,7 +558,7 @@ export default {
                 },
                 checkSuccess: (res, file) => {
                   console.log('res', res)
-                  let rdata = JSON.parse(decrypt(res.resultData))
+                  let rdata = decrypt(res.resultData)
                   if (rdata.status === 0) {
                   // this.uploadValue1 = rdata.url
                     return true

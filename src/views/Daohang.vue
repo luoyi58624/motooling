@@ -12,5 +12,7 @@
     <div><router-link to="/login">登录</router-link></div>
     <br>
     <div><router-link to="/wxlogin">微信登录</router-link></div>
+    <br>
+    <div><router-link to="/wxBindPhone">绑定手机</router-link></div>
   </div>
 </template>
