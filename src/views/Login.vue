@@ -67,6 +67,12 @@ export default {
           console.log(err)
         })
     }
+  },
+  created () {
+    if (/MicroMessenger/.test(window.navigator.userAgent)) {
+      // 微信浏览器进入微信登录
+      this.$router.replace('/wxlogin')
+    }
   }
 }
 

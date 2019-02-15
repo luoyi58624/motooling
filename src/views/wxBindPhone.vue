@@ -20,6 +20,8 @@
       </cu-input>
       <cu-input label="性别" v-model="submitmodel.sex" placeholder="输入" >
       </cu-input>
+      <cu-input label="类型" v-model="submitmodel.type" placeholder="输入" >
+      </cu-input>
 
       <cube-button type="button" @click="submit">提交保存</cube-button>
 
@@ -48,7 +50,8 @@ export default {
         privilege: '',
         province: '',
         sex: '',
-        unionid: ''
+        unionid: '',
+        type: 0
       }
     }
   },
@@ -84,6 +87,7 @@ export default {
           console.log(rdata)
           if (rdata.status === 0) {
             alert('提交成功')
+            localStorage.removeItem('type')
             self.$router.replace('/wxlogin')
           } else {
             alert('提交失败' + rdata.msg)
@@ -103,6 +107,10 @@ export default {
     // self.resString = res.data.resultData
     if (sessionStorage.getItem('wechatInfo')) {
       this.submitmodel = JSON.parse(sessionStorage.getItem('wechatInfo'))
+    }
+    // 邀请类型
+    if (sessionStorage.getItem('type')) {
+      this.submit.type = parseInt(sessionStorage.getItem('type'))
     }
     if (localStorage.getItem('weburl')) {
       this.submitmodel.webUrl = localStorage.getItem('weburl')

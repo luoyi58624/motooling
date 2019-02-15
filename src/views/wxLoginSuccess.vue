@@ -28,6 +28,7 @@ export default {
       postWxCode(param)
         .then(function (res) {
           let resObj = res.data
+          let nextpage = localStorage.getItem('nextpage')
           console.log(resObj)
           if (resObj.code !== '000000') {
             alert(resObj.msg)
@@ -42,8 +43,17 @@ export default {
           } else if (resObj.data.statusCode === 1) {
             localStorage.setItem('token', resObj.data.user.token)
             localStorage.setItem('weburl', resObj.data.weburl)
+            localStorage.setItem('uid', resObj.data.user.uid)
             // 登录成功
-            self.$router.replace('/person/add?uid=' + resObj.data.user.uid)
+            if (localStorage.type === '0' && localStorage.referee) {
+              // 邀请人
+              self.$router.replace(nextpage + '?referee=' + localStorage.invite_referee)
+            } else if (localStorage.type === '1') {
+              // 邀请设备
+              self.$router.replace(nextpage + '?deviceid=' + localStorage.invite_deviceid)
+            } else {
+              self.$router.replace('/')
+            }
           } else if (resObj.data.statusCode === 2) {
             // 未绑定手机号
             self.$router.replace('/wxBindPhone')

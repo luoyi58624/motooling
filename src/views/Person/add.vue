@@ -378,17 +378,16 @@ export default {
     }
   },
   methods: {
-    genderText(val){
-      if(val===1){
+    genderText (val) {
+      if (val === 1) {
         return '男'
-      }else if(val===1){
+      } else if (val === 1) {
         return '女'
-      }else if(val ===0){
+      } else if (val === 0) {
         return '未定'
-      }else{
+      } else {
         return '未定'
       }
-
     },
     positionSelect (selected, selectedVal, selectedIndex, selectedText) {
       console.log(selectedVal)
@@ -491,7 +490,7 @@ export default {
         .then(
           function (res) {
             let rdata = res.data
-            console.log(res.data,rdata.data,self.submitmodel)
+            console.log(res.data, rdata.data, self.submitmodel)
 
             Object.assign(self.submitmodel, rdata.data)
             // self.submitmodel = rdata.data
@@ -510,18 +509,18 @@ export default {
     }
   },
   created () {
-    let fullPath = this.$router.currentRoute.fullPath
+    let path = this.$router.currentRoute.path
+    console.log(this.$router.currentRoute)
     var self = this
+
     if (!localStorage.getItem('token')) {
-      // sessionStorage.setItem('nextpage', fullPath)
-      // self.$router.replace('/login?next=' + fullPath)
-      alert('请登录')
+      localStorage.setItem('nextpage', path)
+      localStorage.setItem('type', 0)
+      localStorage.setItem('invite_referee', getUrlQueryString('referee'))
+      self.$router.replace('/login?next=' + path)
     } else {
-      this.submitmodel.userInfo.uid = parseInt(getUrlQueryString('uid'))
-      this.submitmodel.userInfo.referee = getUrlQueryString('referee')
-      // let loginData = sessionStorage.getItem('loginData')
-      // this.submitmodel.phoneCode = ''
-      // this.submitmodel.phone = ''
+      this.submitmodel.userInfo.uid = localStorage.uid
+      this.submitmodel.userInfo.referee = localStorage.invite_referee
       this.getUserInfo()
       userSelectList()
         .then(
