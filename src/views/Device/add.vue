@@ -1,24 +1,30 @@
 <template>
   <div>
+    <cu-input label="id" v-model="submitmodel.device.id" placeholder="输入" >
+    </cu-input>
     <cu-input label="设备编号" v-model="submitmodel.device.deviceNo" placeholder="输入" >
     </cu-input>
-    <!-- <cu-input label="uid" v-model="submitmodel.userInfo.uid" placeholder="输入" >
-    </cu-input> -->
     <cu-input label="设备品牌" v-model="submitmodel.device.deviceBrand" placeholder="输入" >
     </cu-input>
     <cu-input label="设备型号" v-model="submitmodel.device.deviceModel" placeholder="输入" >
     </cu-input>
-    <cu-picker :pickerData="deviceSelectListData.deviceList" @select="deviceSelect" @cancel="deviceCancel" :alias="deviceAlias">
+    <cu-picker :pickerData="deviceSelectListData.deviceList" @select="deviceSelect" @cancel="deviceCancel" :alias="deviceAlias"
+    :initialSelect="{val:submitmodel.device.type,Text:submitmodel.device.typeName}"
+    >
         <div slot="label">
           设备类型
         </div>
       </cu-picker>
-    <cu-picker :pickerData="deviceSelectListData.pmPgList" @select="pmPgSelect" @cancel="pmPgCancel" :alias="pmpgAlias">
+    <cu-picker :pickerData="deviceSelectListData.pmPgList" @select="pmPgSelect" @cancel="pmPgCancel" :alias="pmpgAlias"
+    :initialSelect="{val:submitmodel.device.pgId,Text:submitmodel.device.pgName}"
+    >
       <div slot="label">
         隶属工作中心
       </div>
     </cu-picker>
-    <cu-picker :pickerData="deviceSelectListData.userList" @select="userSelect" @cancel="userCancel" :alias="userAlias">
+    <cu-picker :pickerData="deviceSelectListData.userList" @select="managerSelect" @cancel="managerCancel" :alias="managerAlias"
+    :initialSelect="{val:submitmodel.device.managerId,Text:submitmodel.device.managerName}"
+    >
       <div slot="label">
         点检负责人
       </div>
@@ -65,7 +71,7 @@
 import CuInput from '@/components/input/Input'
 import CuUpload from '@/components/upload/Upload'
 import CuPicker from '@/components/picker/Picker'
-import { addDevice, deviceSelectList } from '@/api/device/Device.js'
+import { deviceSelectList, getDeviceInfo, addDeviceInfo } from '@/api/device/Device.js'
 import { getUrlQueryString } from '@/utils/utils.js'
 import { nationList } from '@/data/nations.js'
 export default {
@@ -88,7 +94,7 @@ export default {
         value: 'code',
         text: 'name'
       },
-      userAlias: {
+      managerAlias: {
         value: 'uid',
         text: 'workName'
       },
@@ -112,14 +118,26 @@ export default {
       educationListFields: [],
       // 待提交至后端的表单数据
       submitmodel: {
-        phoneCode: '',
-        mobile: '',
         device: {
-
+          id: 71,
+          type: '1',
+          typeName: 'CNC',
+          deviceBrand: '设备品牌呀2',
+          deviceModel: '',
+          buyDate: '',
+          pgId: '8',
+          pgName: '',
+          managerId: '226',
+          managerName: '很好听',
+          remark: '',
+          isShare: '',
+          machineRate: '',
+          deviceCost: '',
+          serviceRemark: ''
         },
         deviceServiceList: [],
-        deviceImgs: '',
-        deviceServiceImgs: ''
+        deviceImgs: [],
+        deviceServiceImgs: []
       }
     }
   },
@@ -130,39 +148,41 @@ export default {
     },
     deviceSelect (selected, selectedVal, selectedIndex, selectedText) {
       this.submitmodel.device.type = selectedVal.join(',')
+      this.submitmodel.device.typeName = selectedText.join(',')
     },
     deviceCancel () {
-      this.submitmodel.device.type = ''
+
     },
     pmPgSelect (selected, selectedVal, selectedIndex, selectedText) {
       this.submitmodel.device.pmId = selectedVal.join(',')
+      this.submitmodel.device.pgName = selectedVal.join(',')
     },
     pmPgCancel () {
-      this.submitmodel.device.pmId = ''
     },
 
-    userSelect (selected, selectedVal, selectedIndex, selectedText) {
+    managerSelect (selected, selectedVal, selectedIndex, selectedText) {
+      console.log(selectedVal)
       this.submitmodel.device.managerId = selectedVal.join(',')
+      this.submitmodel.device.managerName = selectedVal.join(',')
     },
-    userCancel () {
-      this.submitmodel.device.managerId = ''
+    managerCancel () {
     },
     // 第一个参数为URL集合
     // 第二个参数 解密后的返回值，
     // 第三个参数：文件对象
     deviceImgsSuccess (res, file) {
       // console.log(res)
-      this.submitmodel.deviceImgs = res.toString()
+      this.submitmodel.deviceImgs = this.submitmodel.deviceImgs.concat(res)
     },
     deviceImgsRemove (res, file) {
       this.submitmodel.deviceImgs = ''
     },
     deviceServiceImgsSuccess (res, file) {
-      // console.log(res)
-      this.submitmodel.deviceServiceImgs = res.toString()
+      console.log(res)
+      this.submitmodel.deviceServiceImgs = this.submitmodel.deviceImgs.concat(res)
     },
     deviceServiceImgsRemove (res, file) {
-      this.submitmodel.deviceServiceImgs = ''
+      this.submitmodel.deviceServiceImgs = []
     },
     // 增加子列表
     addList (target) {
@@ -175,27 +195,48 @@ export default {
     submit () {
       console.log(this.submitmodel)
       console.log(JSON.stringify(this.submitmodel))
-      addDevice(this.submitmodel).then(function (res) {
-        console.log(res)
-      }).catch(function (err) {
-        console.log(err)
-      })
+      addDeviceInfo(this.submitmodel)
+        .then(function (res) {
+          console.log(res)
+        }).catch(function (err) {
+          console.log(err)
+        })
     }
   },
   created () {
-    // this.submitmodel.userInfo.uid = getUrlQueryString('uid')
-    // this.submitmodel.userInfo.referee = getUrlQueryString('referee')
     var self = this
-    deviceSelectList()
-      .then(
-        function (res) {
-          let deviceSelectListData = res.data
-          console.log(deviceSelectListData)
-          self.deviceSelectListData = deviceSelectListData.data
-        }
-      ).catch(function (err) {
-        console.log(err)
-      })
+    let path = this.$router.currentRoute.path
+    console.log(this.$router.currentRoute)
+    if (!localStorage.getItem('token')) {
+      localStorage.setItem('nextpage', path)
+      localStorage.setItem('type', 0)
+      localStorage.setItem('invite_deviceid', getUrlQueryString('deviceid'))
+      self.$router.replace('/login?next=' + path)
+    } else {
+      this.submitmodel.device.id = parseInt(getUrlQueryString('deviceid'))
+      deviceSelectList()
+        .then(
+          function (res) {
+            let deviceSelectListData = res.data
+            console.log(deviceSelectListData)
+            self.deviceSelectListData = deviceSelectListData.data
+          }
+        ).catch(function (err) {
+          console.log(err)
+        })
+
+      getDeviceInfo({ id: this.submitmodel.device.id })
+        .then(
+          function (res) {
+            console.log(res.data)
+            Object.assign(self.submitmodel, res.data.data)
+            // self.submitmodel = res.data
+            console.log(res)
+          }
+        ).catch(function (err) {
+          console.log(err)
+        })
+    }
   },
   components: {
     CuInput,

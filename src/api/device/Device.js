@@ -8,20 +8,6 @@ const md5String = md5(token + timestamp + 'Motooling')
 
 console.log(md5String)
 
-export function addDevice (params) {
-  const data = {
-    token: token,
-    md5: md5String,
-    timestamp: timestamp,
-    data: params
-  }
-  return request({
-    url: WEBURL + '/mtH5/invitationDevice/deviceSelectList',
-    method: 'post',
-    data
-  })
-}
-
 export function deviceSelectList (params) {
   const data = {
     token: token,
@@ -32,6 +18,36 @@ export function deviceSelectList (params) {
 
   return request({
     url: WEBURL + '/mtH5/invitationDevice/deviceSelectList',
+    method: 'post',
+    data
+  })
+}
+
+export function getDeviceInfo (params) {
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+
+  return request({
+    url: WEBURL + '/mtH5/invitationDevice/deviceInfo',
+    method: 'post',
+    data
+  })
+}
+
+export function addDeviceInfo (params) {
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+
+  return request({
+    url: WEBURL + '/mtH5/invitationDevice/addDevice',
     method: 'post',
     data
   })
