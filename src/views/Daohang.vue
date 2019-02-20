@@ -5,9 +5,9 @@
     <br>
     <div><router-link to="/person/add?referee=456">邀请人员</router-link></div>
     <br>
-    <div><router-link to="/supplier/add">供应商</router-link></div>
-    <br>
-    <div><router-link to="/customer/add">客户资料录入</router-link></div>
+    <div><router-link to="/supplier/add">邀请供应商</router-link></div>
+    <hr>
+    <div><h4>以下为中转页面</h4></div>
     <br>
     <div><router-link to="/login">登录</router-link></div>
     <br>

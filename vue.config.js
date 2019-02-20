@@ -18,17 +18,17 @@ module.exports = {
     // proxy: 'http://localhost:4000'
     proxy: {
       '/invitation': {
-        target: 'http://192.168.2.125:8808/',
+        target: 'http://192.168.2.120:8808/',
         ws: true,
         changeOrigin: true
       },
       '/mtH5': {
-        target: 'http://192.168.2.125:8809/',
+        target: 'http://192.168.2.120:8809/',
         ws: true,
         changeOrigin: true
       },
       '/img': {
-        target: 'http://192.168.2.125:8808/'
+        target: 'http://192.168.2.120:8808/'
       }
     }
   }
