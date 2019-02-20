@@ -4,7 +4,7 @@
           <slot name="label"></slot>
       </div>
       <div class="constom-input_content" @click="showPicker">
-          {{select.Text}}
+          {{select.Text||'请选择'}}
       </div>
     </div>
   </template>
@@ -119,6 +119,8 @@ export default {
   align-items: center;
   word-wrap: break-word;
   word-break: break-word;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .constom-input_content{
   flex: 1;

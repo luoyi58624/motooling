@@ -62,7 +62,6 @@
       </div>
     </div>
     <div class="append-btn" @click="addList(submitmodel.deviceServiceList)">添加联系人</div>
-
     <cube-button type="button" @click="submit">提交保存</cube-button>
   </div>
 </template>
@@ -143,8 +142,8 @@ export default {
   },
   methods: {
     show () {
-      console.log(JSON.stringify(this.depList))
-      console.log(JSON.stringify(this.positionList))
+      console.log(this.addDeviceInfo)
+
     },
     deviceSelect (selected, selectedVal, selectedIndex, selectedText) {
       this.submitmodel.device.type = selectedVal.join(',')
@@ -193,6 +192,7 @@ export default {
       target.splice(index, 1)
     },
     submit () {
+      console.log(addDeviceInfo)
       console.log(this.submitmodel)
       console.log(JSON.stringify(this.submitmodel))
       addDeviceInfo(this.submitmodel)

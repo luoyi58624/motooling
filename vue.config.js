@@ -1,5 +1,5 @@
 module.exports = {
-  "publicPath": process.env.NODE_ENV === 'production' ? '/mthtml/' : '/mthtml/',
+  'publicPath': process.env.NODE_ENV === 'production' ? '/mthtml/' : '/mthtml/',
   css: {
     loaderOptions: {
       stylus: {
