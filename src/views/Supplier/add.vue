@@ -299,12 +299,18 @@ export default {
       target.splice(index, 1)
     },
     submit () {
+      var self = this
       console.log(this.submitmodel)
       console.log(JSON.stringify(this.submitmodel))
-      alert(123)
       addSupplierInfo(this.submitmodel)
         .then(function (res) {
           console.log(res)
+          if (res.data.code === '000000') {
+            alert('添加成功')
+            self.$router.replace('/')
+          } else {
+            alert('添加失败：' + res.data.msg)
+          }
         }).catch(function (err) {
           console.log(err)
         })

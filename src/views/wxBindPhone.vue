@@ -1,33 +1,39 @@
 <template>
-    <div>
-      <div class="title">
-        绑定手机
+  <div class="login">
+    <div class="group">
+      <div class="logo-wrapper">
+        <img class="logo" alt="logo" src="../assets/logo.png">
       </div>
-      <cu-input label="手机号" v-model="submitmodel.mobile" placeholder="输入" >
-      </cu-input>
-      <cu-input label="手机验证码" v-model="submitmodel.phoneCode" placeholder="输入" >
-      </cu-input>
-      <cube-button type="button" @click="getCode">获取手机验证码</cube-button>
-      <template>
-          <cu-input label="企业域名" v-model="submitmodel.webUrl" placeholder="输入" >
-          </cu-input>
-          <cu-input label="微信头像" v-model="submitmodel.headImgUrl" placeholder="输入" >
-          </cu-input>
-          <cu-input label="昵称" v-model="submitmodel.nickname" placeholder="输入" >
-          </cu-input>
-          <cu-input label="unionid" v-model="submitmodel.unionid" placeholder="输入" >
-          </cu-input>
-          <cu-input label="openId" v-model="submitmodel.openId" placeholder="输入" >
-          </cu-input>
-          <cu-input label="性别" v-model="submitmodel.sex" placeholder="输入" >
-          </cu-input>
-          <cu-input label="类型" v-model="submitmodel.type" placeholder="输入" >
-          </cu-input>
-      </template>
-      <cube-button type="button" @click="submit">提交保存</cube-button>
-
     </div>
-  </template>
+    <div class="group">
+      <cube-input v-model="submitmodel.mobile" placeholder="请输入手机号码" type="text" :maxlength="11" :autocomplete="true"></cube-input>
+      <cube-input v-model="submitmodel.phoneCode" placeholder="请输入验证码" type="tel" :maxlength="6" :autocomplete="false">
+      <cube-button slot="append" :inline="true" @click="getCode">获取验证码</cube-button>
+      </cube-input>
+    </div>
+    <div class="hidden">
+      <cu-input label="企业域名" v-model="submitmodel.webUrl" placeholder="输入">
+      </cu-input>
+      <cu-input label="微信头像" v-model="submitmodel.headImgUrl" placeholder="输入">
+      </cu-input>
+      <cu-input label="昵称" v-model="submitmodel.nickname" placeholder="输入">
+      </cu-input>
+      <cu-input label="unionid" v-model="submitmodel.unionid" placeholder="输入">
+      </cu-input>
+      <cu-input label="openId" v-model="submitmodel.openId" placeholder="输入">
+      </cu-input>
+      <cu-input label="性别" v-model="submitmodel.sex" placeholder="输入">
+      </cu-input>
+      <cu-input label="类型" v-model="submitmodel.type" placeholder="输入">
+      </cu-input>
+    </div>
+    <div class="group">
+      <cube-button @click="submit">进入</cube-button>
+    </div>
+    <!-- <cube-button class="submit-btn" type="button" @click="submit">提交保存</cube-button> -->
+
+  </div>
+</template>
 
 <script>
 // import { getUrlQueryString } from '@/utils/utils.js'
@@ -42,7 +48,7 @@ export default {
       wxLinkBase: 'https://open.weixin.qq.com/connect/oauth2/authorize',
       redirect_uri: 'http://www.motooling.com/mthtml/wxloginSuccess',
       submitmodel: {
-        mobile: '18565705036',
+        mobile: '',
         city: '',
         country: '',
         headImgUrl: '',
@@ -124,10 +130,13 @@ export default {
 
 </script>
 
-  <style scoped>
-    .title{
-      text-align: center
-    }
+<style scoped>
+  .title {
+    text-align: center;
+    height: 20px;
+    line-height: 20px;
+    font-size: 16px;
+  }
 
   .constom-input {
     display: flex;
@@ -154,4 +163,40 @@ export default {
     display: none
   }
 
-  </style>
+  .logo-wrapper {
+    margin: auto;
+    text-align: center;
+    padding-top: 20px;
+  }
+
+  .logo {
+    width: 100px;
+    height: 100px;
+  }
+
+  .login {
+    height: 100%;
+    background: #efeff4;
+  }
+
+  .group {
+    margin-bottom: 16px;
+  }
+
+  .hidden {
+    display: none
+  }
+
+  .code-input {
+    display: flex
+  }
+
+  .code-btn {
+    width: 100px;
+  }
+
+  .submit-btn {
+    margin-top: 10px;
+  }
+
+</style>

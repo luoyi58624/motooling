@@ -45,7 +45,7 @@ export default {
             localStorage.setItem('weburl', resObj.data.weburl)
             localStorage.setItem('uid', resObj.data.user.uid)
             // 登录成功
-            if ((localStorage.type === '0' && localStorage.invite_referee||(localStorage.type === '0' && localStorage.invite_code)){
+            if ((localStorage.type === '0' && localStorage.invite_referee) || (localStorage.type === '0' && localStorage.invite_code)) {
               // 邀请人
               if (localStorage.invite_referee) {
                 self.$router.replace(nextpage + '?referee=' + localStorage.invite_referee)
