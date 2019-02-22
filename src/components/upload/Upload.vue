@@ -55,7 +55,7 @@ export default {
   props: {
     initialFile: {
       type: [String, Array],
-      default:''
+      default: ''
     },
     action: {
       type: Object,
@@ -63,7 +63,7 @@ export default {
         return {
           target: WEBURL + '/img/h5ImgUpload',
           fileName: 'imgFile',
-          data: {paramsMap:JSON.stringify(req)},
+          data: { paramsMap: JSON.stringify(req) },
           checkSuccess: (res, file) => {
             // let rdata = JSON.parse(decrypt(res.resultData))
             console.log('res', res)
@@ -94,7 +94,7 @@ export default {
       // newValue: this.value
       files: '',
       isChange: false,
-      importFiles:[],
+      importFiles: [],
       files: []
     }
   },
@@ -106,17 +106,16 @@ export default {
         this.select = this.initialFile
 
         console.log(this.initialFile)
-        if(Array.isArray(this.initialFile)){
+        if (Array.isArray(this.initialFile)) {
           this.importFiles = this.initialFile
-        }else{
+        } else {
           this.importFiles = this.initialFile.split(',')
         }
         console.log(this.importFiles)
       }
     }
   },
-  created(){
-
+  created () {
 
   },
   computed: {

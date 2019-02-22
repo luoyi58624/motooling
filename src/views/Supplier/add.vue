@@ -200,7 +200,7 @@ export default {
       submitmodel: {
         code: '',
         supplierMap: {
-          supCompanyId:'',
+          supCompanyId: '',
           companyFullName: '',
           address: '',
           phone: '',
@@ -273,19 +273,19 @@ export default {
       console.log(res)
       console.log(encryptRes)
       console.log(file)
-      this.submitmodel.licenseOriginal = this.submitmodel.licenseOriginal.concat({imgUrl:res[0]})
+      this.submitmodel.licenseOriginal = this.submitmodel.licenseOriginal.concat({ imgUrl: res[0] })
     },
     licenseOriginalRemove (res, file) {
       this.submitmodel.licenseOriginal = []
     },
     systemOriginalSuccess (res, file) {
-      this.submitmodel.systemOriginal = this.submitmodel.systemOriginal.concat({imgUrl:res[0]})
+      this.submitmodel.systemOriginal = this.submitmodel.systemOriginal.concat({ imgUrl: res[0] })
     },
     systemOriginalRemove (res, file) {
       this.submitmodel.systemOriginal = []
     },
     otherOriginalSuccess (res, file) {
-      this.submitmodel.otherOriginal = this.submitmodel.otherOriginal.concat({imgUrl:res[0]})
+      this.submitmodel.otherOriginal = this.submitmodel.otherOriginal.concat({ imgUrl: res[0] })
     },
     otherOriginalRemove (res, file) {
       this.submitmodel.otherOriginal = []
@@ -318,6 +318,7 @@ export default {
       localStorage.setItem('nextpage', path)
       localStorage.setItem('type', 0)
       localStorage.setItem('invite_code', getUrlQueryString('code'))
+      localStorage.setItem('invite_companyid', getUrlQueryString('companyid'))
       self.$router.replace('/login?next=' + path)
     } else {
       this.submitmodel.code = decodeURIComponent(getUrlQueryString('code'))

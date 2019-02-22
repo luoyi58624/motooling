@@ -45,13 +45,20 @@ export default {
             localStorage.setItem('weburl', resObj.data.weburl)
             localStorage.setItem('uid', resObj.data.user.uid)
             // 登录成功
-            if (localStorage.type === '0' && localStorage.invite_referee) {
+            if ((localStorage.type === '0' && localStorage.invite_referee||(localStorage.type === '0' && localStorage.invite_code)){
               // 邀请人
-              self.$router.replace(nextpage + '?referee=' + localStorage.invite_referee)
+              if (localStorage.invite_referee) {
+                self.$router.replace(nextpage + '?referee=' + localStorage.invite_referee)
+              }
+              // 邀请供应商
+              if (localStorage.invite_code) {
+                self.$router.replace(nextpage + '?referee=' + localStorage.invite_code + '&companyid=' + localStorage.invite_companyid)
+              }
             } else if (localStorage.type === '1') {
               // 邀请设备
               self.$router.replace(nextpage + '?deviceid=' + localStorage.invite_deviceid)
             } else {
+              alert('链接有误')
               self.$router.replace('/')
             }
           } else if (resObj.data.statusCode === 2) {

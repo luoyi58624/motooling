@@ -8,21 +8,22 @@
       <cu-input label="手机验证码" v-model="submitmodel.phoneCode" placeholder="输入" >
       </cu-input>
       <cube-button type="button" @click="getCode">获取手机验证码</cube-button>
-      <cu-input label="企业域名" v-model="submitmodel.webUrl" placeholder="输入" >
-      </cu-input>
-      <cu-input label="微信头像" v-model="submitmodel.headImgUrl" placeholder="输入" >
-      </cu-input>
-      <cu-input label="昵称" v-model="submitmodel.nickname" placeholder="输入" >
-      </cu-input>
-      <cu-input label="unionid" v-model="submitmodel.unionid" placeholder="输入" >
-      </cu-input>
-      <cu-input label="openId" v-model="submitmodel.openId" placeholder="输入" >
-      </cu-input>
-      <cu-input label="性别" v-model="submitmodel.sex" placeholder="输入" >
-      </cu-input>
-      <cu-input label="类型" v-model="submitmodel.type" placeholder="输入" >
-      </cu-input>
-
+      <template>
+          <cu-input label="企业域名" v-model="submitmodel.webUrl" placeholder="输入" >
+          </cu-input>
+          <cu-input label="微信头像" v-model="submitmodel.headImgUrl" placeholder="输入" >
+          </cu-input>
+          <cu-input label="昵称" v-model="submitmodel.nickname" placeholder="输入" >
+          </cu-input>
+          <cu-input label="unionid" v-model="submitmodel.unionid" placeholder="输入" >
+          </cu-input>
+          <cu-input label="openId" v-model="submitmodel.openId" placeholder="输入" >
+          </cu-input>
+          <cu-input label="性别" v-model="submitmodel.sex" placeholder="输入" >
+          </cu-input>
+          <cu-input label="类型" v-model="submitmodel.type" placeholder="输入" >
+          </cu-input>
+      </template>
       <cube-button type="button" @click="submit">提交保存</cube-button>
 
     </div>
