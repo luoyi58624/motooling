@@ -143,7 +143,6 @@ export default {
   methods: {
     show () {
       console.log(this.addDeviceInfo)
-
     },
     deviceSelect (selected, selectedVal, selectedIndex, selectedText) {
       this.submitmodel.device.type = selectedVal.join(',')

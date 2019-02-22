@@ -4,21 +4,28 @@
       <slot name="label"></slot>
     </div>
     <div class="upload-file-list">
-      <div v-if="!isChange" class="initial-file-wrapper">
-          <img :src="initialFile" class="initial-file">
-        </div>
-        <div class="upload-wrapper">
-          <cube-upload ref="upload" :action="action" :simultaneous-uploads="1" :max='max' v-model="files" @files-added="addedHandler" @file-success="fileSuccess" @file-removed="fileRemoved">
-              <div class="clear-fix">
-                <cube-upload-file v-for="(file, i) in files" :file="file" :key="i"></cube-upload-file>
-                <cube-upload-btn :multiple="false">
-                  <div>
-                    <i>＋</i>
-                </div>
-              </cube-upload-btn>
+      <div v-show="!isChange" class="initial-file-wrapper">
+        <template v-for="(item,index) in importFiles">
+          <template v-if="typeof(item)==='string'">
+            <img :src="importFiles[index]" class="initial-file">
+          </template>
+          <template v-if="typeof(item)==='object'">
+            <img :src="importFiles[index].imgUrl" class="initial-file">
+          </template>
+        </template>
+      </div>
+      <div class="upload-wrapper">
+        <cube-upload ref="upload" :action="action" :simultaneous-uploads="1" :max='max' v-model="files" @files-added="addedHandler" @file-success="fileSuccess" @file-removed="fileRemoved">
+            <div class="clear-fix">
+              <cube-upload-file v-for="(file, i) in files" :file="file" :key="i"></cube-upload-file>
+              <cube-upload-btn :multiple="false">
+                <div>
+                  <i>＋</i>
               </div>
-            </cube-upload>
-        </div>
+            </cube-upload-btn>
+            </div>
+          </cube-upload>
+      </div>
     </div>
   </div>
 </template>
@@ -47,21 +54,20 @@ export default {
   },
   props: {
     initialFile: {
-      type: String
+      type: [String, Array],
+      default:''
     },
     action: {
       type: Object,
       default () {
         return {
-          target: WEBURL + '/img/imgUpload',
+          target: WEBURL + '/img/h5ImgUpload',
           fileName: 'imgFile',
-          data: {
-            paramsData: encryptionData
-          },
+          data: {paramsMap:JSON.stringify(req)},
           checkSuccess: (res, file) => {
-            let rdata = JSON.parse(decrypt(res.resultData))
-            console.log('rdata', rdata)
-            if (rdata.status === 0) {
+            // let rdata = JSON.parse(decrypt(res.resultData))
+            console.log('res', res)
+            if (res.status === 0) {
               // this.uploadValue1 = rdata.url
               return true
             }
@@ -86,23 +92,47 @@ export default {
       // validity: {},
       // valid: undefined,
       // newValue: this.value
-      // files: this.initialFile.split(',')
+      files: '',
       isChange: false,
+      importFiles:[],
       files: []
     }
+  },
+  watch: {
+    initialFile (curSelect, oldSelect) {
+      console.log(curSelect, oldSelect)
+      if (curSelect) {
+        this.initialFile = curSelect
+        this.select = this.initialFile
+
+        console.log(this.initialFile)
+        if(Array.isArray(this.initialFile)){
+          this.importFiles = this.initialFile
+        }else{
+          this.importFiles = this.initialFile.split(',')
+        }
+        console.log(this.importFiles)
+      }
+    }
+  },
+  created(){
+
+
   },
   computed: {
     // 文件上传后的URL地址
     fileURLs: function () {
       let arr = []
       for (let item of this.files) {
-        let de = JSON.parse(decrypt(item.response.resultData))
+        let de = item.response
+        console.log(de)
         if (de.status === 0) {
           arr.push(de.data.url)
         } else {
           console.log('文件上传失败')
         }
-      }
+      };
+      console.log(arr)
       return arr
     }
   },
@@ -133,6 +163,13 @@ export default {
   .upload-file-list{
     position: relative;
     height: 80px;
+    /* width: 400px; */
+    flex: 1;
+  }
+
+  .upload-file-list img{
+    /* display: flex */
+    /* flex-wrap: nowrap */
   }
   .initial-file-wrapper,.upload-wrapper{
     position: absolute;

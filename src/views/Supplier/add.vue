@@ -11,6 +11,8 @@
     </cu-input>
     <cu-input label="id" v-model="submitmodel.supplierMap.id" placeholder="输入">
     </cu-input>
+    <cu-input label="supCompanyId" v-model="submitmodel.supplierMap.supCompanyId" placeholder="输入">
+    </cu-input>
     <cu-input label="公司全称" v-model="submitmodel.supplierMap.companyFullName" placeholder="输入">
     </cu-input>
     <cu-input label="公司地址" v-model="submitmodel.supplierMap.address" placeholder="输入">
@@ -19,7 +21,7 @@
     </cu-input>
     <cu-input label="公司传真" v-model="submitmodel.supplierMap.fax" placeholder="输入">
     </cu-input>
-    <cu-input label="公司网址" v-model="submitmodel.supplierMap.webSite" placeholder="输入">
+    <cu-input label="公司网址" v-model="submitmodel.supplierMap.website" placeholder="输入">
     </cu-input>
 
     <div class="group-title">
@@ -29,7 +31,7 @@
     <div v-for="(val, key) in submitmodel.supplierContactorList">
       <div class="group-item-title">
         <div></div>
-        <div @click="deleteList(submitmodel.supplierContactorList,key)">删除</div>
+        <!-- <div @click="deleteList(submitmodel.supplierContactorList,key)">删除</div> -->
       </div>
       <div v-for="(item,index) in fields.supplierContactorListField">
         <cu-input :label="item.label" v-model="submitmodel.supplierContactorList[key][item.name]" placeholder="输入">
@@ -91,22 +93,22 @@
         付款方式
       </div>
     </cu-picker>
-    <cu-input label="税务账号" v-model="submitmodel.supplierMap.buyDate" placeholder="输入">
+    <cu-input label="税务账号" v-model="submitmodel.supplierMap.taxAccount" placeholder="输入">
     </cu-input>
-    <cu-input label="开户银行" v-model="submitmodel.supplierMap.buyDate" placeholder="输入">
+    <cu-input label="开户银行" v-model="submitmodel.supplierMap.bank" placeholder="输入">
     </cu-input>
-    <cu-input label="银行账号" v-model="submitmodel.supplierMap.buyDate" placeholder="输入">
+    <cu-input label="银行账号" v-model="submitmodel.supplierMap.bankAccount" placeholder="输入">
     </cu-input>
     <div class="group-title">
       <div>证件资料</div>
     </div>
-    <cu-upload @file-success="licenseOriginalSuccess" @file-remove="licenseOriginalRemove" :max='1'>
+    <cu-upload @file-success="licenseOriginalSuccess" @file-remove="licenseOriginalRemove" :max='1' :initialFile="submitmodel.licenseOriginal">
       <div slot="label">营业执照原件</div>
     </cu-upload>
-    <cu-upload @file-success="systemOriginalSuccess" @file-remove="systemOriginalRemove" :max='1'>
+    <cu-upload @file-success="systemOriginalSuccess" @file-remove="systemOriginalRemove" :max='1' :initialFile="submitmodel.systemOriginal">
       <div slot="label">体系证书原件</div>
     </cu-upload>
-    <cu-upload @file-success="otherOriginalSuccess" @file-remove="otherOriginalRemove" :max='1'>
+    <cu-upload @file-success="otherOriginalSuccess" @file-remove="otherOriginalRemove" :max='1' :initialFile="submitmodel.otherOriginal">
       <div slot="label">其它证书原件</div>
     </cu-upload>
     <!-- <div class="group-title">
@@ -122,8 +124,6 @@
         </cu-input>
       </div>
     </div> -->
-    <!-- <div class="append-btn" @click="addList(submitmodel.deviceServiceList)">添加联系人</div> -->
-
     <cube-button type="button" @click="submit">提交保存</cube-button>
   </div>
 </template>
@@ -132,7 +132,7 @@
 import CuInput from '@/components/input/Input'
 import CuUpload from '@/components/upload/Upload'
 import CuPicker from '@/components/picker/Picker'
-import { getSupplierInfo,addSupplierInfo,supplierSelectList } from '@/api/supplier/Supplier.js'
+import { getSupplierInfo, addSupplierInfo, supplierSelectList } from '@/api/supplier/Supplier.js'
 import { getUrlQueryString } from '@/utils/utils.js'
 export default {
   data () {
@@ -144,7 +144,7 @@ export default {
         payType: [],
         invoiceType: [],
         taxRatio: [],
-        paymentType:[],
+        paymentType: []
       },
       coinTypeAlias: {
         value: 'code',
@@ -154,7 +154,7 @@ export default {
         value: 'code',
         text: 'name'
       },
-      paymentTypeAlias:{
+      paymentTypeAlias: {
         value: 'code',
         text: 'name'
       },
@@ -162,7 +162,7 @@ export default {
         value: 'code',
         text: 'name'
       },
-      taxRatioAlias:{
+      taxRatioAlias: {
         value: 'remark',
         text: 'remark'
       },
@@ -198,13 +198,14 @@ export default {
       educationListFields: [],
       // 待提交至后端的表单数据
       submitmodel: {
-        code:'',
+        code: '',
         supplierMap: {
+          supCompanyId:'',
           companyFullName: '',
           address: '',
           phone: '',
           fax: '',
-          webSite: '',
+          website: '',
           invoiceType: '',
           invoiceTypeName: '',
           coin: '',
@@ -219,21 +220,21 @@ export default {
           taxAccount: '',
           bank: '',
           bankAccount: '',
-          id: 0
+          id: 5
         },
-        supplierContactorList:[],
-        licenseOriginal:{
-          imgName:"",
-          imgUrl:""
-        },
-        systemOriginal:{
-          imgName:"",
-          imgUrl:""
-        },
-        otherOriginal:{
-          imgName:"",
-          imgUrl:""
-        },
+        supplierContactorList: [],
+        licenseOriginal: [{
+          imgName: '',
+          imgUrl: ''
+        }],
+        systemOriginal: [{
+          imgName: '',
+          imgUrl: ''
+        }],
+        otherOriginal: [{
+          imgName: '',
+          imgUrl: ''
+        }]
       }
     }
   },
@@ -253,38 +254,41 @@ export default {
       this.submitmodel.supplierMap.invoiceTypeName = selectedText.join(',')
     },
     invoiceTypeCancel () {},
-    taxRatioSelect(selected, selectedVal, selectedIndex, selectedText) {
+    taxRatioSelect (selected, selectedVal, selectedIndex, selectedText) {
       this.submitmodel.supplierMap.taxRatio = selectedVal.join(',')
       // this.submitmodel.supplierMap.invoiceTypeName = selectedVal.join(',')
     },
-    taxRatioCancel(){},
-    paymentTypeSelect(selected, selectedVal, selectedIndex, selectedText) {
+    taxRatioCancel () {},
+    paymentTypeSelect (selected, selectedVal, selectedIndex, selectedText) {
       this.submitmodel.supplierMap.paymentCode = selectedVal.join(',')
       this.submitmodel.supplierMap.payment = selectedText.join(',')
     },
-    paymentTypeCancel(){
+    paymentTypeCancel () {
 
     },
     // 第一个参数为URL集合
     // 第二个参数 解密后的返回值，
     // 第三个参数：文件对象
-    licenseOriginalSuccess (res, encryptRes,file) {
-      this.submitmodel.licenseOriginal.imgUrl = res[0]
+    licenseOriginalSuccess (res, encryptRes, file) {
+      console.log(res)
+      console.log(encryptRes)
+      console.log(file)
+      this.submitmodel.licenseOriginal = this.submitmodel.licenseOriginal.concat({imgUrl:res[0]})
     },
     licenseOriginalRemove (res, file) {
-      this.submitmodel.licenseOriginal = ''
+      this.submitmodel.licenseOriginal = []
     },
     systemOriginalSuccess (res, file) {
-      this.submitmodel.systemOriginal.imgUrl = res[0]
+      this.submitmodel.systemOriginal = this.submitmodel.systemOriginal.concat({imgUrl:res[0]})
     },
     systemOriginalRemove (res, file) {
-      this.submitmodel.systemOriginal.imgUrl = ''
+      this.submitmodel.systemOriginal = []
     },
-    otherOriginalSuccess(res, file) {
-      this.submitmodel.otherOriginal.imgUrl = res[0]
+    otherOriginalSuccess (res, file) {
+      this.submitmodel.otherOriginal = this.submitmodel.otherOriginal.concat({imgUrl:res[0]})
     },
     otherOriginalRemove (res, file) {
-      this.submitmodel.otherOriginal.imgUrl = ''
+      this.submitmodel.otherOriginal = []
     },
     // 增加子列表
     addList (target) {
@@ -297,6 +301,7 @@ export default {
     submit () {
       console.log(this.submitmodel)
       console.log(JSON.stringify(this.submitmodel))
+      alert(123)
       addSupplierInfo(this.submitmodel)
         .then(function (res) {
           console.log(res)
@@ -321,13 +326,13 @@ export default {
           function (res) {
             let supplierSelectListData = res.data.data
             console.log(supplierSelectListData)
-            self.supplierSelectListData = supplierSelectListData.data
+            self.supplierSelectListData = supplierSelectListData
           }
         ).catch(function (err) {
           console.log(err)
         })
 
-        getSupplierInfo({ code: this.submitmodel.code })
+      getSupplierInfo({ code: this.submitmodel.code })
         .then(
           function (res) {
             console.log(res.data)
