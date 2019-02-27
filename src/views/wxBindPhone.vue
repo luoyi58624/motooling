@@ -183,10 +183,6 @@ export default {
     margin-bottom: 16px;
   }
 
-  .hidden {
-    display: none
-  }
-
   .code-input {
     display: flex
   }

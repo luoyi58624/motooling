@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="tips">
-      xxx:欢迎您加入Motooling! 请如实填写以下信息，以便您使用简单、快捷的办公方式
+      欢迎您加入Motooling! 请如实填写以下信息，以便您使用简单、快捷的办公方式
     </div>
     <!-- 免冠照 -->
     <cu-upload

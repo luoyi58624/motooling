@@ -1,18 +1,20 @@
 <template>
   <div>
     <div class="tips">
-      欢迎贵司成为XXX供应商！ 请如实填写以下信息，以便贵司顺利加入XXX供应商行列。
+      欢迎贵司成为我司的供应商！ 请如实填写以下信息，以便贵司顺利加入我司的供应商行列。
     </div>
     <div class="group-title">
       <div>基本信息</div>
       <div class="group-sub-title">联系人</div>
     </div>
-    <cu-input label="code" v-model="submitmodel.code" placeholder="输入">
-    </cu-input>
-    <cu-input label="id" v-model="submitmodel.supplierMap.id" placeholder="输入">
-    </cu-input>
-    <cu-input label="supCompanyId" v-model="submitmodel.supplierMap.supCompanyId" placeholder="输入">
-    </cu-input>
+    <div class="hidden">
+      <cu-input label="code" v-model="submitmodel.code" placeholder="输入">
+      </cu-input>
+      <cu-input label="id" v-model="submitmodel.supplierMap.id" placeholder="输入">
+      </cu-input>
+      <cu-input label="supCompanyId" v-model="submitmodel.supplierMap.supCompanyId" placeholder="输入">
+      </cu-input>
+    </div>
     <cu-input label="公司全称" v-model="submitmodel.supplierMap.companyFullName" placeholder="输入">
     </cu-input>
     <cu-input label="公司地址" v-model="submitmodel.supplierMap.address" placeholder="输入">
