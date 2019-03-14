@@ -5,6 +5,7 @@
         <img class="logo" alt="logo" src="../assets/logo.png">
       </div>
     </div>
+    <div class="text-bindphone">绑定手机号码</div>
     <div class="group">
       <cube-input v-model="submitmodel.mobile" placeholder="请输入手机号码" type="text" :maxlength="11" :autocomplete="true"></cube-input>
       <cube-input v-model="submitmodel.phoneCode" placeholder="请输入验证码" type="tel" :maxlength="6" :autocomplete="false">
@@ -43,7 +44,7 @@ export default {
   data () {
     return {
       state: '',
-      companyId: '',
+      companyid: '',
       appid: 'wx70214a3c12e8e576',
       wxLinkBase: 'https://open.weixin.qq.com/connect/oauth2/authorize',
       redirect_uri: 'http://www.motooling.com/mthtml/wxloginSuccess',
@@ -105,9 +106,9 @@ export default {
     }
   },
   created () {
-    // this.companyId = getUrlQueryString('companyId')
-    // if (this.companyId) {
-    //   this.state = this.companyId
+    // this.companyid = getUrlQueryString('companyid')
+    // if (this.companyid) {
+    //   this.state = this.companyid
     // }else{
     //   this.state =  1
     // }
@@ -193,6 +194,13 @@ export default {
 
   .submit-btn {
     margin-top: 10px;
+  }
+
+  .text-bindphone{
+    text-align: center;
+    font-size: 20px;
+    padding-bottom: 8px;
+    color: #444444;
   }
 
 </style>

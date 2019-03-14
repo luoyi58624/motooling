@@ -28,130 +28,130 @@
   </div>
 </template>
 <script>
-  import { encryption, decrypt } from '@/utils/crypt'
-  import { WEBURL, BASEURL } from '@/utils/utils.js'
-  import md5 from 'md5'
+import { encryption, decrypt } from '@/utils/crypt'
+import { WEBURL, BASEURL } from '@/utils/utils.js'
+import md5 from 'md5'
 
-  const token = localStorage.getItem('token') || ''
-  const timestamp = '1547621396'
-  const md5String = md5(token + timestamp + 'Motooling')
-  console.log(md5String)
-  const req = {
-    token: token,
-    md5: md5String,
-    timestamp: timestamp,
-    data: {}
-  }
-  console.log(req)
-  const encryptionData = encryption(JSON.stringify(req))
+const token = localStorage.getItem('token') || ''
+const timestamp = '1547621396'
+const md5String = md5(token + timestamp + 'Motooling')
+console.log(md5String)
+const req = {
+  token: token,
+  md5: md5String,
+  timestamp: timestamp,
+  data: {}
+}
+console.log(req)
+const encryptionData = encryption(JSON.stringify(req))
 
-  export default {
-    name: 'CuUpload',
-    model: {
-      value: ''
+export default {
+  name: 'CuUpload',
+  model: {
+    value: ''
+  },
+  props: {
+    initialFile: {
+      type: [String, Array],
+      default: ''
     },
-    props: {
-      initialFile: {
-        type: [String, Array],
-        default: ''
-      },
-      action: {
-        type: Object,
-        default () {
-          return {
-            target: WEBURL + '/img/h5ImgUpload',
-            fileName: 'imgFile',
-            data: { paramsMap: JSON.stringify(req) },
-            checkSuccess: (res, file) => {
-              // let rdata = JSON.parse(decrypt(res.resultData))
-              console.log('res', res)
-              if (res.status === 0) {
-                // this.uploadValue1 = rdata.url
-                return true
-              }
+    action: {
+      type: Object,
+      default () {
+        return {
+          target: WEBURL + '/img/h5ImgUpload',
+          fileName: 'imgFile',
+          data: { paramsMap: JSON.stringify(req) },
+          checkSuccess: (res, file) => {
+            // let rdata = JSON.parse(decrypt(res.resultData))
+            console.log('res', res)
+            if (res.status === 0) {
+              // this.uploadValue1 = rdata.url
+              return true
             }
           }
         }
-      },
-      max: {
-        type: Number,
-        default: 10
-      },
-      'simultaneous-uploads': {
-        type: Number,
-        default: 1
-      },
-      value: [String, Number],
-      placeholder: String
-    },
-    data() {
-      // console.log(this.initialFile.split(','))
-      return {
-        // validity: {},
-        // valid: undefined,
-        // newValue: this.value
-        files: '',
-        isChange: false,
-        importFiles: [],
-        files: []
       }
     },
-    watch: {
-      initialFile(curSelect, oldSelect) {
-        console.log(curSelect, oldSelect)
-        if (curSelect) {
-          this.initialFile = curSelect
-          this.select = this.initialFile
-          console.log(this.initialFile)
-          if (Array.isArray(this.initialFile)) {
-            this.importFiles = this.initialFile
-          } else {
-            this.importFiles = this.initialFile.split(',')
-          }
-          console.log(this.importFiles)
+    max: {
+      type: Number,
+      default: 10
+    },
+    'simultaneous-uploads': {
+      type: Number,
+      default: 1
+    },
+    value: [String, Number],
+    placeholder: String
+  },
+  data () {
+    // console.log(this.initialFile.split(','))
+    return {
+      // validity: {},
+      // valid: undefined,
+      // newValue: this.value
+      files: '',
+      isChange: false,
+      importFiles: [],
+      files: []
+    }
+  },
+  watch: {
+    initialFile (curSelect, oldSelect) {
+      console.log(curSelect, oldSelect)
+      if (curSelect) {
+        this.initialFile = curSelect
+        this.select = this.initialFile
+        console.log(this.initialFile)
+        if (Array.isArray(this.initialFile)) {
+          this.importFiles = this.initialFile
+        } else {
+          this.importFiles = this.initialFile.split(',')
         }
-      }
-    },
-    created() {
-
-    },
-    computed: {
-      // 文件上传后的URL地址
-      fileURLs: function () {
-        let arr = []
-        for (let item of this.files) {
-          let de = item.response
-          console.log(de)
-          if (de.status === 0) {
-            arr.push(de.data.url)
-          } else {
-            console.log('文件上传失败')
-          }
-        };
-        console.log(arr)
-        return arr
-      }
-    },
-    methods: {
-      addedHandler() {
-        const file = this.files[0]
-        file && this.$refs.upload.removeFile(file)
-        this.isChange = true
-      },
-      fileSuccess(e) {
-        // console.log(this.fileURLs)
-        this.$emit('file-success', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
-        console.log(this.files)
-      },
-      fileRemoved(e) {
-        // console.log(this.fileURLs)
-        // 第一个参数为URL集合
-        // 第二个参数 解密后的返回值，
-        // 第三个参数：文件对象
-        this.$emit('file-remove', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
+        console.log(this.importFiles)
       }
     }
+  },
+  created () {
+
+  },
+  computed: {
+    // 文件上传后的URL地址
+    fileURLs: function () {
+      let arr = []
+      for (let item of this.files) {
+        let de = item.response
+        console.log(de)
+        if (de.status === 0) {
+          arr.push(de.data.url)
+        } else {
+          console.log('文件上传失败')
+        }
+      };
+      console.log(arr)
+      return arr
+    }
+  },
+  methods: {
+    addedHandler () {
+      const file = this.files[0]
+      file && this.$refs.upload.removeFile(file)
+      this.isChange = true
+    },
+    fileSuccess (e) {
+      // console.log(this.fileURLs)
+      this.$emit('file-success', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
+      console.log(this.files)
+    },
+    fileRemoved (e) {
+      // console.log(this.fileURLs)
+      // 第一个参数为URL集合
+      // 第二个参数 解密后的返回值，
+      // 第三个参数：文件对象
+      this.$emit('file-remove', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
+    }
   }
+}
 
 </script>
 

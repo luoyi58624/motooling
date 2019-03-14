@@ -5,7 +5,7 @@
 
 <script>
 import { postWxCode } from '@/api/login'
-import { getUrlQueryString } from '@/utils/utils.js'
+import { getUrlQueryString, getStringQueryString } from '@/utils/utils.js'
 export default {
   data () {
     return {
@@ -14,17 +14,15 @@ export default {
     }
   },
   computed: {
-    wxLoginLink () {
-      return this.wxLinkBase + '?appid=' + this.appid + '&redirect_uri=' + encodeURIComponent(this.redirect_uri) + '&response_type=code&scope=snsapi_userinfo&state=' + this.state + '#wechat_redirect'
-    }
   },
   methods: {
     submitCode () {
       let self = this
       let param = {
-        code: this.code,
-        companyId: this.companyId
+        code: getUrlQueryString('code'),
+        companyId: getStringQueryString(this.state,'companyid')
       }
+      console.log('param',param)
       postWxCode(param)
         .then(function (res) {
           let resObj = res.data
@@ -70,7 +68,7 @@ export default {
             alert('用户信息需要管理员审批，请等待')
             self.$router.replace('/')
           } else {
-            alert(resObj.msg)
+            alert('error: '+resObj.msg)
             self.$router.replace('/')
           }
         })
@@ -83,7 +81,6 @@ export default {
     this.code = getUrlQueryString('code')
     this.state = decodeURIComponent(getUrlQueryString('state'))
     console.log(this.state)
-    this.companyId = this.state
     this.submitCode()
   }
 }

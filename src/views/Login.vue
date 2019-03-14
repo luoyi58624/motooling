@@ -22,6 +22,7 @@
 
 <script>
 import { getPhoneCode } from '@/api/login'
+import { getUrlQueryString } from '@/utils/utils.js'
 import { getUser } from '@/api/person/User.js'
 export default {
   data () {
@@ -71,7 +72,7 @@ export default {
   created () {
     if (/MicroMessenger/.test(window.navigator.userAgent)) {
       // 微信浏览器进入微信登录
-      this.$router.replace('/wxlogin')
+      this.$router.replace('/wxlogin?redirectURL=' + getUrlQueryString('redirectURL'))
     }
   }
 }

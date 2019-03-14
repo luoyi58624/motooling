@@ -17,7 +17,18 @@ export function getUrlQueryString (name) {
   return null
 }
 
+// 获取字符串中查询参数
+export function getStringQueryString(str,query) {
+  var reg = new RegExp("(^|&)" + query + "=([^&]*)(&|$)", "i");
+  var r = str.substr(str.indexOf('?')+1).match(reg)
+  if (r != null) {
+    return decodeURI(r[2]);
+  }
+  return null;
+}
+
 // 获取URL中查询参数
 export const WEBURL = localStorage.getItem('weburl')
 
-export const BASEURL = 'http://192.168.2.120:8809'
+export const BASEURL = 'http://www.motooling.com:8809'
+// export const BASEURL = 'http://192.168.2.110:8809'

@@ -1,11 +1,11 @@
 <template>
   <div>
     <br>
-    <div><router-link to="/device/add?deviceid=71">设备资料维护</router-link></div>
+    <div><router-link to="/device/add?deviceid=71&companyid=1">设备资料维护</router-link></div>
     <br>
-    <div><router-link to="/person/add?companyid=35&referee=456">邀请人员</router-link></div>
+    <div><router-link to="/person/add?companyid=1&referee=456">邀请人员</router-link></div>
     <br>
-    <div><router-link :to="'/supplier/add?companyid=35&code=' + code" >邀请供应商</router-link></div>
+    <div><router-link :to="'/supplier/add?companyid=1&code=' + code" >邀请供应商</router-link></div>
     <hr>
     <div><h4>以下为中转页面</h4></div>
     <br>
