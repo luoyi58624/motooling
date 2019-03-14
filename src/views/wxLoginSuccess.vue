@@ -20,9 +20,9 @@ export default {
       let self = this
       let param = {
         code: getUrlQueryString('code'),
-        companyId: getStringQueryString(this.state,'companyid')
+        companyId: getStringQueryString(this.state, 'companyid')
       }
-      console.log('param',param)
+      console.log('param', param)
       postWxCode(param)
         .then(function (res) {
           let resObj = res.data
@@ -68,7 +68,7 @@ export default {
             alert('用户信息需要管理员审批，请等待')
             self.$router.replace('/')
           } else {
-            alert('error: '+resObj.msg)
+            alert('error: ' + resObj.msg)
             self.$router.replace('/')
           }
         })

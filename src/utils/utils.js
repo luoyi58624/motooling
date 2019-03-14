@@ -18,13 +18,13 @@ export function getUrlQueryString (name) {
 }
 
 // 获取字符串中查询参数
-export function getStringQueryString(str,query) {
-  var reg = new RegExp("(^|&)" + query + "=([^&]*)(&|$)", "i");
-  var r = str.substr(str.indexOf('?')+1).match(reg)
+export function getStringQueryString (str, query) {
+  var reg = new RegExp('(^|&)' + query + '=([^&]*)(&|$)', 'i')
+  var r = str.substr(str.indexOf('?') + 1).match(reg)
   if (r != null) {
-    return decodeURI(r[2]);
+    return decodeURI(r[2])
   }
-  return null;
+  return null
 }
 
 // 获取URL中查询参数

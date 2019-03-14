@@ -320,14 +320,15 @@ export default {
   },
   created () {
     let self = this
-    let path = this.$router.currentRoute.path
+    let fullPath = this.$router.currentRoute.fullPath
     console.log(this.$router.currentRoute)
     if (!localStorage.getItem('token')) {
-      localStorage.setItem('nextpage', path)
+      localStorage.setItem('nextpage', fullPath)
       localStorage.setItem('type', 0)
       localStorage.setItem('invite_code', getUrlQueryString('code'))
       localStorage.setItem('invite_companyid', getUrlQueryString('companyid'))
-      self.$router.replace('/login?next=' + path)
+      // self.$router.replace('/login?next=' + fullPath)
+      self.$router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
     } else {
       this.submitmodel.code = decodeURIComponent(getUrlQueryString('code'))
       supplierSelectList()
