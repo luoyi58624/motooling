@@ -28,7 +28,7 @@ export function getStringQueryString (str, query) {
 }
 
 // 获取URL中查询参数
-export const WEBURL = localStorage.getItem('weburl')
+export const WEBURL = localStorage.getItem('WEBURL')
 
 export const BASEURL = 'http://www.motooling.com:8809'
 // export const BASEURL = 'http://192.168.2.110:8809'

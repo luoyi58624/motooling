@@ -73,18 +73,20 @@ export default new Router({
   {
     path: '/baogong',
     name: 'baogong',
-    component: () => import('./views/Baogong/index.vue'),
-    children: [{
-      path: 'list',
+  },
+    // component: () => import('./views/Baogong/index.vue'),
+    // children: [{
+    {
+      path: '/baogong/list',
       component: () => import('./views/Baogong/list.vue')
     },
     {
-      path: 'detail',
+      path: '/baogong/detail',
       name: 'baogongDetail',
       component: () => import('./views/Baogong/detail.vue')
     }
-    ]
-  }
+
+
 
   ]
 })

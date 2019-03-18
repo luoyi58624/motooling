@@ -517,12 +517,12 @@ export default {
     if (!localStorage.getItem('token')) {
       localStorage.setItem('nextpage', fullPath)
       // localStorage.setItem('type', 0)
-      // localStorage.setItem('invite_referee', getUrlQueryString('referee'))
+      localStorage.setItem('invite_referee', getUrlQueryString('referee'))
       // localStorage.setItem('companyid', getUrlQueryString('companyid'))
       self.$router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
     } else {
       this.submitmodel.userInfo.uid = localStorage.uid
-      this.submitmodel.userInfo.referee = localStorage.invite_referee
+      this.submitmodel.userInfo.referee = getUrlQueryString('referee')
       this.getUserInfo()
       userSelectList()
         .then(

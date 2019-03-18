@@ -32,7 +32,7 @@ export default {
         reverse: false
       },
       loginData: {
-        mobile: 18565705036,
+        mobile: '',
         phoneCode: ''
       }
     }

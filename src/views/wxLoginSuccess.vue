@@ -40,7 +40,7 @@ export default {
             self.$router.replace('/')
           } else if (resObj.data.statusCode === 1) {
             localStorage.setItem('token', resObj.data.user.token)
-            localStorage.setItem('weburl', resObj.data.weburl)
+            localStorage.setItem('WEBURL', resObj.data.WEBURL)
             localStorage.setItem('uid', resObj.data.user.uid)
             // 登录成功
             if ((localStorage.type === '0' && localStorage.invite_referee) || (localStorage.type === '0' && localStorage.invite_code)) {
@@ -62,7 +62,7 @@ export default {
           } else if (resObj.data.statusCode === 2) {
             // 未绑定手机号
             self.$router.replace('/wxBindPhone')
-            localStorage.setItem('weburl', resObj.data.weburl)
+            localStorage.setItem('WEBURL', resObj.data.WEBURL)
           } else if (resObj.data.statusCode === 3) {
             // 用户未审批
             alert('用户信息需要管理员审批，请等待')

@@ -9,7 +9,7 @@
     <div class="group">
       <cube-input v-model="submitmodel.mobile" placeholder="请输入手机号码" type="text" :maxlength="11" :autocomplete="true"></cube-input>
       <cube-input v-model="submitmodel.phoneCode" placeholder="请输入验证码" type="tel" :maxlength="6" :autocomplete="false">
-      <cube-button slot="append" :inline="true" @click="getCode">获取验证码</cube-button>
+      <cube-button slot="append" :inline="true" @click="getCode" :disabled="timeDisabled">{{timeContent}}</cube-button>
       </cube-input>
     </div>
     <div class="hidden">
@@ -43,6 +43,9 @@ import CuInput from '@/components/input/Input'
 export default {
   data () {
     return {
+      timeContent:'获取验证码',
+      timeDisabled:false,
+      totalTime: 60,
       state: '',
       companyid: '',
       appid: 'wx70214a3c12e8e576',
@@ -69,8 +72,23 @@ export default {
     }
   },
   methods: {
+    countDown(){
+      this.timeDisabled = true
+      let clock = setInterval(()=>{
+        this.timeContent = this.totalTime +'s 后重新获取'
+        this.totalTime --;
+        if (this.totalTime < 0) {     //当倒计时小于0时清除定时器
+          window.clearInterval(clock)
+          this.timeContent = '重新获取'
+          this.totalTime = 60
+          this.timeDisabled = false
+          }
+      },1000)
+
+    },
     getCode () {
       let self = this
+      this.countDown()
       getPhoneCode(this.submitmodel.mobile, 1)
         .then(function (res) {
           console.log(res)
@@ -120,8 +138,8 @@ export default {
     if (sessionStorage.getItem('type')) {
       this.submit.type = parseInt(sessionStorage.getItem('type'))
     }
-    if (localStorage.getItem('weburl')) {
-      this.submitmodel.webUrl = localStorage.getItem('weburl')
+    if (localStorage.getItem('WEBURL')) {
+      this.submitmodel.webUrl = localStorage.getItem('WEBURL')
     }
   },
   components: {
