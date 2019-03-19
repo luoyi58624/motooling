@@ -17,7 +17,7 @@
     </div>
     <cu-input label="公司全称" v-model="submitmodel.supplierMap.companyFullName" placeholder="输入">
     </cu-input>
-    <cu-input label="公司地址" v-model="submitmodel.supplierMap.address" placeholder="输入">
+    <cu-input label="公司地址" v-model="submitmodel.supplierMap.supCompanyAddress" placeholder="输入">
     </cu-input>
     <cu-input label="公司电话" v-model="submitmodel.supplierMap.phone" placeholder="输入">
     </cu-input>
@@ -204,7 +204,7 @@ export default {
         supplierMap: {
           supCompanyId: '',
           companyFullName: '',
-          address: '',
+          supCompanyAddress: '',
           phone: '',
           fax: '',
           website: '',
