@@ -28,7 +28,7 @@ module.exports = {
         changeOrigin: true
       },
       '/img': {
-        target: 'http://www.motooling.com:8809/',
+        target: 'http://www.motooling.com:8809/'
       }
     }
   }

@@ -27,7 +27,7 @@ instance.interceptors.response.use(
   response => {
     response.data.resultData = decrypt(response.data.resultData)
     console.log(response)
-    if(response.data.code==="444444"){
+    if (response.data.code === '444444') {
       router.replace('/login')
       let fullPath = router.currentRoute.fullPath
       console.log(fullPath)

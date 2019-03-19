@@ -20,7 +20,7 @@ export default {
     },
     disabled: {
       type: Boolean,
-      default:false
+      default: false
     },
     value: [String, Number],
     placeholder: String

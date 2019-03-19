@@ -488,9 +488,8 @@ export default {
               self.submitmodel.userInfo.referee = getUrlQueryString('referee')
             }
           }
-        ).catch((err)=>{
+        ).catch((err) => {
           console.log(err)
-
         })
     },
     submit () {

@@ -96,14 +96,14 @@ export default {
     }
   },
   watch: {
-    initialFile:{
-      handler: function(curSelect, oldSelect){
-        console.log(this.importFiles)
-        console.log(curSelect, oldSelect)
+    initialFile: {
+      handler: function (curSelect, oldSelect) {
+        // console.log(this.importFiles)
+        // console.log(curSelect, oldSelect)
         if (curSelect) {
           this.initialFile = curSelect
           this.select = this.initialFile
-          console.log(this.initialFile)
+          // console.log(this.initialFile)
           if (Array.isArray(this.initialFile)) {
             this.importFiles = this.initialFile
           } else {
