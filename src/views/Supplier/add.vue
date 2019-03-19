@@ -222,21 +222,12 @@ export default {
           taxAccount: '',
           bank: '',
           bankAccount: '',
-          id: 5
+          id: 0
         },
         supplierContactorList: [],
-        licenseOriginal: [{
-          imgName: '',
-          imgUrl: ''
-        }],
-        systemOriginal: [{
-          imgName: '',
-          imgUrl: ''
-        }],
-        otherOriginal: [{
-          imgName: '',
-          imgUrl: ''
-        }]
+        licenseOriginal: [],
+        systemOriginal: [],
+        otherOriginal: []
       }
     }
   },
@@ -308,10 +299,19 @@ export default {
         .then(function (res) {
           console.log(res)
           if (res.data.code === '000000') {
-            alert('添加成功')
-            self.$router.replace('/')
+            self.$createToast({
+              time: 2000,
+              txt: res.data.msg,
+              type: 'correct'
+            }).show()
+            // self.$router.replace('/')
           } else {
-            alert('添加失败：' + res.data.msg)
+            self.$createToast({
+              time: 2000,
+              txt: '添加失败: ' + res.data.msg,
+              type: 'error'
+            }).show()
+            alert('' + res.data.msg)
           }
         }).catch(function (err) {
           console.log(err)
@@ -323,10 +323,10 @@ export default {
     let fullPath = this.$router.currentRoute.fullPath
     console.log(this.$router.currentRoute)
     if (!localStorage.getItem('token')) {
-      localStorage.setItem('nextpage', fullPath)
-      localStorage.setItem('type', 0)
-      localStorage.setItem('invite_code', getUrlQueryString('code'))
-      localStorage.setItem('invite_companyid', getUrlQueryString('companyid'))
+      // localStorage.setItem('nextpage', fullPath)
+      // localStorage.setItem('type', 0)
+      // localStorage.setItem('invite_code', getUrlQueryString('code'))
+      // localStorage.setItem('invite_companyid', getUrlQueryString('companyid'))
       // self.$router.replace('/login?next=' + fullPath)
       self.$router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
     } else {
@@ -334,9 +334,18 @@ export default {
       supplierSelectList()
         .then(
           function (res) {
-            let supplierSelectListData = res.data.data
-            console.log(supplierSelectListData)
-            self.supplierSelectListData = supplierSelectListData
+            console.log(res.data)
+            if (res.data.code === '000000') {
+              let supplierSelectListData = res.data.data
+              console.log(supplierSelectListData)
+              self.supplierSelectListData = supplierSelectListData
+            } else {
+              self.$createToast({
+                time: 2000,
+                txt: res.data.msg,
+                type: 'error'
+              }).show()
+            }
           }
         ).catch(function (err) {
           console.log(err)
@@ -346,8 +355,15 @@ export default {
         .then(
           function (res) {
             console.log(res.data)
-            Object.assign(self.submitmodel, res.data.data)
-            console.log(res)
+            if (res.data.code === '000000' && res.data.data) {
+              Object.assign(self.submitmodel, res.data.data)
+            } else {
+              self.$createToast({
+                time: 2000,
+                txt: res.data.msg,
+                type: 'error'
+              }).show()
+            }
           }
         ).catch(function (err) {
           console.log(err)

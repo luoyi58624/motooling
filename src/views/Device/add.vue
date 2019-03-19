@@ -34,16 +34,23 @@
     <cu-upload
     @file-success="deviceImgsSuccess"
     @file-remove="deviceImgsRemove"
-    :initialFile="submitmodel.deviceImgs"
+    :initialFile="submitmodel.deviceImgList"
     :max='1'>
     <div slot="label">设备照片</div>
     </cu-upload>
     <cu-upload
-    @file-success="deviceServiceImgsSuccess"
-    @file-remove="deviceServiceImgsRemove"
-    :initialFile="submitmodel.deviceServiceImgs"
+    @file-success="deviceParamImgSuccess"
+    @file-remove="deviceParamImgRemove"
+    :initialFile="submitmodel.deviceParamImgList"
     :max='1'>
     <div slot="label">设备参数</div>
+    </cu-upload>
+    <cu-upload
+    @file-success="deviceServiceImgSuccess"
+    @file-remove="deviceServiceImgRemove"
+    :initialFile="submitmodel.deviceServiceImgList"
+    :max='1'>
+    <div slot="label">售后服务联系人</div>
     </cu-upload>
     <cu-input label="备注" v-model="submitmodel.device.remark" placeholder="输入">
     </cu-input>
@@ -137,8 +144,11 @@ export default {
           serviceRemark: ''
         },
         deviceServiceList: [],
-        deviceImgs: [],
-        deviceServiceImgs: []
+        deviceServiceImgList: [],
+        deviceImgList: [],
+        deviceParamImgList: []
+        // deviceImgs: [],
+        // deviceServiceImgs: []
       }
     }
   },
@@ -154,8 +164,8 @@ export default {
 
     },
     pmPgSelect (selected, selectedVal, selectedIndex, selectedText) {
-      this.submitmodel.device.pmId = selectedVal.join(',')
-      this.submitmodel.device.pgName = selectedVal.join(',')
+      this.submitmodel.device.pgId = selectedVal.join(',')
+      this.submitmodel.device.pgName = selectedText.join(',')
     },
     pmPgCancel () {
     },
@@ -163,7 +173,7 @@ export default {
     managerSelect (selected, selectedVal, selectedIndex, selectedText) {
       console.log(selectedVal)
       this.submitmodel.device.managerId = selectedVal.join(',')
-      this.submitmodel.device.managerName = selectedVal.join(',')
+      this.submitmodel.device.managerName = selectedText.join(',')
     },
     managerCancel () {
     },
@@ -171,18 +181,25 @@ export default {
     // 第二个参数 解密后的返回值，
     // 第三个参数：文件对象
     deviceImgsSuccess (res, file) {
-      let old = this.submitmodel.deviceImgs
-      this.submitmodel.deviceImgs = old.concat(res)
+      let old = this.submitmodel.deviceImgList
+      this.submitmodel.deviceImgList = old.concat({ imgUrl: res[0] })
     },
     deviceImgsRemove (res, file) {
-      // this.submitmodel.deviceImgs = []
+      // this.submitmodel.deviceImgList = []
     },
-    deviceServiceImgsSuccess (res, file) {
+    deviceParamImgSuccess (res, file) {
       console.log(res)
-      this.submitmodel.deviceServiceImgs = this.submitmodel.deviceServiceImgs.concat(res)
+      console.log(this.submitmodel.deviceParamImgList)
+      this.submitmodel.deviceParamImgList = this.submitmodel.deviceParamImgList.concat({ imgUrl: res[0] })
     },
-    deviceServiceImgsRemove (res, file) {
-      this.submitmodel.deviceServiceImgs = []
+    deviceParamImgRemove (res, file) {
+      // this.submitmodel.deviceParamImgList = []
+    },
+    deviceServiceImgSuccess (res, file) {
+      this.submitmodel.deviceServiceImgList = this.submitmodel.deviceServiceImgList.concat({ imgUrl: res[0] })
+    },
+    deviceServiceImgRemove (res, file) {
+      // this.submitmodel.deviceServiceImgList = []
     },
     // 增加子列表
     addList (target) {
@@ -193,10 +210,23 @@ export default {
       target.splice(index, 1)
     },
     submit () {
+      var self = this
       console.log(this.submitmodel)
       addDeviceInfo(this.submitmodel)
         .then(function (res) {
-          console.log(res)
+          if (res.data.code === '000000') {
+            self.$createToast({
+              time: 2000,
+              txt: res.data.msg,
+              type: 'correct'
+            }).show()
+          } else {
+            self.$createToast({
+              time: 2000,
+              txt: res.data.msg,
+              type: 'error'
+            }).show()
+          }
         }).catch(function (err) {
           console.log(err)
         })
@@ -228,8 +258,11 @@ export default {
         .then(
           function (res) {
             console.log(res.data)
-            Object.assign(self.submitmodel, res.data.data)
+            if (res.data.data) {
+              Object.assign(self.submitmodel, res.data.data)
+            }
             console.log(res)
+            console.log(self.submitmodel)
           }
         ).catch(function (err) {
           console.log(err)
