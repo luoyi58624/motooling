@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { decrypt } from '@/utils/crypt'
+import router from '../router'
 // import md5 from 'md5'
 // encryption
 const instance = axios.create({
@@ -26,6 +27,12 @@ instance.interceptors.response.use(
   response => {
     response.data.resultData = decrypt(response.data.resultData)
     console.log(response)
+    if(response.data.code==="444444"){
+      router.replace('/login')
+      let fullPath = router.currentRoute.fullPath
+      console.log(fullPath)
+      router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
+    }
     return (response)
   },
   error => {

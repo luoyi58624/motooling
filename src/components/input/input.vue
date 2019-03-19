@@ -3,7 +3,7 @@
     <div class="constom-input_label" v-text="label">
     </div>
     <div class="constom-input_content">
-      <cube-input v-model="newValue" @change="handleInput" :placeholder="placeholder" type="text">
+      <cube-input v-model="newValue" @change="handleInput" :placeholder="placeholder" type="text" :disabled="disabled">
       </cube-input>
     </div>
   </div>
@@ -17,6 +17,10 @@ export default {
   props: {
     label: {
       type: String
+    },
+    disabled: {
+      type: Boolean,
+      default:false
     },
     value: [String, Number],
     placeholder: String

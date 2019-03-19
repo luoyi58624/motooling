@@ -43,8 +43,8 @@ import CuInput from '@/components/input/Input'
 export default {
   data () {
     return {
-      timeContent:'获取验证码',
-      timeDisabled:false,
+      timeContent: '获取验证码',
+      timeDisabled: false,
       totalTime: 60,
       state: '',
       companyid: '',
@@ -72,19 +72,18 @@ export default {
     }
   },
   methods: {
-    countDown(){
+    countDown () {
       this.timeDisabled = true
-      let clock = setInterval(()=>{
-        this.timeContent = this.totalTime +'s 后重新获取'
-        this.totalTime --;
-        if (this.totalTime < 0) {     //当倒计时小于0时清除定时器
+      let clock = setInterval(() => {
+        this.timeContent = this.totalTime + 's 后重新获取'
+        this.totalTime--
+        if (this.totalTime < 0) { // 当倒计时小于0时清除定时器
           window.clearInterval(clock)
           this.timeContent = '重新获取'
           this.totalTime = 60
           this.timeDisabled = false
-          }
-      },1000)
-
+        }
+      }, 1000)
     },
     getCode () {
       let self = this

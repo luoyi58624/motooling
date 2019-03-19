@@ -29,10 +29,10 @@
         职位
       </div>
     </cu-picker>
-    <cu-input label="uid" v-model="submitmodel.userInfo.uid" placeholder="输入" >
-    </cu-input>
-    <cu-input label="referee" v-model="submitmodel.userInfo.referee" placeholder="输入" >
-    </cu-input>
+    <!-- <cu-input label="uid" v-model="submitmodel.userInfo.uid" placeholder="输入" >
+    </cu-input> -->
+    <!-- <cu-input label="referee" v-model="submitmodel.userInfo.referee" placeholder="输入" >
+    </cu-input> -->
     <cu-input label="姓名" v-model="submitmodel.userInfo.username" placeholder="输入" >
     </cu-input>
     <cu-picker :pickerData="genderList" @select="genderSelect" @cancel="genderCancel"
@@ -63,7 +63,7 @@
     </cu-input> -->
     <cu-input label="政治面貌" v-model="submitmodel.userCompanyInfo.politicalOutlook" placeholder="输入" >
     </cu-input>
-    <cu-input label="联系电话" v-model="submitmodel.userInfo.mobile" placeholder="输入" >
+    <cu-input label="联系电话" v-model="submitmodel.userInfo.mobile" placeholder="输入" :disabled="true">
     </cu-input>
     <cu-input label="员工卡号" v-model="submitmodel.userCompanyInfo.cardId" placeholder="输入" >
     </cu-input>
@@ -432,46 +432,36 @@ export default {
     },
     // idCard: {
     idCardcertificatesFaceImgSuccess (res, file) {
-      // console.log(res)
-      this.submitmodel.idCard.certificatesFaceImg = res.toString()
+      this.$set(this.submitmodel.idCard, 'certificatesFaceImg', res.toString())
     },
     idCardcertificatesFaceImgRemove (res, file) {
       this.submitmodel.idCard.certificatesFaceImg = ''
     },
     idCardcertificatesBackImgSuccess (res, file) {
-      // console.log(res)
-      this.submitmodel.idCard.certificatesBackImg = res.toString()
+      this.$set(this.submitmodel.idCard, 'certificatesFaceImg', res.toString())
     },
     idCardcertificatesBackImgRemove (res, file) {
       this.submitmodel.idCard.certificatesBackImg = ''
     },
-    // },
     // 社保卡
-    // socialSecurity: {
     socialSecuritycertificatesFaceImgSuccess (res, file) {
-      // console.log(res)
-      this.submitmodel.socialSecurity.certificatesFaceImg = res.toString()
+      this.$set(this.submitmodel.socialSecurity, 'certificatesFaceImg', res.toString())
     },
     socialSecuritycertificatesFaceImgRemove (res, file) {
       this.submitmodel.socialSecurity.certificatesFaceImg = ''
     },
-    // },
     // 公积金
-    // accumulation: {
     accumulationcertificatesFaceImgSuccess (res, file) {
-      // console.log(res)
-      this.submitmodel.accumulation.certificatesFaceImg = res.toString()
+      console.log(res)
+      this.$set(this.submitmodel.accumulation, 'certificatesFaceImg', res.toString())
     },
     accumulationcertificatesFaceImgRemove (res, file) {
       this.submitmodel.accumulation.certificatesFaceImg = ''
     },
 
-    // },
     // 工资卡
-    // salary: {
     salarycertificatesFaceImgSuccess (res, file) {
-      // console.log(res)
-      this.submitmodel.salary.certificatesFaceImg = res.toString()
+      this.$set(this.submitmodel.salary, 'certificatesFaceImg', res.toString())
     },
     salarycertificatesFaceImgRemove (res, file) {
       this.submitmodel.salary.certificatesFaceImg = ''
@@ -490,13 +480,18 @@ export default {
         .then(
           function (res) {
             let rdata = res.data
-            console.log(res.data, rdata.data, self.submitmodel)
-
             Object.assign(self.submitmodel, rdata.data)
             // self.submitmodel = rdata.data
             console.log(self.submitmodel)
+            // 覆盖之前数据保存的邀请人
+            if (getUrlQueryString('referee')) {
+              self.submitmodel.userInfo.referee = getUrlQueryString('referee')
+            }
           }
-        )
+        ).catch((err)=>{
+          console.log(err)
+
+        })
     },
     submit () {
       console.log(this.submitmodel)
@@ -515,9 +510,9 @@ export default {
     var self = this
 
     if (!localStorage.getItem('token')) {
-      localStorage.setItem('nextpage', fullPath)
+      // localStorage.setItem('nextpage', fullPath)
       // localStorage.setItem('type', 0)
-      localStorage.setItem('invite_referee', getUrlQueryString('referee'))
+      // localStorage.setItem('invite_referee', getUrlQueryString('referee'))
       // localStorage.setItem('companyid', getUrlQueryString('companyid'))
       self.$router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
     } else {

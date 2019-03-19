@@ -40,29 +40,18 @@ export default {
             self.$router.replace('/')
           } else if (resObj.data.statusCode === 1) {
             localStorage.setItem('token', resObj.data.user.token)
-            localStorage.setItem('WEBURL', resObj.data.WEBURL)
+            localStorage.setItem('WEBURL', resObj.data.weburl)
             localStorage.setItem('uid', resObj.data.user.uid)
-            // 登录成功
-            if ((localStorage.type === '0' && localStorage.invite_referee) || (localStorage.type === '0' && localStorage.invite_code)) {
-              // 邀请人
-              if (localStorage.invite_referee) {
-                self.$router.replace(nextpage + '?referee=' + localStorage.invite_referee)
-              }
-              // 邀请供应商
-              if (localStorage.invite_code) {
-                self.$router.replace(nextpage + '?referee=' + localStorage.invite_code + '&companyid=' + localStorage.invite_companyid)
-              }
-            } else if (localStorage.type === '1') {
-              // 邀请设备
-              self.$router.replace(nextpage + '?deviceid=' + localStorage.invite_deviceid)
-            } else {
-              alert('链接有误')
-              self.$router.replace('/')
+            let nexturl
+            let state = getUrlQueryString('state')
+            if (state) {
+              nexturl = decodeURIComponent(state)
+              self.$router.replace(nexturl)
             }
           } else if (resObj.data.statusCode === 2) {
             // 未绑定手机号
             self.$router.replace('/wxBindPhone')
-            localStorage.setItem('WEBURL', resObj.data.WEBURL)
+            localStorage.setItem('WEBURL', resObj.data.weburl)
           } else if (resObj.data.statusCode === 3) {
             // 用户未审批
             alert('用户信息需要管理员审批，请等待')

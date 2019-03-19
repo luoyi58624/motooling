@@ -6,10 +6,10 @@
     <div class="upload-file-list">
       <div class="file-wrapper">
         <template v-for="(item,index) in importFiles">
-          <div v-if="typeof(item)==='string'" class="initial-file">
+          <div v-show="typeof(item)==='string'" class="initial-file">
             <div :style="{backgroundImage:'url('+item+')'}" class="initial-file-img"></div>
           </div>
-          <div v-if="typeof(item)==='object'" class="initial-file">
+          <div v-show="typeof(item)==='object'" class="initial-file">
             <div :style="{backgroundImage:'url('+item.imgUrl+')'}" class="initial-file-img"></div>
           </div>
         </template>
@@ -52,8 +52,7 @@ export default {
   },
   props: {
     initialFile: {
-      type: [String, Array],
-      default: ''
+      type: [String, Array]
     },
     action: {
       type: Object,
@@ -97,23 +96,23 @@ export default {
     }
   },
   watch: {
-    initialFile (curSelect, oldSelect) {
-      console.log(curSelect, oldSelect)
-      if (curSelect) {
-        this.initialFile = curSelect
-        this.select = this.initialFile
-        console.log(this.initialFile)
-        if (Array.isArray(this.initialFile)) {
-          this.importFiles = this.initialFile
-        } else {
-          this.importFiles = this.initialFile.split(',')
-        }
+    initialFile:{
+      handler: function(curSelect, oldSelect){
         console.log(this.importFiles)
+        console.log(curSelect, oldSelect)
+        if (curSelect) {
+          this.initialFile = curSelect
+          this.select = this.initialFile
+          console.log(this.initialFile)
+          if (Array.isArray(this.initialFile)) {
+            this.importFiles = this.initialFile
+          } else {
+            this.importFiles = this.initialFile.split(',')
+          }
+          console.log(this.importFiles)
+        }
       }
     }
-  },
-  created () {
-
   },
   computed: {
     // 文件上传后的URL地址
@@ -141,7 +140,7 @@ export default {
     fileSuccess (e) {
       // console.log(this.fileURLs)
       this.$emit('file-success', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
-      console.log(this.files)
+      console.log(this.fileURLs)
     },
     fileRemoved (e) {
       // console.log(this.fileURLs)

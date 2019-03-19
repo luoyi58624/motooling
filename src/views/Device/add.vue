@@ -34,12 +34,14 @@
     <cu-upload
     @file-success="deviceImgsSuccess"
     @file-remove="deviceImgsRemove"
+    :initialFile="submitmodel.deviceImgs"
     :max='1'>
     <div slot="label">设备照片</div>
     </cu-upload>
     <cu-upload
     @file-success="deviceServiceImgsSuccess"
     @file-remove="deviceServiceImgsRemove"
+    :initialFile="submitmodel.deviceServiceImgs"
     :max='1'>
     <div slot="label">设备参数</div>
     </cu-upload>
@@ -118,16 +120,16 @@ export default {
       // 待提交至后端的表单数据
       submitmodel: {
         device: {
-          id: 71,
-          type: '1',
-          typeName: 'CNC',
-          deviceBrand: '设备品牌呀2',
+          id: 0,
+          type: '',
+          typeName: '',
+          deviceBrand: '',
           deviceModel: '',
           buyDate: '',
-          pgId: '8',
+          pgId: '',
           pgName: '',
-          managerId: '226',
-          managerName: '很好听',
+          managerId: '',
+          managerName: '',
           remark: '',
           isShare: '',
           machineRate: '',
@@ -169,15 +171,15 @@ export default {
     // 第二个参数 解密后的返回值，
     // 第三个参数：文件对象
     deviceImgsSuccess (res, file) {
-      // console.log(res)
-      this.submitmodel.deviceImgs = this.submitmodel.deviceImgs.concat(res)
+      let old = this.submitmodel.deviceImgs
+      this.submitmodel.deviceImgs = old.concat(res)
     },
     deviceImgsRemove (res, file) {
-      this.submitmodel.deviceImgs = ''
+      // this.submitmodel.deviceImgs = []
     },
     deviceServiceImgsSuccess (res, file) {
       console.log(res)
-      this.submitmodel.deviceServiceImgs = this.submitmodel.deviceImgs.concat(res)
+      this.submitmodel.deviceServiceImgs = this.submitmodel.deviceServiceImgs.concat(res)
     },
     deviceServiceImgsRemove (res, file) {
       this.submitmodel.deviceServiceImgs = []
@@ -191,9 +193,7 @@ export default {
       target.splice(index, 1)
     },
     submit () {
-      console.log(addDeviceInfo)
       console.log(this.submitmodel)
-      console.log(JSON.stringify(this.submitmodel))
       addDeviceInfo(this.submitmodel)
         .then(function (res) {
           console.log(res)
@@ -207,9 +207,9 @@ export default {
     let fullPath = this.$router.currentRoute.fullPath
     console.log(this.$router.currentRoute)
     if (!localStorage.getItem('token')) {
-      localStorage.setItem('nextpage', fullPath)
-      localStorage.setItem('type', 0)
-      localStorage.setItem('invite_deviceid', getUrlQueryString('deviceid'))
+      // localStorage.setItem('nextpage', fullPath)
+      // localStorage.setItem('type', 0)
+      // localStorage.setItem('invite_deviceid', getUrlQueryString('deviceid'))
       self.$router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
     } else {
       this.submitmodel.device.id = parseInt(getUrlQueryString('deviceid'))
@@ -229,7 +229,6 @@ export default {
           function (res) {
             console.log(res.data)
             Object.assign(self.submitmodel, res.data.data)
-            // self.submitmodel = res.data
             console.log(res)
           }
         ).catch(function (err) {
