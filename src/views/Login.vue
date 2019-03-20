@@ -23,7 +23,7 @@
 <script>
 import { getPhoneCode } from '@/api/login'
 import { getUrlQueryString } from '@/utils/utils.js'
-import { getUser } from '@/api/person/User.js'
+import { getUser } from '@/api/Person/User.js'
 export default {
   data () {
     return {
