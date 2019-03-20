@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import CuInput from '@/components/input/Input'
+import CuInput from '@/components/input/input'
 
 export default {
   name: 'InputGroup',

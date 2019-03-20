@@ -39,7 +39,7 @@
 <script>
 // import { getUrlQueryString } from '@/utils/utils.js'
 import { getPhoneCode, wxBindPhone } from '@/api/login'
-import CuInput from '@/components/input/Input'
+import CuInput from '@/components/input/input'
 export default {
   data () {
     return {

@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import CuInput from '@/components/input/Input'
+import CuInput from '@/components/input/input'
 import CuUpload from '@/components/upload/Upload'
 import CuPicker from '@/components/picker/Picker'
 import { deviceSelectList, getDeviceInfo, addDeviceInfo } from '@/api/device/Device.js'

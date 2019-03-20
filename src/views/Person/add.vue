@@ -185,10 +185,10 @@
 </template>
 
 <script>
-import CuInput from '@/components/input/Input'
+import CuInput from '@/components/input/input'
 import CuUpload from '@/components/upload/Upload'
 import CuPicker from '@/components/picker/Picker'
-import { addUser, getUser, userSelectList } from '@/api/person/User.js'
+import { addUser, getUser, userSelectList } from '@/api/Person/User.js'
 import { getUrlQueryString } from '@/utils/utils.js'
 import { nationList } from '@/data/nations.js'
 export default {
