@@ -27,6 +27,7 @@ export default {
         .then(function (res) {
           let resObj = res.data
           let nextpage = localStorage.getItem('nextpage')
+          let state = getUrlQueryString('state')
           console.log(resObj)
           if (resObj.code !== '000000') {
             alert(resObj.msg)
@@ -43,14 +44,13 @@ export default {
             localStorage.setItem('WEBURL', resObj.data.weburl)
             localStorage.setItem('uid', resObj.data.user.uid)
             let nexturl
-            let state = getUrlQueryString('state')
             if (state) {
               nexturl = decodeURIComponent(state)
               self.$router.replace(nexturl)
             }
           } else if (resObj.data.statusCode === 2) {
             // 未绑定手机号
-            self.$router.replace('/wxBindPhone')
+            self.$router.replace('/wxBindPhone?redirectURL='+state)
             localStorage.setItem('WEBURL', resObj.data.weburl)
           } else if (resObj.data.statusCode === 3) {
             // 用户未审批
