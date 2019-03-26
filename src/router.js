@@ -84,6 +84,16 @@ export default new Router({
     path: '/baogong/detail',
     name: 'baogongDetail',
     component: () => import('./views/Baogong/detail.vue')
+  },
+  {
+    path: '/baogong/work-center',
+    name: 'work-center',
+    component: () => import('./views/Baogong/work-center.vue')
+  },
+  {
+    path: '/baogong/manage',
+    name: 'manage',
+    component: () => import('./views/Baogong/manage.vue')
   }
 
   ]
