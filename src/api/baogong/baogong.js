@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/newRequest'
 import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
 const WEBURL = localStorage.getItem('WEBURL') || ''
@@ -43,6 +43,19 @@ export function getDeviceAndStatus (params={}) {
   }
   return request({
     url: WEBURL + '/mtH5/worktime/getDeviceAndStatus',
+    method: 'post',
+    data
+  })
+}
+export function getProcessTask (params={}) {
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/worktime/getProcessTask',
     method: 'post',
     data
   })
@@ -136,7 +149,7 @@ export function getPartList (params={}) {//获取接收转出工件列表
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/pm/worktime/getPartList',
+    url: WEBURL + '/mtH5/worktime/getPartList',
     method: 'post',
     data
   })

@@ -98,6 +98,9 @@
 import { Input } from "cube-ui";
 import myHeader from "@/components/header";
 import scroll from "@/components/BScroll";
+import {
+  getPartList
+} from "@/api/baogong/baogong";
 
 export default {
   data() {
@@ -105,6 +108,17 @@ export default {
       value: "",
       isShow: false
     };
+  },
+  created(){
+    console.log(getPartList)
+    getPartList({
+      pageNum:1,
+      pageSize:10,
+      type:1
+    }).then(res=>{
+      console.log(res)
+      
+    })
   },
 
   components: {

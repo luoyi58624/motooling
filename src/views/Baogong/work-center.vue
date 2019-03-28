@@ -69,6 +69,9 @@
               <p>前模仁</p>
             </div>
           </div>
+          <div style="display:flex;align-items:center;justify-content:center;" @click="getPart">
+            <span style="font-size:60px;" class="iconfont icon-jia"></span>
+          </div>
         </swiper-slide>
         <div
           class="swiper-pagination2"
@@ -86,11 +89,13 @@ import { swiper, swiperSlide } from "vue-awesome-swiper";
 import {
   getPmPgList,
   getSettingList,
-  getDeviceAndStatus
+  getDeviceAndStatus,
+  getProcessTask
 } from "@/api/baogong/baogong";
 import scroll from "@/components/BScroll";
 import { setTimeout } from "timers";
 import { reject, async, Promise } from "q";
+import router from '../../router'
 var disX = 0;
 var disY = 0;
 export default {
@@ -121,18 +126,21 @@ export default {
     const that = this;
     getPmPgList({ deviceId: "101" })
       .then(res => {
-        that.list = res.data.data.list;
-        that.pgId = res.data.data.list[0].pgId;
+        that.list = res.list;
+        that.pgId = res.list[0].pgId;
         getDeviceAndStatus({
           pageNum: 1, //页码(注意：选填参数[默认第一页])
           pageSize: 12, //页大小(注意：选填参数[默认10条])
           pgId: that.pgId
         }).then(data => {
           console.log(data);
-          that.shebeiList = data.data.data.list;
+          that.shebeiList = data.list;
           console.log(that.shebeiList);
         });
-        _getProcessTask(1,8,that.pgId,1).then(data=>{
+        that._getProcessTask(1,8,that.pgId,1).then(data=>{
+          console.log(data)
+        })
+         that._getProcessTask(1,8,that.pgId,2).then(data=>{
           console.log(data)
         })
       })
@@ -155,6 +163,9 @@ export default {
   methods: {
     select(pgId) {
       this.pgId = pgId;
+    },
+    getPart(type){
+       router.replace('/baogong/manage?type='+type)
     },
     tS(e) {
       this.createModal(this.modalID);
@@ -193,17 +204,20 @@ export default {
     },
     _getProcessTask(pageNum, pageSize, pgId, type) {
       return new Promise((resolve, reject) => {
+        //console.log(1)
         getProcessTask({
-          pageNum: "int", //页码(注意：选填参数[默认第一页])
-          pageSize: "int", //页大小(注意：选填参数[默认10条])
+          pageNum, //页码(注意：选填参数[默认第一页])
+          pageSize, //页大小(注意：选填参数[默认10条])
        //当前选中设备Id（可为空）(注意：选填参数[当前选中设备Id])
-          pgId: "long", //当前工作中心Id (必填）(注意：必填参数[当前工作中心Id])
-          type: "int"
+          pgId, //当前工作中心Id (必填）(注意：必填参数[当前工作中心Id])
+          type
         })
           .then(res => {
+           // console.log(2)
             resolve(res);
           })
           .catch(err => {
+            //console.log(3)
             reject(err);
           });
       });
