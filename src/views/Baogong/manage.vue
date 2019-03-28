@@ -2,8 +2,33 @@
 <template>
   <div>
     <myHeader title="工件管理" :hasRight="true"></myHeader>
-    <scroll class="wrapper" :pulldown="true">
+    <cube-scroll
+      class="scroll"
+      ref="scroll"
+      :options="options"
+      @pulling-down="onPullingDown"
+      @pulling-up="onPullingUp"
+    >
       <div>
+        <template slot="pulldown" slot-scope="props">
+          <span v-if="props.isPullingDown">正在更新...</span>
+          <span v-else>更新成功</span>
+          <div v-if="props.pullDownRefresh" class="cube-pulldown-wrapper">
+            <div class="pulldown-content">
+              <img
+                src="https://dpubstatic.udache.com/static/dpubimg/7d895941-251f-471f-abc4-3eca25762465.jpg"
+              >
+              <span v-if="props.beforePullDown">{{pullDownTip}}</span>
+              <template v-else>
+                <span v-if="props.isPullingDown">正在更新...</span>
+                <span v-else>更新成功</span>
+              </template>
+            </div>
+          </div>
+        </template>
+        <template slot="pullup" >
+          下拉加载更多
+        </template>
         <div class="input-wrapper">
           <div class>
             <cube-input v-model="value"/>
@@ -90,54 +115,112 @@
           </div>
         </div>
       </div>
-    </scroll>
+    </cube-scroll>
   </div>
 </template>
 
 <script>
-import { Input } from "cube-ui";
+import { Input, Scroll } from "cube-ui";
 import myHeader from "@/components/header";
 import scroll from "@/components/BScroll";
-import {
-  getPartList
-} from "@/api/baogong/baogong";
+import { getPartList } from "@/api/baogong/baogong";
 
 export default {
   data() {
     return {
       value: "",
-      isShow: false
+      isShow: false,
+      options: {
+        pullDownRefresh: {
+          threshold: 60,
+          stop: 40,
+          txt: "更新成功"
+        }
+      },
+      pullDownY: 0,
+      pullDownStyle: "",
+      opacityStyle: "",
+      triggerSurpriseFlag: false,
+      triggerSurprise: false
     };
   },
-  created(){
-    console.log(getPartList)
+  created() {
+    const type = this.$route.query.type;
+    const pgId = this.$route.query.pgId;
     getPartList({
-      pageNum:1,
-      pageSize:10,
-      type:1
-    }).then(res=>{
-      console.log(res)
-      
-    })
+      pageNum: 1,
+      pageSize: 10,
+      type: parseInt(type),
+      pgId: parseInt(pgId)
+    }).then(res => {
+      console.log(res);
+    });
   },
 
   components: {
-    myHeader,
-    scroll
+    myHeader
   },
   methods: {
+    onPullingUp() {
+      console.log(2);
+    },
+    onScrollHandle(pos) {
+      this.pullDownY = pos.y;
+      if (pos.y > 0) {
+        this.pullDownStyle = `top:${pos.y}px`;
+        this.triggerSurpriseFlag = false;
+        if (this.pullDownY > 90) {
+          this.triggerSurpriseFlag = true;
+        }
+      }
+      this.$refs.topHeader.style.opacity = this.headerStyle;
+    },
+    onPullingDown() {
+      if (this.triggerSurpriseFlag) {
+        this.triggerSurprise = true;
+        this.$refs.scroll.forceUpdate();
+        return;
+      }
+      setTimeout(() => {
+        this.$refs.scroll.forceUpdate();
+      }, 1000);
+    },
+    surpriseHandle() {
+      this.triggerSurpriseFlag = false;
+      this.triggerSurprise = false;
+      this.$refs.topHeader.style.opacity = 1;
+      // go to other page
+    },
+    onImgLoad() {
+      this.$refs.scroll.refresh();
+    },
     showFix() {
       this.isShow = true;
     },
     hideFix() {
       this.isShow = false;
     }
+  },
+  computed: {
+    pullDownTip() {
+      if (this.pullDownY <= 60) {
+        return "下拉刷新...";
+      } else if (this.pullDownY <= 90) {
+        return "继续下拉有惊喜...";
+      } else {
+        return "松手得惊喜！";
+      }
+    }
   }
 };
 </script>
 <style scoped lang="less">
-.wrapper{
-  position:fixed;top:41px;left:0;right:0;bottom:0;
+.scroll {
+  position: fixed;
+  top: 41px;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 .input-wrapper {
   height: 50px;

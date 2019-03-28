@@ -18,9 +18,9 @@
       </div>
       <swiper :options="swiperOption" ref="mySwiper" class="swiper1">
         <!-- slides -->
-        <swiper-slide v-for="item in [1,2,3]">
+        <swiper-slide v-for="(item,index) in _shebeiList" :key="index">
           <div class="box">
-            <div v-for="ie in shebeiList">
+            <div v-for="ie in item" :key="ie.id">
               <div class="top">
                 <div class="select">
                   <img src="../xuanze.png" alt>
@@ -55,9 +55,10 @@
         style="overflow-y: visible !important;"
       >
         <!-- slides -->
-        <swiper-slide v-for="slide in [1,2,3,5,6,7,87]" class="second-swipe">
+        <swiper-slide v-for="(slide,index) in _waitList" :key="index" class="second-swipe">
           <div
-            v-for="item in [1,2,3,4,5,5,5]"
+            v-for="item in slide"
+            :key="item.poId"
             style="position:relative;"
             @touchstart="tS"
             @touchmove="tM"
@@ -65,11 +66,11 @@
           >
             <div class>图片</div>
             <div class="text">
-              <span>M12323</span>
-              <p>前模仁</p>
+              <span>{{item.matNo}}</span>
+              <p>{{item.matName}}</p>
             </div>
           </div>
-          <div style="display:flex;align-items:center;justify-content:center;" @click="getPart">
+          <div style="display:flex;align-items:center;justify-content:center;background:#fff" @click="getPart(1)">
             <span style="font-size:60px;" class="iconfont icon-jia"></span>
           </div>
         </swiper-slide>
@@ -80,6 +81,8 @@
         ></div>
       </swiper>
     </div>
+    <div class="bar"></div>
+  
   </div>
 </template>
 <script>
@@ -90,20 +93,35 @@ import {
   getPmPgList,
   getSettingList,
   getDeviceAndStatus,
-  getProcessTask
+  getProcessTask,
+  setStartProcessTask
 } from "@/api/baogong/baogong";
 import scroll from "@/components/BScroll";
 import { setTimeout } from "timers";
 import { reject, async, Promise } from "q";
-import router from '../../router'
+import router from "../../router";
 var disX = 0;
 var disY = 0;
+var vm;
 export default {
   data() {
     return {
       swiperOption: {
         pagination: {
           el: ".swiper-pagination"
+        },
+        on: {
+          reachEnd: function(event) {
+            setTimeout(function() {
+              vm._getDeviceAndStatus().then(data => {
+                if (data.list.length == 12) {
+                  vm.shebeiHasmore = true;
+                  vm.shebeiPage++;
+                }
+                vm.shebeiList = [...vm.shebeiList, ...data.list];
+              });
+            }, 100);
+          }
         }
       },
       swiperOption2: {
@@ -119,30 +137,25 @@ export default {
       list: [],
       source: {},
       modalID: "zhezhao",
-      shebeiList: []
+      shebeiList: [],
+      waitList: [],
+      doneList: [],
+      shebeiPage: 1,
+      waitPage: 1,
+      donePage: 1,
+      shebeiHasmore: true,
+      waitHasmore: true,
+      doneHasmore: true
     };
   },
   created() {
+    vm = this;
     const that = this;
-    getPmPgList({ deviceId: "101" })
+    getPmPgList({ deviceId: "3" })
       .then(res => {
         that.list = res.list;
         that.pgId = res.list[0].pgId;
-        getDeviceAndStatus({
-          pageNum: 1, //页码(注意：选填参数[默认第一页])
-          pageSize: 12, //页大小(注意：选填参数[默认10条])
-          pgId: that.pgId
-        }).then(data => {
-          console.log(data);
-          that.shebeiList = data.list;
-          console.log(that.shebeiList);
-        });
-        that._getProcessTask(1,8,that.pgId,1).then(data=>{
-          console.log(data)
-        })
-         that._getProcessTask(1,8,that.pgId,2).then(data=>{
-          console.log(data)
-        })
+        that.select();
       })
       .catch(err => {
         console.log(err);
@@ -157,15 +170,100 @@ export default {
   computed: {
     swiper() {
       return this.$refs.mySwiper.swiper;
+    },
+    _shebeiList() {
+      const that = this;
+      var newArr = [];
+      var length = Math.ceil((that.shebeiList.length + 1) / 6);
+      console.log(length);
+      for (let j = 0; j < length; j++) {
+        var arr = [];
+        for (let i = 0; i < 6; i++) {
+          if (that.shebeiList[j * 6 + i]) {
+            console.log(that.shebeiList[i]);
+            arr.push(that.shebeiList[j * 6 + i]);
+          }
+        }
+        newArr.push(arr);
+      }
+      return newArr;
+    },
+    _waitList() {
+      console.log(this.waitList);
+      var newArr = [];
+      var length = Math.ceil((this.waitList.length + 1) / 8);
+      for (let j = 0; j < length; j++) {
+        var arr = [];
+        for (let i = 0; i < 8; i++) {
+          if (this.waitList[j * 8 + i]) {
+            arr.push(this.waitList[j * 8 + i]);
+          }
+        }
+        newArr.push(arr);
+      }
+      console.log(newArr);
+      return newArr;
+    },
+     _doneList() {
+      console.log(this.doneList);
+      var newArr = [];
+      var length = Math.ceil((this.doneList.length + 1) / 8);
+      for (let j = 0; j < length; j++) {
+        var arr = [];
+        for (let i = 0; i < 8; i++) {
+          if (this.doneList[j * 8 + i]) {
+            arr.push(this.doneList[j * 8 + i]);
+          }
+        }
+        newArr.push(arr);
+      }
+      console.log(newArr);
+      return newArr;
     }
   },
   mounted() {},
   methods: {
     select(pgId) {
+      const that = this;
       this.pgId = pgId;
+      that.shebeiList = [];
+      that.doneList = [];
+      that.waitList = [];
+      that.shebeiPage = 1;
+      that.waitPage = 1;
+      that.donePage = 1;
+      that.shebeiHasmore = true;
+      that.waitHasmore = true;
+      that.doneHasmore = true;
+      console.log(1231542222222222222222222222);
+      that._getDeviceAndStatus().then(data => {
+        if (data.list.length == 12) {
+          that.shebeiHasmore = true;
+          that.shebeiPage++;
+        }
+        that.shebeiList = [...that.shebeiList, ...data.list];
+      });
+      that._getProcessTask().then(data => {
+        console.log(1231542222222222222222222222);
+        console.log(data);
+        this.waitList = [...that.waitList, ...data.list];
+      });
+      that._getProcessTaskDone().then(data => {
+        console.log(1231542222222222222222222222);
+        console.log(data);
+        this.doneList = [...that.doneList, ...data.list];
+      });
     },
-    getPart(type){
-       router.replace('/baogong/manage?type='+type)
+
+    getPart(type) {
+      // router.replace('/baogong/manage?type='+type)
+      this.$router.push({
+        path: "/baogong/manage",
+        query: {
+          type,
+          pgId: this.pgId
+        }
+      });
     },
     tS(e) {
       this.createModal(this.modalID);
@@ -202,24 +300,73 @@ export default {
         document.body.appendChild(modal);
       }
     },
-    _getProcessTask(pageNum, pageSize, pgId, type) {
+    _getDeviceAndStatus() {
+      const that = this;
       return new Promise((resolve, reject) => {
-        //console.log(1)
-        getProcessTask({
-          pageNum, //页码(注意：选填参数[默认第一页])
-          pageSize, //页大小(注意：选填参数[默认10条])
-       //当前选中设备Id（可为空）(注意：选填参数[当前选中设备Id])
-          pgId, //当前工作中心Id (必填）(注意：必填参数[当前工作中心Id])
-          type
-        })
-          .then(res => {
-           // console.log(2)
+        if (this.shebeiHasmore) {
+          this.shebeiHasmore = false;
+          getDeviceAndStatus({
+            pageNum: that.shebeiPage,
+            pageSize: 12,
+            pgId: that.pgId
+          }).then(res => {
+            console.error("出错了");
             resolve(res);
-          })
-          .catch(err => {
-            //console.log(3)
-            reject(err);
           });
+        } else {
+          console.error('出错了')
+          reject();
+        }
+      });
+    },
+    _getProcessTask() {
+      const that = this;
+      return new Promise((resolve, reject) => {
+        if (that.waitHasmore) {
+          that.waitHasmore = false;
+          getProcessTask({
+            pageNum: that.waitPage, //页码(注意：选填参数[默认第一页])
+            pageSize: 16, //页大小(注意：选填参数[默认10条])
+            //当前选中设备Id（可为空）(注意：选填参数[当前选中设备Id])
+            pgId: that.pgId, //当前工作中心Id (必填）(注意：必填参数[当前工作中心Id])
+            type: 1
+          })
+            .then(res => {
+              console.log(2222222222222222);
+              resolve(res);
+            })
+            .catch(err => {
+              //console.log(3)
+              reject(err);
+            });
+        } else {
+          reject(err);
+        }
+      });
+    },
+    _getProcessTaskDone() {
+      const that = this;
+      return new Promise((resolve, reject) => {
+        if (that.doneHasmore) {
+          that.doneHasmore = false;
+          getProcessTask({
+            pageNum: that.donePage, //页码(注意：选填参数[默认第一页])
+            pageSize: 16, //页大小(注意：选填参数[默认10条])
+            //当前选中设备Id（可为空）(注意：选填参数[当前选中设备Id])
+            pgId: that.pgId, //当前工作中心Id (必填）(注意：必填参数[当前工作中心Id])
+            type: 2
+          })
+            .then(res => {
+              console.log(2222222222222222);
+              resolve(res);
+            })
+            .catch(err => {
+              //console.log(3)
+              reject(err);
+            });
+        } else {
+          reject(err);
+        }
       });
     }
   },
