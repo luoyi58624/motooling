@@ -37,7 +37,7 @@
 </template>
 
 <script>
-// import { getUrlQueryString } from '@/utils/utils.js'
+import { getUrlQueryString } from '@/utils/utils.js'
 import { getPhoneCode, wxBindPhone } from '@/api/login'
 import CuInput from '@/components/input/input'
 export default {
@@ -113,7 +113,7 @@ export default {
           if (rdata.status === 0) {
             alert('提交成功')
             localStorage.removeItem('type')
-            self.$router.replace('/wxlogin')
+            self.$router.replace('/wxlogin?redirectURL=' + getUrlQueryString('redirectURL'))
           } else {
             alert('提交失败' + rdata.msg)
           }

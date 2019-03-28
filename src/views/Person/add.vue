@@ -213,7 +213,7 @@ export default {
       depList: [],
 
       genderList: [
-        { text: '未知', value: 0 },
+        { text: '未定', value: 0 },
         { text: '男', value: 1 },
         { text: '女', value: 2 }
       ],
@@ -379,11 +379,11 @@ export default {
   },
   methods: {
     genderText (val) {
-      if (val === 1) {
+      if (val == 1) {
         return '男'
-      } else if (val === 1) {
+      } else if (val == 2) {
         return '女'
-      } else if (val === 0) {
+      } else if (val == 0) {
         return '未定'
       } else {
         return '未定'
