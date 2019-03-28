@@ -1,5 +1,7 @@
 <template>
   <div class>
+    <myHeader :list="list" @select="select" title="工作中心" :hasRight="true"/>
+    <div class="clearFix"></div>
     <div class="bar"></div>
     <div class="title">设备</div>
     <div class="first-banner">
@@ -18,7 +20,7 @@
         <!-- slides -->
         <swiper-slide v-for="item in [1,2,3]">
           <div class="box">
-            <div v-for="ie in [1,2,3,5,6]">
+            <div v-for="ie in shebeiList">
               <div class="top">
                 <div class="select">
                   <img src="../xuanze.png" alt>
@@ -31,8 +33,11 @@
                 </div>
                 <div>头像</div>
               </div>
-              <div>CN094</div>
-              <div class="state">MJDFJG</div>
+              <div>{{ie.deviceNo}}</div>
+              <div
+                class="state"
+                :class="{free:ie.deviceStatus==0,ing:ie.deviceStatus==1,repair:ie.deviceStatus=='其他'}"
+              >{{ie.deviceName }}</div>
               <div class="right-on">未点检</div>
             </div>
           </div>
@@ -76,7 +81,16 @@
 </template>
 <script>
 import "swiper/dist/css/swiper.css";
+import myHeader from "@/components/header";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
+import {
+  getPmPgList,
+  getSettingList,
+  getDeviceAndStatus
+} from "@/api/baogong/baogong";
+import scroll from "@/components/BScroll";
+import { setTimeout } from "timers";
+import { reject, async, Promise } from "q";
 var disX = 0;
 var disY = 0;
 export default {
@@ -93,16 +107,44 @@ export default {
         }
       },
       title: "工作中心",
+      pgId: "",
       ullDownRefresh: {
         stop: 55
       },
+      list: [],
       source: {},
-      modalID: "zhezhao"
+      modalID: "zhezhao",
+      shebeiList: []
     };
+  },
+  created() {
+    const that = this;
+    getPmPgList({ deviceId: "101" })
+      .then(res => {
+        that.list = res.data.data.list;
+        that.pgId = res.data.data.list[0].pgId;
+        getDeviceAndStatus({
+          pageNum: 1, //页码(注意：选填参数[默认第一页])
+          pageSize: 12, //页大小(注意：选填参数[默认10条])
+          pgId: that.pgId
+        }).then(data => {
+          console.log(data);
+          that.shebeiList = data.data.data.list;
+          console.log(that.shebeiList);
+        });
+        _getProcessTask(1,8,that.pgId,1).then(data=>{
+          console.log(data)
+        })
+      })
+      .catch(err => {
+        console.log(err);
+      });
   },
   components: {
     swiper,
-    swiperSlide
+    swiperSlide,
+    myHeader,
+    scroll
   },
   computed: {
     swiper() {
@@ -111,6 +153,9 @@ export default {
   },
   mounted() {},
   methods: {
+    select(pgId) {
+      this.pgId = pgId;
+    },
     tS(e) {
       this.createModal(this.modalID);
       let element = e.targetTouches[0]; // 记录初始 client 位置，用于计算移动距离
@@ -145,6 +190,23 @@ export default {
         modal.style.cssText = `position: fixed; left: 0; top: 0; right: 0; bottom: 0; z-index: 999;`;
         document.body.appendChild(modal);
       }
+    },
+    _getProcessTask(pageNum, pageSize, pgId, type) {
+      return new Promise((resolve, reject) => {
+        getProcessTask({
+          pageNum: "int", //页码(注意：选填参数[默认第一页])
+          pageSize: "int", //页大小(注意：选填参数[默认10条])
+       //当前选中设备Id（可为空）(注意：选填参数[当前选中设备Id])
+          pgId: "long", //当前工作中心Id (必填）(注意：必填参数[当前工作中心Id])
+          type: "int"
+        })
+          .then(res => {
+            resolve(res);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
     }
   },
   directives: {
@@ -181,7 +243,17 @@ export default {
   }
 };
 </script>
-<style scope>
+<style scope lang="less">
+.clearFix {
+  height: 41px;
+}
+.wrapper {
+  position: fixed;
+  top: 41px;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
 swiper-slide {
   width: 100%;
   height: 200px;
@@ -223,7 +295,7 @@ swiper-slide {
 .box > div {
   width: 30%;
   height: 120px;
-  background: #e2e2e2;
+  background: #dcdcdc;
   float: left;
   flex-direction: column;
   align-items: center;
@@ -356,5 +428,14 @@ swiper-slide {
 .swiper-container {
   overflow: visible !important;
   overflow-x: hidden !important;
+}
+.imng {
+  background: #5fd858;
+}
+.free {
+  background: #fd3b33;
+}
+.repair {
+  background: #fe9732;
 }
 </style>

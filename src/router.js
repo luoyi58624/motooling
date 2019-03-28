@@ -94,6 +94,11 @@ export default new Router({
     path: '/baogong/manage',
     name: 'manage',
     component: () => import('./views/Baogong/manage.vue')
+  },
+  {
+    path: '/baogong/setting',
+    name: 'setting',
+    component: () => import('./views/Baogong/setting.vue')
   }
 
   ]
