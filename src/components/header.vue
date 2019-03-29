@@ -63,6 +63,7 @@ export default {
       }
     },
     select(pgId){
+      this.isShowList=false;
       this.$emit('select',pgId)
     },
     hideList() {

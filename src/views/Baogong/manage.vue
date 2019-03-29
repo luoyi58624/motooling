@@ -5,6 +5,7 @@
     <cube-scroll
       class="scroll"
       ref="scroll"
+      :data="list"
       :options="options"
       @pulling-down="onPullingDown"
       @pulling-up="onPullingUp"
@@ -28,7 +29,7 @@
         </template>
         <template slot="pullup" >
           下拉加载更多
-        </template>
+        </template> 
         <div class="input-wrapper">
           <div class>
             <cube-input v-model="value"/>
@@ -36,17 +37,17 @@
           </div>
         </div>
         <div class="nav">
-          <div class="active">接收</div>
-          <div>转出</div>
+          <div :class="{active:type==1}" @click="changeType(1)">接收</div>
+          <div :class="{active:type==2}"  @click="changeType(2)">转出</div>
         </div>
         <div class="option">
           <div>
             <div>按生产订单排序</div>
-            <div>
+            <div :class="{active:reverse}" @click="reverse">
               降序
               <i class="iconfont">&#xe79e;</i>
             </div>
-            <div>
+            <div :class="{active:!reverse}" @click="reverse">
               升序
               <i class="iconfont">&#xe79f;</i>
             </div>
@@ -54,68 +55,47 @@
           <div>筛选</div>
         </div>
         <div class="list">
-          <div class="manager" v-for="item in [1,2,3,4]" :key="item">
+          <div class="manager" v-for="item in list" :key="item.poId">
             <div class="img-wrapper"></div>
             <div class="info-wrapper">
               <div class="manage-top">
-                <p>生产单号：POROIIR</p>
-                <p @click="showFix" class="rizhi">日志</p>
+                <p>生产单号：{{item.poNo}}</p>
+                <p @click="showFix(item.poId,item.popId)" class="rizhi">日志</p>
               </div>
-              <div>物料编码</div>
-              <div>上工序</div>
-              <div>操作人</div>
-              <div>描述</div>
-              <div>工序</div>
-              <div>操作事件</div>
+              <div>物料编码:{{item.matNo}}</div>
+              <div>上工序:{{}}</div>
+              <div>操作人:{{item.prevWorkerName}}</div>
+              <div>描述:{{item.prevProcDesc}}</div>
+              <div>工序:{{}}</div>
+              <div>操作时间：{{item.predictStartTime}}</div>
               <div class="opra">
-                <div>1718</div>
+                <div @click="like(item.prevBatchProcId,item.prevPopId)"><span class="iconfont icon-dianzan1"></span>{{item.prevPraiseCount||0}}</div>
                 <div>
-                  <button>完工</button>
-                  <button>返工</button>
-                  <button>接收</button>
+                  <button v-show="type==2" @click="zhuanchu(2,item.popId,item.batchProcId)">转出</button>
+                  <button  v-show="type==1" @click="jieshou(1,item.popId)">接收</button>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="zhezhao" v-show="isShow" @click="hideFix"></div>
-        <div class="fixed" v-show="isShow">
-          <div style="line-height:50px;text-align:center;font-size:16px;">日志</div>
-          <div class="lc">
-            <div>
-              <div>
-                <div>今天</div>
-                <div>08:30</div>
-              </div>
-              <div>
-                <div>订单已经创建完成</div>
-                <div>操作人：王植阳</div>
-              </div>
-            </div>
-            <div>
-              <div>
-                <div>今天</div>
-                <div>08:30</div>
-              </div>
-              <div>
-                <div>订单已经创建完成</div>
-                <div>操作人：王植阳</div>
-              </div>
-            </div>
-            <div>
-              <div>
-                <div>今天</div>
-                <div>08:30</div>
-              </div>
-              <div>
-                <div>订单已经创建完成</div>
-                <div>操作人：王植阳</div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </cube-scroll>
+            <div class="zhezhao" v-show="isShow" @click="hideFix"></div>
+        <div class="fixed" v-show="isShow">
+          <div style="line-height:50px;text-align:center;font-size:16px;">日志</div>
+          <div class="lc">
+            <div v-for="item in rzList" :key="item.handleTime">
+              <div>
+                <div>{{item.handleTime.slice(5,10)}}</div>
+                <div>{{item.handleTime.slice(11,16)}}</div>
+              </div>
+              <div>
+                <div>{{item.handleDesc}}</div>
+                <div>{{item.handlerName}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
   </div>
 </template>
 
@@ -123,46 +103,123 @@
 import { Input, Scroll } from "cube-ui";
 import myHeader from "@/components/header";
 import scroll from "@/components/BScroll";
-import { getPartList } from "@/api/baogong/baogong";
+import { getPartList ,setPart,getPartProcessLog,setPartPraise} from "@/api/baogong/baogong";
 
 export default {
   data() {
     return {
+      pageNum:1,
+      pageSize:10,
+      hasMore:true,
+      done:true,
       value: "",
+      list:"",
+      type:"",
       isShow: false,
+      reverse:false,//降序
       options: {
         pullDownRefresh: {
           threshold: 60,
           stop: 40,
           txt: "更新成功"
+        },
+        pullUpLoad :{
+          threshold:0,
+          txt:{
+            more:"没有了"
+          }
         }
       },
       pullDownY: 0,
       pullDownStyle: "",
       opacityStyle: "",
       triggerSurpriseFlag: false,
-      triggerSurprise: false
+      triggerSurprise: false,
+      rzList:[]//日志列表
     };
   },
   created() {
-    const type = this.$route.query.type;
-    const pgId = this.$route.query.pgId;
-    getPartList({
-      pageNum: 1,
-      pageSize: 10,
-      type: parseInt(type),
-      pgId: parseInt(pgId)
-    }).then(res => {
-      console.log(res);
-    });
+    
+    this._getPartList()
   },
 
   components: {
     myHeader
   },
   methods: {
-    onPullingUp() {
-      console.log(2);
+    like(prevBatchProcId,prevPopId){
+      setPartPraise({prevBatchProcId,prevPopId}).then(res=>{
+        console.log(res)
+      })
+
+    },
+    jieshou(type,popId){
+      setPart({type,popId}).then(res=>{
+        console.log(res)
+      })
+
+    },
+    zhuanchu(type,popId,batchProcId){
+       setPart({type,popId,batchProcId}).then(res=>{
+        console.log(res)
+      })
+
+    },
+    changeType(type){
+      this.type=type;
+      this.list=[];
+      this.done=true;
+      this.hasMore=true;
+      this._getPartList()
+    },
+    _getPartList(){
+      const that=this
+      const type =this.type||this.$route.query.type;
+      this.type=type
+      console.log(type)
+      const pgId = this.$route.query.pgId;
+      if(that.done&&that.hasMore){
+        that.done=false
+        getPartList({
+          pageNum:that.pageNum,
+          pageSize:that.pageSize,
+          type,
+          pgId
+        }).then(res=>{
+          
+           that.$refs.scroll.forceUpdate()
+           that.list=[...that.list,...res.list]
+           that.done=true;
+           if(res.list==12){
+             that.hasmore=true
+           }else{
+             that.hasMore=false
+           }
+        })
+
+      }
+    },
+    onPullingUp() { 
+      const that=this;
+      if(that.hasMore){
+        that._getPartList()
+
+      }else{
+         this.$refs.scroll.forceUpdate()
+         return;
+      }
+    //    setTimeout(() => {
+    //   if (Math.random() > 0.5) {
+    //     // 如果有新数据
+    //     //let newPage = _foods.slice(0, 5)
+    //     //this.items = this.items.concat(newPage)
+    //     console.log('更新了')
+    //      this.$refs.scroll.forceUpdate()
+    //   } else {
+    //     // 如果没有新数据
+    //     this.$refs.scroll.forceUpdate()
+    //   }
+    // }, 1000)
     },
     onScrollHandle(pos) {
       this.pullDownY = pos.y;
@@ -176,14 +233,14 @@ export default {
       this.$refs.topHeader.style.opacity = this.headerStyle;
     },
     onPullingDown() {
-      if (this.triggerSurpriseFlag) {
-        this.triggerSurprise = true;
-        this.$refs.scroll.forceUpdate();
-        return;
-      }
-      setTimeout(() => {
-        this.$refs.scroll.forceUpdate();
-      }, 1000);
+      // if (this.triggerSurpriseFlag) {
+      //   this.triggerSurprise = true;
+      //   this.$refs.scroll.forceUpdate();
+      //   return;
+      // }\
+      this.list=[];
+      this.hasMore=true;
+      this._getPartList()
     },
     surpriseHandle() {
       this.triggerSurpriseFlag = false;
@@ -194,11 +251,16 @@ export default {
     onImgLoad() {
       this.$refs.scroll.refresh();
     },
-    showFix() {
+    showFix(poId,popId) {
+      this.rzList=true;
       this.isShow = true;
+       getPartProcessLog({poId,popId}).then(res=>{
+       this.rzList=res.list
+      })
     },
     hideFix() {
       this.isShow = false;
+     
     }
   },
   computed: {
@@ -315,7 +377,7 @@ export default {
   }
 }
 .lc {
-  height: 250px;
+  max-height: 250px;
   overflow-y: auto;
 }
 .lc > div {
@@ -325,18 +387,18 @@ export default {
   align-items: center;
 }
 .lc > div > div:first-child {
-  width: 100px;
+  width: 80px;
   display: flex;
   align-items: center;
   flex-direction: column;
   justify-content: center;
 }
 .lc > div > div:first-child > div:first-child {
-  border-right: #4e92ff 1px solid;
+  border-right: #4e92ff 2px solid;
   padding-top: 10px;
 }
 .lc > div > div:first-child > div:nth-child(2) {
-  border-right: #4e92ff 1px solid;
+  border-right: #4e92ff 2px solid;
   padding-bottom: 10px;
   position: relative;
 }
@@ -351,10 +413,10 @@ export default {
   position: absolute;
   width: 14px;
   height: 14px;
-  background: #000;
+  background: #4e92ff;
   border-radius: 50%;
   top: -7px;
-  right: -7px;
+  right: -8px;
   content: "";
 }
 .lc > div > div:first-child > div {
@@ -364,14 +426,15 @@ export default {
 }
 .lc > div > div:nth-child(2) {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;padding:0 15px 0 10px;
   flex: 1;
 }
 .fixed {
+  transition: transfrom 1s;
   position: fixed;
   bottom: 0;
   width: 100%;
-  height: 300px;
+  overflow-y: auto;
   z-index: 10;
   background: #fff;
   border-radius: 6px 6px 0 0;

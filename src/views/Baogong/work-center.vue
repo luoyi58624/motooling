@@ -23,12 +23,13 @@
             <div v-for="ie in item" :key="ie.id">
               <div class="top">
                 <div class="select">
-                  <img src="../xuanze.png" alt>
-                  <div v-show="false">
-                    <div>点检</div>
-                    <div>点检</div>
-                    <div>点检</div>
-                    <div>点检</div>
+                  <img src="../xuanze.png" @click="handleSelectShebei(ie.oldIdx)" alt>
+                  
+                  <span  v-show="ie.showOption" style="font-size:20px;color:#fff9ad;position:absolute;top:9px;left:-2px;" class="iconfont icon-xiangshang-"></span>
+                  <div v-show="ie.showOption">
+                     <div @click="wangong(2,ie.batchProcId,ie.flag)">完成</div>
+                    <div @click="jiaojie(1,ie.batchProcId,ie.flag)">交接</div>
+                    <div>预报</div>
                   </div>
                 </div>
                 <div>头像</div>
@@ -60,17 +61,25 @@
             v-for="item in slide"
             :key="item.poId"
             style="position:relative;"
-            @touchstart="tS"
-            @touchmove="tM"
-            @touchend="tE"
+            @click="handleSelectWait(item.oldIdx)"
+           
           >
-            <div class>图片</div>
+            <div class="alert-box"  v-show="item.showOption">
+              <div @click="toTop(item.popId)">置顶</div>
+              <div @click="addWork(item.deviceId,1,item.memberId,item.setStatus,item.partQty,item.popId,item.pgId,item.batchProcId)">加工</div>
+            </div>
+            <div class>
+              <img :src="item.imgUrl" alt="">
+            </div>
             <div class="text">
               <span>{{item.matNo}}</span>
               <p>{{item.matName}}</p>
             </div>
           </div>
-          <div style="display:flex;align-items:center;justify-content:center;background:#fff" @click="getPart(1)">
+          <div
+            style="display:flex;align-items:center;justify-content:center;background:#fff"
+            @click="getPart(1)"
+          >
             <span style="font-size:60px;" class="iconfont icon-jia"></span>
           </div>
         </swiper-slide>
@@ -82,7 +91,49 @@
       </swiper>
     </div>
     <div class="bar"></div>
-  
+    <div class="second-banner">
+      <div class="title">已完工</div>
+      <swiper
+        ref="mySwiper2"
+        :options="swiperOption2"
+        class="swiper2"
+        style="overflow-y: visible !important;"
+      >
+        <!-- slides -->
+        <swiper-slide v-for="(slide,index) in _doneList" :key="index" class="second-swipe">
+          <div
+            v-for="item in slide"
+            :key="item.poId"
+            style="position:relative;"
+            @click="handleSelectWait(item.oldIdx)"
+           
+          >
+            <div class="alert-box"  v-show="item.showOption">
+              <div @click="toTop(item.popId)">置顶</div>
+              <div @click="addWork(item.deviceId,1,item.memberId,item.setStatus,item.partQty,item.popId,item.pgId,item.batchProcId)">加工</div>
+            </div>
+            <div class>
+              <img :src="item.imgUrl" alt="">
+            </div>
+            <div class="text">
+              <span>{{item.matNo}}</span>
+              <p>{{item.matName}}</p>
+            </div>
+          </div>
+          <div
+            style="display:flex;align-items:center;justify-content:center;background:#fff"
+            @click="getPart(1)"
+          >
+            <span style="font-size:60px;" class="iconfont icon-jia"></span>
+          </div>
+        </swiper-slide>
+        <div
+          class="swiper-pagination2"
+          style="display:flex;align-items:center;justify-content:center;"
+          slot="pagination"
+        ></div>
+      </swiper>
+    </div>
   </div>
 </template>
 <script>
@@ -94,7 +145,9 @@ import {
   getSettingList,
   getDeviceAndStatus,
   getProcessTask,
-  setStartProcessTask
+  setStartProcessTask,
+  setWaitProcessTaskTop,
+  setTask
 } from "@/api/baogong/baogong";
 import scroll from "@/components/BScroll";
 import { setTimeout } from "timers";
@@ -112,15 +165,12 @@ export default {
         },
         on: {
           reachEnd: function(event) {
-            setTimeout(function() {
-              vm._getDeviceAndStatus().then(data => {
-                if (data.list.length == 12) {
-                  vm.shebeiHasmore = true;
-                  vm.shebeiPage++;
-                }
-                vm.shebeiList = [...vm.shebeiList, ...data.list];
-              });
-            }, 100);
+            if (vm._shebeiList.length > 1) {
+              vm._getDeviceAndStatus();
+            }
+          },
+          touchEnd: function(event) {
+            // console.log(event);
           }
         }
       },
@@ -150,6 +200,7 @@ export default {
   },
   created() {
     vm = this;
+    //getSettingList().then()
     const that = this;
     getPmPgList({ deviceId: "3" })
       .then(res => {
@@ -204,7 +255,7 @@ export default {
       console.log(newArr);
       return newArr;
     },
-     _doneList() {
+    _doneList() { 
       console.log(this.doneList);
       var newArr = [];
       var length = Math.ceil((this.doneList.length + 1) / 8);
@@ -223,6 +274,28 @@ export default {
   },
   mounted() {},
   methods: {
+    addWork(deviceId,flag,memberId,setStatus,partQty,popId,pgId,batchProcId){
+      console.log({deviceId,flag,memberId,setStatus,partQty,popId,pgId,batchProcId})
+
+    },
+    jiaojie(type,batchProcId,flag){
+      setTask({type,batchProcId,flag}).then(res=>{
+        console.log(res)
+      })
+    },
+    wangong(type,batchProcId,flag){
+      setTask({type,batchProcId,flag}).then(res=>{
+        console.log(res)
+      })
+    },
+    handleSelectShebei(index) {
+      console.log(1);
+      this.shebeiList[index].showOption = !this.shebeiList[index].showOption;
+    },
+    handleSelectWait(index) {
+      console.log(1);
+      this.waitList[index].showOption = !this.waitList[index].showOption;
+    },
     select(pgId) {
       const that = this;
       this.pgId = pgId;
@@ -236,18 +309,8 @@ export default {
       that.waitHasmore = true;
       that.doneHasmore = true;
       console.log(1231542222222222222222222222);
-      that._getDeviceAndStatus().then(data => {
-        if (data.list.length == 12) {
-          that.shebeiHasmore = true;
-          that.shebeiPage++;
-        }
-        that.shebeiList = [...that.shebeiList, ...data.list];
-      });
-      that._getProcessTask().then(data => {
-        console.log(1231542222222222222222222222);
-        console.log(data);
-        this.waitList = [...that.waitList, ...data.list];
-      });
+      that._getDeviceAndStatus();
+      that._getProcessTask();
       that._getProcessTaskDone().then(data => {
         console.log(1231542222222222222222222222);
         console.log(data);
@@ -302,71 +365,93 @@ export default {
     },
     _getDeviceAndStatus() {
       const that = this;
-      return new Promise((resolve, reject) => {
-        if (this.shebeiHasmore) {
-          this.shebeiHasmore = false;
-          getDeviceAndStatus({
-            pageNum: that.shebeiPage,
-            pageSize: 12,
-            pgId: that.pgId
-          }).then(res => {
-            console.error("出错了");
-            resolve(res);
-          });
-        } else {
-          console.error('出错了')
-          reject();
-        }
-      });
+      if (this.shebeiHasmore) {
+        this.shebeiHasmore = false;
+        getDeviceAndStatus({
+          pageNum: that.shebeiPage,
+          pageSize: 12,
+          pgId: that.pgId
+        }).then(res => {
+          if (res.list.length == 12) {
+            that.shebeiHasmore = true;
+            that.shebeiPage++;
+          }
+          var arr = [...that.shebeiList, ...res.list];
+          for (let i = 0; i < arr.length; i++) {
+            arr[i]["showOption"] = false;
+            arr[i]["oldIdx"] = i;
+          }
+          that.shebeiList = arr;
+        });
+      } else {
+        console.error("meiyougengduo");
+      }
     },
     _getProcessTask() {
       const that = this;
-      return new Promise((resolve, reject) => {
-        if (that.waitHasmore) {
-          that.waitHasmore = false;
-          getProcessTask({
-            pageNum: that.waitPage, //页码(注意：选填参数[默认第一页])
-            pageSize: 16, //页大小(注意：选填参数[默认10条])
-            //当前选中设备Id（可为空）(注意：选填参数[当前选中设备Id])
-            pgId: that.pgId, //当前工作中心Id (必填）(注意：必填参数[当前工作中心Id])
-            type: 1
+      if (that.waitHasmore) {
+        that.waitHasmore = false;
+        getProcessTask({
+          pageNum: that.waitPage,
+          pageSize: 16, 
+          pgId: that.pgId,
+          type: 1
+        })
+          .then(res => {
+            if (res.list.length == 16) {
+              that.waitHasmore = true;
+            }
+            var arr = [...that.waitList, ...res.list];
+            for (let i = 0; i < arr.length; i++) {
+              arr[i]["showOption"] = false;
+              arr[i]["oldIdx"] = i;
+            }
+            that.waitList = arr;
           })
-            .then(res => {
-              console.log(2222222222222222);
-              resolve(res);
-            })
-            .catch(err => {
-              //console.log(3)
-              reject(err);
-            });
-        } else {
-          reject(err);
-        }
-      });
+          .catch(err => {
+            //console.log(3)
+            reject(err);
+          });
+      } else {
+        console.error("meiyougengduo");
+      }
     },
     _getProcessTaskDone() {
-      const that = this;
-      return new Promise((resolve, reject) => {
-        if (that.doneHasmore) {
-          that.doneHasmore = false;
-          getProcessTask({
-            pageNum: that.donePage, //页码(注意：选填参数[默认第一页])
-            pageSize: 16, //页大小(注意：选填参数[默认10条])
-            //当前选中设备Id（可为空）(注意：选填参数[当前选中设备Id])
-            pgId: that.pgId, //当前工作中心Id (必填）(注意：必填参数[当前工作中心Id])
-            type: 2
+     const that = this;
+      if (that.doneHasmore) {
+        that.doneHasmore = false;
+        getProcessTask({
+          pageNum: that.donePage,
+          pageSize: 16, 
+          pgId: that.pgId,
+          type: 2
+        })
+          .then(res => {
+            if (res.list.length == 16) {
+              that.doneHasmore = true;
+            }
+            var arr = [...that.doneList, ...res.list];
+            for (let i = 0; i < arr.length; i++) {
+              arr[i]["showOption"] = false;
+              arr[i]["oldIdx"] = i;
+            }
+            that.doneList = arr;
+            console.log(arr)
           })
-            .then(res => {
-              console.log(2222222222222222);
-              resolve(res);
-            })
-            .catch(err => {
-              //console.log(3)
-              reject(err);
-            });
-        } else {
-          reject(err);
-        }
+          .catch(err => {
+            //console.log(3)
+            reject(err);
+          });
+      } else {
+        console.error("meiyougengduo");
+      }
+      
+    },
+    toTop(popId) {
+      setWaitProcessTaskTop({
+        popId
+      }).then(res => {
+        console.log(res);
       });
     }
   },
@@ -490,7 +575,7 @@ swiper-slide {
   right: -30px;
   background: rgb(84, 149, 255);
   color: #fff;
-  font-size: 12px;
+  font-size: 10px;
   height: 40px;
   width: 80px;
   text-align: center;
@@ -512,15 +597,15 @@ swiper-slide {
 }
 .select > div {
   position: absolute;
-  bottom: -20px;
-  height: 20px;
+  bottom: 0;transform: translateY(100%);
+  
   background: rgb(255, 249, 173);
   color: #333;
   text-align: center;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  display: block;
+  flex-wrap: wrap;
   padding: 0;
   display: flex;
   width: 100px;
@@ -528,14 +613,15 @@ swiper-slide {
   z-index: 3;
   border-radius: 4px;
   left: -14px;
-  padding: 0 4px;
+  padding: 0 4px 5px 4px;
 }
 .select > div > div {
-  border-right: 1px solid #333;
+  border-right: 1px solid #666; padding: 0 4px;margin-top:5px;
 }
-.select > div > div:last-child {
+.select > div > div:nth-child(3n) {
   border-right: none;
 }
+
 .state {
   width: 100%;
   height: 30px;
@@ -566,6 +652,27 @@ swiper-slide {
   background: #000;
   text-align: center;
   float: left;
+}
+.alert-box {
+  position: absolute;
+  top: 0;
+  width: 80%;
+  left: 10%;
+  background: #fff;
+  border-radius: 4px;
+  top: 20%;
+  > div {
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+  }
+  > div:last-child {
+    border: 0;
+  }
+  img{
+width:100%
+  }
 }
 .text > span {
   color: red;

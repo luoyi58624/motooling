@@ -29,7 +29,7 @@ export function getSettingList (params={}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/pm/worktime/getParamList',
+    url: WEBURL + '/mtH5/worktime/getParamList',
     method: 'post',
     data
   })
@@ -112,6 +112,19 @@ export function setTaskFinished (params={}) {//设置工件完工
     data
   })
 }
+export function setTask (params={}) {//设置工件交接。完工
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/worktime/setTask',
+    method: 'post',
+    data
+  })
+}
 
 export function setTaskPrediction (params={}) {//预报加工时间
   const data = {
@@ -135,7 +148,7 @@ export function setWaitProcessTaskTop (params={}) {//设置待加工任务置顶
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/pm//mtH5/pm/worktime/setWaitProcessTaskTop',
+    url: WEBURL + '/mtH5/worktime/setWaitProcessTaskTop',
     method: 'post',
     data
   })
@@ -201,8 +214,50 @@ export function getPartProcessLog (params={}) {//查询日志
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/pm/worktime/getPartProcessLog',
+    url: WEBURL + '/mtH5/worktime/getPartProcessLog',
     method: 'post',
     data
   })
 }
+
+export function setPart (params={}) {//查询日志
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/worktime/setPart',
+    method: 'post',
+    data
+  })
+}
+
+export function setPartPraise (params={}) {//点赞
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/worktime/setPartPraise',
+    method: 'post',
+    data
+  })
+}
+export function saveParamList (params={}) {//点赞
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/worktime/saveParamList',
+    method: 'post',
+    data
+  })
+}
+
