@@ -25,7 +25,7 @@
                 <div class="select">
                   <img src="../xuanze.png" @click="handleSelectShebei(ie.oldIdx)" alt>
                   
-                  <span  v-show="ie.showOption" style="font-size:20px;color:#fff9ad;position:absolute;top:9px;left:-2px;" class="iconfont icon-xiangshang-"></span>
+                  <span  v-show="ie.showOption" style="" class="iconfont icon-xiangshang-"></span>
                   <div v-show="ie.showOption">
                      <div @click="wangong(2,ie.batchProcId,ie.flag)">完成</div>
                     <div @click="jiaojie(1,ie.batchProcId,ie.flag)">交接</div>
@@ -64,12 +64,14 @@
             @click="handleSelectWait(item.oldIdx)"
            
           >
+          
             <div class="alert-box"  v-show="item.showOption">
+              
               <div @click="toTop(item.popId)">置顶</div>
               <div @click="addWork(item.deviceId,1,item.memberId,item.setStatus,item.partQty,item.popId,item.pgId,item.batchProcId)">加工</div>
             </div>
             <div class>
-              <img :src="item.imgUrl" alt="">
+              <img :src="item.imgUrl" class="gjimg" alt="">
             </div>
             <div class="text">
               <span>{{item.matNo}}</span>
@@ -94,8 +96,8 @@
     <div class="second-banner">
       <div class="title">已完工</div>
       <swiper
-        ref="mySwiper2"
-        :options="swiperOption2"
+        ref="mySwiper3"
+        :options="swiperOption3"
         class="swiper2"
         style="overflow-y: visible !important;"
       >
@@ -105,15 +107,11 @@
             v-for="item in slide"
             :key="item.poId"
             style="position:relative;"
-            @click="handleSelectWait(item.oldIdx)"
            
           >
-            <div class="alert-box"  v-show="item.showOption">
-              <div @click="toTop(item.popId)">置顶</div>
-              <div @click="addWork(item.deviceId,1,item.memberId,item.setStatus,item.partQty,item.popId,item.pgId,item.batchProcId)">加工</div>
-            </div>
+          
             <div class>
-              <img :src="item.imgUrl" alt="">
+              <img :src="item.imgUrl" alt="" class="gjimg">
             </div>
             <div class="text">
               <span>{{item.matNo}}</span>
@@ -122,13 +120,13 @@
           </div>
           <div
             style="display:flex;align-items:center;justify-content:center;background:#fff"
-            @click="getPart(1)"
+            @click="getPart(2)"
           >
-            <span style="font-size:60px;" class="iconfont icon-jia"></span>
+            <span style="font-size:60px;" class="iconfont icon-jian"></span>
           </div>
         </swiper-slide>
         <div
-          class="swiper-pagination2"
+          class="swiper-pagination3"
           style="display:flex;align-items:center;justify-content:center;"
           slot="pagination"
         ></div>
@@ -177,6 +175,31 @@ export default {
       swiperOption2: {
         pagination: {
           el: ".swiper-pagination2"
+        },
+         on: {
+          reachEnd: function(event) {
+            if (vm._waitList.length > 1) {
+              vm._getProcessTask();
+            }
+          },
+          touchEnd: function(event) {
+            // console.log(event);
+          }
+        }
+      },
+       swiperOption3: {
+        pagination: {
+          el: ".swiper-pagination3"
+        },
+         on: {
+          reachEnd: function(event) {
+            if (vm._doneList.length > 1) {
+              vm._getProcessTaskDone();
+            }
+          },
+          touchEnd: function(event) {
+            // console.log(event);
+          }
         }
       },
       title: "工作中心",
@@ -200,6 +223,7 @@ export default {
   },
   created() {
     vm = this;
+    localStorage.setItem('token','aca031d2-4449-4ad0-aee8-40af5a8670cc')
     //getSettingList().then()
     const that = this;
     getPmPgList({ deviceId: "3" })
@@ -289,12 +313,29 @@ export default {
       })
     },
     handleSelectShebei(index) {
-      console.log(1);
-      this.shebeiList[index].showOption = !this.shebeiList[index].showOption;
+      console.log(1)
+      for(let i=0;i<this.shebeiList.length;i++){
+        // this.shebeiList[index].showOption = false;
+         //this.$set( this.shebeiList[index],'showOption',false)
+         if(i==index){
+            this.shebeiList[i].showOption = !this.shebeiList[index].showOption;
+         }else{
+           this.shebeiList[i].showOption = false;
+         }
+      }
+      //this.shebeiList[index].showOption = !this.shebeiList[index].showOption;
+     // this.shebeiList[index].showOption = false;
     },
     handleSelectWait(index) {
-      console.log(1);
-      this.waitList[index].showOption = !this.waitList[index].showOption;
+       for(let i=0;i<this.waitList.length;i++){
+           if(i==index){
+            this.waitList[i].showOption = !this.waitList[index].showOption;
+         }else{
+           this.waitList[i].showOption = false;
+         }
+
+       }
+      //this.waitList[index].showOption = !this.waitList[index].showOption;
     },
     select(pgId) {
       const that = this;
@@ -311,11 +352,7 @@ export default {
       console.log(1231542222222222222222222222);
       that._getDeviceAndStatus();
       that._getProcessTask();
-      that._getProcessTaskDone().then(data => {
-        console.log(1231542222222222222222222222);
-        console.log(data);
-        this.doneList = [...that.doneList, ...data.list];
-      });
+      that._getProcessTaskDone();
     },
 
     getPart(type) {
@@ -649,7 +686,6 @@ swiper-slide {
   width: 21%;
   margin: 2%;
   height: 100px;
-  background: #000;
   text-align: center;
   float: left;
 }
@@ -660,6 +696,7 @@ swiper-slide {
   left: 10%;
   background: #fff;
   border-radius: 4px;
+  border:1px solid #eee;
   top: 20%;
   > div {
     height: 30px;
@@ -670,17 +707,29 @@ swiper-slide {
   > div:last-child {
     border: 0;
   }
-  img{
-width:100%
-  }
+
 }
+  .gjimg{
+width:100%;height:50px;border-radius:4px;
+  }
+  .text{
+    margin-top:10px;
+  }
 .text > span {
-  color: red;
-  font-size: 14px;
+  color: #ff5e56;
+  display:block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
 }
 .text > p {
   font-size: 14px;
   color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top:4px;
 }
 .title {
   font-size: 16px;
@@ -706,4 +755,16 @@ width:100%
 .repair {
   background: #fe9732;
 }
+.icon-xiangshang-{
+  font-size:20px;color:#fff9ad;position:absolute;top:9px;left:-2px;
+}
+.bg {
+    position: fixed;
+    top: 41px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 2;
+  }
 </style>

@@ -5,7 +5,7 @@
     <cube-scroll
       class="scroll"
       ref="scroll"
-      :data="list"
+      :data="[]"
       :options="options"
       @pulling-down="onPullingDown"
       @pulling-up="onPullingUp"
@@ -56,7 +56,9 @@
         </div>
         <div class="list">
           <div class="manager" v-for="item in list" :key="item.poId">
-            <div class="img-wrapper"></div>
+            <div class="img-wrapper">
+              <img :src="item.imgUrl" alt="" class="gjimg">
+            </div>
             <div class="info-wrapper">
               <div class="manage-top">
                 <p>生产单号：{{item.poNo}}</p>
@@ -69,7 +71,7 @@
               <div>工序:{{}}</div>
               <div>操作时间：{{item.predictStartTime}}</div>
               <div class="opra">
-                <div @click="like(item.prevBatchProcId,item.prevPopId)"><span class="iconfont icon-dianzan1"></span>{{item.prevPraiseCount||0}}</div>
+                <div v-if="item.prevBatchProcId" @click="like(item.prevBatchProcId,item.prevPopId)"><span class="iconfont icon-dianzan1"></span>{{item.prevPraiseCount||0}}</div>
                 <div>
                   <button v-show="type==2" @click="zhuanchu(2,item.popId,item.batchProcId)">转出</button>
                   <button  v-show="type==1" @click="jieshou(1,item.popId)">接收</button>
@@ -335,7 +337,7 @@ export default {
   align-items: center;
 }
 .img-wrapper {
-  width: 80px;
+  width: 80px;margin-right:10px;
 }
 .info-wrapper {
   font-size: 13px;
@@ -477,5 +479,8 @@ export default {
   margin-right: 20px;
   display: flex;
   align-items: center;
+}
+.gjimg{
+  width:100%;display:block;
 }
 </style>
