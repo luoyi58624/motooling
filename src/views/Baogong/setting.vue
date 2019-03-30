@@ -4,10 +4,15 @@
     <myHeader title="设置"/>
     <div style="height:40px;"></div>
     <div class="wrapper">
-      <div class="list">
-        <div>自动接收下道工序</div>
+      <div class="list" v-for="item in list" :key="item.id">
+        <div>{{item.name}}</div>
         <div>
-          <cube-switch v-model="value"></cube-switch>
+          
+          <div v-if="item.code=='p06'||item.code=='p07'" class="time"  @click="showPicker">6s</div>
+          <div v-else-if="item.code=='p11'" class="radio">
+            <cube-radio-group v-model="item.val=='0'?false:true" :options="options" style="display:flex;border-top:none;"/>
+          </div>
+          <cube-switch v-else v-model="item.val=='0'?false:true" class="switch"></cube-switch>
         </div>
       </div>
     </div>
@@ -18,15 +23,14 @@
 import { Input } from "cube-ui";
 import myHeader from "@/components/header";
 import { getSettingList,saveParamList} from "@/api/baogong/baogong";
+const column1 = [{ text: '剧毒', value: '剧毒'}, { text: '蚂蚁', value: '蚂蚁' },
+  { text: '幽鬼', value: '幽鬼' }]
 export default {
   data() {
     return {
       value: true,
-      list: {
-        status: 0,
-        code: "000000",
-        data: {
-          list: [
+      options:[1,2],
+         list: [ 
             {
               id: 1,
               code: "p01",
@@ -127,11 +131,9 @@ export default {
               sort: null
             }
           ]
-        },
       
       }
-    };
-  },
+    },
 
   components: {
     myHeader
@@ -145,13 +147,39 @@ export default {
   },
 
   methods: {
+    showPicker() {
+      if (!this.picker) {
+        this.picker = this.$createPicker({
+          title: 'Picker',
+          data: [column1],
+          onSelect: this.selectHandle,
+          onCancel: this.cancelHandle
+        })
+      }
+      this.picker.show()
+    },
+    selectHandle(selectedVal, selectedIndex, selectedText) {
+      this.$createDialog({
+        type: 'warn',
+        content: `Selected Item: <br/> - value: ${selectedVal.join(', ')} <br/> - index: ${selectedIndex.join(', ')} <br/> - text: ${selectedText.join(' ')}`,
+        icon: 'cubeic-alert'
+      }).show()
+    },
+    cancelHandle() {
+      this.$createToast({
+        type: 'correct',
+        txt: 'Picker canceled',
+        time: 1000
+      }).show()
+    }
+  },
     _saveParamList(id,code,name,val,unitremark){
       saveParamList({id,code,name,val,unitremark}).then(res=>{
         console.log(res)
       })
 
     }
-  }
+  
 };
 </script>
 <style lang='less' scoped>
@@ -166,7 +194,7 @@ export default {
 }
 .list {
   height: 50px;
-  font-size: 18px;
+  font-size: 12px;
   color: #333;
   border-bottom: 1px solid #eee;
   padding: 0 10px 0 0;
@@ -176,9 +204,16 @@ export default {
   font-weight: 200;
   > div:nth-child(2) {
     height: 20px;
-    > div {
-      height: 20px;
-    }
+    
   }
+}
+.cube-switch .cube-switch-ui{
+  height:10px !important;
+}
+.time{
+  width:50px;height:20px;border:1px solid #DCDCDC;color:#ADADAD;text-align:center;line-height:20px;border-radius:5px;
+}
+.radio{
+  display:flex;
 }
 </style>
