@@ -12,7 +12,7 @@
       </div>
     </div>
       <slide-up-down :active="isShowList" :duration="300" class="list" >
-        <div v-for="item in list" :key="item.pgId" @click="select(item.pgId)">
+        <div v-for="(item,index) in list" :key="item.pgId" @click="select(item.pgId,index)" :class="{active:index==selIdx}">
           <div>{{item.pgName}}</div>
         </div>
       </slide-up-down>
@@ -33,6 +33,12 @@ export default {
       type: String,
       default() {
         return "标题";
+      }
+    },
+    selIdx:{
+       type: Number,
+      default() {
+        return 0;
       }
     },
     list: {
@@ -62,9 +68,11 @@ export default {
         this.isShowList = !this.isShowList;
       }
     },
-    select(pgId){
+    select(pgId,index){
       this.isShowList=false;
-      this.$emit('select',pgId)
+      this.pgId=pgId;
+      
+      this.$emit('select',pgId,index)
     },
     hideList() {
       this.isShowList = false;
@@ -130,5 +138,8 @@ export default {
     background: rgba(0, 0, 0, 0.4);
     z-index: 2;
   }
+}
+.active{
+  color:#4e92ff
 }
 </style>

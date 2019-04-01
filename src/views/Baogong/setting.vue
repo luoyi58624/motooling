@@ -105,7 +105,7 @@ export default {
     showTime1() {
       if (!this.picker) {
         this.picker = this.$createPicker({
-          title: "Picker",
+          title: "允许时间",
           data: [this.time1],
           onSelect: this.selectHandleTime1
         });
@@ -113,10 +113,9 @@ export default {
       this.picker.show();
     },
      showTime2() {
-       console.log(2)
       if (!this.picker) {
         this.picker = this.$createPicker({
-          title: "Picker",
+          title: "允许误差",
           data: [this.time2],
           onSelect: this.selectHandleTime2
         });
@@ -162,11 +161,11 @@ export default {
       });
     },
     selectHandleTime1(selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal.join(", "))
+     // console.log(selectedVal.join(", "))
       saveParamList({
         list: [{ id: 6, code: "p06", val: selectedVal.join(", ") }]
       }).then(res => {
-        that.list[5].val = selectedVal.join(", ");
+        this.list[5].val = selectedVal.join(", ");
       });
     },
      selectHandleTime2(selectedVal, selectedIndex, selectedText) {

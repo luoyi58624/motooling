@@ -12,8 +12,8 @@
     >
       <div>
         <template slot="pulldown" slot-scope="props">
-          <span v-if="props.isPullingDown">正在更新...</span>
-          <span v-else>更新成功</span>
+          <span v-if="props.isPullingDown"  style="font-size:12px;">正在更新...</span>
+          <span v-else  style="font-size:12px;">更新成功</span>
           <div v-if="props.pullDownRefresh" class="cube-pulldown-wrapper">
             <div class="pulldown-content">
               <img
@@ -21,8 +21,8 @@
               >
               <span v-if="props.beforePullDown">{{pullDownTip}}</span>
               <template v-else>
-                <span v-if="props.isPullingDown">正在更新...</span>
-                <span v-else>更新成功</span>
+                <span v-if="props.isPullingDown" style="font-size:12px;">正在更新...</span>
+                <span v-else style="font-size:12px;">更新成功</span>
               </template>
             </div>
           </div>
@@ -86,7 +86,7 @@
         <div class="fixed" v-show="isShow">
           <div style="line-height:50px;text-align:center;font-size:16px;">日志</div>
           <div class="lc">
-            <div v-for="item in rzList" :key="item.handleTime">
+            <div v-for="(item,index) in rzList" :key="index">
               <div>
                 <div>{{item.handleTime.slice(5,10)}}</div>
                 <div>{{item.handleTime.slice(11,16)}}</div>
@@ -482,5 +482,8 @@ export default {
 }
 .gjimg{
   width:100%;display:block;
+}
+.cube-pulldown-loaded>span{
+  font-size:12px !important;
 }
 </style>

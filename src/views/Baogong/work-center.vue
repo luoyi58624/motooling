@@ -1,139 +1,142 @@
 <template>
   <div class>
-    <myHeader :list="list" @select="select" title="工作中心" :hasRight="true"/>
-    <div class="clearFix"></div>
-    <div class="bar"></div>
-    <div class="title">设备</div>
-    <div class="first-banner">
-      <div class="point">
-        <div>
-          <span style="background:rgb(95,216,89)"></span> 正在加工
+    <myHeader :list="list" @select="select" title="工作中心" :hasRight="true" :selIdx="selIdx"/>
+    <cube-scroll style="position:fixed;top:41px;left:0;right:0;bottom:0">
+      <div class="bar"></div>
+      <div class="title">设备</div>
+      <div class="first-banner">
+        <div class="point">
+          <div>
+            <span style="background:rgb(95,216,89)"></span> 正在加工
+          </div>
+          <div>
+            <span style="background:rgb(254,59,50)"></span> 空闲
+          </div>
+          <div>
+            <span style="background:rgb(254,151,50)"></span> 维修/保养
+          </div>
         </div>
-        <div>
-          <span style="background:rgb(254,59,50)"></span> 空闲
-        </div>
-        <div>
-          <span style="background:rgb(254,151,50)"></span> 维修/保养
-        </div>
-      </div>
-      <swiper :options="swiperOption" ref="mySwiper" class="swiper1">
-        <!-- slides -->
-        <swiper-slide v-for="(item,index) in _shebeiList" :key="index">
-          <div class="box">
-            <div v-for="ie in item" :key="ie.id">
-              <div class="top">
-                <div class="select">
-                  <img src="../xuanze.png" @click="handleSelectShebei(ie.oldIdx)" alt>
-                  
-                  <span  v-show="ie.showOption" style="" class="iconfont icon-xiangshang-"></span>
-                  <div v-show="ie.showOption">
-                     <div @click="wangong(2,ie.batchProcId,ie.flag)">完成</div>
-                    <div @click="jiaojie(1,ie.batchProcId,ie.flag)">交接</div>
-                    <div>预报</div>
+        <swiper :options="swiperOption" ref="mySwiper" class="swiper1">
+          <!-- slides -->
+          <swiper-slide v-for="(item,index) in _shebeiList" :key="index">
+            <div class="box">
+              <div v-for="ie in item" :key="ie.id" class="shebei">
+                <div class="top">
+                  <div class="select">
+                    <img src="../xuanze.png" @click="handleSelectShebei(ie.oldIdx)" alt>
+
+                    <span v-show="ie.showOption" style class="iconfont icon-xiangshang-"></span>
+                    <div v-show="ie.showOption">
+                      <div @click="wangong(2,ie.deviceId,1)">完成</div>
+                      <div @click="jiaojie(1,ie.deviceId,1)">交接</div>
+                      <div>预报</div>
+                    </div>
                   </div>
+                  <div>头像</div>
                 </div>
-                <div>头像</div>
+                <div>{{ie.deviceNo}}</div>
+                <div
+                  class="state"
+                  :class="{free:ie.deviceStatus==0,ing:ie.deviceStatus==1,repair:ie.deviceStatus=='其他'}"
+                >{{ie.deviceName }}</div>
+                <div class="right-on">未点检</div>
               </div>
-              <div>{{ie.deviceNo}}</div>
-              <div
-                class="state"
-                :class="{free:ie.deviceStatus==0,ing:ie.deviceStatus==1,repair:ie.deviceStatus=='其他'}"
-              >{{ie.deviceName }}</div>
-              <div class="right-on">未点检</div>
             </div>
-          </div>
-        </swiper-slide>
-        <div class="swiper-pagination" slot="pagination"></div>
-      </swiper>
-    </div>
-    <div class="bar"></div>
-    <div class="second-banner">
-      <div class="title">待加工</div>
-      <swiper
-        ref="mySwiper2"
-        :options="swiperOption2"
-        class="swiper2"
-        style="overflow-y: visible !important;"
-      >
-        <!-- slides -->
-        <swiper-slide v-for="(slide,index) in _waitList" :key="index" class="second-swipe">
+          </swiper-slide>
+          <div class="swiper-pagination" slot="pagination"></div>
+        </swiper>
+      </div>
+      <div class="bar"></div>
+      <div class="second-banner">
+        <div class="title">待加工</div>
+        <swiper
+          ref="mySwiper2"
+          :options="swiperOption2"
+          class="swiper2"
+          style="overflow-y: visible !important;"
+        >
+          <!-- slides -->
+          <swiper-slide v-for="(slide,index) in _waitList" :key="index" class="second-swipe">
+            <div
+              v-for="(item,idx) in slide"
+              :key="idx"
+              style
+              @click="handleSelectWait(item.oldIdx)"
+              @touchstart.stop="tS($event,idx,index)"
+              @touchmove.stop="tM($event,idx,index)"
+              @touchend.stop="tE($event,idx,index)"
+              ref="moveBox"
+              class="moveBox"
+            >
+              <div class="alert-box" v-show="item.showOption">
+                <div @click="toTop(item.popId)">置顶</div>
+                <div
+                  @click="addWork(item.deviceId,1,item.memberId,item.setStatus,item.partQty,item.popId,item.pgId,item.batchProcId)"
+                >加工</div>
+              </div>
+              <div class>
+                <img :src="item.imgUrl" class="gjimg" alt>
+              </div>
+              <div class="text">
+                <span>{{item.matNo}}</span>
+                <p>{{item.matName}}</p>
+              </div>
+            </div>
+            <div
+              style="display:flex;align-items:center;justify-content:center;background:#fff"
+              @click="getPart(1)"
+              v-if="index==_waitList.length-1"
+            >
+              <span style="font-size:60px;" class="iconfont icon-jia"></span>
+            </div>
+          </swiper-slide>
           <div
-            v-for="item in slide"
-            :key="item.poId"
-            style="position:relative;"
-            @click="handleSelectWait(item.oldIdx)"
-           
-          >
-          
-            <div class="alert-box"  v-show="item.showOption">
-              
-              <div @click="toTop(item.popId)">置顶</div>
-              <div @click="addWork(item.deviceId,1,item.memberId,item.setStatus,item.partQty,item.popId,item.pgId,item.batchProcId)">加工</div>
+            class="swiper-pagination2"
+            style="display:flex;align-items:center;justify-content:center;"
+            slot="pagination"
+          ></div>
+        </swiper>
+      </div>
+      <div class="bar"></div>
+      <div class="second-banner">
+        <div class="title">已完工</div>
+        <swiper
+          ref="mySwiper3"
+          :options="swiperOption3"
+          class="swiper2"
+          style="overflow-y: visible !important;"
+        >
+          <!-- slides -->
+          <swiper-slide v-for="(slide,index) in _doneList" :key="index" class="second-swipe">
+            <div v-for="item in slide" :key="item.poId" style="position:relative;">
+              <div class>
+                <img :src="item.imgUrl" alt class="gjimg">
+              </div>
+              <div class="text">
+                <span>{{item.matNo}}</span>
+                <p>{{item.matName}}</p>
+              </div>
             </div>
-            <div class>
-              <img :src="item.imgUrl" class="gjimg" alt="">
+            <div
+              style="display:flex;align-items:center;justify-content:center;background:#fff"
+              @click="getPart(2)"
+              v-if="index==_doneList.length-1"
+            >
+              <span style="font-size:60px;" class="iconfont icon-jian"></span>
             </div>
-            <div class="text">
-              <span>{{item.matNo}}</span>
-              <p>{{item.matName}}</p>
-            </div>
-          </div>
+          </swiper-slide>
           <div
-            style="display:flex;align-items:center;justify-content:center;background:#fff"
-            @click="getPart(1)"
-          >
-            <span style="font-size:60px;" class="iconfont icon-jia"></span>
-          </div>
-        </swiper-slide>
-        <div
-          class="swiper-pagination2"
-          style="display:flex;align-items:center;justify-content:center;"
-          slot="pagination"
-        ></div>
-      </swiper>
-    </div>
-    <div class="bar"></div>
-    <div class="second-banner">
-      <div class="title">已完工</div>
-      <swiper
-        ref="mySwiper3"
-        :options="swiperOption3"
-        class="swiper2"
-        style="overflow-y: visible !important;"
-      >
-        <!-- slides -->
-        <swiper-slide v-for="(slide,index) in _doneList" :key="index" class="second-swipe">
-          <div
-            v-for="item in slide"
-            :key="item.poId"
-            style="position:relative;"
-           
-          >
-          
-            <div class>
-              <img :src="item.imgUrl" alt="" class="gjimg">
-            </div>
-            <div class="text">
-              <span>{{item.matNo}}</span>
-              <p>{{item.matName}}</p>
-            </div>
-          </div>
-          <div
-            style="display:flex;align-items:center;justify-content:center;background:#fff"
-            @click="getPart(2)"
-          >
-            <span style="font-size:60px;" class="iconfont icon-jian"></span>
-          </div>
-        </swiper-slide>
-        <div
-          class="swiper-pagination3"
-          style="display:flex;align-items:center;justify-content:center;"
-          slot="pagination"
-        ></div>
-      </swiper>
-    </div>
+            class="swiper-pagination3"
+            style="display:flex;align-items:center;justify-content:center;"
+            slot="pagination"
+          ></div>
+        </swiper>
+      </div>
+    </cube-scroll>
+    <cube-popup type="my-popup" ref="myPopup">操作成功</cube-popup>
   </div>
 </template>
+
 <script>
 import "swiper/dist/css/swiper.css";
 import myHeader from "@/components/header";
@@ -151,12 +154,14 @@ import scroll from "@/components/BScroll";
 import { setTimeout } from "timers";
 import { reject, async, Promise } from "q";
 import router from "../../router";
+import { Input, Scroll } from "cube-ui";
 var disX = 0;
 var disY = 0;
 var vm;
 export default {
   data() {
     return {
+      shebeiCurrentIdx: 0,
       swiperOption: {
         pagination: {
           el: ".swiper-pagination"
@@ -168,7 +173,7 @@ export default {
             }
           },
           touchEnd: function(event) {
-            // console.log(event);
+            this.shebeiCurrentIdx = this.activeIndex;
           }
         }
       },
@@ -176,22 +181,22 @@ export default {
         pagination: {
           el: ".swiper-pagination2"
         },
-         on: {
+        on: {
           reachEnd: function(event) {
             if (vm._waitList.length > 1) {
               vm._getProcessTask();
             }
           },
           touchEnd: function(event) {
-            // console.log(event);
+            console.log(event);
           }
         }
       },
-       swiperOption3: {
+      swiperOption3: {
         pagination: {
           el: ".swiper-pagination3"
         },
-         on: {
+        on: {
           reachEnd: function(event) {
             if (vm._doneList.length > 1) {
               vm._getProcessTaskDone();
@@ -207,6 +212,7 @@ export default {
       ullDownRefresh: {
         stop: 55
       },
+      selIdx: 0,
       list: [],
       source: {},
       modalID: "zhezhao",
@@ -218,12 +224,15 @@ export default {
       donePage: 1,
       shebeiHasmore: true,
       waitHasmore: true,
-      doneHasmore: true
+      doneHasmore: true,
+      shebeiArray: []
     };
   },
   created() {
     vm = this;
-    localStorage.setItem('token','aca031d2-4449-4ad0-aee8-40af5a8670cc')
+    localStorage.setItem("token", "aca031d2-4449-4ad0-aee8-40af5a8670cc");
+    localStorage.setItem("uid", "12");
+    localStorage.setItem("WEBURL", "http://www.motooling.com:8808");
     //getSettingList().then()
     const that = this;
     getPmPgList({ deviceId: "3" })
@@ -279,7 +288,7 @@ export default {
       console.log(newArr);
       return newArr;
     },
-    _doneList() { 
+    _doneList() {
       console.log(this.doneList);
       var newArr = [];
       var length = Math.ceil((this.doneList.length + 1) / 8);
@@ -298,47 +307,75 @@ export default {
   },
   mounted() {},
   methods: {
-    addWork(deviceId,flag,memberId,setStatus,partQty,popId,pgId,batchProcId){
-      console.log({deviceId,flag,memberId,setStatus,partQty,popId,pgId,batchProcId})
-
+      showPopup(refId) {
+      const component = this.$refs[refId]
+      component.show()
+      setTimeout(() => {
+        component.hide()
+      }, 1000)
     },
-    jiaojie(type,batchProcId,flag){
-      setTask({type,batchProcId,flag}).then(res=>{
-        console.log(res)
-      })
+    fixedE(element) {
+      //console.log( element.getBoundingClientRect())
     },
-    wangong(type,batchProcId,flag){
-      setTask({type,batchProcId,flag}).then(res=>{
-        console.log(res)
-      })
+    addWork(
+      deviceId,
+      flag,
+      memberId,
+      setStatus,
+      partQty,
+      popId,
+      pgId,
+      batchProcId
+    ) {
+      console.log({
+        deviceId,
+        flag,
+        memberId,
+        setStatus,
+        partQty,
+        popId,
+        pgId,
+        batchProcId
+      });
+    },
+    jiaojie(type, deviceId, flag) {
+      setTask({ type, deviceId, flag }).then(res => {
+        console.log(res);
+      });
+    },
+    wangong(type, deviceId, flag) {
+      setTask({ type, deviceId, flag }).then(res => {
+        console.log(res);
+      });
     },
     handleSelectShebei(index) {
-      console.log(1)
-      for(let i=0;i<this.shebeiList.length;i++){
+      console.log(1);
+      for (let i = 0; i < this.shebeiList.length; i++) {
         // this.shebeiList[index].showOption = false;
-         //this.$set( this.shebeiList[index],'showOption',false)
-         if(i==index){
-            this.shebeiList[i].showOption = !this.shebeiList[index].showOption;
-         }else{
-           this.shebeiList[i].showOption = false;
-         }
+        //this.$set( this.shebeiList[index],'showOption',false)
+        if (i == index) {
+          this.shebeiList[i].showOption = !this.shebeiList[index].showOption;
+        } else {
+          this.shebeiList[i].showOption = false;
+        }
       }
       //this.shebeiList[index].showOption = !this.shebeiList[index].showOption;
-     // this.shebeiList[index].showOption = false;
+      // this.shebeiList[index].showOption = false;
     },
     handleSelectWait(index) {
-       for(let i=0;i<this.waitList.length;i++){
-           if(i==index){
-            this.waitList[i].showOption = !this.waitList[index].showOption;
-         }else{
-           this.waitList[i].showOption = false;
-         }
-
-       }
+      for (let i = 0; i < this.waitList.length; i++) {
+        if (i == index) {
+          this.waitList[i].showOption = !this.waitList[index].showOption;
+        } else {
+          this.waitList[i].showOption = false;
+        }
+      }
       //this.waitList[index].showOption = !this.waitList[index].showOption;
     },
-    select(pgId) {
+    select(pgId, index) {
+      console.log(index);
       const that = this;
+      this.selIdx = index;
       this.pgId = pgId;
       that.shebeiList = [];
       that.doneList = [];
@@ -365,30 +402,200 @@ export default {
         }
       });
     },
-    tS(e) {
+    tS(e, index, idx) {
+      // console.log(e.currentTarget)
+      // console.log()
+      // if (e.target === e.currentTarget) {
+      this.shebeiArray = [];
+      var shebeiDom = document.getElementsByClassName("shebei");
+      //var myDom=shebeiDom.slice(idx*8+index-1,idx*8+index)
+
+      var myDom = Array.prototype.slice.call(
+        shebeiDom,
+        this.shebeiCurrentIdx * 6,
+        this.shebeiCurrentIdx * 6 + 6
+      );
+      console.log(shebeiDom);
+      console.log(myDom);
+      for (var i = 0; i < myDom.length; i++) {
+        this.shebeiArray.push(myDom[i].getBoundingClientRect());
+      }
+
+      console.log(this.shebeiArray);
+      //this.fixedE(a)
+      //var obj=a[0].getBoundingClientRect();
+
       this.createModal(this.modalID);
       let element = e.targetTouches[0]; // 记录初始 client 位置，用于计算移动距离
+      // console.log(element)
       this.source.client = {
         x: element.clientX,
         y: element.clientY
       };
+
+      // }
       console.log(this.source);
     },
-    tM(e) {
+    tM(e, index, idx) {
+      //console.log(obj)
+      //console.log(index);
+      // if (e.target === e.currentTarget) {
+
       let element = e.targetTouches[0];
+      // console.log(this.$refs.moveBox[index])
+      // let dom=e.currentTarget[0]
+      //let dom=this.$refs.moveBox;
 
       // 根据初始 client 位置计算移动距离
       let x = element.clientX - this.source.client.x;
       let y = element.clientY - this.source.client.y;
+      document.getElementsByClassName("moveBox")[
+        8 * idx + index
+      ].style = `transform: translate(${x}px, ${y}px);z-index:10;`;
+
+      // let a=element.clientX;
+      //  let b=element.clientY;
+      // for(let i=0;i< this.shebeiArray.length;i++){
+      //   console.log(a,this.shebeiArray[i].left,a,this.shebeiArray[i].right,b,this.shebeiArray[i].bottom,b,this.shebeiArray[i].top)
+      //   if(a> this.shebeiArray[i].left&&a<this.shebeiArray[i].right&&b<this.shebeiArray[i].bottom&&b>this.shebeiArray[i].top){
+      //      document.getElementsByClassName("moveBox")[
+      //   8 * idx + index
+      // ].style = `transform: translate(${x}px, ${y}px);z-index:10;`;
+      //   }else{
+      //       document.getElementsByClassName("moveBox")[
+      //   8 * idx + index
+      // ].style = `transform: translate(${x}px, ${y}px);z-index:10;`;
+      //   }
+
+      // }
 
       // 移动当前元素
-      element.target.style.cssText = `transform: translate(${x}px, ${y}px);z-index:10;`;
+      //console.log(this.$refs.moveBox[index])
+      // console.log(this.$refs.moveBox);
+      //console.log(fatI*8+index)
+      // document.getElementsByClassName('moveBox')[0].style="background:red;"
+
+      // }
     },
-    tE(e) {
-      e.target.style.cssText = `transform: none;`;
+    tE(e, index, idx) {
+      //if (e.target === e.currentTarget) {
+      document.getElementsByClassName("moveBox")[
+        8 * idx + index
+      ].style = `transform: none;z-index:1`;
       let modal = document.getElementById(this.modalID);
+      let element = e.changedTouches[0];
+      console.log(e);
       document.body.removeChild(modal);
-      e.target.style.cssText = `z-index:1`;
+      let a = element.clientX;
+      let b = element.clientY;
+       let x = element.clientX - this.source.client.x;
+      let y = element.clientY - this.source.client.y;
+      if(x<=5&&x>=-5&&y<=5&&y>=-5){
+        this.handleSelectWait(idx*8+index);
+        return;
+
+      }
+      for (let i = 0; i < this.shebeiArray.length; i++) {
+        console.log(
+          a,
+          this.shebeiArray[i].left,
+          a,
+          this.shebeiArray[i].right,
+          b,
+          this.shebeiArray[i].bottom,
+          b,
+          this.shebeiArray[i].top
+        );
+        if (
+          a > this.shebeiArray[i].left &&
+          a < this.shebeiArray[i].right &&
+          b < this.shebeiArray[i].bottom &&
+          b > this.shebeiArray[i].top
+        ) {
+          //      document.getElementsByClassName("moveBox")[
+          //   8 * idx + index
+          // ].style = `background:red`;
+          // return this.shebeiCurrentIdx*6+i;
+          this.$createDialog({
+            type: "confirm",
+            icon: "",
+            title: "注意",
+            content: `是否确认将此工件加入${
+              this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceName
+            }`,
+            confirmBtn: {
+              text: "确定",
+              active: true,
+              disabled: false,
+              href: "javascript:;"
+            },
+            cancelBtn: {
+              text: "取消",
+              active: false,
+              disabled: false,
+              href: "javascript:;"
+            },
+            onConfirm: () => {
+              // this.$createToast({
+              //   type: 'warn',
+              //   time: 1000,
+              //   txt: '点击确认按钮'
+              // }).show()
+              //setStartProcessTask({deviceId:this.shebeiList[ this.shebeiCurrentIdx*6+i].deviceId,flag:1,partQty:1,popId:this._waitList[idx][index].popId,pgId:this._waitList[idx][index].pgId})
+              if (this._waitList[idx][index].partQty === 1) {
+                setStartProcessTask({
+                  deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
+                    .deviceId,
+                  flag: 1,
+                  partQty: 1,
+                  popId: this._waitList[idx][index].popId,
+                  pgId: this._waitList[idx][index].pgId
+                }).then(res=>{
+                  this.showPopup('myPopup')
+                });
+              } else {
+                this.dialog = this.$createDialog({
+                  type: "prompt",
+                  title: "输入添加数量",
+                  prompt: {
+                    value: "",
+                    placeholder: `请输入1-${
+                      this._waitList[idx][index].partQty
+                    }范围内的数字`
+                  },
+                  onConfirm: (e, promptValue) => {
+                    if (
+                      typeof parseInt(promptValue) === "number" &&
+                      parseInt(promptValue) > 0 &&
+                      parseInt(promptValue) < this._waitList[idx][index].partQty*1+1
+                    ) {
+                      setStartProcessTask({
+                        deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
+                          .deviceId,
+                        flag: 1,
+                        partQty: promptValue,
+                        popId: this._waitList[idx][index].popId,
+                        pgId: this._waitList[idx][index].pgId
+                      }).then(res => {
+                        this.showPopup('myPopup')
+                        this.select()
+                      });
+                    } else {
+                      this.$createToast({
+                        type: "warn",
+                        time: 1000,
+                        txt: `输入有误，请重新操作`
+                      }).show();
+                    }
+                  }
+                }).show();
+              }
+            },
+            onCancel: () => {}
+          }).show();
+        } else {
+        }
+      }
     },
     createModal(id) {
       let modal = document.getElementById(id);
@@ -430,7 +637,7 @@ export default {
         that.waitHasmore = false;
         getProcessTask({
           pageNum: that.waitPage,
-          pageSize: 16, 
+          pageSize: 16,
           pgId: that.pgId,
           type: 1
         })
@@ -454,12 +661,12 @@ export default {
       }
     },
     _getProcessTaskDone() {
-     const that = this;
+      const that = this;
       if (that.doneHasmore) {
         that.doneHasmore = false;
         getProcessTask({
           pageNum: that.donePage,
-          pageSize: 16, 
+          pageSize: 16,
           pgId: that.pgId,
           type: 2
         })
@@ -473,7 +680,7 @@ export default {
               arr[i]["oldIdx"] = i;
             }
             that.doneList = arr;
-            console.log(arr)
+            console.log(arr);
           })
           .catch(err => {
             //console.log(3)
@@ -482,7 +689,6 @@ export default {
       } else {
         console.error("meiyougengduo");
       }
-      
     },
     toTop(popId) {
       setWaitProcessTaskTop({
@@ -491,42 +697,13 @@ export default {
         console.log(res);
       });
     }
-  },
-  directives: {
-    drag: {
-      // 指令的定义
-      bind: function(el) {
-        let odiv = el; //获取当前元素
-        //console.log(odiv)
-        odiv.onmousedown = e => {
-          //算出鼠标相对元素的位置
-          let disX = e.clientX - odiv.offsetLeft;
-          let disY = e.clientY - odiv.offsetTop;
-
-          document.onmousemove = e => {
-            //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-            let left = e.clientX - disX;
-            let top = e.clientY - disY;
-
-            //绑定元素位置到positionX和positionY上面
-            this.positionX = top;
-            this.positionY = left;
-
-            //移动当前元素
-            odiv.style.left = left + "px";
-            odiv.style.top = top + "px";
-          };
-          document.onmouseup = e => {
-            document.onmousemove = null;
-            document.onmouseup = null;
-          };
-        };
-      }
-    }
   }
 };
 </script>
 <style scope lang="less">
+body {
+  background: #fff;
+}
 .clearFix {
   height: 41px;
 }
@@ -634,8 +811,9 @@ swiper-slide {
 }
 .select > div {
   position: absolute;
-  bottom: 0;transform: translateY(100%);
-  
+  bottom: 0;
+  transform: translateY(100%);
+
   background: rgb(255, 249, 173);
   color: #333;
   text-align: center;
@@ -653,7 +831,9 @@ swiper-slide {
   padding: 0 4px 5px 4px;
 }
 .select > div > div {
-  border-right: 1px solid #666; padding: 0 4px;margin-top:5px;
+  border-right: 1px solid #666;
+  padding: 0 4px;
+  margin-top: 5px;
 }
 .select > div > div:nth-child(3n) {
   border-right: none;
@@ -682,6 +862,7 @@ swiper-slide {
   display: table;
 }
 .second-swipe > div {
+  position: relative;
   font-size: 12px;
   width: 21%;
   margin: 2%;
@@ -696,7 +877,7 @@ swiper-slide {
   left: 10%;
   background: #fff;
   border-radius: 4px;
-  border:1px solid #eee;
+  border: 1px solid #eee;
   top: 20%;
   > div {
     height: 30px;
@@ -707,17 +888,18 @@ swiper-slide {
   > div:last-child {
     border: 0;
   }
-
 }
-  .gjimg{
-width:100%;height:50px;border-radius:4px;
-  }
-  .text{
-    margin-top:10px;
-  }
+.gjimg {
+  width: 100%;
+  height: 50px;
+  border-radius: 4px;
+}
+.text {
+  margin-top: 10px;
+}
 .text > span {
   color: #ff5e56;
-  display:block;
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -729,7 +911,7 @@ width:100%;height:50px;border-radius:4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-top:4px;
+  margin-top: 4px;
 }
 .title {
   font-size: 16px;
@@ -743,8 +925,9 @@ width:100%;height:50px;border-radius:4px;
   background: rgb(248, 248, 248);
 }
 .swiper-container {
-  overflow: visible !important;
-  overflow-x: hidden !important;
+  //overflow: visible !important;
+  //overflow-x:hidden !important;
+  // overflow-x: hidden !important;
 }
 .imng {
   background: #5fd858;
@@ -755,16 +938,20 @@ width:100%;height:50px;border-radius:4px;
 .repair {
   background: #fe9732;
 }
-.icon-xiangshang-{
-  font-size:20px;color:#fff9ad;position:absolute;top:9px;left:-2px;
+.icon-xiangshang- {
+  font-size: 20px;
+  color: #fff9ad;
+  position: absolute;
+  top: 9px;
+  left: -2px;
 }
 .bg {
-    position: fixed;
-    top: 41px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 2;
-  }
+  position: fixed;
+  top: 41px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
 </style>
