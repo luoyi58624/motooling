@@ -7,6 +7,7 @@ const instance = axios.create({
   // baseURL: process.env.base_API,
   // baseURL: 'http://192.168.2.136:8808',
   // baseURL: 'http://www.motooling.com:8080',
+  //baseURL:'http://192.168.2.247:8808',
   timeout: 5000
 })
 
@@ -32,8 +33,10 @@ instance.interceptors.response.use(
       let fullPath = router.currentRoute.fullPath
       console.log(fullPath)
       router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
+    }else if(response.data.code==='000000'){
+      return (response.data.data)
     }
-    return (response.data.data)
+   
   },
   error => {
     console.warn('err: ' + error)

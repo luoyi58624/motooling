@@ -27,9 +27,9 @@
 
                     <span v-show="ie.showOption" style class="iconfont icon-xiangshang-"></span>
                     <div v-show="ie.showOption">
-                      <div @click="wangong(2,ie.deviceId,1)">完成</div>
-                      <div @click="jiaojie(1,ie.deviceId,1)">交接</div>
-                      <div>预报</div>
+                      <div @click="wangong(2,ie.deviceId,1,ie.pgId)">完成</div>
+                      <div @click="jiaojie(1,ie.deviceId,1,ie.pgId)">交接</div>
+                      <div @click="ybwg(ie.deviceId,ie.pgId)">预报</div>
                     </div>
                   </div>
                   <div>头像</div>
@@ -49,12 +49,7 @@
       <div class="bar"></div>
       <div class="second-banner">
         <div class="title">待加工</div>
-        <swiper
-          ref="mySwiper2"
-          :options="swiperOption2"
-          class="swiper2"
-          style="overflow-y: visible !important;"
-        >
+        <swiper ref="mySwiper2" :options="swiperOption2" class="swiper2">
           <!-- slides -->
           <swiper-slide v-for="(slide,index) in _waitList" :key="index" class="second-swipe">
             <div
@@ -69,10 +64,13 @@
               class="moveBox"
             >
               <div class="alert-box" v-show="item.showOption">
-                <div @click="toTop(item.popId)">置顶</div>
+                <div @touchstart.stop="toTop(item.popId)">置顶</div>
                 <div
-                  @click="addWork(item.deviceId,1,item.memberId,item.setStatus,item.partQty,item.popId,item.pgId,item.batchProcId)"
-                >加工</div>
+                  @touchstart.stop="yubao(item.popId)"
+                  @touchmove.stop="()=>{}"
+                  @touchend.stop="()=>{}"
+                >预报</div>
+                <div>详情</div>
               </div>
               <div class>
                 <img :src="item.imgUrl" class="gjimg" alt>
@@ -87,12 +85,12 @@
               @click="getPart(1)"
               v-if="index==_waitList.length-1"
             >
-              <span style="font-size:60px;" class="iconfont icon-jia"></span>
+              <span style="font-size:60px;color:#dcdcdc" class="iconfont icon-jia"></span>
             </div>
           </swiper-slide>
           <div
             class="swiper-pagination2"
-            style="display:flex;align-items:center;justify-content:center;"
+            style="display:flex;align-items:center;justify-content:center;height:30px;"
             slot="pagination"
           ></div>
         </swiper>
@@ -122,12 +120,12 @@
               @click="getPart(2)"
               v-if="index==_doneList.length-1"
             >
-              <span style="font-size:60px;" class="iconfont icon-jian"></span>
+              <span style="font-size:60px;color:#dcdcdc" class="iconfont icon-jian"></span>
             </div>
           </swiper-slide>
           <div
             class="swiper-pagination3"
-            style="display:flex;align-items:center;justify-content:center;"
+            style="display:flex;align-items:center;justify-content:center;height:30px;"
             slot="pagination"
           ></div>
         </swiper>
@@ -148,7 +146,9 @@ import {
   getProcessTask,
   setStartProcessTask,
   setWaitProcessTaskTop,
-  setTask
+  setTask,
+  setTaskPrediction,
+  setProcessTaskPrediction
 } from "@/api/baogong/baogong";
 import scroll from "@/components/BScroll";
 import { setTimeout } from "timers";
@@ -158,6 +158,11 @@ import { Input, Scroll } from "cube-ui";
 var disX = 0;
 var disY = 0;
 var vm;
+var startTime;
+var endTime;//预报用
+var popId;//预报用
+var pgId;//预报用
+var deviceId;//预报用
 export default {
   data() {
     return {
@@ -230,9 +235,10 @@ export default {
   },
   created() {
     vm = this;
-    localStorage.setItem("token", "aca031d2-4449-4ad0-aee8-40af5a8670cc");
+    localStorage.setItem("token", "63b63bd4-9262-4a08-82ca-17fb7f31f3f0");
     localStorage.setItem("uid", "12");
-    localStorage.setItem("WEBURL", "http://www.motooling.com:8808");
+    //localStorage.setItem("WEBURL", "http://www.motooling.com:8808");
+    localStorage.setItem("WEBURL", "http://192.168.2.247:8808");
     //getSettingList().then()
     const that = this;
     getPmPgList({ deviceId: "3" })
@@ -307,12 +313,110 @@ export default {
   },
   mounted() {},
   methods: {
-      showPopup(refId) {
-      const component = this.$refs[refId]
-      component.show()
+    ybwg(id,pid){
+      deviceId=id;
+      pgId=pid;
+      console.log(deviceId)
+      const dateTimePicker = this.$createDatePicker({
+        title: "选择预计完工时间",
+        min: new Date(),
+        value: new Date(),
+        columnCount: 5,
+        onSelect: this.selectE,
+        onCancel: this.cancelHandle
+      });
+       dateTimePicker.show();
+    },
+    selectE(date, selectedVal, selectedText){
+      endTime =
+        selectedVal[0] +
+        "-" +
+        selectedVal[1] +
+        "-" +
+        selectedVal[2] +
+        " " +
+        selectedVal[3] +
+        ":" +
+        selectedVal[4];
+        console.log(deviceId)
+        setProcessTaskPrediction({
+          deviceId,
+          pgId,
+          predictEndTime:endTime
+        }).then(res=>{
+          this.showToast('预报加工时间成功')
+        }).catch(err=>{
+           this.showToast("预报加工时间失败");
+        })
+
+    },
+    yubao(id) {
+      popId=id;
+      const dateTimePicker = this.$createDatePicker({
+        title: "选择预计开始时间",
+        min: new Date(),
+        value: new Date(),
+        columnCount: 5,
+        onSelect: this.selectStart,
+        onCancel: this.cancelHandle
+      });
+      dateTimePicker.show();
+    },
+    selectStart(date, selectedVal, selectedText) {
+      //console.log(selectedVal,selectedText)
+       startTime =
+        selectedVal[0] +
+        "-" +
+        selectedVal[1] +
+        "-" +
+        selectedVal[2] +
+        " " +
+        selectedVal[3] +
+        ":" +
+        selectedVal[4];
+      console.log(startTime);
+      const dateTimePicker = this.$createDatePicker({
+        title: "选择预计完工时间",
+        min: date,
+        value: new Date(),
+        columnCount: 5,
+        onSelect: this.selectEnd,
+        onCancel: this.cancelHandle
+      });
+      dateTimePicker.show();
+    },
+    selectEnd(date, selectedVal, selectedText) {
+       endTime =
+        selectedVal[0] +
+        "-" +
+        selectedVal[1] +
+        "-" +
+        selectedVal[2] +
+        " " +
+        selectedVal[3] +
+        ":" +
+        selectedVal[4];
+        setTaskPrediction({popId,predictStartTime:startTime,predictEndTime:endTime}).then(res=>{
+          console.log(res);
+          this.showToast("预报加工时间成功");
+        }).catch(err=>{
+           this.showToast("预报加工时间失败");
+        })
+      
+    },
+    showToast(val) {
+      const toast = this.$createToast({
+        type: "txt",
+        txt: val
+      });
+      toast.show();
+    },
+    showPopup(refId) {
+      const component = this.$refs[refId];
+      component.show();
       setTimeout(() => {
-        component.hide()
-      }, 1000)
+        component.hide();
+      }, 1000);
     },
     fixedE(element) {
       //console.log( element.getBoundingClientRect())
@@ -338,14 +442,18 @@ export default {
         batchProcId
       });
     },
-    jiaojie(type, deviceId, flag) {
-      setTask({ type, deviceId, flag }).then(res => {
+    jiaojie(type, deviceId, flag, pgId) {
+      setTask({ type, deviceId, flag, pgId }).then(res => {
         console.log(res);
+        this.select()
+        this.showToast('操作成功')
       });
     },
-    wangong(type, deviceId, flag) {
-      setTask({ type, deviceId, flag }).then(res => {
+    wangong(type, deviceId, flag,pgId) {
+      setTask({ type, deviceId, flag, pgId }).then(res => {
         console.log(res);
+        this.select()
+        this.showToast('操作成功')
       });
     },
     handleSelectShebei(index) {
@@ -425,7 +533,7 @@ export default {
       //this.fixedE(a)
       //var obj=a[0].getBoundingClientRect();
 
-      this.createModal(this.modalID);
+      // this.createModal(this.modalID);
       let element = e.targetTouches[0]; // 记录初始 client 位置，用于计算移动距离
       // console.log(element)
       this.source.client = {
@@ -485,15 +593,14 @@ export default {
       let modal = document.getElementById(this.modalID);
       let element = e.changedTouches[0];
       console.log(e);
-      document.body.removeChild(modal);
+      // document.body.removeChild(modal);
       let a = element.clientX;
       let b = element.clientY;
-       let x = element.clientX - this.source.client.x;
+      let x = element.clientX - this.source.client.x;
       let y = element.clientY - this.source.client.y;
-      if(x<=5&&x>=-5&&y<=5&&y>=-5){
-        this.handleSelectWait(idx*8+index);
+      if (x <= 5 && x >= -5 && y <= 5 && y >= -5) {
+        this.handleSelectWait(idx * 8 + index);
         return;
-
       }
       for (let i = 0; i < this.shebeiArray.length; i++) {
         console.log(
@@ -550,8 +657,9 @@ export default {
                   partQty: 1,
                   popId: this._waitList[idx][index].popId,
                   pgId: this._waitList[idx][index].pgId
-                }).then(res=>{
-                  this.showPopup('myPopup')
+                }).then(res => {
+                  this.showToast("操作成功");
+                  this.select();
                 });
               } else {
                 this.dialog = this.$createDialog({
@@ -567,7 +675,8 @@ export default {
                     if (
                       typeof parseInt(promptValue) === "number" &&
                       parseInt(promptValue) > 0 &&
-                      parseInt(promptValue) < this._waitList[idx][index].partQty*1+1
+                      parseInt(promptValue) <=
+                        this._waitList[idx][index].partQty * 1
                     ) {
                       setStartProcessTask({
                         deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
@@ -577,15 +686,11 @@ export default {
                         popId: this._waitList[idx][index].popId,
                         pgId: this._waitList[idx][index].pgId
                       }).then(res => {
-                        this.showPopup('myPopup')
-                        this.select()
+                        this.showToast("操作成功");
+                        this.select();
                       });
                     } else {
-                      this.$createToast({
-                        type: "warn",
-                        time: 1000,
-                        txt: `输入有误，请重新操作`
-                      }).show();
+                      this.showToast("输入有误，请重新输入");
                     }
                   }
                 }).show();
@@ -929,7 +1034,7 @@ swiper-slide {
   //overflow-x:hidden !important;
   // overflow-x: hidden !important;
 }
-.imng {
+.ing {
   background: #5fd858;
 }
 .free {

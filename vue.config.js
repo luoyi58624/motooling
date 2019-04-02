@@ -15,7 +15,7 @@ module.exports = {
     }
   },
   devServer: {
-    // proxy: 'http://localhost:4000'
+   // proxy: 'http://localhost:4000'
     proxy: {
       '/invitation': {
         target: 'http://www.motooling.com:8809/',
@@ -31,6 +31,21 @@ module.exports = {
         target: 'http://www.motooling.com:8809/'
       }
     }
+    // proxy: {
+    //   '/invitation': {
+    //     target: 'http://192.168.2.247:8808/',
+    //     ws: true,
+    //     changeOrigin: true
+    //   },
+    //   '/mtH5': {
+    //     target: 'http://192.168.2.247:8808/',
+    //     ws: true,
+    //     changeOrigin: true
+    //   },
+    //   '/img': {
+    //     target: 'http://192.168.2.247:8808/'
+    //   }
+    // }
   }
 }
 

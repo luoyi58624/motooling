@@ -103,23 +103,23 @@ export default {
       });
     },
     showTime1() {
-      if (!this.picker) {
+      
         this.picker = this.$createPicker({
           title: "允许时间",
           data: [this.time1],
           onSelect: this.selectHandleTime1
         });
-      }
+      
       this.picker.show();
     },
      showTime2() {
-      if (!this.picker) {
+      
         this.picker = this.$createPicker({
           title: "允许误差",
           data: [this.time2],
           onSelect: this.selectHandleTime2
         });
-      }
+      
       this.picker.show();
     },
     
@@ -154,7 +154,7 @@ export default {
       const that = this;
       console.log({ selectedVal, selectedIndex, selectedText });
       saveParamList({
-        list: [{ id: 9, code: "p09", val: selectedVal.join(", ") }]
+        list: [{ id: 9, code: "p09", val: selectedVal.join(", "),unit:this.list[8].unit,remark:this.list[8].remark}]
       }).then(res => {
         console.log(res);
         that.list[8].val = selectedVal.join(", ");
@@ -186,7 +186,7 @@ export default {
     saveParamList({ id, code, name, val, unitremark }).then(res => {
       console.log(res);
     });
-  }
+  },
 };
 </script>
 <style lang='less' scoped>

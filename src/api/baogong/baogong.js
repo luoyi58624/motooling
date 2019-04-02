@@ -134,7 +134,7 @@ export function setTaskPrediction (params={}) {//预报加工时间
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/pm/worktime/setTaskPrediction',
+    url: WEBURL + '/mtH5/worktime/setTaskPrediction',
     method: 'post',
     data
   })
@@ -261,3 +261,16 @@ export function saveParamList (params={}) {//点赞
   })
 }
 
+export function setProcessTaskPrediction (params={}) {
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/worktime/setProcessTaskPrediction',
+    method: 'post',
+    data
+  })
+}

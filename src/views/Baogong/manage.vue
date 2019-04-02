@@ -36,6 +36,7 @@
             <div>确定</div>
           </div>
         </div>
+        
         <div class="nav">
           <div :class="{active:type==1}" @click="changeType(1)">接收</div>
           <div :class="{active:type==2}"  @click="changeType(2)">转出</div>
@@ -65,13 +66,14 @@
                 <p @click="showFix(item.poId,item.popId)" class="rizhi">日志</p>
               </div>
               <div>物料编码:{{item.matNo}}</div>
-              <div>上工序:{{}}</div>
+              <div>上工序:{{item.matName}}</div>
               <div>操作人:{{item.prevWorkerName}}</div>
               <div>描述:{{item.prevProcDesc}}</div>
-              <div>工序:{{}}</div>
-              <div>操作时间：{{item.predictStartTime}}</div>
+              <div>工序:{{item.procSeq}}</div>
+              <div>操作时间：{{item.prevHandleTime}}</div>
               <div class="opra">
                 <div v-if="item.prevBatchProcId" @click="like(item.prevBatchProcId,item.prevPopId)"><span class="iconfont icon-dianzan1"></span>{{item.prevPraiseCount||0}}</div>
+               <div></div>
                 <div>
                   <button v-show="type==2" @click="zhuanchu(2,item.popId,item.batchProcId)">转出</button>
                   <button  v-show="type==1" @click="jieshou(1,item.popId)">接收</button>
@@ -149,6 +151,13 @@ export default {
     myHeader
   },
   methods: {
+     showToast(val) {
+      const toast = this.$createToast({
+          type: 'txt',
+        txt: val
+      })
+      toast.show()
+    },
     like(prevBatchProcId,prevPopId){
       setPartPraise({prevBatchProcId,prevPopId}).then(res=>{
         console.log(res)
@@ -157,13 +166,27 @@ export default {
     },
     jieshou(type,popId){
       setPart({type,popId}).then(res=>{
-        console.log(res)
+        console.log(res);
+         this.list=[];
+         this.done=true;
+      this.hasMore=true;
+      this._getPartList()
+        this.showToast('接收成功')
+      }).catch(err=>{
+          this.showToast('接收失败')
       })
 
     },
     zhuanchu(type,popId,batchProcId){
        setPart({type,popId,batchProcId}).then(res=>{
+          this.list=[];
+         this.done=true;
+      this.hasMore=true;
+      this._getPartList()
+          this.showToast('转出成功')
         console.log(res)
+      }).catch(err=>{
+          this.showToast('转出失败')
       })
 
     },
@@ -330,6 +353,7 @@ export default {
 }
 .rizhi {
   color: #4e92ff;
+  font-size:14px;
 }
 .manage-top {
   display: flex;
@@ -347,7 +371,7 @@ export default {
   flex: 1;
 }
 .info-wrapper > div {
-  line-height: 25px;
+  line-height: 22px;
 }
 .info-wrapper > div:first-child {
   display: flex;
@@ -461,6 +485,8 @@ export default {
   padding: 15px;
   align-items: center;
   border-bottom: 1px solid #eee;
+  position:sticky;
+  top:40px;left:0;right:0;
 }
 .option::after {
   display: table;
@@ -481,7 +507,7 @@ export default {
   align-items: center;
 }
 .gjimg{
-  width:100%;display:block;
+  width:100%;display:block;margin-top:6px;
 }
 .cube-pulldown-loaded>span{
   font-size:12px !important;
