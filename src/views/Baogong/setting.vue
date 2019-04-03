@@ -76,7 +76,7 @@ export default {
     getSettingList().then(res => {
       console.log(res.list);
       for (var i = 0; i < res.list.length; i++) {
-        if (!["p06", "p07", "p09"].includes(res.list[i].code)) {
+        if (!["p06", "p07", "p09","p11"].includes(res.list[i].code)) {
           res.list[i].val = res.list[i].val == 0 ? false : true;
         }
         this.list = res.list;

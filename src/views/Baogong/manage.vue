@@ -5,7 +5,7 @@
     <cube-scroll
       class="scroll"
       ref="scroll"
-      :data="[]"
+      :data="list"
       :options="options"
       @pulling-down="onPullingDown"
       @pulling-up="onPullingUp"
@@ -44,19 +44,19 @@
         <div class="option">
           <div>
             <div>按生产订单排序</div>
-            <div :class="{active:reverse}" @click="reverse">
-              降序
+            <div :class="{active:sort=='1'}" @click="reverse(1)">
+              升序
               <i class="iconfont">&#xe79e;</i>
             </div>
-            <div :class="{active:!reverse}" @click="reverse">
-              升序
+            <div :class="{active:sort=='2'}" @click="reverse(2)">
+              降序
               <i class="iconfont">&#xe79f;</i>
             </div>
           </div>
           <div>筛选</div>
         </div>
         <div class="list">
-          <div class="manager" v-for="item in list" :key="item.poId">
+          <div class="manager" v-for="(item,index) in list" :key="item.poId">
             <div class="img-wrapper">
               <img :src="item.imgUrl" alt="" class="gjimg">
             </div>
@@ -72,11 +72,12 @@
               <div>工序:{{item.procSeq}}</div>
               <div>操作时间：{{item.prevHandleTime}}</div>
               <div class="opra">
-                <div v-if="item.prevBatchProcId" @click="like(item.prevBatchProcId,item.prevPopId)"><span class="iconfont icon-dianzan1"></span>{{item.prevPraiseCount||0}}</div>
+                <div v-if="item.prevBatchProcId" @click="like(item.prevBatchProcId,item.prevPopId,item.prevPraiseCount,index)"><span class="iconfont icon-dianzan1"></span>{{item.prevPraiseCount||0}}</div>
                <div></div>
                 <div>
                   <button v-show="type==2" @click="zhuanchu(2,item.popId,item.batchProcId)">转出</button>
                   <button  v-show="type==1" @click="jieshou(1,item.popId)">接收</button>
+                   <button v-if="item.prevBatchProcId&&item.prevPopId" v-show="type==1" @click="fangong(3,item.popId,item.prevBatchProcId,prevPopId)">返工</button>
                 </div>
               </div>
             </div>
@@ -117,10 +118,10 @@ export default {
       hasMore:true,
       done:true,
       value: "",
-      list:"",
+      list:[],
       type:"",
       isShow: false,
-      reverse:false,//降序
+      sort:1,
       options: {
         pullDownRefresh: {
           threshold: 60,
@@ -143,7 +144,6 @@ export default {
     };
   },
   created() {
-    
     this._getPartList()
   },
 
@@ -151,6 +151,15 @@ export default {
     myHeader
   },
   methods: {
+     reverse(sort){
+       this.sort=sort;
+        this.list=[];
+      this.done=true;
+      this.hasMore=true;
+      this._getPartList()
+      //this._getPartList()
+
+     },
      showToast(val) {
       const toast = this.$createToast({
           type: 'txt',
@@ -158,9 +167,10 @@ export default {
       })
       toast.show()
     },
-    like(prevBatchProcId,prevPopId){
+    like(prevBatchProcId,prevPopId,prevPraiseCount,index){
       setPartPraise({prevBatchProcId,prevPopId}).then(res=>{
-        console.log(res)
+
+        this.list[index].prevPraiseCount=this.list[index].prevPraiseCount+1
       })
 
     },
@@ -175,6 +185,20 @@ export default {
       }).catch(err=>{
           this.showToast('接收失败')
       })
+
+    },
+    fangong(type,popId,prevBatchProcId,prevPopId){
+         setPart({type,popId,prevBatchProcId,prevPopId}).then(res=>{
+        console.log(res);
+         this.list=[];
+         this.done=true;
+      this.hasMore=true;
+      this._getPartList()
+        this.showToast('返工成功')
+      }).catch(err=>{
+          this.showToast('返工失败')
+      })
+
 
     },
     zhuanchu(type,popId,batchProcId){
@@ -201,11 +225,12 @@ export default {
       const that=this
       const type =this.type||this.$route.query.type;
       this.type=type
-      console.log(type)
+      //console.log(type)
       const pgId = this.$route.query.pgId;
       if(that.done&&that.hasMore){
         that.done=false
         getPartList({
+          sort:that.sort,
           pageNum:that.pageNum,
           pageSize:that.pageSize,
           type,
@@ -487,6 +512,9 @@ export default {
   border-bottom: 1px solid #eee;
   position:sticky;
   top:40px;left:0;right:0;
+  .active{
+    color: #4e92ff;
+  }
 }
 .option::after {
   display: table;

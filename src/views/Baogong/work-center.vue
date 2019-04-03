@@ -1,7 +1,7 @@
 <template>
   <div class>
-    <myHeader :list="list" @select="select" title="工作中心" :hasRight="true" :selIdx="selIdx"/>
-    <cube-scroll style="position:fixed;top:41px;left:0;right:0;bottom:0">
+    <myHeader :list="list" @select="select" title="工作中心" :hasRight="true" :selIdx="selIdx" @workshop="workshop"/>
+    <cube-scroll :data="allArr" style="position:fixed;top:41px;left:0;right:0;bottom:0">
       <div class="bar"></div>
       <div class="title">设备</div>
       <div class="first-banner">
@@ -106,7 +106,7 @@
         >
           <!-- slides -->
           <swiper-slide v-for="(slide,index) in _doneList" :key="index" class="second-swipe">
-            <div v-for="item in slide" :key="item.poId" style="position:relative;">
+            <div v-for="(item,idx) in slide" :key="idx" style="position:relative;">
               <div class>
                 <img :src="item.imgUrl" alt class="gjimg">
               </div>
@@ -245,6 +245,7 @@ export default {
       .then(res => {
         that.list = res.list;
         that.pgId = res.list[0].pgId;
+        console.log(this.pgId)
         that.select();
       })
       .catch(err => {
@@ -258,6 +259,9 @@ export default {
     scroll
   },
   computed: {
+    allArr(){
+      return [...this.waitList,...this.shebeiList,...this.doneList]
+    },
     swiper() {
       return this.$refs.mySwiper.swiper;
     },
@@ -313,6 +317,24 @@ export default {
   },
   mounted() {},
   methods: {
+    workshop(list){
+       this.picker = this.$createPicker({
+          title: '选择要查看的车间',
+          data: [list],
+          onSelect: this.selectWork
+        })
+         this.picker.show()
+    },
+    selectWork(selectedVal, selectedIndex, selectedText){
+      console.log(selectedVal.join(', '))
+       this.$router.push({
+        path: "/baogong/work-shop",
+        query: {
+          id:selectedVal.join(', '),
+          name:selectedText.join(', ')
+        }
+      });
+    },
     ybwg(id,pid){
       deviceId=id;
       pgId=pid;
@@ -480,11 +502,17 @@ export default {
       }
       //this.waitList[index].showOption = !this.waitList[index].showOption;
     },
-    select(pgId, index) {
+    select(pgId,index) {
       console.log(index);
       const that = this;
-      this.selIdx = index;
-      this.pgId = pgId;
+      if(typeof(pgId)=='undefined'){
+      }else{
+        this.pgId = pgId
+      }
+      if(typeof(index)=='undefined'){
+      }else{
+        this.selIdx = index
+      }
       that.shebeiList = [];
       that.doneList = [];
       that.waitList = [];

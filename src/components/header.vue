@@ -12,7 +12,7 @@
       </div>
     </div>
       <slide-up-down :active="isShowList" :duration="300" class="list" >
-        <div v-for="(item,index) in list" :key="item.pgId" @click="select(item.pgId,index)" :class="{active:index==selIdx}">
+        <div v-for="(item,index) in list" :key="item.pgId" @click="select(item.pgId,index,item.workShopList)" :class="{active:index==selIdx}">
           <div>{{item.pgName}}</div>
         </div>
       </slide-up-down>
@@ -68,11 +68,20 @@ export default {
         this.isShowList = !this.isShowList;
       }
     },
-    select(pgId,index){
+    select(pgId,index,workShopList){
       this.isShowList=false;
       this.pgId=pgId;
+      if(this.pgId==0){
+        var newArray=[];
+        for(let i=0;i<workShopList.length;i++){
+          newArray.push({value:workShopList[i].id,text:workShopList[i].workshopName})
+        }
+        this.$emit('workshop',newArray)
+      }else{
+        this.$emit('select',pgId,index)
+      }
       
-      this.$emit('select',pgId,index)
+     
     },
     hideList() {
       this.isShowList = false;

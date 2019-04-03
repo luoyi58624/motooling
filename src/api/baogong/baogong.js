@@ -274,3 +274,17 @@ export function setProcessTaskPrediction (params={}) {
     data
   })
 }
+
+export function workshopList (params={}) {
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/worktime/workshopList',
+    method: 'post',
+    data
+  })
+}
