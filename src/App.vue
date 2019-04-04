@@ -5,7 +5,8 @@
 </template>
 
 <style>
-@import url("../static/iconfont/iconfont.css");
+/**@import url("../static/iconfont/iconfont.css");**/
+@import url("http:////at.alicdn.com/t/font_1109928_4myskl3b2ha.css");
 html,
 body {
   height: 100%;
@@ -55,4 +56,5 @@ body {
   width:10px !important;height:10px !important;
 
 }
+
 </style>

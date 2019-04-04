@@ -104,6 +104,21 @@ export default new Router({
     path: '/baogong/work-shop',
     name: 'work-shop',
     component: () => import('./views/Baogong/work-shop.vue')
+  },
+  {
+    path: '/instore/list',
+    name: 'instore-list',
+    component: () => import('./views/instore/list')
+  },
+  {
+    path: '/instore/info',
+    name: 'instore-info',
+    component: () => import('./views/instore/info')
+  },
+  {
+    path: '/instore/setting',
+    name: 'instore-setting',
+    component: () => import('./views/instore/setting')
   }
 
   ]

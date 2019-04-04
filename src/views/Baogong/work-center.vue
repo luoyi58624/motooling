@@ -332,7 +332,6 @@ export default {
         this.showToast("没有可选车间");
          return;
       }
-     
       this.picker = this.$createPicker({
         title: "选择要查看的车间",
         data: [list],
@@ -918,9 +917,6 @@ swiper-slide {
 .swiper1 {
   padding-bottom: 30px;
 }
-
-.box {
-}
 .box::after {
   clear: both;
   content: "";
@@ -1006,7 +1002,6 @@ swiper-slide {
 }
 .select > div > div {
   border-right: 1px solid #666;
-  //padding: 0 4px;
   margin-top: 5px;
   width:30%;
 }
@@ -1099,11 +1094,7 @@ swiper-slide {
   height: 10px;
   background: rgb(248, 248, 248);
 }
-.swiper-container {
-  //overflow: visible !important;
-  //overflow-x:hidden !important;
-  // overflow-x: hidden !important;
-}
+
 .ing {
   background: #5fd858;
 }

@@ -4,7 +4,7 @@
     <myHeader title="设置"/>
     <div style="height:40px;"></div>
     <div class="wrapper">
-      <div class="list" v-for="(item,index) in list" :key="item.id">
+      <div class="list" v-for="(item) in list" :key="item.id">
         <div>{{item.name}}</div>
         <div>
           <div v-if="item.code=='p06'" class="time" @click="showTime1">{{item.val}}{{item.unit}}</div>
