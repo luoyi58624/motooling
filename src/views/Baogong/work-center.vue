@@ -1,7 +1,18 @@
 <template>
   <div class>
-    <myHeader :list="list" @select="select" title="工作中心" :hasRight="true" :selIdx="selIdx" @workshop="workshop"/>
-    <cube-scroll :data="allArr" style="position:fixed;top:41px;left:0;right:0;bottom:0">
+    <myHeader
+      :list="list"
+      @select="select"
+      title="工作中心"
+      :hasRight="true"
+      :selIdx="selIdx"
+      @workshop="workshop"
+    />
+    <cube-scroll
+      :data="allArr"
+      ref="scroll"
+      style="position:fixed;top:41px;left:0;right:0;bottom:0"
+    >
       <div class="bar"></div>
       <div class="title">设备</div>
       <div class="first-banner">
@@ -40,6 +51,7 @@
                   :class="{free:ie.deviceStatus==0,ing:ie.deviceStatus==1,repair:ie.deviceStatus=='其他'}"
                 >{{ie.deviceName }}</div>
                 <div class="right-on">未点检</div>
+                <div class="right-on" v-if="ie.deviceStatus===!0&&ie.deviceStatus===!1">维修中</div>
               </div>
             </div>
           </swiper-slide>
@@ -159,10 +171,10 @@ var disX = 0;
 var disY = 0;
 var vm;
 var startTime;
-var endTime;//预报用
-var popId;//预报用
-var pgId;//预报用
-var deviceId;//预报用
+var endTime; //预报用
+var popId; //预报用
+var pgId; //预报用
+var deviceId; //预报用
 export default {
   data() {
     return {
@@ -191,9 +203,6 @@ export default {
             if (vm._waitList.length > 1) {
               vm._getProcessTask();
             }
-          },
-          touchEnd: function(event) {
-            console.log(event);
           }
         }
       },
@@ -237,19 +246,19 @@ export default {
     vm = this;
     localStorage.setItem("token", "63b63bd4-9262-4a08-82ca-17fb7f31f3f0");
     localStorage.setItem("uid", "12");
-    //localStorage.setItem("WEBURL", "http://www.motooling.com:8808");
-    localStorage.setItem("WEBURL", "http://192.168.2.247:8808");
+    localStorage.setItem("WEBURL", "http://www.motooling.com:8808");
+    // localStorage.setItem("WEBURL", "http://192.168.2.247:8808");
     //getSettingList().then()
     const that = this;
-    getPmPgList({ deviceId: "3" })
+    getPmPgList({ deviceId: "2"})
       .then(res => {
         that.list = res.list;
         that.pgId = res.list[0].pgId;
-        console.log(this.pgId)
+        //console.log(this.pgId);
         that.select();
       })
       .catch(err => {
-        console.log(err);
+        //console.log(err);
       });
   },
   components: {
@@ -259,8 +268,9 @@ export default {
     scroll
   },
   computed: {
-    allArr(){
-      return [...this.waitList,...this.shebeiList,...this.doneList]
+    allArr() {
+     // console.log([...this.waitList, ...this.shebeiList, ...this.doneList]);
+      return [...this.waitList, ...this.shebeiList, ...this.doneList];
     },
     swiper() {
       return this.$refs.mySwiper.swiper;
@@ -269,12 +279,12 @@ export default {
       const that = this;
       var newArr = [];
       var length = Math.ceil((that.shebeiList.length + 1) / 6);
-      console.log(length);
+      //console.log(length);
       for (let j = 0; j < length; j++) {
         var arr = [];
         for (let i = 0; i < 6; i++) {
           if (that.shebeiList[j * 6 + i]) {
-            console.log(that.shebeiList[i]);
+            //console.log(that.shebeiList[i]);
             arr.push(that.shebeiList[j * 6 + i]);
           }
         }
@@ -283,7 +293,7 @@ export default {
       return newArr;
     },
     _waitList() {
-      console.log(this.waitList);
+      //console.log(this.waitList);
       var newArr = [];
       var length = Math.ceil((this.waitList.length + 1) / 8);
       for (let j = 0; j < length; j++) {
@@ -295,11 +305,11 @@ export default {
         }
         newArr.push(arr);
       }
-      console.log(newArr);
+      //console.log(newArr);
       return newArr;
     },
     _doneList() {
-      console.log(this.doneList);
+     // console.log(this.doneList);
       var newArr = [];
       var length = Math.ceil((this.doneList.length + 1) / 8);
       for (let j = 0; j < length; j++) {
@@ -311,34 +321,39 @@ export default {
         }
         newArr.push(arr);
       }
-      console.log(newArr);
+     // console.log(newArr);
       return newArr;
     }
   },
   mounted() {},
   methods: {
-    workshop(list){
-       this.picker = this.$createPicker({
-          title: '选择要查看的车间',
-          data: [list],
-          onSelect: this.selectWork
-        })
-         this.picker.show()
+    workshop(list) {
+      if (list.length == 0) {
+        this.showToast("没有可选车间");
+         return;
+      }
+     
+      this.picker = this.$createPicker({
+        title: "选择要查看的车间",
+        data: [list],
+        onSelect: this.selectWork
+      });
+      this.picker.show();
     },
-    selectWork(selectedVal, selectedIndex, selectedText){
-      console.log(selectedVal.join(', '))
-       this.$router.push({
+    selectWork(selectedVal, selectedIndex, selectedText) {
+      //console.log(selectedVal.join(", "));
+      this.$router.push({
         path: "/baogong/work-shop",
         query: {
-          id:selectedVal.join(', '),
-          name:selectedText.join(', ')
+          id: selectedVal.join(", "),
+          name: selectedText.join(", ")
         }
       });
     },
-    ybwg(id,pid){
-      deviceId=id;
-      pgId=pid;
-      console.log(deviceId)
+    ybwg(id, pid) {
+      deviceId = id;
+      pgId = pid;
+      //console.log(deviceId);
       const dateTimePicker = this.$createDatePicker({
         title: "选择预计完工时间",
         min: new Date(),
@@ -347,9 +362,9 @@ export default {
         onSelect: this.selectE,
         onCancel: this.cancelHandle
       });
-       dateTimePicker.show();
+      dateTimePicker.show();
     },
-    selectE(date, selectedVal, selectedText){
+    selectE(date, selectedVal, selectedText) {
       endTime =
         selectedVal[0] +
         "-" +
@@ -360,20 +375,23 @@ export default {
         selectedVal[3] +
         ":" +
         selectedVal[4];
-        console.log(deviceId)
-        setProcessTaskPrediction({
-          deviceId,
-          pgId,
-          predictEndTime:endTime
-        }).then(res=>{
-          this.showToast('预报加工时间成功')
-        }).catch(err=>{
-           this.showToast("预报加工时间失败");
+      //console.log(deviceId);
+      setProcessTaskPrediction({
+        deviceId,
+        pgId,
+        predictEndTime: endTime
+      })
+        .then(res => {
+          this.showToast("预报加工时间成功");
         })
-
+        .catch(err=>{
+       if(err.msg){
+         this.showToast(err.msg)
+       }
+      })
     },
     yubao(id) {
-      popId=id;
+      popId = id;
       const dateTimePicker = this.$createDatePicker({
         title: "选择预计开始时间",
         min: new Date(),
@@ -386,7 +404,7 @@ export default {
     },
     selectStart(date, selectedVal, selectedText) {
       //console.log(selectedVal,selectedText)
-       startTime =
+      startTime =
         selectedVal[0] +
         "-" +
         selectedVal[1] +
@@ -408,7 +426,7 @@ export default {
       dateTimePicker.show();
     },
     selectEnd(date, selectedVal, selectedText) {
-       endTime =
+      endTime =
         selectedVal[0] +
         "-" +
         selectedVal[1] +
@@ -418,13 +436,18 @@ export default {
         selectedVal[3] +
         ":" +
         selectedVal[4];
-        setTaskPrediction({popId,predictStartTime:startTime,predictEndTime:endTime}).then(res=>{
+      setTaskPrediction({
+        popId,
+        predictStartTime: startTime,
+        predictEndTime: endTime
+      })
+        .then(res => {
           console.log(res);
           this.showToast("预报加工时间成功");
-        }).catch(err=>{
-           this.showToast("预报加工时间失败");
         })
-      
+        .catch(err => {
+          this.showToast("预报加工时间失败");
+        });
     },
     showToast(val) {
       const toast = this.$createToast({
@@ -466,20 +489,28 @@ export default {
     },
     jiaojie(type, deviceId, flag, pgId) {
       setTask({ type, deviceId, flag, pgId }).then(res => {
-        console.log(res);
-        this.select()
-        this.showToast('操作成功')
-      });
+       // console.log(res);
+        this.select();
+        this.showToast("操作成功");
+      }).catch(err=>{
+       if(err.msg){
+         this.showToast(err.msg)
+       }
+      })
     },
-    wangong(type, deviceId, flag,pgId) {
+    wangong(type, deviceId, flag, pgId) {
       setTask({ type, deviceId, flag, pgId }).then(res => {
         console.log(res);
-        this.select()
-        this.showToast('操作成功')
-      });
+        this.select();
+        this.showToast("操作成功");
+      }).catch(err=>{
+       if(err.msg){
+         this.showToast(err.msg)
+       }
+      })
     },
     handleSelectShebei(index) {
-      console.log(1);
+      //console.log(1);
       for (let i = 0; i < this.shebeiList.length; i++) {
         // this.shebeiList[index].showOption = false;
         //this.$set( this.shebeiList[index],'showOption',false)
@@ -502,16 +533,15 @@ export default {
       }
       //this.waitList[index].showOption = !this.waitList[index].showOption;
     },
-    select(pgId,index) {
-      console.log(index);
+    select(pgId, index) {
       const that = this;
-      if(typeof(pgId)=='undefined'){
-      }else{
-        this.pgId = pgId
+      if (typeof pgId == "undefined") {
+      } else {
+        this.pgId = pgId;
       }
-      if(typeof(index)=='undefined'){
-      }else{
-        this.selIdx = index
+      if (typeof index == "undefined") {
+      } else {
+        this.selIdx = index;
       }
       that.shebeiList = [];
       that.doneList = [];
@@ -522,7 +552,6 @@ export default {
       that.shebeiHasmore = true;
       that.waitHasmore = true;
       that.doneHasmore = true;
-      console.log(1231542222222222222222222222);
       that._getDeviceAndStatus();
       that._getProcessTask();
       that._getProcessTaskDone();
@@ -551,13 +580,13 @@ export default {
         this.shebeiCurrentIdx * 6,
         this.shebeiCurrentIdx * 6 + 6
       );
-      console.log(shebeiDom);
-      console.log(myDom);
+      //console.log(shebeiDom);
+      //console.log(myDom);
       for (var i = 0; i < myDom.length; i++) {
         this.shebeiArray.push(myDom[i].getBoundingClientRect());
       }
 
-      console.log(this.shebeiArray);
+     // console.log(this.shebeiArray);
       //this.fixedE(a)
       //var obj=a[0].getBoundingClientRect();
 
@@ -570,7 +599,7 @@ export default {
       };
 
       // }
-      console.log(this.source);
+      //console.log(this.source);
     },
     tM(e, index, idx) {
       //console.log(obj)
@@ -581,7 +610,6 @@ export default {
       // console.log(this.$refs.moveBox[index])
       // let dom=e.currentTarget[0]
       //let dom=this.$refs.moveBox;
-
       // 根据初始 client 位置计算移动距离
       let x = element.clientX - this.source.client.x;
       let y = element.clientY - this.source.client.y;
@@ -620,7 +648,7 @@ export default {
       ].style = `transform: none;z-index:1`;
       let modal = document.getElementById(this.modalID);
       let element = e.changedTouches[0];
-      console.log(e);
+      //console.log(e);
       // document.body.removeChild(modal);
       let a = element.clientX;
       let b = element.clientY;
@@ -631,16 +659,16 @@ export default {
         return;
       }
       for (let i = 0; i < this.shebeiArray.length; i++) {
-        console.log(
-          a,
-          this.shebeiArray[i].left,
-          a,
-          this.shebeiArray[i].right,
-          b,
-          this.shebeiArray[i].bottom,
-          b,
-          this.shebeiArray[i].top
-        );
+        // console.log(
+        //   a,
+        //   this.shebeiArray[i].left,
+        //   a,
+        //   this.shebeiArray[i].right,
+        //   b,
+        //   this.shebeiArray[i].bottom,
+        //   b,
+        //   this.shebeiArray[i].top
+        // );
         if (
           a > this.shebeiArray[i].left &&
           a < this.shebeiArray[i].right &&
@@ -702,7 +730,7 @@ export default {
                   onConfirm: (e, promptValue) => {
                     if (
                       typeof parseInt(promptValue) === "number" &&
-                      parseInt(promptValue) > 0 &&
+                      parseInt(promptValue) >= 0 &&
                       parseInt(promptValue) <=
                         this._waitList[idx][index].partQty * 1
                     ) {
@@ -716,6 +744,10 @@ export default {
                       }).then(res => {
                         this.showToast("操作成功");
                         this.select();
+                      }).catch(err=>{
+                        if(err.msg){
+                          this.showToast(err.msg)
+                        }
                       });
                     } else {
                       this.showToast("输入有误，请重新输入");
@@ -761,7 +793,7 @@ export default {
           that.shebeiList = arr;
         });
       } else {
-        console.error("meiyougengduo");
+       // console.error("meiyougengduo");
       }
     },
     _getProcessTask() {
@@ -790,7 +822,7 @@ export default {
             reject(err);
           });
       } else {
-        console.error("meiyougengduo");
+        //console.error("meiyougengduo");
       }
     },
     _getProcessTaskDone() {
@@ -813,22 +845,31 @@ export default {
               arr[i]["oldIdx"] = i;
             }
             that.doneList = arr;
-            console.log(arr);
+            //console.log(arr);
           })
           .catch(err => {
             //console.log(3)
             reject(err);
           });
       } else {
-        console.error("meiyougengduo");
+        //console.error("meiyougengduo");
       }
     },
     toTop(popId) {
       setWaitProcessTaskTop({
         popId
       }).then(res => {
-        console.log(res);
+        this.select()
+        this.showToast('设置置顶成功')
+        //console.log(res);
       });
+    }
+  },
+  watch: {
+    allArr() {
+      setTimeout(() => {
+        this.$refs.scroll.refresh();
+      }, 300);
     }
   }
 };
@@ -965,8 +1006,9 @@ swiper-slide {
 }
 .select > div > div {
   border-right: 1px solid #666;
-  padding: 0 4px;
+  //padding: 0 4px;
   margin-top: 5px;
+  width:30%;
 }
 .select > div > div:nth-child(3n) {
   border-right: none;

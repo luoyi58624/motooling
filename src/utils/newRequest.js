@@ -20,14 +20,14 @@ instance.interceptors.request.use(
     return config
   }, error => {
     console.log(error)
-    Promise.reject(error)
+    return Promise.reject(error)
   }
 )
 
 instance.interceptors.response.use(
   response => {
     response.data.resultData = decrypt(response.data.resultData)
-   // console.log(response.data)
+    console.log(response)
     if (response.data.code === '444444') {
       router.replace('/login')
       let fullPath = router.currentRoute.fullPath
@@ -38,7 +38,7 @@ instance.interceptors.response.use(
       return response.data.data
     }else{
       //console.error('youdianwenti')
-      new  Promise.reject(response.data)
+     return Promise.reject(response.data)
     }
   },
   error => {

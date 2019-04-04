@@ -33,7 +33,7 @@
         <div class="input-wrapper">
           <div class>
             <cube-input v-model="value"/>
-            <div>确定</div>
+            <div  @click="()=>{this.showToast('功能暂未开发')}">确定</div>
           </div>
         </div>
         
@@ -43,7 +43,7 @@
         </div>
         <div class="option">
           <div>
-            <div>按生产订单排序</div>
+            <div style="color:#4e92ff">按生产订单排序</div>
             <div :class="{active:sort=='1'}" @click="reverse(1)">
               升序
               <i class="iconfont">&#xe79e;</i>
@@ -53,10 +53,10 @@
               <i class="iconfont">&#xe79f;</i>
             </div>
           </div>
-          <div>筛选</div>
+          <div @click="()=>{this.showToast('功能暂未开发')}">筛选</div>
         </div>
         <div class="list">
-          <div class="manager" v-for="(item,index) in list" :key="item.poId">
+          <div class="manager" v-for="(item,index) in list" :key="index">
             <div class="img-wrapper">
               <img :src="item.imgUrl" alt="" class="gjimg">
             </div>
@@ -68,16 +68,16 @@
               <div>物料编码:{{item.matNo}}</div>
               <div>上工序:{{item.matName}}</div>
               <div>操作人:{{item.prevWorkerName}}</div>
-              <div>描述:{{item.prevProcDesc}}</div>
+              <div>描述:{{item.procDesc}}</div>
               <div>工序:{{item.procSeq}}</div>
               <div>操作时间：{{item.prevHandleTime}}</div>
               <div class="opra">
-                <div v-if="item.prevBatchProcId" @click="like(item.prevBatchProcId,item.prevPopId,item.prevPraiseCount,index)"><span class="iconfont icon-dianzan1"></span>{{item.prevPraiseCount||0}}</div>
+                <div v-if="item.prevBatchProcId" @click="like(item.prevBatchProcId,item.prevPopId,item.prevPraiseCount,index)"><span class="iconfont icon-dianzan1"></span>  {{item.prevPraiseCount||0}}</div>
                <div></div>
                 <div>
                   <button v-show="type==2" @click="zhuanchu(2,item.popId,item.batchProcId)">转出</button>
                   <button  v-show="type==1" @click="jieshou(1,item.popId)">接收</button>
-                   <button v-if="item.prevBatchProcId&&item.prevPopId" v-show="type==1" @click="fangong(3,item.popId,item.prevBatchProcId,prevPopId)">返工</button>
+                   <button v-if="item.prevBatchProcId&&item.prevPopId" v-show="type==1" @click="fangong(3,item.popId,item.prevBatchProcId,item.prevPopId)">返工</button>
                 </div>
               </div>
             </div>
@@ -91,8 +91,9 @@
           <div class="lc">
             <div v-for="(item,index) in rzList" :key="index">
               <div>
-                <div>{{item.handleTime.slice(5,10)}}</div>
-                <div>{{item.handleTime.slice(11,16)}}</div>
+                
+                <div>{{item.handleTime?item.handleTime.substring(5,10):''}}</div>
+                <div>{{item.handleTime?item.handleTime.substring(11,16):''}}</div>
               </div>
               <div>
                 <div>{{item.handleDesc}}</div>
@@ -183,7 +184,9 @@ export default {
       this._getPartList()
         this.showToast('接收成功')
       }).catch(err=>{
-          this.showToast('接收失败')
+        if(err.msg){
+        this.showToast(err.msg)
+        }
       })
 
     },
@@ -196,7 +199,9 @@ export default {
       this._getPartList()
         this.showToast('返工成功')
       }).catch(err=>{
-          this.showToast('返工失败')
+        if(err.msg){
+        this.showToast(err.msg)
+        }
       })
 
 
@@ -210,7 +215,9 @@ export default {
           this.showToast('转出成功')
         console.log(res)
       }).catch(err=>{
-          this.showToast('转出失败')
+        if(err.msg){
+        this.showToast(err.msg)
+        }
       })
 
     },
@@ -245,7 +252,11 @@ export default {
            }else{
              that.hasMore=false
            }
-        })
+        }).catch(err=>{
+        if(err.msg){
+        this.showToast(err.msg)
+        }
+      })
 
       }
     },
