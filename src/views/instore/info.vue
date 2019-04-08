@@ -96,10 +96,38 @@
         </div>
       </div>
     </div>
+        <div class="title">特采信息</div>
+         <div class="wrapper second-banner">
+      <div>
+        <div>
+          特采数量
+          <input type="text" name id>
+        </div>
+        <div>
+          特采单价
+          <input type="text" name id>
+        </div>
+      </div>
+      <div>
+        <div>
+          降价比例
+          <input type="text" name id>
+          %
+        </div>
+       
+      </div>
+   
+      <div >
+        <div class="txt">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注
+          <textarea name="" id="" ></textarea>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { getPartList ,setPart,getPartProcessLog,setPartPraise} from "@/api/baogong/baogong";
 export default {
   data() {
     return {};

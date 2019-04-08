@@ -242,8 +242,7 @@ export default {
           pageSize:that.pageSize,
           type,
           pgId
-        }).then(res=>{
-          
+        }).then(res=>{         
            that.$refs.scroll.forceUpdate()
            that.list=[...that.list,...res.list]
            that.done=true;
@@ -256,7 +255,7 @@ export default {
         if(err.msg){
         this.showToast(err.msg)
         }
-      })
+      })  
 
       }
     },

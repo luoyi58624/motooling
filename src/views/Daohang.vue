@@ -15,6 +15,7 @@
     <br>
     <div><router-link to="/wxBindPhone">绑定手机</router-link></div>
     <div><router-link to="/baogong/work-center">工作中心</router-link></div>
+       <div><router-link to="/instore/list">收发货</router-link></div>
   </div>
 </template>
 

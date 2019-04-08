@@ -48,13 +48,15 @@ body {
 .cube-dialog-btn_highlight,.cube-picker-confirm{
   color:#4e92ff;
 }
+.cube-switch .cube-switch-ui{
+  height:25px;
+}
 .cube-switch .cube-switch-input:checked + .cube-switch-ui {
       border-color: #4e92ff;
     background-color: #4e92ff;
 }
 .swiper-pagination-bullet-active{
   width:10px !important;height:10px !important;
-
 }
 
 </style>
