@@ -48,3 +48,99 @@ export function setUpUpdate (params={}) {
     data
   })
 }
+export function inStoreInfo (params={}) {
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/ivStore/inStoreInfo',
+    method: 'post',
+    data
+  })
+}
+
+export function purchUpdate (params={}) {//收货信息修改
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/ivStore/purchUpdate',
+    method: 'post',
+    data
+  })
+}
+export function purchSpecial (params={}) {//特采
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/ivStore/purchSpecial',
+    method: 'post',
+    data
+  })
+}
+export function purchQuality (params={}) {//质检
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/ivStore/purchQuality',
+    method: 'post',
+    data
+  })
+}
+export function purchBatchReceived (params={}) {//采购单收货
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/ivStore/purchBatchReceived',
+    method: 'post',
+    data
+  })
+}
+
+export function getStoreHouse (params={}) {//仓库
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+ 
+  return request({
+    url: WEBURL + '/mtH5/ivStore/getStoreHouse',
+    method: 'post',
+    data
+  })
+}
+export function getStoreRoom (params={}) {//库位
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/ivStore/getStoreRoom',
+    method: 'post',
+    data
+  })
+}
+
+

@@ -1,148 +1,241 @@
 <!--  -->
 <template>
   <div>
+    <div class="z-top"></div>
+    <my-header title="采购收货"></my-header>
     <div class="title">采购信息</div>
-    <div class="wrapper first-banner">
-      <div>采购单号：</div>
-      <div>物料单号：</div>
+    <div class="containner first-banner">
+      <div>采购单号：{{info.purchNo}}</div>
+      <div>物料单号：{{info.matNo}}</div>
 
-      <div>物料名称</div>
-      <div>规格型号</div>
+      <div>物料名称:{{}}</div>
+      <div>规格型号:{{info.matModel}}</div>
       <div>
-        <div>采购数量</div>
-        <div>采购重量：</div>
+        <div>采购数量：{{info.quantity}}</div>
+        <div>采购重量：{{info.weight}}</div>
       </div>
       <div>
-        <div>采购单价：</div>
-        <div>采购金额：</div>
+        <div>采购单价：{{info.up}}</div>
+        <div>采购金额：{{info.totalPrice}}</div>
       </div>
       <div>
-        <div>发送日期：</div>
-        <div>交货金额：</div>
+        <div>发送日期：{{info.sendDate?info.sendDate.slice(0,10):''}}</div>
+        <div>交货日期：{{info.deliveryDate?info.deliveryDate.slice(0,10):''}}</div>
       </div>
-      <div>备注：</div>
+      <div>备注：{{info.remark}}</div>
     </div>
     <div class="title">收货信息</div>
-    <div class="wrapper second-banner">
+    <div class="containner second-banner">
       <div>
         <div>
           收货数量
-          <input type="text" name id>
+          <input type="number" name id v-model="info.receivedQty" :disabled="type!=='1'">
         </div>
         <div>
           收货重量
-          <input type="text" name id>
+          <input type="number" name id v-model="info.receivedWeight" :disabled="type!=='1'">
         </div>
       </div>
       <div>
         <div>
           收货单价
-          <input type="text" name id>
+          <input type="number" name id :disabled="type!=='1'">
         </div>
         <div>
           收货金额
-          <input type="text" name id>
+          <input type="number" v-model="info.a" name id :disabled="type!=='1'">
         </div>
       </div>
       <div>
         <div>
           收货仓库
-          <cube-select class="select" v-model="value" :options="options"></cube-select>
+          <cube-select
+            class="select"
+            v-model="textCk"
+            title="选择仓库"
+            :options="storeHouseList"
+            :disabled="type!=='1'||storeHouseList.length==0"
+           @change="changeCk"
+          ></cube-select>
         </div>
       </div>
       <div>
-        <div>收货库位
-             <cube-select class="select" v-model="value" :options="options"></cube-select>
+        <div>
+          收货库位
+          <cube-select
+          class="select"
+             v-model="textKw"
+            title="选择库位"
+            :options="storeRoomList"
+            :disabled="type!=='1'||storeRoomList.length==0"
+          
+          ></cube-select>
         </div>
-         
       </div>
-      <div >
-        <div class="txt">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注
-          <textarea name="" id="" ></textarea>
+      <div>
+        <div class="txt">
+          备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注
+          <textarea
+            name
+            id
+            v-model="info.receivedRemark"
+            :disabled="type!=='1'"
+          ></textarea>
         </div>
       </div>
     </div>
     <div class="title">
-        <div>质检信息</div>
-        <div>验证标准</div>
+      <div>质检信息</div>
+      <div>验证标准</div>
     </div>
-    <div class="wrapper second-banner">
+    <div class="containner second-banner">
       <div>
         <div>
           检验方式
           <div></div>
-          
         </div>
       </div>
       <div>
         <div>
           合格数量
-          <input type="text" name id>
+          <input type="text" name id v-model="info.qualifiedQty" :disabled="type!=='2'">
         </div>
         <div>
           不良数量
-          <input type="text" name id>
+          <input type="text" name id v-model="info.noQualifiedQty" :disabled="type!=='2'">
         </div>
       </div>
       <div>
         <div>
           不良原因
-          <cube-select class="select" v-model="value" :options="options"></cube-select>
+          <cube-select class="select" v-model="info.unusualReason" :disabled="type!=='2'"></cube-select>
         </div>
       </div>
-      <div >
-        <div class="txt">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注
-          <textarea name="" id="" ></textarea>
+      <div>
+        <div class="txt">
+          备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注
+          <textarea
+            name
+            id
+            v-model="info.qcRemark"
+            :disabled="type!=='2'"
+          ></textarea>
         </div>
       </div>
     </div>
-        <div class="title">特采信息</div>
-         <div class="wrapper second-banner">
+    <div class="title">特采信息</div>
+    <div class="containner second-banner">
       <div>
         <div>
           特采数量
-          <input type="text" name id>
+          <input type="text" name id v-model="info.specialQty" :disabled="type!=='3'">
         </div>
         <div>
           特采单价
-          <input type="text" name id>
+          <input type="text" name id v-model="info.specialUp" :disabled="type!=='3'">
         </div>
       </div>
       <div>
         <div>
           降价比例
-          <input type="text" name id>
+          <input type="text" name id v-model="info.reduceRatio" :disabled="type!=='3'">
           %
         </div>
-       
       </div>
-   
-      <div >
-        <div class="txt">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注
-          <textarea name="" id="" ></textarea>
+
+      <div>
+        <div class="txt">
+          备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注
+          <textarea
+            name
+            id
+            v-model="info.specialRemark"
+          ></textarea>
         </div>
       </div>
+    </div>
+    <div class="zw"></div>
+    <div class="bot">
+      <div @click="save">确定</div>
     </div>
   </div>
 </template>
 
 <script>
-import { getPartList ,setPart,getPartProcessLog,setPartPraise} from "@/api/baogong/baogong";
+import {
+  inStoreInfo,
+  purchUpdate,
+  purchSpecial,
+  purchQuality,
+  getStoreHouse,
+  getStoreRoom
+} from "@/api/instore/instore";
+import myHeader from "@/components/header";
 export default {
-  data() {
-    return {};
+  components: {
+    myHeader
   },
-
-  components: {},
-
-  computed: {},
-
-  mounted: {},
-
-  methods: {}
+  data() {
+    return {
+      info: {},
+      value: "",
+      storeHouseList:[{value:'1',text:'2'}],
+      storeRoomList:[],
+      textCk:"1",
+      textKw:'345',
+      type: "2" //用于判断哪些板块可以操作，1代表可以操作收货信息，2代表质检信息，3特采信息
+    };
+  },
+  created() {
+    this.getInfo();
+    this._getStoreHouse()
+    const type = this.$route.query.type;
+    this.type = type;
+  },
+  methods: {
+    changeCk(value, index, text) {
+      console.log('change', value, index, text,this.textCk)
+      getStoreRoom({storeHouseId:''}).then(res=>{
+        console.log(res)
+      })
+    },
+    _getStoreHouse(){
+      getStoreHouse().then(res=>{
+        console.log(res)
+        
+      })
+    },
+    getInfo() {
+      const purchSubId = this.$route.query.purchSubId;
+      console.log(purchSubId);
+      inStoreInfo({ purchSubId }).then(res => {
+        console.log(res);
+        this.info = res.inStoreInfo;
+      });
+    },
+    save() {
+      const purchSubId = this.$route.query.purchSubId;
+      if (this.type === "1") {
+        var data = Object.assign({}, { purchSubId }, this.info);
+        purchUpdate(data).then(res => {
+          console.log(res);
+          this.showToast("修改成功");
+        });
+      } else if (this.type === "2") {
+        var data = Object.assign({}, { purchSubId }, this.info);
+        purchSpecial(data).then(res => {});
+      } else if (this.type == "3") {
+        var data = Object.assign({}, { purchSubId }, this.info);
+        purchQuality(data).then(res => {});
+      }
+    }
+  }
 };
 </script>
 <style lang='less' scoped>
+.z-top {
+  margin-top: 41px;
+}
 .title {
   background: #f8f9fe;
   color: #505050;
@@ -150,13 +243,17 @@ export default {
   line-height: 30px;
   padding: 0 15px;
   font-size: 14px;
-  display:flex;
+  display: flex;
   justify-content: space-between;
-  >div:nth-child(2){
-      font-size:12px;color:#5495FF;
+  > div:nth-child(2) {
+    font-size: 12px;
+    color: #5495ff;
   }
-  }
-.wrapper {
+}
+.title:first-child {
+  margin-top: 41px;
+}
+.containner {
   padding: 10px 20px;
 }
 .first-banner {
@@ -184,21 +281,60 @@ export default {
         height: 30px;
         margin-left: 12px;
         border-radius: 4px;
+        text-align: center;
       }
-      >.select{
-          height:30px;padding:0; margin-left: 12px;border-radius: 4px; background: #f2f5fa;flex:1;border:0;line-height:30px;padding:0 20px;
+      > .select {
+        height: 30px;
+        padding: 0;
+        margin-left: 12px;
+        border-radius: 4px;
+        background: #f2f5fa;
+        flex: 1;
+        border: 0;
+        line-height: 30px;
+        padding: 0 20px;
       }
-      >.select::after{
-          border:0;
+      > .select::after {
+        border: 0;
       }
-      >textarea{
-            height:60px;padding:0; margin-left: 12px;border-radius: 4px; background: #f2f5fa;flex:1;border:0;line-height:20px;
+      > textarea {
+        height: 60px;
+        padding: 0;
+        margin-left: 12px;
+        border-radius: 4px;
+        background: #f2f5fa;
+        flex: 1;
+        border: 0;
+        line-height: 20px;
       }
-     
     }
-    >div.txt{
-        height: 70px;
+    > div.txt {
+      height: 70px;
     }
   }
+}
+.bot {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: #f8f9fe;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > div {
+    width: 80%;
+    height: 40px;
+    background: #5495ff;
+    color: #fff;
+    font-size: 16px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 6px;
+  }
+}
+.zw {
+  height: 50px;
 }
 </style>

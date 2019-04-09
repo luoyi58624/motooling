@@ -1,6 +1,7 @@
 <!--  -->
 <template>
   <div>
+    <my-header title="采购收货"></my-header>
     <div class="option">
       <div>
         <div style="color:#4e92ff">按生产订单排序</div>
@@ -17,10 +18,10 @@
     </div>
     <div class="no">
        <div>PO201807001（深圳聚能）</div>
-       <div>  <span class="iconfont icon-iconfontxuanzhong4"></span></div>
+       <div>  <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span></div>
     </div>
     <div class="list">
-      <div class="boxer" v-for="(item,index) in list" :key="index">
+      <div class="boxer" v-for="(item,index) in list" :key="index" @click="toInfo(item.purchSubId)">
         <div class="img-wrapper">
           <img src alt>
         </div>
@@ -38,7 +39,7 @@
           </div>
         </div>
         <div class="right-wrapper">
-          <span class="iconfont icon-iconfontxuanzhong4"></span>
+          <span class="iconfont icon-iconfontxuanzhong4" :class="{active:item.selected}"></span>
         </div>
       </div>
     </div>
@@ -60,10 +61,16 @@
 
 <script>
 import { inStoreList} from "@/api/instore/instore";
+import router from "../../router";
+import myHeader from "@/components/header";
 export default {
+   components: {
+      myHeader
+  },
   data() {
     return {
-        list:[]
+        list:[],
+        selecteAll:true
     };
   },
   created(){
@@ -75,8 +82,22 @@ export default {
   methods: {
       getList(){
            inStoreList({billNo:"MP19040001"}).then(res=>{
-               this.list=res.inStoreDetailList
+             let array=res.inStoreDetailList
+             for(let i=0;i<array.length;i++){
+               array[i].selected=true
+             }
+               this.list=array
       })
+      },
+      toInfo(purchSubId){
+      //onsole.log(purchId)
+        this.$router.push({
+        path: "/instore/info",
+        query: {
+          purchSubId,
+          type:1
+        }
+      });
       }
   }
 };
@@ -86,6 +107,7 @@ export default {
     height:51px;
 }
 .option {
+  margin-top:41px;
     background: #fff;
   font-size: 14px;
   padding: 15px;
@@ -118,9 +140,15 @@ export default {
   align-items: center;
 }
 .no{
-    height:40px;display:flex;justify-content: space-between;padding:0 15px;border-bottom:1px solid #E9E9E9;font-size:12px;color:#505050;align-items: center;
+    height:40px;display:flex;justify-content: space-between;padding:0 6px 0 15px;border-bottom:1px solid #E9E9E9;font-size:12px;color:#505050;align-items: center;
     >div:nth-child(2){
-        font-size:24px;color: #eee;
+       color: #eee;
+        >span{
+ font-size:24px;
+        }
+        >span.active{
+          color:#4e92ff;
+        }
     }
 }
 .list {

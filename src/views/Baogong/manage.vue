@@ -235,7 +235,8 @@ export default {
       //console.log(type)
       const pgId = this.$route.query.pgId;
       if(that.done&&that.hasMore){
-        that.done=false
+        that.done=false;
+        that.hasMore=false;
         getPartList({
           sort:that.sort,
           pageNum:that.pageNum,
@@ -246,8 +247,9 @@ export default {
            that.$refs.scroll.forceUpdate()
            that.list=[...that.list,...res.list]
            that.done=true;
-           if(res.list==12){
-             that.hasmore=true
+           if(res.list.length==that.pageSize){
+             that.hasMore=true;
+             that.pageNum++;
            }else{
              that.hasMore=false
            }
@@ -260,6 +262,7 @@ export default {
       }
     },
     onPullingUp() { 
+      console.log(this.hasMore)
       const that=this;
       if(that.hasMore){
         that._getPartList()
@@ -300,6 +303,7 @@ export default {
       // }\
       this.list=[];
       this.hasMore=true;
+      this.pageNum=1;
       this._getPartList()
     },
     surpriseHandle() {
