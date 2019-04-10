@@ -58,5 +58,14 @@ body {
 .swiper-pagination-bullet-active{
   width:10px !important;height:10px !important;
 }
+.cube-radio-group[data-horz="true"]::after{
+  border:0;
+}
+.border-right-1px::after{
+  border:0;
+}
+.cube-radio_selected .cube-radio-ui{
+  background: #5495ff;
+}
 
 </style>

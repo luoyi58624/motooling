@@ -119,6 +119,16 @@ export default new Router({
     path: '/instore/setting',
     name: 'instore-setting',
     component: () => import('./views/instore/setting')
+  },
+  {
+    path: '/instore/pick',
+    name: 'instore-pick',
+    component: () => import('./views/instore/pick')
+  },
+  {
+    path: '/instore/select',
+    name: 'instore-select',
+    component: () => import('./views/instore/select')
   }
 
   ]

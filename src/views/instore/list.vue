@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <my-header title="采购收货"></my-header>
+    <my-header title="采购收货"></my-header>  
     <div class="option">
       <div>
         <div style="color:#4e92ff">按生产订单排序</div>
@@ -18,7 +18,7 @@
     </div>
     <div class="no">
        <div>PO201807001（深圳聚能）</div>
-       <div>  <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span></div>
+       <div @click.stop="selectAll">  <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span></div>
     </div>
     <div class="list">
       <div class="boxer" v-for="(item,index) in list" :key="index" @click="toInfo(item.purchSubId)">
@@ -38,7 +38,7 @@
             <div>特采</div>
           </div>
         </div>
-        <div class="right-wrapper">
+        <div class="right-wrapper"  @click.stop="select(index)">
           <span class="iconfont icon-iconfontxuanzhong4" :class="{active:item.selected}"></span>
         </div>
       </div>
@@ -69,17 +69,37 @@ export default {
   },
   data() {
     return {
-        list:[],
-        selecteAll:true
+        list:[]
     };
   },
   created(){
      this.getList()
      
   },
+  computed:{
+       selecteAll(){
+      return this.list.every(item=>{
+        return item.selected===true
+      })
+
+    }
+
+  },
 
 
   methods: {
+    selectAll(){
+      if(this.selecteAll){
+        this.list=this.list.map((item,index)=>{
+          return Object.assign({},item,{selected:false})
+        })
+      }else{
+        this.list=this.list.map((item,index)=>{
+          return Object.assign({},item,{selected:true})
+        })
+      }
+
+    },
       getList(){
            inStoreList({billNo:"MP19040001"}).then(res=>{
              let array=res.inStoreDetailList
@@ -98,6 +118,11 @@ export default {
           type:1
         }
       });
+      },
+      select(index){
+        this.list=[...this.list.slice(0,index),Object.assign({},this.list[index],{selected:!this.list[index].selected}),...this.list.slice(index+1)]
+        //this.selecteAll=false;
+
       }
   }
 };
