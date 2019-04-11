@@ -98,7 +98,8 @@ export default new Router({
   {
     path: '/baogong/setting',
     name: 'setting',
-    component: () => import('./views/Baogong/setting.vue')
+    component: () => import('./views/Baogong/setting.vue'),
+ 
   },
   {
     path: '/baogong/work-shop',
@@ -118,7 +119,10 @@ export default new Router({
   {
     path: '/instore/setting',
     name: 'instore-setting',
-    component: () => import('./views/instore/setting')
+    component: () => import('./views/instore/setting'),
+    meta: {
+      keepAlive: true // 需要被缓存
+    }
   },
   {
     path: '/instore/pick',

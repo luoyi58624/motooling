@@ -50,7 +50,7 @@ export default {
             }
           } else if (resObj.data.statusCode === 2) {
             // 未绑定手机号
-            self.$router.replace('/wxBindPhone?redirectURL='+state)
+            self.$router.replace('/wxBindPhone?redirectURL=' + state)
             localStorage.setItem('WEBURL', resObj.data.weburl)
           } else if (resObj.data.statusCode === 3) {
             // 用户未审批

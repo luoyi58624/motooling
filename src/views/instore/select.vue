@@ -1,7 +1,7 @@
 <!-- 选择公司，供应商等 -->
 <template>
   <div class="_containner">
-    <div class="select-box">
+    <div class="select-box"  @click="pick">
       <div>
         <img src="../../../static/img/s1.png" alt>
         公司
@@ -33,14 +33,26 @@
 
 <script>
 export default {
-  data() {
-    return {};
+  data () {
+    return {}
   },
 
   components: {},
 
-  methods: {}
-};
+  methods: {
+    pick(){
+      console.log(1)
+      const type=this.$route.query.type
+      const name=this.$route.query.name
+      this.$router.push({
+        path: '/instore/pick',
+        query: {
+          type,name
+        }
+      })
+    }
+  }
+}
 </script>
 <style lang='less' scoped>
 ._containner {

@@ -16,43 +16,43 @@
           <div>{{item.pgName}}</div>
         </div>
       </slide-up-down>
-    
+
   </div>
 </template>
 
 <script>
 import SlideUpDown from 'vue-slide-up-down'
 export default {
-  data() {
+  data () {
     return {
-      isShowList:false
-    };
+      isShowList: false
+    }
   },
   props: {
     title: {
       type: String,
-      default() {
-        return "标题";
+      default () {
+        return '标题'
       }
     },
-    selIdx:{
-       type: Number,
-      default() {
-        return 0;
+    selIdx: {
+      type: Number,
+      default () {
+        return 0
       }
     },
     list: {
       type: Array,
-      default() {
-        return [];
+      default () {
+        return []
       }
     },
     hasRight: {
       type: Boolean,
-      default() {
-        return false;
+      default () {
+        return false
       }
-    },
+    }
   },
 
   components: {
@@ -62,35 +62,33 @@ export default {
   computed: {},
 
   methods: {
-    showList() {
-      console.log(this.list);
+    showList () {
+      console.log(this.list)
       if (this.list && this.list.length > 0) {
-        this.isShowList = !this.isShowList;
+        this.isShowList = !this.isShowList
       }
     },
-    select(pgId,index,workShopList){
-      this.isShowList=false;
-      this.pgId=pgId;
-      if(this.pgId==0){
-        var newArray=[];
-        for(let i=0;i<workShopList.length;i++){
-          newArray.push({value:workShopList[i].id,text:workShopList[i].workshopName})
+    select (pgId, index, workShopList) {
+      this.isShowList = false
+      this.pgId = pgId
+      if (this.pgId == 0) {
+        var newArray = []
+        for (let i = 0; i < workShopList.length; i++) {
+          newArray.push({ value: workShopList[i].id, text: workShopList[i].workshopName })
         }
-        this.$emit('workshop',newArray)
-      }else{
-        this.$emit('select',pgId,index)
+        this.$emit('workshop', newArray)
+      } else {
+        this.$emit('select', pgId, index)
       }
-      
-     
     },
-    hideList() {
-      this.isShowList = false;
+    hideList () {
+      this.isShowList = false
     },
-    back(){
+    back () {
       this.$router.back(-1)
     }
   }
-};
+}
 </script>
 <style lang='less' scoped>
 .header {
@@ -107,7 +105,7 @@ export default {
   border-bottom: 1px solid #eee;
   > .header-wrapper {
     z-index: 4;
-    
+
     position: relative;
     height: 40px;
     line-height:40px;

@@ -6,9 +6,9 @@ const token = localStorage.getItem('token') || ''
 const timestamp = '1547621396'
 const md5String = md5(token + timestamp + 'Motooling')
 
-//console.log(md5String)
+// console.log(md5String)
 
-export function inStoreList (params={}) {
+export function inStoreList (params = {}) {
   const data = {
     token: token,
     md5: md5String,
@@ -21,7 +21,7 @@ export function inStoreList (params={}) {
     data
   })
 }
-export function setUpInfo (params={}) {
+export function setUpInfo (params = {}) {
   const data = {
     token: token,
     md5: md5String,
@@ -35,7 +35,7 @@ export function setUpInfo (params={}) {
   })
 }
 
-export function setUpUpdate (params={}) {
+export function setUpUpdate (params = {}) {
   const data = {
     token: token,
     md5: md5String,
@@ -48,7 +48,7 @@ export function setUpUpdate (params={}) {
     data
   })
 }
-export function inStoreInfo (params={}) {
+export function inStoreInfo (params = {}) {
   const data = {
     token: token,
     md5: md5String,
@@ -62,7 +62,7 @@ export function inStoreInfo (params={}) {
   })
 }
 
-export function purchUpdate (params={}) {//收货信息修改
+export function purchUpdate (params = {}) { // 收货信息修改
   const data = {
     token: token,
     md5: md5String,
@@ -75,7 +75,7 @@ export function purchUpdate (params={}) {//收货信息修改
     data
   })
 }
-export function purchSpecial (params={}) {//特采
+export function purchSpecial (params = {}) { // 特采
   const data = {
     token: token,
     md5: md5String,
@@ -88,7 +88,7 @@ export function purchSpecial (params={}) {//特采
     data
   })
 }
-export function purchQuality (params={}) {//质检
+export function purchQuality (params = {}) { // 质检
   const data = {
     token: token,
     md5: md5String,
@@ -101,7 +101,7 @@ export function purchQuality (params={}) {//质检
     data
   })
 }
-export function purchBatchReceived (params={}) {//采购单收货
+export function purchBatchReceived (params = {}) { // 采购单收货
   const data = {
     token: token,
     md5: md5String,
@@ -115,21 +115,21 @@ export function purchBatchReceived (params={}) {//采购单收货
   })
 }
 
-export function getStoreHouse (params={}) {//仓库
+export function getStoreHouse (params = {}) { // 仓库
   const data = {
     token: token,
     md5: md5String,
     timestamp: timestamp,
     data: params
   }
- 
+
   return request({
     url: WEBURL + '/mtH5/ivStore/getStoreHouse',
     method: 'post',
     data
   })
 }
-export function getStoreRoom (params={}) {//库位
+export function getStoreRoom (params = {}) { // 库位
   const data = {
     token: token,
     md5: md5String,
@@ -142,5 +142,29 @@ export function getStoreRoom (params={}) {//库位
     data
   })
 }
-
-
+export function h5FileUpload (params = {}) { // 库位
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/file/h5FileUpload',
+    method: 'post',
+    data
+  })
+}
+export function depUserList (params = {}) { // 库位
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/department/depUserList',
+    method: 'post',
+    data
+  })
+}

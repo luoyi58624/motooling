@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <my-header title="采购收货"></my-header>  
+    <my-header title="采购收货"></my-header>
     <div class="option">
       <div>
         <div style="color:#4e92ff">按生产订单排序</div>
@@ -29,7 +29,7 @@
           <div class="title">名称:</div>
           <div>物料编码：{{item.matNo}}</div>
           <div>规格型号：{{item.matModel}}</div>
-          
+
           <div>数量：{{item.quantity}}</div>
           <div>重量：{{item.a}}</div>
           <div>检验要求:{{item.pcFlag}}</div>
@@ -53,79 +53,75 @@
             <div>检验</div>
             <div>特采</div>
         </div>
-        
+
     </div>
     <div class="zw"></div>
   </div>
 </template>
 
 <script>
-import { inStoreList} from "@/api/instore/instore";
-import router from "../../router";
-import myHeader from "@/components/header";
+import { inStoreList } from '@/api/instore/instore'
+import router from '../../router'
+import myHeader from '@/components/header'
 export default {
-   components: {
-      myHeader
+  components: {
+    myHeader
   },
-  data() {
+  data () {
     return {
-        list:[]
-    };
+      list: []
+    }
   },
-  created(){
-     this.getList()
-     
+  created () {
+    this.getList()
   },
-  computed:{
-       selecteAll(){
-      return this.list.every(item=>{
-        return item.selected===true
+  computed: {
+    selecteAll () {
+      return this.list.every(item => {
+        return item.selected === true
       })
-
     }
 
   },
 
-
   methods: {
-    selectAll(){
-      if(this.selecteAll){
-        this.list=this.list.map((item,index)=>{
-          return Object.assign({},item,{selected:false})
+    selectAll () {
+      if (this.selecteAll) {
+        this.list = this.list.map((item, index) => {
+          return Object.assign({}, item, { selected: false })
         })
-      }else{
-        this.list=this.list.map((item,index)=>{
-          return Object.assign({},item,{selected:true})
+      } else {
+        this.list = this.list.map((item, index) => {
+          return Object.assign({}, item, { selected: true })
         })
       }
-
     },
-      getList(){
-           inStoreList({billNo:"MP19040001"}).then(res=>{
-             let array=res.inStoreDetailList
-             for(let i=0;i<array.length;i++){
-               array[i].selected=true
-             }
-               this.list=array
+    getList () {
+      inStoreList({ billNo: 'MP19040001' }).then(res => {
+        let array = res.inStoreDetailList
+        for (let i = 0; i < array.length; i++) {
+          array[i].selected = true
+        }
+        this.list = array
       })
-      },
-      toInfo(purchSubId){
-      //onsole.log(purchId)
-        this.$router.push({
-        path: "/instore/info",
+    },
+    toInfo (purchSubId) {
+      // onsole.log(purchId)
+      this.$router.push({
+        path: '/instore/info',
         query: {
           purchSubId,
-          type:1
+          type: 1
         }
-      });
-      },
-      select(index){
-        this.list=[...this.list.slice(0,index),Object.assign({},this.list[index],{selected:!this.list[index].selected}),...this.list.slice(index+1)]
-        //this.selecteAll=false;
-
-      }
+      })
+    },
+    select (index) {
+      this.list = [...this.list.slice(0, index), Object.assign({}, this.list[index], { selected: !this.list[index].selected }), ...this.list.slice(index + 1)]
+      // this.selecteAll=false;
+      // this.list[index].selected=!this.list[index].selected
+    }
   }
-};
+}
 </script>
 <style lang='less' scoped>
 .zw{
@@ -254,8 +250,8 @@ export default {
         >div{
            border-left:1px solid #fff;background: #5495FF;color:#fff;
         }
-        
+
     }
-  
+
 }
 </style>

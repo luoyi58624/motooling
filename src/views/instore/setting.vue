@@ -1,5 +1,6 @@
 <!--  -->
 <template>
+<keep-alive>
   <div>
     <my-header title="设置"></my-header>
     <div class="z-top"></div>
@@ -8,7 +9,12 @@
       <div>
         <p>收货人员设置</p>
         <div class="img-wrapper">
-          <img src="png" alt>
+          <div v-for="(item,index) in founderList" :key="index">
+          <img :src="item.avatar" alt>
+          </div>
+          <div @click="addTeam">
+            +
+          </div>
         </div>
       </div>
       <div>
@@ -94,34 +100,60 @@
       </div>
     </div>
   </div>
+  </keep-alive>
 </template>
 
 <script>
 import { setUpInfo, setUpUpdate } from "@/api/instore/instore";
 import myHeader from "@/components/header";
 export default {
-   components: {
-      myHeader
+  components: {
+    myHeader
   },
   data() {
-    return {};
+    return {
+      setInfo: {},
+     
+    };
   },
   created() {
+    console.log(this.$store.state);
     this.getSetting();
+  },
+  computed:{
+    founderList(){
+      return this.$store.state.founderList
+    }
+
   },
 
   methods: {
+    addTeam(){
+      this.$router.push({
+        path: '/instore/select',
+        query: {
+          type: 'changeReciveList',
+          name: 'founderList'
+        }
+      })
+    },
     getSetting() {
       setUpInfo().then(res => {
-        console.log(res);
+        this.setInfo = res;
+        if(res.founderList){
+          this.$store.commit('changeReciveList',res.founderList)
+        }else{
+          this.$store.commit('changeReciveList',[])
+        }
+        console.log(this.$store.state)
       });
     }
   }
 };
 </script>
 <style lang='less' scoped>
-.z-top{
-  margin-top:41px;
+.z-top {
+  margin-top: 41px;
 }
 .title {
   background: #f8f9fe;
@@ -137,8 +169,8 @@ export default {
     color: #5495ff;
   }
 }
-.title:first-child{
-  margin-top:41px;
+.title:first-child {
+  margin-top: 41px;
 }
 .wrapper {
   padding: 0 30px 15px 30px;
@@ -153,14 +185,26 @@ export default {
     }
 
     > div.img-wrapper {
-      > img {
-        width: 50px;
-        height: 50px;
-        margin-left: 16px;
+      
+      > div {
+        float:left;
+         width: 50px;
+          height: 50px;
+          margin-left: 16px;
+          font-size:52px;
+        > img {
+          width: 50px;
+          height: 50px;
+        }
       }
-      > img:first-child {
-        margin-left: 0;
+      >div:first-child{
+        margin-left:0;
       }
+    }
+    > div.img-wrapper::after{
+      content:"";
+      clear:both;
+      display:table
     }
     > div.option-wrapper {
       font-size: 14px;

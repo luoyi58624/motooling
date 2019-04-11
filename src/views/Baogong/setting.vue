@@ -47,24 +47,24 @@
 </template>
 
 <script>
-import { Input } from "cube-ui";
-import myHeader from "@/components/header";
-import { getSettingList, saveParamList } from "@/api/baogong/baogong";
+import { Input } from 'cube-ui'
+import myHeader from '@/components/header'
+import { getSettingList, saveParamList } from '@/api/baogong/baogong'
 const column1 = [
-  { text: "剧毒", value: "剧毒" },
-  { text: "蚂蚁", value: "蚂蚁" },
-  { text: "幽鬼", value: "幽鬼" }
-];
+  { text: '剧毒', value: '剧毒' },
+  { text: '蚂蚁', value: '蚂蚁' },
+  { text: '幽鬼', value: '幽鬼' }
+]
 export default {
-  data() {
+  data () {
     return {
       value: true,
       options: [1, 2],
       list: [],
-      tx: [{ text: "提示对话框", value: "1" }, { text: "仅提醒", value: "2" }],
-      time1: [{ text: "1", value: "1" }, { text: "2", value: "2" }],
-       time2: [{ text: "1", value: "1" }, { text: "2", value: "2" }],
-    };
+      tx: [{ text: '提示对话框', value: '1' }, { text: '仅提醒', value: '2' }],
+      time1: [{ text: '1', value: '1' }, { text: '2', value: '2' }],
+      time2: [{ text: '1', value: '1' }, { text: '2', value: '2' }]
+    }
   },
 
   components: {
@@ -72,122 +72,120 @@ export default {
   },
 
   computed: {},
-  created() {
+  created () {
     getSettingList().then(res => {
-      console.log(res.list);
+      console.log(res.list)
       for (var i = 0; i < res.list.length; i++) {
-        if (!["p06", "p07", "p09","p11"].includes(res.list[i].code)) {
-          res.list[i].val = res.list[i].val == 0 ? false : true;
+        if (!['p06', 'p07', 'p09', 'p11'].includes(res.list[i].code)) {
+          res.list[i].val = res.list[i].val != 0
         }
-        this.list = res.list;
+        this.list = res.list
       }
-    });
+    })
   },
 
   methods: {
-    changeP(id, code, name, val) {
-      const that = this;
+    changeP (id, code, name, val) {
+      const that = this
       saveParamList({
         list: [{ id: id, code, name, val }]
       }).then(res => {
-        console.log(val);
-        that.list[10].val = val;
-      });
+        console.log(val)
+        that.list[10].val = val
+      })
     },
-    change(id, code, name, val, unit, remark) {
+    change (id, code, name, val, unit, remark) {
       saveParamList({
         list: [{ id: id, code, val: val == true ? 1 : 0 }]
       }).then(res => {
-        console.log(res);
-        //that.list[8].val = selectedVal.join(", ");
-      });
+        console.log(res)
+        // that.list[8].val = selectedVal.join(", ");
+      })
     },
-    showTime1() {
-      
-        this.picker = this.$createPicker({
-          title: "允许时间",
-          data: [this.time1],
-          onSelect: this.selectHandleTime1
-        });
-      
-      this.picker.show();
-    },
-     showTime2() {
-      
-        this.picker = this.$createPicker({
-          title: "允许误差",
-          data: [this.time2],
-          onSelect: this.selectHandleTime2
-        });
-      
-      this.picker.show();
-    },
-    
-    selectHandle(selectedVal, selectedIndex, selectedText) {
-      this.$createDialog({
-        type: "warn",
-        content: `Selected Item: <br/> - value: ${selectedVal.join(
-          ", "
-        )} <br/> - index: ${selectedIndex.join(
-          ", "
-        )} <br/> - text: ${selectedText.join(" ")}`,
-        icon: "cubeic-alert"
-      }).show();
-    },
-    cancelHandle() {
-      this.$createToast({
-        type: "correct",
-        txt: "Picker canceled",
-        time: 1000
-      }).show();
-    },
-    changeTx(id, code, name, val, unit, remark) {
-      //console.log(2)
+    showTime1 () {
       this.picker = this.$createPicker({
-        title: "选择提醒方式",
+        title: '允许时间',
+        data: [this.time1],
+        onSelect: this.selectHandleTime1
+      })
+
+      this.picker.show()
+    },
+    showTime2 () {
+      this.picker = this.$createPicker({
+        title: '允许误差',
+        data: [this.time2],
+        onSelect: this.selectHandleTime2
+      })
+
+      this.picker.show()
+    },
+
+    selectHandle (selectedVal, selectedIndex, selectedText) {
+      this.$createDialog({
+        type: 'warn',
+        content: `Selected Item: <br/> - value: ${selectedVal.join(
+          ', '
+        )} <br/> - index: ${selectedIndex.join(
+          ', '
+        )} <br/> - text: ${selectedText.join(' ')}`,
+        icon: 'cubeic-alert'
+      }).show()
+    },
+    cancelHandle () {
+      this.$createToast({
+        type: 'correct',
+        txt: 'Picker canceled',
+        time: 1000
+      }).show()
+    },
+    changeTx (id, code, name, val, unit, remark) {
+      // console.log(2)
+      this.picker = this.$createPicker({
+        title: '选择提醒方式',
         data: [this.tx],
         onSelect: this.selectTx
-      });
-      this.picker.show();
+      })
+      this.picker.show()
     },
-    selectTx(selectedVal, selectedIndex, selectedText) {
-      const that = this;
-      console.log({ selectedVal, selectedIndex, selectedText });
+    selectTx (selectedVal, selectedIndex, selectedText) {
+      const that = this
+      console.log({ selectedVal, selectedIndex, selectedText })
       saveParamList({
-        list: [{ id: 9, code: "p09", val: selectedVal.join(", "),unit:this.list[8].unit,remark:this.list[8].remark}]
+        list: [{ id: 9, code: 'p09', val: selectedVal.join(', '), unit: this.list[8].unit, remark: this.list[8].remark }]
       }).then(res => {
-        console.log(res);
-        that.list[8].val = selectedVal.join(", ");
-      });
+        console.log(res)
+        that.list[8].val = selectedVal.join(', ')
+      })
     },
-    selectHandleTime1(selectedVal, selectedIndex, selectedText) {
-     // console.log(selectedVal.join(", "))
+    selectHandleTime1 (selectedVal, selectedIndex, selectedText) {
+      // console.log(selectedVal.join(", "))
       saveParamList({
-        list: [{ id: 6, code: "p06", val: selectedVal.join(", ") }]
+        list: [{ id: 6, code: 'p06', val: selectedVal.join(', ') }]
       }).then(res => {
-        this.list[5].val = selectedVal.join(", ");
-      });
+        this.list[5].val = selectedVal.join(', ')
+      })
     },
-     selectHandleTime2(selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal.join(", "))
+    selectHandleTime2 (selectedVal, selectedIndex, selectedText) {
+      console.log(selectedVal.join(', '))
       saveParamList({
-        list: [{ id: 7, code: "p07", val: selectedVal.join(", ") }]
+        list: [{ id: 7, code: 'p07', val: selectedVal.join(', ') }]
       }).then(res => {
-        this.list[6].val = selectedVal.join(", ");
-      });
+        this.list[6].val = selectedVal.join(', ')
+      })
     }
   },
   watch: {
-    list() {
-      console.log(this.list);
+    list () {
+      console.log(this.list)
     }
   },
-  _saveParamList(id, code, name, val, unitremark) {
+  _saveParamList (id, code, name, val, unitremark) {
     saveParamList({ id, code, name, val, unitremark }).then(res => {
-      console.log(res);
-    });
-  },
-};
+      console.log(res)
+    })
+  }
+}
 </script>
 <style lang='less' scoped>
 .body {

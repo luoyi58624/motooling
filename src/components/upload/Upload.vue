@@ -13,7 +13,7 @@
             <div :style="{backgroundImage:'url('+item.imgUrl+')'}" class="initial-file-img"></div>
           </div>
         </template>
-        <cube-upload ref="upload" :action="action" :simultaneous-uploads="1" :max='max' v-model="files" @files-added="addedHandler" @file-success="fileSuccess" @file-removed="fileRemoved">
+        <cube-upload ref="upload" :action="action" :simultaneous-uploads="1" :max='max' :accept="accept" v-model="files" @files-added="addedHandler" @file-success="fileSuccess" @file-removed="fileRemoved">
           <div class="clear-fix">
             <!-- <cube-upload-file v-for="(file, i) in files" :file="file" :key="i"></cube-upload-file> -->
             <cube-upload-btn :multiple="false">
@@ -51,6 +51,10 @@ export default {
     value: ''
   },
   props: {
+    accept: {
+      type: String,
+      default: 'image/*'
+    },
     initialFile: {
       type: [String, Array]
     },
@@ -138,7 +142,7 @@ export default {
       this.isChange = true
     },
     fileSuccess (e) {
-      // console.log(this.fileURLs)
+      console.log(this.fileURLs)
       this.$emit('file-success', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
       console.log(this.fileURLs)
     },

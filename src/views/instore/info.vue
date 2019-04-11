@@ -68,7 +68,7 @@
             title="选择库位"
             :options="storeRoomList"
             :disabled="type!=='1'||storeRoomList.length==0"
-              @change="changeKw"
+            @change="changeKw"
           ></cube-select>
         </div>
       </div>
@@ -93,7 +93,7 @@
         <div>
           检验方式
           <div class="radio">
-           <cube-radio-group v-model="info.qcFlag"  :options="options3" :horizontal="true" />
+            <cube-radio-group v-model="info.qcFlag" :options="options3" :horizontal="true"/>
           </div>
         </div>
       </div>
@@ -110,7 +110,20 @@
       <div>
         <div>
           不良原因
-          <input type="text" name id v-model="info.noQualifiedQty" :disabled="type!=='2'" style="flex:1">
+          <input
+            type="text"
+            name
+            id
+            v-model="info.unusualReason"
+            :disabled="type!=='2'"
+            style="flex:1"
+          >
+        </div>
+      </div>
+      <div>
+        <div>
+          质检报告
+        <cube-upload :action="action"  @files-added="filesAdded" ref="upload" accept="*.doc application/msword MS Word Document"/>
         </div>
       </div>
       <div>
@@ -171,114 +184,175 @@ import {
   purchQuality,
   getStoreHouse,
   getStoreRoom
-} from "@/api/instore/instore";
-import myHeader from "@/components/header";
+} from '@/api/instore/instore'
+import myHeader from '@/components/header'
+import CuUpload from '@/components/upload/Upload'
+import { WEBURL, BASEURL } from '@/utils/utils.js'
+import md5 from 'md5'
+
+const token = localStorage.getItem('token') || ''
+const timestamp = '1547621396'
+const md5String = md5(token + timestamp + 'Motooling')
+console.log(md5String)
+const req = {
+  token: token,
+  md5: md5String,
+  timestamp: timestamp,
+  data: {}
+}
+
 export default {
   components: {
     myHeader
   },
-  data() {
+  data () {
     return {
-         options3: [
-    
+      action: {
+        target: WEBURL + '/file/h5FileUpload',
+        fileName: 'enFile',
+        data: { paramsMap: JSON.stringify(req) },
+        checkSuccess: (res, file) => {
+          // let rdata = JSON.parse(decrypt(res.resultData))
+          console.log('res', res)
+          if (res.status === 0) {
+            // this.uploadValue1 = rdata.url
+            return true
+          }
+        }
+      },
+
+      options3: [
         {
           label: '抽检',
           value: 1
         },
-         
+
         {
           label: '全检',
           value: 2
         }
       ],
       info: {},
-      value: "",
+      value: '',
       storeHouseList: [],
       storeRoomList: [],
-      textCk: "1",
-      textKw: "345",
-      type: "2", //用于判断哪些板块可以操作，1代表可以操作收货信息，2代表质检信息，3特采信息
-      storeHouseName: "",
-      storeHouseId: "",
-      storeRoomId: "",
-      storeRoomName: ""
-    };
+      textCk: '1',
+      textKw: '345',
+      type: '2', // 用于判断哪些板块可以操作，1代表可以操作收货信息，2代表质检信息，3特采信息
+      storeHouseName: '',
+      storeHouseId: '',
+      storeRoomId: '',
+      storeRoomName: ''
+    }
   },
-  created() {
-    this.getInfo();
-    this._getStoreHouse();
-    const type = this.$route.query.type;
-    this.type = type;
+  created () {
+    this.getInfo()
+    this._getStoreHouse()
+    const type = this.$route.query.type
+    this.type = type
   },
   methods: {
-    changeQc(value){
+    filesAdded (files) {
+      let hasIgnore = false
+      const maxSize = 1 * 1024 * 1024 // 1M
+      for (let k in files) {
+        const file = files[k]
+        if (file.size > maxSize) {
+          file.ignore = true
+          hasIgnore = true
+        }
+      }
+      hasIgnore && this.$createToast({
+        type: 'warn',
+        time: 1000,
+        txt: 'You selected >1M files'
+      }).show()
+    },
+    fileSubmitted (file) {
+      file.base64Value = file.file.base64
+    },
+    changeQc (value) {
       console.log(this.info)
-      //this.$set(this.info,'qcFlag',value)
-      //this.info.qcFlag=value;
+      // this.$set(this.info,'qcFlag',value)
+      // this.info.qcFlag=value;
     },
-    changeCk(value, index, text) {
-      console.log("change", value, index, text, this.textCk);
+    changeCk (value, index, text) {
+      console.log('change', value, index, text, this.textCk)
       getStoreRoom({ storeHouseId: value }).then(res => {
-        var romeList = res.storeRoomsConfList;
+        var romeList = res.storeRoomsConfList
         var newRome = romeList.map((item, index) => {
-          return { text: item.storeRoomName, value: item.id };
-        });
-        this.storeRoomList = newRome;
-        this.storeHouseId = value;
-        this.storeHouseName = text;
-      });
+          return { text: item.storeRoomName, value: item.id }
+        })
+        this.storeRoomList = newRome
+        this.storeHouseId = value
+        this.storeHouseName = text
+        console.log(this.storeHouseName)
+      })
     },
-    changeKw(value, index, text){
-      this.storeRoomId=value
-      this.storeRoomName=text
+    changeKw (value, index, text) {
+      this.storeRoomId = value
+      this.storeRoomName = text
     },
-    _getStoreHouse() {
+    _getStoreHouse () {
       getStoreHouse().then(res => {
-        console.log(res.storeHouseConfList);
-        var houseList = res.storeHouseConfList;
+        console.log(res.storeHouseConfList)
+        var houseList = res.storeHouseConfList
         var newHose = houseList.map((item, index) => {
-          return { text: item.storeHouseName, value: item.id };
-        });
-        this.storeHouseList = newHose;
-      });
+          return { text: item.storeHouseName, value: item.id }
+        })
+        this.storeHouseList = newHose
+      })
     },
-    getInfo() {
-      const purchSubId = this.$route.query.purchSubId;
-      console.log(purchSubId);
+    getInfo () {
+      const purchSubId = this.$route.query.purchSubId
+      console.log(purchSubId)
       inStoreInfo({ purchSubId }).then(res => {
-        console.log(res);
-        this.info = res.inStoreInfo;
-        this.storeHouseId = res.storeHouseId;
-        this.storeRoomId = res.storeRoomId;
-      });
+        console.log(res)
+        this.info = res.inStoreInfo
+        this.storeHouseId = res.inStoreInfo.storeHouseId
+        this.storeRoomId = res.inStoreInfo.storeRoomId
+        console.log(this.storeHouseId, this.storeRoomId)
+        if (this.storeHouseId) {
+          getStoreRoom({ storeHouseId: this.storeHouseId }).then(res => {
+            var romeList = res.storeRoomsConfList
+            var newRome = romeList.map((item, index) => {
+              return { text: item.storeRoomName, value: item.id }
+            })
+            this.storeRoomList = newRome
+          })
+        }
+      })
     },
-    save() {
-      const purchSubId = this.$route.query.purchSubId;
-      if (this.type === "1") {
+    save () {
+      const purchSubId = this.$route.query.purchSubId
+      if (this.type === '1') {
         var data = Object.assign({}, { purchSubId }, this.info, {
-          storeHouseName: this.storeHouseName,
-          storeHouseId: this.storeHouseId,
-          storeRoomId: this.storeRoomId,
-          storeRoomName: this.storeRoomName
-        });
+          storeHouseName: this.storeHouseName || this.info.storeHouseName,
+          storeHouseId: this.storeHouseId || this.info.storeHouseId,
+          storeRoomId: this.storeRoomId || this.info.storeRoomId,
+          storeRoomName: this.storeRoomName || this.info.storeRoomName
+        })
         purchUpdate(data).then(res => {
-          console.log(res);
-          this.showToast("修改成功");
-        });
-      } else if (this.type === "2") {
-        var data = Object.assign({}, { purchSubId }, this.info);
-        purchSpecial(data).then(res => {});
-      } else if (this.type == "3") {
-        var data = Object.assign({}, { purchSubId }, this.info);
-        purchQuality(data).then(res => {});
+          console.log(res)
+          this.showToast('修改成功')
+        })
+      } else if (this.type === '3') {
+        var data = Object.assign({}, { purchSubId }, this.info)
+        purchSpecial(data).then(res => {})
+      } else if (this.type == '2') {
+        var data = Object.assign({}, { purchSubId }, this.info)
+        purchQuality(data).then(res => {})
       }
     }
+  },
+  comments: {
+    CuUpload
   }
-};
+}
 </script>
 <style lang='less' scoped>
-.radio{
-  margin-left:25px;
+.radio {
+  margin-left: 25px;
 }
 .z-top {
   margin-top: 41px;
@@ -345,10 +419,10 @@ export default {
         border: 0;
       }
       > textarea {
-        box-sizing:border-box;
-        padding:10px;
+        box-sizing: border-box;
+        padding: 10px;
         height: 60px;
-      
+
         margin-left: 12px;
         border-radius: 4px;
         background: #f2f5fa;
@@ -357,8 +431,9 @@ export default {
         line-height: 20px;
       }
     }
-    >div:nth-child(2){
-      display:flex;justify-content: flex-end;
+    > div:nth-child(2) {
+      display: flex;
+      justify-content: flex-end;
     }
     > div.txt {
       height: 70px;
@@ -366,7 +441,7 @@ export default {
   }
 }
 .bot {
-  z-index:10;
+  z-index: 10;
   position: fixed;
   bottom: 0;
   left: 0;

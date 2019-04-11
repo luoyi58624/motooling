@@ -29,14 +29,14 @@
         </template>
         <template slot="pullup" >
           下拉加载更多
-        </template> 
+        </template>
         <div class="input-wrapper">
           <div class>
             <cube-input v-model="value"/>
             <div  @click="()=>{this.showToast('功能暂未开发')}">确定</div>
           </div>
         </div>
-        
+
         <div class="nav">
           <div :class="{active:type==1}" @click="changeType(1)">接收</div>
           <div :class="{active:type==2}"  @click="changeType(2)">转出</div>
@@ -91,7 +91,7 @@
           <div class="lc">
             <div v-for="(item,index) in rzList" :key="index">
               <div>
-                
+
                 <div>{{item.handleTime?item.handleTime.substring(5,10):''}}</div>
                 <div>{{item.handleTime?item.handleTime.substring(11,16):''}}</div>
               </div>
@@ -106,45 +106,45 @@
 </template>
 
 <script>
-import { Input, Scroll } from "cube-ui";
-import myHeader from "@/components/header";
-import scroll from "@/components/BScroll";
-import { getPartList ,setPart,getPartProcessLog,setPartPraise} from "@/api/baogong/baogong";
+import { Input, Scroll } from 'cube-ui'
+import myHeader from '@/components/header'
+import scroll from '@/components/BScroll'
+import { getPartList, setPart, getPartProcessLog, setPartPraise } from '@/api/baogong/baogong'
 
 export default {
-  data() {
+  data () {
     return {
-      pageNum:1,
-      pageSize:10,
-      hasMore:true,
-      done:true,
-      value: "",
-      list:[],
-      type:"",
+      pageNum: 1,
+      pageSize: 10,
+      hasMore: true,
+      done: true,
+      value: '',
+      list: [],
+      type: '',
       isShow: false,
-      sort:1,
+      sort: 1,
       options: {
         pullDownRefresh: {
           threshold: 60,
           stop: 40,
-          txt: "更新成功"
+          txt: '更新成功'
         },
-        pullUpLoad :{
-          threshold:0,
-          txt:{
-            more:"没有了"
+        pullUpLoad: {
+          threshold: 0,
+          txt: {
+            more: '没有了'
           }
         }
       },
       pullDownY: 0,
-      pullDownStyle: "",
-      opacityStyle: "",
+      pullDownStyle: '',
+      opacityStyle: '',
       triggerSurpriseFlag: false,
       triggerSurprise: false,
-      rzList:[]//日志列表
-    };
+      rzList: []// 日志列表
+    }
   },
-  created() {
+  created () {
     this._getPartList()
   },
 
@@ -152,124 +152,114 @@ export default {
     myHeader
   },
   methods: {
-     reverse(sort){
-       this.sort=sort;
-        this.list=[];
-      this.done=true;
-      this.hasMore=true;
+    reverse (sort) {
+      this.sort = sort
+      this.list = []
+      this.done = true
+      this.hasMore = true
       this._getPartList()
-      //this._getPartList()
-
-     },
-     showToast(val) {
+      // this._getPartList()
+    },
+    showToast (val) {
       const toast = this.$createToast({
-          type: 'txt',
+        type: 'txt',
         txt: val
       })
       toast.show()
     },
-    like(prevBatchProcId,prevPopId,prevPraiseCount,index){
-      setPartPraise({prevBatchProcId,prevPopId}).then(res=>{
-
-        this.list[index].prevPraiseCount=this.list[index].prevPraiseCount+1
+    like (prevBatchProcId, prevPopId, prevPraiseCount, index) {
+      setPartPraise({ prevBatchProcId, prevPopId }).then(res => {
+        this.list[index].prevPraiseCount = this.list[index].prevPraiseCount + 1
       })
-
     },
-    jieshou(type,popId){
-      setPart({type,popId}).then(res=>{
-        console.log(res);
-         this.list=[];
-         this.done=true;
-      this.hasMore=true;
-      this._getPartList()
-        this.showToast('接收成功')
-      }).catch(err=>{
-        if(err.msg){
-        this.showToast(err.msg)
-        }
-      })
-
-    },
-    fangong(type,popId,prevBatchProcId,prevPopId){
-         setPart({type,popId,prevBatchProcId,prevPopId}).then(res=>{
-        console.log(res);
-         this.list=[];
-         this.done=true;
-      this.hasMore=true;
-      this._getPartList()
-        this.showToast('返工成功')
-      }).catch(err=>{
-        if(err.msg){
-        this.showToast(err.msg)
-        }
-      })
-
-
-    },
-    zhuanchu(type,popId,batchProcId){
-       setPart({type,popId,batchProcId}).then(res=>{
-          this.list=[];
-         this.done=true;
-      this.hasMore=true;
-      this._getPartList()
-          this.showToast('转出成功')
+    jieshou (type, popId) {
+      setPart({ type, popId }).then(res => {
         console.log(res)
-      }).catch(err=>{
-        if(err.msg){
-        this.showToast(err.msg)
+        this.list = []
+        this.done = true
+        this.hasMore = true
+        this._getPartList()
+        this.showToast('接收成功')
+      }).catch(err => {
+        if (err.msg) {
+          this.showToast(err.msg)
         }
       })
-
     },
-    changeType(type){
-      this.type=type;
-      this.list=[];
-      this.done=true;
-      this.hasMore=true;
+    fangong (type, popId, prevBatchProcId, prevPopId) {
+      setPart({ type, popId, prevBatchProcId, prevPopId }).then(res => {
+        console.log(res)
+        this.list = []
+        this.done = true
+        this.hasMore = true
+        this._getPartList()
+        this.showToast('返工成功')
+      }).catch(err => {
+        if (err.msg) {
+          this.showToast(err.msg)
+        }
+      })
+    },
+    zhuanchu (type, popId, batchProcId) {
+      setPart({ type, popId, batchProcId }).then(res => {
+        this.list = []
+        this.done = true
+        this.hasMore = true
+        this._getPartList()
+        this.showToast('转出成功')
+        console.log(res)
+      }).catch(err => {
+        if (err.msg) {
+          this.showToast(err.msg)
+        }
+      })
+    },
+    changeType (type) {
+      this.type = type
+      this.list = []
+      this.done = true
+      this.hasMore = true
       this._getPartList()
     },
-    _getPartList(){
-      const that=this
-      const type =this.type||this.$route.query.type;
-      this.type=type
-      //console.log(type)
-      const pgId = this.$route.query.pgId;
-      if(that.done&&that.hasMore){
-        that.done=false;
-        that.hasMore=false;
+    _getPartList () {
+      const that = this
+      const type = this.type || this.$route.query.type
+      this.type = type
+      // console.log(type)
+      const pgId = this.$route.query.pgId
+      if (that.done && that.hasMore) {
+        that.done = false
+        that.hasMore = false
         getPartList({
-          sort:that.sort,
-          pageNum:that.pageNum,
-          pageSize:that.pageSize,
+          sort: that.sort,
+          pageNum: that.pageNum,
+          pageSize: that.pageSize,
           type,
           pgId
-        }).then(res=>{         
-           that.$refs.scroll.forceUpdate()
-           that.list=[...that.list,...res.list]
-           that.done=true;
-           if(res.list.length==that.pageSize){
-             that.hasMore=true;
-             that.pageNum++;
-           }else{
-             that.hasMore=false
-           }
-        }).catch(err=>{
-        if(err.msg){
-        this.showToast(err.msg)
-        }
-      })  
-
+        }).then(res => {
+          that.$refs.scroll.forceUpdate()
+          that.list = [...that.list, ...res.list]
+          that.done = true
+          if (res.list.length == that.pageSize) {
+            that.hasMore = true
+            that.pageNum++
+          } else {
+            that.hasMore = false
+          }
+        }).catch(err => {
+          if (err.msg) {
+            this.showToast(err.msg)
+          }
+        })
       }
     },
-    onPullingUp() { 
+    onPullingUp () {
       console.log(this.hasMore)
-      const that=this;
-      if(that.hasMore){
+      const that = this
+      if (that.hasMore) {
         that._getPartList()
-
-      }else{
-         this.$refs.scroll.forceUpdate()
-         return;
+      } else {
+        this.$refs.scroll.forceUpdate()
       }
     //    setTimeout(() => {
     //   if (Math.random() > 0.5) {
@@ -284,61 +274,60 @@ export default {
     //   }
     // }, 1000)
     },
-    onScrollHandle(pos) {
-      this.pullDownY = pos.y;
+    onScrollHandle (pos) {
+      this.pullDownY = pos.y
       if (pos.y > 0) {
-        this.pullDownStyle = `top:${pos.y}px`;
-        this.triggerSurpriseFlag = false;
+        this.pullDownStyle = `top:${pos.y}px`
+        this.triggerSurpriseFlag = false
         if (this.pullDownY > 90) {
-          this.triggerSurpriseFlag = true;
+          this.triggerSurpriseFlag = true
         }
       }
-      this.$refs.topHeader.style.opacity = this.headerStyle;
+      this.$refs.topHeader.style.opacity = this.headerStyle
     },
-    onPullingDown() {
+    onPullingDown () {
       // if (this.triggerSurpriseFlag) {
       //   this.triggerSurprise = true;
       //   this.$refs.scroll.forceUpdate();
       //   return;
       // }\
-      this.list=[];
-      this.hasMore=true;
-      this.pageNum=1;
+      this.list = []
+      this.hasMore = true
+      this.pageNum = 1
       this._getPartList()
     },
-    surpriseHandle() {
-      this.triggerSurpriseFlag = false;
-      this.triggerSurprise = false;
-      this.$refs.topHeader.style.opacity = 1;
+    surpriseHandle () {
+      this.triggerSurpriseFlag = false
+      this.triggerSurprise = false
+      this.$refs.topHeader.style.opacity = 1
       // go to other page
     },
-    onImgLoad() {
-      this.$refs.scroll.refresh();
+    onImgLoad () {
+      this.$refs.scroll.refresh()
     },
-    showFix(poId,popId) {
-      this.rzList=true;
-      this.isShow = true;
-       getPartProcessLog({poId,popId}).then(res=>{
-       this.rzList=res.list
+    showFix (poId, popId) {
+      this.rzList = true
+      this.isShow = true
+      getPartProcessLog({ poId, popId }).then(res => {
+        this.rzList = res.list
       })
     },
-    hideFix() {
-      this.isShow = false;
-     
+    hideFix () {
+      this.isShow = false
     }
   },
   computed: {
-    pullDownTip() {
+    pullDownTip () {
       if (this.pullDownY <= 60) {
-        return "下拉刷新...";
+        return '下拉刷新...'
       } else if (this.pullDownY <= 90) {
-        return "继续下拉有惊喜...";
+        return '继续下拉有惊喜...'
       } else {
-        return "松手得惊喜！";
+        return '松手得惊喜！'
       }
     }
   }
-};
+}
 </script>
 <style scoped lang="less">
 .scroll {

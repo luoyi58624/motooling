@@ -15,7 +15,7 @@ module.exports = {
     }
   },
   devServer: {
-   // proxy: 'http://localhost:4000'
+    // proxy: 'http://localhost:4000'
     proxy: {
       '/invitation': {
         target: 'http://www.motooling.com:8809/',
