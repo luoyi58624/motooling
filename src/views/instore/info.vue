@@ -121,8 +121,14 @@
         </div>
       </div>
       <div>
-        <div>
+        <div class="big word">
           质检报告
+        <cube-upload  :action="action"  @files-added="filesAdded" ref="upload" accept="*.doc application/msword MS Word Document"/>
+        </div>
+      </div>
+            <div>
+        <div class="big pdf">
+          供应商出场检验报告
         <cube-upload :action="action"  @files-added="filesAdded" ref="upload" accept="*.doc application/msword MS Word Document"/>
         </div>
       </div>
@@ -394,7 +400,7 @@ export default {
       flex: 1;
       font-size: 14px;
       display: flex;
-      height: 40px;
+     padding:5px 0;
       align-items: center;
       > input {
         width: 90px;
@@ -430,6 +436,12 @@ export default {
         border: 0;
         line-height: 20px;
       }
+    }
+    >div.big{
+      >div{
+        margin-left:12px;
+      }
+     
     }
     > div:nth-child(2) {
       display: flex;

@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<style>
+<style lang="less">
 /**@import url("../static/iconfont/iconfont.css");**/
 @import url("http:////at.alicdn.com/t/font_1109928_4myskl3b2ha.css");
 html,
@@ -67,5 +67,51 @@ body {
 .cube-radio_selected .cube-radio-ui{
   background: #5495ff;
 }
+.cube-radio-group[data-horz="true"]{
+  display:flex;flex-wrap: wrap;justify-content: flex-start;
+}
+.cube-radio-group[data-horz="true"] .cube-radio{
+ white-space: normal;width:auto;
+}
+.cube-radio-label{
+  white-space: nowrap;
+}
+.cube-radio-group[data-horz="true"] .cube-radio{
+   flex-grow:0;
+}
+.word .cube-upload-file-state{
+  background: url('../static/img/word.png');background-size:cover;
+ .cube-upload-file-status.cubeic-right{
+   display:none;
+
+ }
+}
+.pdf .cube-upload-file-state{
+  background: url('../static/img/pdf.png');background-size:cover;
+ .cube-upload-file-status.cubeic-right{
+   display:none;
+
+ }
+}
+.cube-checkbox-group[data-horz="true"]::after {border:0}
+.wrapper > div > div.option-wrapper{
+  flex-wrap: wrap
+}
+.wrapper > div > div.option-wrapper{
+  width:auto;
+}
+.cube-checkbox-label{
+   white-space: nowrap;
+}
+.cube-checkbox-ui.cubeic-square-border{
+  border-radius: 50%;
+}
+.cube-checkbox_checked .cube-checkbox-ui i{
+  background: #fff;
+}
+.cube-checkbox_checked .cube-checkbox-ui i{
+  color:#5495ff;
+}
+
 
 </style>

@@ -38,14 +38,17 @@ export default {
   },
 
   components: {},
+  created(){
+    console.log(1)
+  },
 
   methods: {
     pick(){
       console.log(1)
       const type=this.$route.query.type
       const name=this.$route.query.name
-      this.$router.push({
-        path: '/instore/pick',
+      this.$router.replace({
+        path: 'pick',
         query: {
           type,name
         }
@@ -56,7 +59,8 @@ export default {
 </script>
 <style lang='less' scoped>
 ._containner {
-  padding: 15px;
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  padding: 15px;background: #fff;z-index:10;
   .select-box {
     display: flex;justify-content: space-between;padding:0 15px;font-size:16px;align-items:center;height:60px;
     box-shadow: 0px 0px 3px 3px #eee;border-radius:4px;margin-top:15px;

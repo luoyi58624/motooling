@@ -122,18 +122,23 @@ export default new Router({
     component: () => import('./views/instore/setting'),
     meta: {
       keepAlive: true // 需要被缓存
-    }
-  },
-  {
-    path: '/instore/pick',
-    name: 'instore-pick',
-    component: () => import('./views/instore/pick')
-  },
-  {
-    path: '/instore/select',
-    name: 'instore-select',
-    component: () => import('./views/instore/select')
+    },
+    children:[
+      {
+        path: 'pick',
+        name: 'instore-pick',
+        component: () => import('./views/instore/pick'),
+        meta:{keepAlive: true}
+      },
+      {
+        path: 'select',
+        name: 'instore-select',
+        component: () => import('./views/instore/select'),
+        meta:{keepAlive: true}
+      }
+    ]
   }
+ 
 
   ]
 })

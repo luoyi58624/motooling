@@ -168,3 +168,17 @@ export function depUserList (params = {}) { // 库位
     data
   })
 }
+
+export function getNotifyType (params = {}) { // 库位
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/ivStore/getNotifyType',
+    method: 'post',
+    data
+  })
+}

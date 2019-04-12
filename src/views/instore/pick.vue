@@ -1,96 +1,103 @@
 <!-- 选择公司，供应商等 -->
 <template>
-
-  <div class="_containner">
-   
-    <div class="select-box" v-for="(it,idx) in list" :key="idx">
-      <div class="box">
-        <div>
-          <img src="../../../static/img/s4.png" alt>
-          <!-- <img :src="it.depPic" alt=""> -->
-          {{it.name}}
-        </div>
-        <div>
-          <img src="../../../static/img/arrow.png" class="arrow" alt>
-        </div>
-      </div>
-      <div class="list">
-        <div v-for="(item,index) in it.userList" :key="index"  @click="pick(item)">
+  <cube-scroll class="scroll">
+    <div class="_containner">
+      <div class="select-box" v-for="(it,idx) in list" :key="idx">
+        <div class="box">
           <div>
-            <span class="iconfont icon-iconfontxuanzhong4" :class="{active:uidList.includes(item.uid)}"></span>
+            <img src="../../../static/img/s4.png" alt>
+            <!-- <img :src="it.depPic" alt=""> -->
+            {{it.name}}
           </div>
           <div>
-            <img :src="item.avatar" alt>
+            <img src="../../../static/img/arrow.png" class="arrow" alt>
           </div>
-          <div>{{item.username}}</div>
+        </div>
+        <div class="list">
+          <div v-for="(item,index) in it.userList" :key="index" @click="pick(item)">
+            <div>
+              <span
+                class="iconfont icon-iconfontxuanzhong4"
+                :class="{active:uidList.includes(item.uid)}"
+              ></span>
+            </div>
+            <div>
+              <img :src="item.avatar" alt>
+            </div>
+            <div>{{item.username}}</div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
- 
+  </cube-scroll>
 </template>
 
 <script>
 var type;
 var name;
-import { depUserList } from '@/api/instore/instore'
+import { depUserList } from "@/api/instore/instore";
 export default {
-  data () {
+  data() {
     return {
       list: []
-    }
+    };
   },
-  created () {
-    type=this.$route.query.type;
-    name=this.$route.query.name;
-     console.log( this.$store.state[name])
-    this.getList()
+  created() {
+    type = this.$route.query.type;
+    name = this.$route.query.name;
+    console.log(this.$store.state[name]);
+    this.getList();
   },
-  computed:{
-    selectedList(){
+  computed: {
+    selectedList() {
       return this.$store.state[name];
     },
-    uidList(){
-      const arr=this.selectedList.map(item=>{
-         return item.uid
-       })
-       const a=arr||[]
-       return a
+    uidList() {
+      const arr = this.selectedList.map(item => {
+        return item.uid;
+      });
+      const a = arr || [];
+      return a;
     }
   },
 
   components: {},
 
   methods: {
-    getList () {
+    getList() {
       // console.log(depUserList)
       depUserList().then(res => {
         //this.list = res.depList
-        this.list=res.depList
-      })
+        this.list = res.depList;
+      });
     },
-    pick(item){
-      console.log(this.uidList)
-      var selectedList=this.$store.state[name]
-      const uid=item.uid
-      if(this.uidList.includes(uid)){
-        for(var i=0;i<selectedList.length;i++){
-          if(selectedList[i].uid==uid){
-            selectedList=[...selectedList.slice(0,i),...selectedList.slice(i+1)]
+    pick(item) {
+      console.log(this.uidList);
+      var selectedList = this.$store.state[name];
+      const uid = item.uid;
+      if (this.uidList.includes(uid)) {
+        for (var i = 0; i < selectedList.length; i++) {
+          if (selectedList[i].uid == uid) {
+            selectedList = [
+              ...selectedList.slice(0, i),
+              ...selectedList.slice(i + 1)
+            ];
           }
         }
-         
-      }else{
-        selectedList.push(item)
+      } else {
+        selectedList.push(item);
       }
-      this.$store.commit(type,selectedList)
+      this.$store.commit(type, selectedList);
     }
   }
-}
+};
 </script>
 <style lang='less' scoped>
 body {
   background: rgb(248, 249, 254);
+}
+.scroll{
+  position:fixed;top:0;left:0;bottom:0;right:0;background: #fff;z-index:20;
 }
 ._containner {
   padding: 15px;

@@ -1,6 +1,5 @@
 <!--  -->
 <template>
-<keep-alive>
   <div>
     <my-header title="设置"></my-header>
     <div class="z-top"></div>
@@ -10,101 +9,113 @@
         <p>收货人员设置</p>
         <div class="img-wrapper">
           <div v-for="(item,index) in founderList" :key="index">
-          <img :src="item.avatar" alt>
+            <img :src="item.avatar" alt>
           </div>
-          <div @click="addTeam">
-            +
+          <div @click="addTeam('changeReciveList','founderList')" class="tianjia"></div>
+        </div>
+      </div>
+      <div>
+        <p>收货通知设置</p>
+        <div class="img-wrapper">
+          <div v-for="(item,index) in founderManagerList" :key="index">
+            <img :src="item.avatar" alt>
           </div>
+          <div @click="addTeam('changeFounderManagerList','founderManagerList')"  class="tianjia"></div>
         </div>
       </div>
       <div>
         <p>通知方式</p>
         <div class="option-wrapper">
-          <div class="active">
-            <span></span>
-            站内信
-          </div>
-          <div>
-            <span></span>
-            微信
-          </div>
-          <div>
-            <span></span>
-            邮件
+         <div class="radio">
+           <cube-checkbox-group v-model="founderNotifyList" :options="notifyTypeList" :horizontal="true" shape="square"/>
+            <!-- <cube-radio-group v-model="setInfo.founderNotifyList['0'].code" :options="notifyTypeList" :horizontal="true"/> -->
           </div>
         </div>
       </div>
       <div class="switch-wrapper">
         <p>是否显示金额</p>
-        <cube-switch v-model="value"></cube-switch>
+        <cube-switch v-model="founderIfMoney" ></cube-switch>
       </div>
     </div>
     <div class="title">检验设置</div>
     <div class="wrapper">
       <div>
         <p>检验人员设置</p>
-        <div class="img-wrapper">
-          <img src="png" alt>
+         <div class="img-wrapper">
+          <div v-for="(item,index) in verifyerList" :key="index">
+            <img :src="item.avatar" alt>
+          </div>
+          <div @click="addTeam('changeVerifyerList','verifyerList')"  class="tianjia"></div>
+        </div>
+      </div>
+           <div>
+        <p>质检通知设置</p>
+         <div class="img-wrapper">
+          <div v-for="(item,index) in verifyerManagerList" :key="index">
+            <img :src="item.avatar" alt>
+          </div>
+          <div @click="addTeam('changeVerifyerManagerList','verifyerManagerList')"  class="tianjia"></div>
         </div>
       </div>
       <div>
         <p>通知方式</p>
         <div class="option-wrapper">
-          <div class="active">
-            <span></span>
-            站内信
-          </div>
-          <div>
-            <span></span>
-            微信
-          </div>
-          <div>
-            <span></span>
-            邮件
+             <div class="radio">
+               <cube-checkbox-group v-model="verifyerNotifyList" :options="notifyTypeList" :horizontal="true" shape="square"/>
+            <!-- <cube-radio-group v-model="setInfo.verifyerNotifyList['0'].code" :options="notifyTypeList" :horizontal="true"/> -->
           </div>
         </div>
       </div>
       <div class="switch-wrapper">
         <p>是否显示金额</p>
-        <cube-switch v-model="value"></cube-switch>
+        <cube-switch v-model="verifyerIfMoney"></cube-switch>
       </div>
     </div>
     <div class="title">特采设置</div>
     <div class="wrapper">
       <div>
         <p>特采人员设置</p>
-        <div class="img-wrapper">
-          <img src="png" alt>
+           <div class="img-wrapper">
+          <div v-for="(item,index) in ratifyerList" :key="index">
+            <img :src="item.avatar" alt>
+          </div>
+          <div @click="addTeam('changeRatifyerList','ratifyerList')"  class="tianjia"></div>
+        </div>
+      </div>
+       <div>
+        <p>特采通知设置</p>
+           <div class="img-wrapper">
+          <div v-for="(item,index) in ratifyerManagerList" :key="index">
+            <img :src="item.avatar" alt>
+          </div>
+          <div @click="addTeam('changeRatifyerManagerList','ratifyerManagerList')"  class="tianjia"></div>
         </div>
       </div>
       <div>
         <p>通知方式</p>
         <div class="option-wrapper">
-          <div class="active">
-            <span></span>
-            站内信
-          </div>
-          <div>
-            <span></span>
-            微信
-          </div>
-          <div>
-            <span></span>
-            邮件
+        <div class="radio">
+           <cube-checkbox-group v-model="ratifyerNotifyLisst" :options="notifyTypeList" :horizontal="true" shape="square"/>
+            <!-- <cube-radio-group v-model="setInfo.ratifyerNotifyLisst['0'].code" :options="notifyTypeList" :horizontal="true"/> -->
           </div>
         </div>
       </div>
       <div class="switch-wrapper">
         <p>是否显示金额</p>
-        <cube-switch v-model="value"></cube-switch>
+        <cube-switch v-model="ratifyerIfMoney"></cube-switch>
       </div>
     </div>
+    
+      <router-view></router-view>
+        <div class="zw"></div>
+      <div class="bot">
+        <div @click="save">保存设置</div>
+      </div>
   </div>
-  </keep-alive>
 </template>
 
 <script>
-import { setUpInfo, setUpUpdate } from "@/api/instore/instore";
+import { setUpInfo, setUpUpdate,getNotifyType} from "@/api/instore/instore";
 import myHeader from "@/components/header";
 export default {
   components: {
@@ -112,40 +123,110 @@ export default {
   },
   data() {
     return {
-      setInfo: {},
-     
+      setInfo: {
+      //   verifyerNotifyList:[{}],
+      //    ratifyerNotifyLisst:[{}],
+      // founderNotifyList:[{}],
+      },
+      notifyTypeList:[],
+      founderNotifyList:[],
+      verifyerNotifyList:[],
+      ratifyerNotifyLisst:[],
+      founderIfMoney:false,
+      verifyerIfMoney:false,
+      ratifyerIfMoney:false
     };
   },
   created() {
-    console.log(this.$store.state);
+     const that=this;
     this.getSetting();
+    getNotifyType().then(res=>{
+      console.log(res.notifyTypeList)
+      const notifyTypeList=res.notifyTypeList.map(item=>{
+        if(item.isUse){
+            return {label:item.name,value:item.code}
+        }
+      })
+      that.notifyTypeList=notifyTypeList
+      console.log(notifyTypeList)
+    })
+
   },
-  computed:{
-    founderList(){
-      return this.$store.state.founderList
-    }
+  computed: {
+    founderList() {
+      return this.$store.state.founderList;
+    },
+    founderManagerList(){
+          return this.$store.state.founderManagerList
+    },
+    verifyerManagerList(){
+       return this.$store.state.verifyerManagerList
+    },
+    verifyerList(){
+       return this.$store.state.verifyerList
+    },
+    ratifyerList(){
+       return this.$store.state.ratifyerList
+    },
+    ratifyerManagerList(){
+       return this.$store.state.ratifyerManagerList
+    },
 
   },
 
   methods: {
-    addTeam(){
-      this.$router.push({
-        path: '/instore/select',
-        query: {
-          type: 'changeReciveList',
-          name: 'founderList'
-        }
+    save(){
+      const verifyerNotifyList= this.verifyerNotifyList.map(item=>{
+        return {code:item}
       })
+      const founderNotifyList= this.founderNotifyList.map(item=>{
+        return {code:item}
+      })
+      const ratifyerNotifyLisst= this.ratifyerNotifyLisst.map(item=>{
+        return {code:item}
+      })
+      console.log(verifyerNotifyList,
+          founderNotifyList,
+          ratifyerNotifyLisst)
+        const newObject=Object.assign({},this.setInfo,{
+          founderList:this.founderList,
+          founderManagerList:this.founderManagerList,
+          verifyerManagerList:this.verifyerManagerList,
+          verifyerNotifyList,
+          founderNotifyList,
+          ratifyerNotifyLisst,
+           founderIfMoney:this.founderIfMoney?'1':'0',
+      verifyerIfMoney:this.verifyerIfMoney?'1':'0',
+      ratifyerIfMoney:this.ratifyerIfMoney?'1':'0',
+        })
+        setUpUpdate(newObject).then(res=>{
+          console.log(res)
+        })
+    },
+    addTeam(type,name) {
+      this.$router.push({
+        path: "/instore/setting/select",
+        query: {
+          type,
+          name,
+        }
+      });
     },
     getSetting() {
       setUpInfo().then(res => {
         this.setInfo = res;
-        if(res.founderList){
-          this.$store.commit('changeReciveList',res.founderList)
-        }else{
-          this.$store.commit('changeReciveList',[])
-        }
-        console.log(this.$store.state)
+        this.founderNotifyList=res.founderNotifyList.map(item=>item.code)
+         this.verifyerNotifyList=res.verifyerNotifyList.map(item=>item.code)
+          this.ratifyerNotifyLisst=res.ratifyerNotifyLisst.map(item=>item.code)
+           this.founderIfMoney=res.founderIfMoney?true:false;
+      this.verifyerIfMoney=res.verifyerIfMoney?true:false;
+      this.ratifyerIfMoney=res.ratifyerIfMoney?true:false;
+        this.$store.commit("changeReciveList", res.founderList||[]);
+        this.$store.commit("changeFounderManagerList", res.founderManagerList||[]);
+        this.$store.commit("changeVerifyerManagerList", res.verifyerManagerList||[]);
+        this.$store.commit("changeVerifyerList", res.verifyerList||[]);
+        this.$store.commit("changeRatifyerList", res.ratifyerList||[]);
+        this.$store.commit("changeRatifyerManagerList", res.ratifyerManagerList||[]);
       });
     }
   }
@@ -185,26 +266,25 @@ export default {
     }
 
     > div.img-wrapper {
-      
+      margin-top:0;
       > div {
-        float:left;
-         width: 50px;
-          height: 50px;
-          margin-left: 16px;
-          font-size:52px;
+        float: left;
+        width: 50px;
+        height: 50px;
+        margin-right: 16px;
+        font-size: 52px;
+        margin-top:10px;
+        text-align:center;line-height:50px;
         > img {
           width: 50px;
           height: 50px;
         }
       }
-      >div:first-child{
-        margin-left:0;
-      }
     }
-    > div.img-wrapper::after{
-      content:"";
-      clear:both;
-      display:table
+    > div.img-wrapper::after {
+      content: "";
+      clear: both;
+      display: table;
     }
     > div.option-wrapper {
       font-size: 14px;
@@ -212,8 +292,9 @@ export default {
       justify-content: space-between;
       > div {
         font-size: 14px;
-        display: flex;
+        display: flex;flex-direction: wrap;
         align-items: center;
+       
         > span {
           width: 14px;
           height: 14px;
@@ -253,5 +334,34 @@ export default {
     font-weight: 500;
     color: rgba(48, 48, 48, 1);
   }
+}
+.bot {
+  z-index: 8;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: #f8f9fe;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > div {
+    width: 80%;
+    height: 40px;
+    background: #5495ff;
+    color: #fff;
+    font-size: 16px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 6px;
+  }
+}
+.zw{
+  height:50px;
+}
+.tianjia{
+  background: url('../../../static/img/tianjia.png');
+  background-size:50px;
 }
 </style>

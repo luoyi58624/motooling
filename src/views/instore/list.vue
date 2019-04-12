@@ -55,12 +55,14 @@
         </div>
 
     </div>
+    <div @click="purch">收货</div>
     <div class="zw"></div>
+    
   </div>
 </template>
 
 <script>
-import { inStoreList } from '@/api/instore/instore'
+import { inStoreList,purchBatchReceived } from '@/api/instore/instore'
 import router from '../../router'
 import myHeader from '@/components/header'
 export default {
@@ -69,7 +71,8 @@ export default {
   },
   data () {
     return {
-      list: []
+      list: [],
+      billNo:'MP19040001'
     }
   },
   created () {
@@ -85,6 +88,16 @@ export default {
   },
 
   methods: {
+    purch(){
+      const newList=this.list.filter(item=>item.selected).map(item=>{
+        return {purchSubId:item.purchSubId}
+      })
+      console.log(newList)
+      purchBatchReceived({purchList:newList,purchNo:this.billNo}).then(res=>{
+        console.log(res)
+      })
+
+    },
     selectAll () {
       if (this.selecteAll) {
         this.list = this.list.map((item, index) => {
