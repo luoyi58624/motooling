@@ -5,7 +5,7 @@
     <div class="option">
       <div>
         <div style="color:#4e92ff">按生产订单排序</div>
-        <div :class="{active:true}" >
+        <div :class="{active:true}">
           升序
           <i class="iconfont">&#xe79e;</i>
         </div>
@@ -17,11 +17,18 @@
       <div @click="()=>{this.showToast('功能暂未开发')}">筛选</div>
     </div>
     <div class="no">
-       <div>PO201807001（深圳聚能）</div>
-       <div @click.stop="selectAll">  <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span></div>
+      <div>PO201807001（深圳聚能）</div>
+      <div @click.stop="selectAll">
+        <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span>
+      </div>
     </div>
     <div class="list">
-      <div class="boxer" v-for="(item,index) in list" :key="index" @click="toInfo(item.purchSubId)">
+      <div
+        class="boxer"
+        v-for="(item,index) in list"
+        :key="index"
+        @click="toInfo(item.purchSubId,1,item.isNeedQc)"
+      >
         <div class="img-wrapper">
           <img src alt>
         </div>
@@ -33,120 +40,188 @@
           <div>数量：{{item.quantity}}</div>
           <div>重量：{{item.a}}</div>
           <div>检验要求:{{item.pcFlag}}</div>
-          <div class="btn-wrapper">
-            <div class="active">质检</div>
-            <div>特采</div>
+          <div class="btn-wrapper" v-if="item.preOrderFlag==1">
+            <button
+              :disabled="item.isNeedQc=='0'||item.qcQty==0"
+              @click.stop="toInfo(item.purchSubId,2)"
+            >质检{{item.isNeedQc}}</button>
+            <button
+              :disabled="!item.noQualifiedQty>0"
+              @click.stop="toInfo(item.purchSubId,3)"
+            >特采{{item.noQualifiedQty}}</button>
           </div>
         </div>
-        <div class="right-wrapper"  @click.stop="select(index)">
+        <div class="right-wrapper" @click.stop="select(index)" v-if="item.preOrderFlag==0">
           <span class="iconfont icon-iconfontxuanzhong4" :class="{active:item.selected}"></span>
+        </div>
+        <div class="right-wrapper" v-if="item.preOrderFlag==1">
+          <span class="iconfont icon-iconset0141"></span>
         </div>
       </div>
     </div>
     <div class="footer">
-        <div>
-            <div>服务</div>
-            <div>企业圈</div>
-        </div>
-        <div>
-            <div>收货</div>
-            <div>检验</div>
-            <div>特采</div>
-        </div>
-
+      <div>
+        <div>服务</div>
+        <div>企业圈</div>
+      </div>
+      <div>
+        <div>收货</div>
+        <div>检验</div>
+        <div>特采</div>
+      </div>
     </div>
-    <div @click="purch">收货</div>
+    <div class="bot">
+      <div @click="purch">确定</div>
+    </div>
     <div class="zw"></div>
-    
   </div>
 </template>
 
 <script>
-import { inStoreList,purchBatchReceived } from '@/api/instore/instore'
-import router from '../../router'
-import myHeader from '@/components/header'
+import { inStoreList, purchBatchReceived } from "@/api/instore/instore";
+import router from "../../router";
+import myHeader from "@/components/header";
 export default {
   components: {
     myHeader
   },
-  data () {
+  data() {
     return {
       list: [],
-      billNo:'MP19040001'
-    }
+      //billNo:'MP19040001'
+      billNo: "MP19010006"
+    };
   },
-  created () {
-    this.getList()
+  created() {
+    this.getList();
   },
   computed: {
-    selecteAll () {
-      return this.list.every(item => {
-        return item.selected === true
-      })
+    selecteAll() {
+      if( this.list
+        .filter(item => {
+          return item.preOrderFlag === 0;
+        }).length==0){
+          return false
+        }
+      return this.list
+        .filter(item => {
+          return item.preOrderFlag === 0;
+        })
+        .every(item => {
+          return item.selected === true;
+        });
     }
-
   },
 
   methods: {
-    purch(){
-      const newList=this.list.filter(item=>item.selected).map(item=>{
-        return {purchSubId:item.purchSubId}
-      })
-      console.log(newList)
-      purchBatchReceived({purchList:newList,purchNo:this.billNo}).then(res=>{
-        console.log(res)
-      })
+    purch() {
+      const newList = this.list
+        .filter(item => item.selected&&item.preOrderFlag===0)
+        .map(item => {
+          return { purchSubId: item.purchSubId };
+        });
+      console.log(newList);
+      if(newList.length==0){
+        this.showToast('没有选择货物')
+        return;
 
+      }
+      purchBatchReceived({ purchList: newList, purchNo: this.billNo })
+        .then(res => {
+          this.showToast("收货成功");
+        })
+        .catch(res => {
+          this.showToast(res.msg);
+        });
     },
-    selectAll () {
+    selectAll() {
       if (this.selecteAll) {
-        this.list = this.list.map((item, index) => {
-          return Object.assign({}, item, { selected: false })
-        })
+        this.list = this.list
+          .filter(item => {
+            return item.preOrderFlag == 1;
+          })
+          .map((item, index) => {
+            return Object.assign({}, item, { selected: false });
+          });
       } else {
-        this.list = this.list.map((item, index) => {
-          return Object.assign({}, item, { selected: true })
-        })
+        this.list = this.list
+          .filter(item => {
+            return item.preOrderFlag == 1;
+          })
+          .map((item, index) => {
+            return Object.assign({}, item, { selected: true });
+          });
       }
     },
-    getList () {
-      inStoreList({ billNo: 'MP19040001' }).then(res => {
-        let array = res.inStoreDetailList
+    getList() {
+      inStoreList({ billNo: this.billNo }).then(res => {
+        let array = res.inStoreDetailList;
         for (let i = 0; i < array.length; i++) {
-          array[i].selected = true
+          array[i].selected = false;
         }
-        this.list = array
-      })
+        this.list = array;
+      });
     },
-    toInfo (purchSubId) {
+    toInfo(purchSubId, type,isNeedQc) {
       // onsole.log(purchId)
+      if(type==1&&isNeedQc==='0'){
+        return
+      }
       this.$router.push({
-        path: '/instore/info',
+        path: "/instore/info",
         query: {
           purchSubId,
-          type: 1
+          type
         }
-      })
+      });
     },
-    select (index) {
-      this.list = [...this.list.slice(0, index), Object.assign({}, this.list[index], { selected: !this.list[index].selected }), ...this.list.slice(index + 1)]
+    select(index) {
+      this.list = [
+        ...this.list.slice(0, index),
+        Object.assign({}, this.list[index], {
+          selected: !this.list[index].selected
+        }),
+        ...this.list.slice(index + 1)
+      ];
       // this.selecteAll=false;
       // this.list[index].selected=!this.list[index].selected
     }
   }
-}
+};
 </script>
 <style lang='less' scoped>
-.zw{
-    height:51px;
+.bot {
+  z-index: 10;
+  position: fixed;
+  bottom: 51px;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: #f8f9fe;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > div {
+    width: 80%;
+    height: 40px;
+    background: #5495ff;
+    color: #fff;
+    font-size: 16px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 6px;
+  }
+}
+.zw {
+  height: 102px;
 }
 .option {
-  margin-top:41px;
-    background: #fff;
+  margin-top: 41px;
+  background: #fff;
   font-size: 14px;
   padding: 15px;
   align-items: center;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgb(238, 238, 238);
   position: sticky;
   top: 0;
   left: 0;
@@ -173,22 +248,31 @@ export default {
   display: flex;
   align-items: center;
 }
-.no{
-    height:40px;display:flex;justify-content: space-between;padding:0 6px 0 15px;border-bottom:1px solid #E9E9E9;font-size:12px;color:#505050;align-items: center;
-    >div:nth-child(2){
-       color: #eee;
-        >span{
- font-size:24px;
-        }
-        >span.active{
-          color:#4e92ff;
-        }
+.no {
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 6px 0 15px;
+  border-bottom: 1px solid #e9e9e9;
+  font-size: 12px;
+  color: #505050;
+  align-items: center;
+  > div:nth-child(2) {
+    color: #eee;
+    > span {
+      font-size: 24px;
     }
+    > span.active {
+      color: #4e92ff;
+    }
+  }
 }
 .list {
-    padding-left:15px;
+  padding-left: 15px;
   > .boxer {
-    display: flex;border-bottom:1px solid #E9E9E9;padding-bottom:18px;
+    display: flex;
+    border-bottom: 1px solid #e9e9e9;
+    padding-bottom: 18px;
     > .img-wrapper {
       width: 120px;
       > img {
@@ -212,22 +296,25 @@ export default {
       > div.btn-wrapper {
         height: 30px;
         display: flex;
-        > div {
+        > button {
+          background: #fff;
           height: 30px;
           width: 60px;
           text-align: center;
           line-height: 30px;
-          border: 1px solid #ababab;
+    
           margin-left: 10px;
           border-radius: 4px;
-        }
-        > div:first-child {
-          margin-left: 0;
-        }
-        > div.active {
           color: #fe4c44;
           border: 1px solid #fe4c44;
         }
+        >button:disabled{
+          color:#999;border-color:#999;
+        }
+        > button:first-child {
+          margin-left: 0;
+        }
+       
       }
     }
     > .right-wrapper {
@@ -250,21 +337,34 @@ export default {
     }
   }
 }
-.footer{
-    display:flex;position:fixed;bottom:0;right:0;left:0;height:50px;font-size:16px;color:#505050;
-    border-top:1px solid #E9E9E9;background: #fff;
-    >div{
-        display:flex;flex:1;color:#505050;
-        >div{
-            flex:1;justify-content: center;align-items: center;display:flex;
-        }
+.footer {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 50px;
+  font-size: 16px;
+  color: #505050;
+  border-top: 1px solid #e9e9e9;
+  background: #fff;
+  > div {
+    display: flex;
+    flex: 1;
+    color: #505050;
+    > div {
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+      display: flex;
     }
-    >div:nth-child(2){
-        >div{
-           border-left:1px solid #fff;background: #5495FF;color:#fff;
-        }
-
+  }
+  > div:nth-child(2) {
+    > div {
+      border-left: 1px solid #fff;
+      background: #5495ff;
+      color: #fff;
     }
-
+  }
 }
 </style>

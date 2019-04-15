@@ -201,6 +201,11 @@ export default {
         })
         setUpUpdate(newObject).then(res=>{
           console.log(res)
+          this.showToast('保存成功')
+        }).catch(res=>{
+          if(res.msg){
+            this.showToast(res.msg)
+          }
         })
     },
     addTeam(type,name) {

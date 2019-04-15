@@ -29,7 +29,7 @@
       <div>
         <div>
           收货数量
-          <input type="number" name id v-model="info.receivedQty" :disabled="type!=='1'">
+          <input type="number" name id v-model="info.receivedQty" :disabled="type!=='1'" min="1">
         </div>
         <div>
           收货重量
@@ -93,7 +93,7 @@
         <div>
           检验方式
           <div class="radio">
-            <cube-radio-group v-model="info.qcFlag" :options="options3" :horizontal="true"/>
+            <cube-radio-group v-model="info.qcFlag" :options="options3" :horizontal="true" :disabled="type!=='2'"/>
           </div>
         </div>
       </div>
@@ -123,7 +123,7 @@
       <div>
         <div class="big word">
           质检报告
-        <cube-upload  :action="action"  @files-added="filesAdded" ref="upload" accept="*.doc application/msword MS Word Document"/>
+        <cube-upload v-model="wordList" disabled="disabled" :action="action" @file-success="fileSuccess"  @files-added="filesAdded" ref="upload" accept="*.doc application/msword MS Word Document"/>
         </div>
       </div>
             <div>
@@ -226,18 +226,7 @@ export default {
           }
         }
       },
-
-      options3: [
-        {
-          label: '抽检',
-          value: 1
-        },
-
-        {
-          label: '全检',
-          value: 2
-        }
-      ],
+      wordList:[],
       info: {},
       value: '',
       storeHouseList: [],
@@ -251,14 +240,54 @@ export default {
       storeRoomName: ''
     }
   },
+  computed:{
+    options3(){
+      console.log(this.type==='2')
+      if(this.type==='2'){
+        return   [
+        {
+          label: '抽检',
+          value: 1,
+          disabled:false
+        },
+        {
+          label: '全检',
+          value: 2,
+          disabled:false
+        }
+      ]
+      }else{
+         return   [
+        {
+          label: '抽检',
+          value: 1,
+          disabled:true
+        },
+        {
+          label: '全检',
+          value: 2,
+          disabled:true
+        }
+      ]
+      }
+    }
+  },
   created () {
     this.getInfo()
     this._getStoreHouse()
-    const type = this.$route.query.type
+    const type = this.$route.query.type+""
     this.type = type
   },
   methods: {
+    fileSuccess(){
+      console.log(this.wordList)
+
+    },
     filesAdded (files) {
+      if(this.type!=='2'){
+        console.log(2)
+        return;
+      }
       let hasIgnore = false
       const maxSize = 1 * 1024 * 1024 // 1M
       for (let k in files) {
@@ -332,6 +361,11 @@ export default {
     save () {
       const purchSubId = this.$route.query.purchSubId
       if (this.type === '1') {
+         if(!info.quantity||!info.totalPrice||!info.up){
+           this.showToast('收货表单未填写完整')
+          return;
+             
+        }
         var data = Object.assign({}, { purchSubId }, this.info, {
           storeHouseName: this.storeHouseName || this.info.storeHouseName,
           storeHouseId: this.storeHouseId || this.info.storeHouseId,
@@ -343,9 +377,26 @@ export default {
           this.showToast('修改成功')
         })
       } else if (this.type === '3') {
+        if(!info.specialUp||!info.noQualifiedQty||info.reduceRatio===null){
+           this.showToast('特采表单未填写完整')
+          return;
+        }
+        if(info.specialQty>info.noQualifiedQty){
+              this.showToast('特采数量不能大于不良数量')
+              return;
+        }
         var data = Object.assign({}, { purchSubId }, this.info)
         purchSpecial(data).then(res => {})
       } else if (this.type == '2') {
+        
+        if(!this.info.noQualifiedQty||this.info.qualifiedQty===null||!this.info.qcFlag){
+          this.showToast('质检表单未填写完整')
+          return;
+        }
+        if( this.info.noQualifiedQty+this.info.qualifiedQty>this.info.receivedQty){
+         this.showToast('合格数量与不良数量总数不能大于收货数量')
+         return;
+        }
         var data = Object.assign({}, { purchSubId }, this.info)
         purchQuality(data).then(res => {})
       }
