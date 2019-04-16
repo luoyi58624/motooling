@@ -10,6 +10,7 @@
       @pulling-down="onPullingDown"
       @pulling-up="onPullingUp"
     >
+    
       <div>
         <template slot="pulldown" slot-scope="props">
           <span v-if="props.isPullingDown"  style="font-size:12px;">正在更新...</span>
@@ -55,6 +56,7 @@
           </div>
           <div @click="()=>{this.showToast('功能暂未开发')}">筛选</div>
         </div>
+        <div v-if="list.length==0&&!hasMore" class="nocontent">暂无工件</div>
         <div class="list">
           <div class="manager" v-for="(item,index) in list" :key="index">
             <div class="img-wrapper">
@@ -330,6 +332,9 @@ export default {
 }
 </script>
 <style scoped lang="less">
+.nocontent{
+   font-size:16px;color:#999;text-align:center;padding:20px 0;
+}
 .scroll {
   position: fixed;
   top: 41px;
