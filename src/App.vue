@@ -6,7 +6,7 @@
 
 <style lang="less">
 /**@import url("../static/iconfont/iconfont.css");**/
-@import url("//at.alicdn.com/t/font_1109928_kjg94ijcbh.css");
+@import url("//at.alicdn.com/t/font_1109928_0bj316ek8gup.css");
 html,
 body {
   height: 100%;

@@ -137,7 +137,12 @@ export default new Router({
         meta:{keepAlive: true}
       }
     ]
-  }
+  },
+  {
+    path: '/instore/search',
+    name: 'search',
+    component: () => import('./views/instore/search')
+  },
  
 
   ]

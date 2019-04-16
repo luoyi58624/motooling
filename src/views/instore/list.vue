@@ -22,6 +22,7 @@
         <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span>
       </div>
     </div>
+    <div v-if="listDone&&list.length==0" class="nocontent">暂时没有数据</div>
     <div class="list">
       <div
         class="boxer"
@@ -89,7 +90,8 @@ export default {
     return {
       list: [],
       //billNo:'MP19040001'
-      billNo: "MP19010006"
+      billNo: "MP19010006",
+      listDone:false
     };
   },
   created() {
@@ -154,12 +156,15 @@ export default {
       }
     },
     getList() {
+      this.showLoading()
       inStoreList({ billNo: this.billNo }).then(res => {
+        this.hideLoading()
         let array = res.inStoreDetailList;
         for (let i = 0; i < array.length; i++) {
           array[i].selected = false;
         }
         this.list = array;
+        this.listDone=true;
       });
     },
     toInfo(purchSubId, type,isNeedQc) {
@@ -336,6 +341,9 @@ export default {
       }
     }
   }
+}
+.nocontent{
+  font-size:12px;padding:20px 0;text-align:center;color:#999;
 }
 .footer {
   display: flex;

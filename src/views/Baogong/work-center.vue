@@ -142,6 +142,11 @@
           ></div>
         </swiper>
       </div>
+       <div class="bar"></div>
+        <div class="bar"></div>
+         <div class="bar"></div>
+          <div class="bar"></div>
+           <div class="bar"></div>
     </cube-scroll>
     <cube-popup type="my-popup" ref="myPopup">操作成功</cube-popup>
   </div>
@@ -773,6 +778,7 @@ export default {
     },
     _getDeviceAndStatus () {
       const that = this
+      console.log(that.shebeiPage)
       if (this.shebeiHasmore) {
         this.shebeiHasmore = false
         getDeviceAndStatus({
@@ -784,6 +790,7 @@ export default {
             that.shebeiHasmore = true
             that.shebeiPage++
           }
+          
           var arr = [...that.shebeiList, ...res.list]
           for (let i = 0; i < arr.length; i++) {
             arr[i]['showOption'] = false
@@ -807,7 +814,8 @@ export default {
         })
           .then(res => {
             if (res.list.length == 16) {
-              that.waitHasmore = true
+              that.waitHasmore = true;
+              that.waitPage++;
             }
             var arr = [...that.waitList, ...res.list]
             for (let i = 0; i < arr.length; i++) {
@@ -825,7 +833,7 @@ export default {
       }
     },
     _getProcessTaskDone () {
-      const that = this
+      const that = this;
       if (that.doneHasmore) {
         that.doneHasmore = false
         getProcessTask({
@@ -836,7 +844,8 @@ export default {
         })
           .then(res => {
             if (res.list.length == 16) {
-              that.doneHasmore = true
+              that.doneHasmore = true;
+              that.donePage++;
             }
             var arr = [...that.doneList, ...res.list]
             for (let i = 0; i < arr.length; i++) {
