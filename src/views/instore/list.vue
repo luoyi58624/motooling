@@ -165,6 +165,8 @@ export default {
         }
         this.list = array;
         this.listDone=true;
+      }).catch(err=>{
+        console.log(err)
       });
     },
     toInfo(purchSubId, type,isNeedQc) {

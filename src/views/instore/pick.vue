@@ -2,7 +2,7 @@
 <template>
   <cube-scroll class="scroll">
     <div class="_containner">
-      <div class="select-box" v-for="(it,idx) in list" :key="idx">
+      <div class="select-box" v-for="(it,idx) in list" :key="idx" @click="show(idx)">
         <div class="box">
           <div>
             <img src="../../../static/img/s4.png" alt>
@@ -13,8 +13,8 @@
             <img src="../../../static/img/arrow.png" class="arrow" alt>
           </div>
         </div>
-        <div class="list">
-          <div v-for="(item,index) in it.userList" :key="index" @click="pick(item)">
+        <div class="list" v-show="it.showList">
+          <div v-for="(item,index) in it.userList" :key="index" @click.stop="pick(item)">
             <div>
               <span
                 class="iconfont icon-iconfontxuanzhong4"
@@ -68,8 +68,13 @@ export default {
       // console.log(depUserList)
       depUserList().then(res => {
         //this.list = res.depList
-        this.list = res.depList;
+        this.list = res.depList.map(item=>{
+          return Object.assign({},item,{showList:false})
+        })
       });
+    },
+    show(index){
+      this.list[index].showList=!this.list[index].showList
     },
     pick(item) {
       console.log(this.uidList);
