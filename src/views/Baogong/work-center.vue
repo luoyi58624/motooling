@@ -270,6 +270,7 @@ export default {
     const that = this;
     getPmPgList({ deviceId })
       .then(res => {
+        console.log(res.list)
         that.list = res.list;
         that.pgId = res.list[0].pgId;
         // console.log(this.pgId);
