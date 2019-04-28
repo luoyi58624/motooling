@@ -6,6 +6,7 @@
         <img class="logo" alt="logo" src="../assets/logo.png">
       </div>
     </div>
+    <div style="text-align:center">请使用微信打开</div>
     <div class="group">
       <cube-input v-model="loginData.mobile" placeholder="请输入手机号码" type="text" :maxlength="11" :autocomplete="true"></cube-input>
     </div>
