@@ -130,6 +130,7 @@ export default {
     //   this.state =  1
     // }
     // self.resString = res.data.resultData
+    console.log(sessionStorage)
     if (sessionStorage.getItem('wechatInfo')) {
       this.submitmodel = JSON.parse(sessionStorage.getItem('wechatInfo'))
     }

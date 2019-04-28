@@ -1,10 +1,24 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+const getWEBURL = () => localStorage.getItem('WEBURL') || ''
+const getToken = () => localStorage.getItem('token') || ''
 
 Vue.use(Router)
+// router.beforeRouterEnter((to, from, next) => {
+//   console.log(this, 'beforeRouteEnter'); // undefined
+//   console.log(to, '组件独享守卫beforeRouteEnter第一个参数');
+//   console.log(from, '组件独享守卫beforeRouteEnter第二个参数');
+//   console.log(next, '组件独享守卫beforeRouteEnter第三个参数');
+//   next(vm => {
+//     //因为当钩子执行前，组件实例还没被创建
+//     // vm 就是当前组件的实例相当于上面的 this，所以在 next 方法里你就可以把 vm 当 this 来用了。
+//     console.log(vm);//当前组件的实例
+//   });
 
-export default new Router({
+// })
+
+var router = new Router({
   mode: 'history',
   base: '/mthtml',
   routes: [{
@@ -99,7 +113,7 @@ export default new Router({
     path: '/baogong/setting',
     name: 'setting',
     component: () => import('./views/Baogong/setting.vue'),
- 
+
   },
   {
     path: '/baogong/work-shop',
@@ -123,18 +137,18 @@ export default new Router({
     meta: {
       keepAlive: true // 需要被缓存
     },
-    children:[
+    children: [
       {
         path: 'pick',
         name: 'instore-pick',
         component: () => import('./views/instore/pick'),
-        meta:{keepAlive: true}
+        meta: { keepAlive: true }
       },
       {
         path: 'select',
         name: 'instore-select',
         component: () => import('./views/instore/select'),
-        meta:{keepAlive: true}
+        meta: { keepAlive: true }
       }
     ]
   },
@@ -147,3 +161,20 @@ export default new Router({
 
   ]
 })
+router.beforeEach((to, from, next) => {
+  console.log(to.fullPath)
+  if (to.query.token && to.query.weburl) {
+    next()
+    return;
+  } else if (to.path == '/login' || to.path == '/daohang' || to.path == '/'||to.path=='/wxlogin'||to.path=='/wxLoginSuccess'||to.path=='/wxbindphone') {
+    console.log(getWEBURL() ,getToken())
+   next()
+    return;
+  }else if (!getWEBURL()) {
+    console.log('-----------------------',getWEBURL() ,getToken())
+     // router.push('/login?redirectURL=' + to.fullPath)  
+  }
+  next()
+
+})
+export default router;
