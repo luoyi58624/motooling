@@ -6,16 +6,18 @@
     <div><router-link to="/person/add?companyid=1&referee=456&companyid=1">邀请人员</router-link></div>
     <br>
     <div><router-link :to="'/supplier/add?companyid=1&code=' + code" >邀请供应商</router-link></div>
+    <br>
+    <div><router-link to="/baogong/work-center">工作中心</router-link></div>
+    <br>
+    <div><router-link to="/instore/list">收发货</router-link></div>
     <hr>
-    <div><h4>以下为中转页面</h4></div>
+    <div><h4>以下为中转页面（不要直接进入）</h4></div>
     <br>
     <div><router-link to="/login">登录</router-link></div>
     <br>
     <div><router-link to="/wxlogin">微信登录</router-link></div>
     <br>
     <div><router-link to="/wxBindPhone">绑定手机</router-link></div>
-    <div><router-link to="/baogong/work-center">工作中心</router-link></div>
-       <div><router-link to="/instore/list">收发货</router-link></div>
   </div>
 </template>
 
