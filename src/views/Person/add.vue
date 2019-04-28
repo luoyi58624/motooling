@@ -494,10 +494,22 @@ export default {
     },
     submit () {
       console.log(this.submitmodel)
+      var self = this
       // console.log(JSON.stringify(this.submitmodel))
       addUser(this.submitmodel).then(function (res) {
-        console.log(res)
-        alert()
+        if (res.data.code === '000000') {
+          self.$createToast({
+            time: 2000,
+            txt: res.data.msg,
+            type: 'correct'
+          }).show()
+        } else {
+          self.$createToast({
+            time: 2000,
+            txt: res.data.msg,
+            type: 'error'
+          }).show()
+        }
       }).catch(function (err) {
         console.log(err)
       })

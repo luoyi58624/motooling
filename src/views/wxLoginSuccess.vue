@@ -18,7 +18,7 @@ export default {
       let self = this;
       let param = {
         code: getUrlQueryString("code"),
-        companyId: getStringQueryString(this.state, "companyid")
+        // companyId: getStringQueryString(this.state, "companyid")
       };
       console.log("param", param);
       postWxCode(param)
@@ -42,7 +42,7 @@ export default {
             self.$router.replace("/");
           } else if (resObj.data.statusCode === 1) {
             localStorage.setItem("token", resObj.data.user.token);
-            localStorage.setItem("WEBURL", resObj.data.weburl);
+            // localStorage.setItem("WEBURL", resObj.data.weburl);
             localStorage.setItem("uid", resObj.data.user.uid);
             let nexturl;
             if (state) {
@@ -51,8 +51,8 @@ export default {
             }
           } else if (resObj.data.statusCode === 2) {
             // 未绑定手机号
-            localStorage.setItem("WEBURL", resObj.data.weburl);
-            elf.$router.replace("/wxbindphone?redirectURL=" + state);
+            // localStorage.setItem("WEBURL", resObj.data.weburl);
+            self.$router.replace("/wxbindphone?redirectURL=" + state);
           } else if (resObj.data.statusCode === 3) {
             // 用户未审批
             alert("用户信息需要管理员审批，请等待");
@@ -71,6 +71,7 @@ export default {
     this.code = getUrlQueryString("code");
     this.state = decodeURIComponent(getUrlQueryString("state"));
     console.log(this.state);
+    localStorage.setItem("WEBURL", 'http://192.168.2.180:8808');
     this.submitCode();
   }
 };
