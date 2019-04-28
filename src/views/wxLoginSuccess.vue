@@ -52,11 +52,7 @@ export default {
           } else if (resObj.data.statusCode === 2) {
             // 未绑定手机号
             localStorage.setItem("WEBURL", resObj.data.weburl);
-            alert(localStorage.getItem('WEBURL'))
-            if(localStorage.getItem('WEBURL')){
-                  self.$router.replace("/wxBindPhone?redirectURL=" + state);
-            }
-          
+            elf.$router.replace("/wxbindphone?redirectURL=" + state);
           } else if (resObj.data.statusCode === 3) {
             // 用户未审批
             alert("用户信息需要管理员审批，请等待");

@@ -162,19 +162,16 @@ var router = new Router({
   ]
 })
 router.beforeEach((to, from, next) => {
-  console.log(to.fullPath)
+  const path=to.path.toLowerCase();
   if (to.query.token && to.query.weburl) {
     next()
-    return;
-  } else if (to.path == '/login' || to.path == '/daohang' || to.path == '/'||to.path=='/wxlogin'||to.path=='/wxLoginSuccess'||to.path=='/wxbindphone') {
-    console.log(getWEBURL() ,getToken())
-   next()
-    return;
-  }else if (!getWEBURL()) {
-    console.log('-----------------------',getWEBURL() ,getToken())
-     // router.push('/login?redirectURL=' + to.fullPath)  
+    return; 
+  } else if (path == '/login' || path == '/daohang' || path == '/'||path=='/wxlogin'||path=='/wxloginsuccess'||path=='/wxbindphone') {
+  }else if (!getWEBURL()||!getToken()) {
+     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))  
+     return;
   }
+  // setTimeout(()=>{next()},2000)
   next()
-
 })
 export default router;
