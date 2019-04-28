@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="tips">
-      欢迎您加入Motooling! 请如实填写以下信息，以便您使用简单、快捷的办公方式
+      欢迎您加入MoTooling! 请如实填写以下信息，以便您使用简单、快捷的办公方式
     </div>
     <!-- 免冠照 -->
     <cu-upload
@@ -78,14 +78,14 @@
     @file-remove="idCardcertificatesFaceImgRemove"
     :initialFile="submitmodel.idCard.certificatesFaceImg"
     :max='1'>
-    <div slot="label">身份证原件正面</div>
+    <div slot="label">身份证正面照</div>
     </cu-upload>
     <cu-upload
     @file-success="idCardcertificatesBackImgSuccess"
     @file-remove="idCardcertificatesBackImgRemove"
     :initialFile="submitmodel.idCard.certificatesBackImg"
     :max='1'>
-    <div slot="label">身份证反面</div>
+    <div slot="label">身份证反面照</div>
     </cu-upload>
     <cu-input label="社保卡号" v-model="submitmodel.socialSecurity.number" placeholder="输入" >
     </cu-input>
@@ -94,7 +94,7 @@
     @file-remove="socialSecuritycertificatesFaceImgRemove"
     :initialFile="submitmodel.socialSecurity.certificatesFaceImg"
     :max='1'>
-    <div slot="label">社保卡原件</div>
+    <div slot="label">社保卡原件照</div>
     </cu-upload>
 
     <cu-input label="公积金号" v-model="submitmodel.accumulation.number" placeholder="输入" >
@@ -104,7 +104,7 @@
     @file-remove="accumulationcertificatesFaceImgRemove"
     :initialFile="submitmodel.accumulation.certificatesFaceImg"
     :max='1'>
-    <div slot="label">公积金卡原件</div>
+    <div slot="label">公积金卡原件照</div>
     </cu-upload>
     <cu-input label="工资卡号" v-model="submitmodel.salary.number" placeholder="输入" >
     </cu-input>
@@ -113,7 +113,7 @@
     @file-remove="salarycertificatesFaceImgRemove"
     :initialFile="submitmodel.salary.certificatesFaceImg"
     :max='1'>
-    <div slot="label">工资卡原件</div>
+    <div slot="label">工资卡原件照</div>
     </cu-upload>
     <div>
       <div class="group-title">家庭成员</div>
@@ -494,9 +494,22 @@ export default {
     },
     submit () {
       console.log(this.submitmodel)
+      var self = this
       // console.log(JSON.stringify(this.submitmodel))
       addUser(this.submitmodel).then(function (res) {
-        console.log(res)
+        if (res.data.code === '000000') {
+          self.$createToast({
+            time: 2000,
+            txt: res.data.msg,
+            type: 'correct'
+          }).show()
+        } else {
+          self.$createToast({
+            time: 2000,
+            txt: res.data.msg,
+            type: 'error'
+          }).show()
+        }
       }).catch(function (err) {
         console.log(err)
       })
