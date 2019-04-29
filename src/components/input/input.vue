@@ -19,9 +19,9 @@ export default {
     label: {
       type: String
     },
-    isRequired:{
-      type:Boolean,
-      default:false
+    isRequired: {
+      type: Boolean,
+      default: false
     },
     disabled: {
       type: Boolean,

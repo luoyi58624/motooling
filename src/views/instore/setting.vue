@@ -105,7 +105,7 @@
         <cube-switch v-model="ratifyerIfMoney"></cube-switch>
       </div>
     </div>
-    
+
       <router-view></router-view>
         <div class="zw"></div>
       <div class="bot">
@@ -115,127 +115,126 @@
 </template>
 
 <script>
-import { setUpInfo, setUpUpdate,getNotifyType} from "@/api/instore/instore";
-import myHeader from "@/components/header";
+import { setUpInfo, setUpUpdate, getNotifyType } from '@/api/instore/instore'
+import myHeader from '@/components/header'
 export default {
   components: {
     myHeader
   },
-  data() {
+  data () {
     return {
       setInfo: {
       //   verifyerNotifyList:[{}],
       //    ratifyerNotifyLisst:[{}],
       // founderNotifyList:[{}],
       },
-      notifyTypeList:[],
-      founderNotifyList:[],
-      verifyerNotifyList:[],
-      ratifyerNotifyLisst:[],
-      founderIfMoney:false,
-      verifyerIfMoney:false,
-      ratifyerIfMoney:false
-    };
+      notifyTypeList: [],
+      founderNotifyList: [],
+      verifyerNotifyList: [],
+      ratifyerNotifyLisst: [],
+      founderIfMoney: false,
+      verifyerIfMoney: false,
+      ratifyerIfMoney: false
+    }
   },
-  created() {
-     const that=this;
-    this.getSetting();
-    getNotifyType().then(res=>{
+  created () {
+    const that = this
+    this.getSetting()
+    getNotifyType().then(res => {
       console.log(res.notifyTypeList)
-      const notifyTypeList=res.notifyTypeList.map(item=>{
-        if(item.isUse){
-            return {label:item.name,value:item.code}
+      const notifyTypeList = res.notifyTypeList.map(item => {
+        if (item.isUse) {
+          return { label: item.name, value: item.code }
         }
       })
-      that.notifyTypeList=notifyTypeList
+      that.notifyTypeList = notifyTypeList
       console.log(notifyTypeList)
     })
-
   },
   computed: {
-    founderList() {
-      return this.$store.state.founderList;
+    founderList () {
+      return this.$store.state.founderList
     },
-    founderManagerList(){
-          return this.$store.state.founderManagerList
+    founderManagerList () {
+      return this.$store.state.founderManagerList
     },
-    verifyerManagerList(){
-       return this.$store.state.verifyerManagerList
+    verifyerManagerList () {
+      return this.$store.state.verifyerManagerList
     },
-    verifyerList(){
-       return this.$store.state.verifyerList
+    verifyerList () {
+      return this.$store.state.verifyerList
     },
-    ratifyerList(){
-       return this.$store.state.ratifyerList
+    ratifyerList () {
+      return this.$store.state.ratifyerList
     },
-    ratifyerManagerList(){
-       return this.$store.state.ratifyerManagerList
-    },
+    ratifyerManagerList () {
+      return this.$store.state.ratifyerManagerList
+    }
 
   },
 
   methods: {
-    save(){
-      const verifyerNotifyList= this.verifyerNotifyList.map(item=>{
-        return {code:item}
+    save () {
+      const verifyerNotifyList = this.verifyerNotifyList.map(item => {
+        return { code: item }
       })
-      const founderNotifyList= this.founderNotifyList.map(item=>{
-        return {code:item}
+      const founderNotifyList = this.founderNotifyList.map(item => {
+        return { code: item }
       })
-      const ratifyerNotifyLisst= this.ratifyerNotifyLisst.map(item=>{
-        return {code:item}
+      const ratifyerNotifyLisst = this.ratifyerNotifyLisst.map(item => {
+        return { code: item }
       })
       console.log(verifyerNotifyList,
-          founderNotifyList,
-          ratifyerNotifyLisst)
-        const newObject=Object.assign({},this.setInfo,{
-          founderList:this.founderList,
-          founderManagerList:this.founderManagerList,
-          verifyerManagerList:this.verifyerManagerList,
-          verifyerNotifyList,
-          founderNotifyList,
-          ratifyerNotifyLisst,
-           founderIfMoney:this.founderIfMoney?'1':'0',
-      verifyerIfMoney:this.verifyerIfMoney?'1':'0',
-      ratifyerIfMoney:this.ratifyerIfMoney?'1':'0',
-        })
-        setUpUpdate(newObject).then(res=>{
-          console.log(res)
-          this.showToast('保存成功')
-        }).catch(res=>{
-          if(res.msg){
-            this.showToast(res.msg)
-          }
-        })
+        founderNotifyList,
+        ratifyerNotifyLisst)
+      const newObject = Object.assign({}, this.setInfo, {
+        founderList: this.founderList,
+        founderManagerList: this.founderManagerList,
+        verifyerManagerList: this.verifyerManagerList,
+        verifyerNotifyList,
+        founderNotifyList,
+        ratifyerNotifyLisst,
+        founderIfMoney: this.founderIfMoney ? '1' : '0',
+        verifyerIfMoney: this.verifyerIfMoney ? '1' : '0',
+        ratifyerIfMoney: this.ratifyerIfMoney ? '1' : '0'
+      })
+      setUpUpdate(newObject).then(res => {
+        console.log(res)
+        this.showToast('保存成功')
+      }).catch(res => {
+        if (res.msg) {
+          this.showToast(res.msg)
+        }
+      })
     },
-    addTeam(type,name) {
+    addTeam (type, name) {
       this.$router.push({
-        path: "/instore/setting/select",
+        path: '/instore/setting/select',
         query: {
           type,
-          name,
+          name
         }
-      });
+      })
     },
-    getSetting() {
+    getSetting () {
       setUpInfo().then(res => {
-        this.setInfo = res;
-        this.founderNotifyList=res.founderNotifyList.map(item=>item.code)
-         this.verifyerNotifyList=res.verifyerNotifyList.map(item=>item.code)
-          this.ratifyerNotifyLisst=res.ratifyerNotifyLisst.map(item=>item.code)
-           this.founderIfMoney=res.founderIfMoney?true:false;
-      this.verifyerIfMoney=res.verifyerIfMoney?true:false;
-      this.ratifyerIfMoney=res.ratifyerIfMoney?true:false;
-        this.$store.commit("changeReciveList", res.founderList||[]);
-        this.$store.commit("changeFounderManagerList", res.founderManagerList||[]);
-        this.$store.commit("changeVerifyerManagerList", res.verifyerManagerList||[]);
-        this.$store.commit("changeVerifyerList", res.verifyerList||[]);
-        this.$store.commit("changeRatifyerList", res.ratifyerList||[]);
-        this.$store.commit("changeRatifyerManagerList", res.ratifyerManagerList||[]);
-      });
+        this.setInfo = res
+        this.founderNotifyList = res.founderNotifyList.map(item => item.code)
+        this.verifyerNotifyList = res.verifyerNotifyList.map(item => item.code)
+        this.ratifyerNotifyLisst = res.ratifyerNotifyLisst.map(item => item.code)
+        this.founderIfMoney = !!res.founderIfMoney
+        this.verifyerIfMoney = !!res.verifyerIfMoney
+        this.ratifyerIfMoney = !!res.ratifyerIfMoney
+        this.$store.commit('changeReciveList', res.founderList || [])
+        this.$store.commit('changeFounderManagerList', res.founderManagerList || [])
+        this.$store.commit('changeVerifyerManagerList', res.verifyerManagerList || [])
+        this.$store.commit('changeVerifyerList', res.verifyerList || [])
+        this.$store.commit('changeRatifyerList', res.ratifyerList || [])
+        this.$store.commit('changeRatifyerManagerList', res.ratifyerManagerList || [])
+      })
     }
   }
-};
+}
 </script>
 <style lang='less' scoped>
 .z-top {
@@ -299,7 +298,7 @@ export default {
         font-size: 14px;
         display: flex;flex-direction: wrap;
         align-items: center;
-       
+
         > span {
           width: 14px;
           height: 14px;

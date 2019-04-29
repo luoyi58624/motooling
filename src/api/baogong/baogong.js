@@ -1,11 +1,11 @@
 import request from '@/utils/newRequest'
 import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
-const getWEBURL=()=>localStorage.getItem('WEBURL') || ''
-const getToken =() => localStorage.getItem('token') || ''
-const token=localStorage.getItem('token') || ''
+const getWEBURL = () => localStorage.getItem('WEBURL') || ''
+const getToken = () => localStorage.getItem('token') || ''
+const token = localStorage.getItem('token') || ''
 const timestamp = '1547621396'
-const getMd5String =()=> md5(getToken() + timestamp + 'Motooling')
+const getMd5String = () => md5(getToken() + timestamp + 'Motooling')
 
 // console.log(md5String)
 
@@ -26,8 +26,8 @@ export function getPmPgList (params = {}) {
 }
 export function getSettingList (params = {}) {
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -39,8 +39,8 @@ export function getSettingList (params = {}) {
 }
 export function getDeviceAndStatus (params = {}) {
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -52,8 +52,8 @@ export function getDeviceAndStatus (params = {}) {
 }
 export function getProcessTask (params = {}) {
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -65,8 +65,8 @@ export function getProcessTask (params = {}) {
 }
 export function setStartProcessTask (params = {}) { // 开始加工某种任务
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -78,8 +78,8 @@ export function setStartProcessTask (params = {}) { // 开始加工某种任务
 }
 export function allocateProcessTask (params = {}) { // 组长分配待加工任务
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -91,8 +91,8 @@ export function allocateProcessTask (params = {}) { // 组长分配待加工任�
 }
 export function setTaskTurnover (params = {}) { // 设置工件交接
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -104,8 +104,8 @@ export function setTaskTurnover (params = {}) { // 设置工件交接
 }
 export function setTaskFinished (params = {}) { // 设置工件完工
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -117,8 +117,8 @@ export function setTaskFinished (params = {}) { // 设置工件完工
 }
 export function setTask (params = {}) { // 设置工件交接。完工
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -131,8 +131,8 @@ export function setTask (params = {}) { // 设置工件交接。完工
 
 export function setTaskPrediction (params = {}) { // 预报加工时间
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -145,8 +145,8 @@ export function setTaskPrediction (params = {}) { // 预报加工时间
 
 export function setWaitProcessTaskTop (params = {}) { // 设置待加工任务置顶
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -159,8 +159,8 @@ export function setWaitProcessTaskTop (params = {}) { // 设置待加工任务�
 
 export function getPartList (params = {}) { // 获取接收转出工件列表
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -172,8 +172,8 @@ export function getPartList (params = {}) { // 获取接收转出工件列表
 }
 export function setPartReceive (params = {}) { // 接收
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -185,8 +185,8 @@ export function setPartReceive (params = {}) { // 接收
 }
 export function setPartFlowOut (params = {}) { // 转出
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -198,8 +198,8 @@ export function setPartFlowOut (params = {}) { // 转出
 }
 export function setPartReprocess (params = {}) { // 返工
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -211,8 +211,8 @@ export function setPartReprocess (params = {}) { // 返工
 }
 export function getPartProcessLog (params = {}) { // 查询日志
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -227,7 +227,7 @@ export function setPart (params = {}) { // 查询日志
   console.log(getToken())
   const data = {
     token: getToken(),
-     md5: getMd5String(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -240,8 +240,8 @@ export function setPart (params = {}) { // 查询日志
 
 export function setPartPraise (params = {}) { // 点赞
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -253,8 +253,8 @@ export function setPartPraise (params = {}) { // 点赞
 }
 export function saveParamList (params = {}) { // 点赞
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -267,8 +267,8 @@ export function saveParamList (params = {}) { // 点赞
 
 export function setProcessTaskPrediction (params = {}) {
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -281,8 +281,8 @@ export function setProcessTaskPrediction (params = {}) {
 
 export function workshopList (params = {}) {
   const data = {
-   token: getToken(),
-     md5: getMd5String(),
+    token: getToken(),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }

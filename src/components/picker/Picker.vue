@@ -12,9 +12,9 @@
 export default {
   name: 'CuPicker',
   props: {
-    isRequired:{
-      type:Boolean,
-      default:false
+    isRequired: {
+      type: Boolean,
+      default: false
     },
     pickerData: {
       type: Array,

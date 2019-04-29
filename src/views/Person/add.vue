@@ -377,7 +377,7 @@ export default {
         accumulation: {},
         salary: {}
 
-        }
+      }
     }
   },
   methods: {
@@ -499,19 +499,18 @@ export default {
       console.log(this.submitmodel)
       var self = this
       // console.log(JSON.stringify(this.submitmodel))
-      if(this.submitmodel.userInfo.username==''||
-        this.submitmodel.userInfo.mobile==''||
-        this.submitmodel.userInfo.gender==''||
-        this.submitmodel.userInfo.depId==''||
-        this.submitmodel.userInfo.positionCode==''
-        ){
-          self.$createToast({
-            time: 2000,
-            txt: '请完善资料',
-            type: 'error'
-          }).show()
-        }
-      else{
+      if (this.submitmodel.userInfo.username == '' ||
+        this.submitmodel.userInfo.mobile == '' ||
+        this.submitmodel.userInfo.gender == '' ||
+        this.submitmodel.userInfo.depId == '' ||
+        this.submitmodel.userInfo.positionCode == ''
+      ) {
+        self.$createToast({
+          time: 2000,
+          txt: '请完善资料',
+          type: 'error'
+        }).show()
+      } else {
         addUser(this.submitmodel).then(function (res) {
           if (res.data.code === '000000') {
             self.$createToast({

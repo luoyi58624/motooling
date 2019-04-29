@@ -112,7 +112,7 @@ var router = new Router({
   {
     path: '/baogong/setting',
     name: 'setting',
-    component: () => import('./views/Baogong/setting.vue'),
+    component: () => import('./views/Baogong/setting.vue')
 
   },
   {
@@ -156,25 +156,24 @@ var router = new Router({
     path: '/instore/search',
     name: 'search',
     component: () => import('./views/instore/search')
-  },
-
+  }
 
   ]
 })
 router.beforeEach((to, from, next) => {
-  const path=to.path.toLowerCase();
-  if (to.query.weburl){
+  const path = to.path.toLowerCase()
+  if (to.query.weburl) {
     localStorage.WEBURL = decodeURIComponent(to.query.weburl)
   }
   if (to.query.token && to.query.weburl) {
     next()
-    return;
-  } else if (path == '/login' || path == '/daohang' || path == '/'||path=='/wxlogin'||path=='/wxloginsuccess'||path=='/wxbindphone') {
-  }else if (!getWEBURL()||!getToken()) {
-     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
-     return;
+    return
+  } else if (path == '/login' || path == '/daohang' || path == '/' || path == '/wxlogin' || path == '/wxloginsuccess' || path == '/wxbindphone') {
+  } else if (!getWEBURL() || !getToken()) {
+    router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
+    return
   }
   // setTimeout(()=>{next()},2000)
   next()
 })
-export default router;
+export default router

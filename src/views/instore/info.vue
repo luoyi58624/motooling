@@ -215,231 +215,231 @@ import {
   purchQuality,
   getStoreHouse,
   getStoreRoom
-} from "@/api/instore/instore";
-import myHeader from "@/components/header";
-import CuUpload from "@/components/upload/Upload";
-import { WEBURL, BASEURL } from "@/utils/utils.js";
-import md5 from "md5";
+} from '@/api/instore/instore'
+import myHeader from '@/components/header'
+import CuUpload from '@/components/upload/Upload'
+import { WEBURL, BASEURL } from '@/utils/utils.js'
+import md5 from 'md5'
 
-const token = localStorage.getItem("token") || "";
-const timestamp = "1547621396";
-const md5String = md5(token + timestamp + "Motooling");
-console.log(md5String);
+const token = localStorage.getItem('token') || ''
+const timestamp = '1547621396'
+const md5String = md5(token + timestamp + 'Motooling')
+console.log(md5String)
 const req = {
   token: token,
   md5: md5String,
   timestamp: timestamp,
   data: {}
-};
+}
 
 export default {
   components: {
     myHeader
   },
-  data() {
+  data () {
     return {
       action: {
-        target: WEBURL + "/file/h5FileUpload",
-        fileName: "enFile",
+        target: WEBURL + '/file/h5FileUpload',
+        fileName: 'enFile',
         data: { paramsMap: JSON.stringify(req) },
         checkSuccess: (res, file) => {
           // let rdata = JSON.parse(decrypt(res.resultData))
-          console.log("res", res);
+          console.log('res', res)
           if (res.status === 0) {
             // this.uploadValue1 = rdata.url
-            return true;
+            return true
           }
         }
       },
       wordList: [],
       info: {},
-      value: "",
+      value: '',
       storeHouseList: [],
       storeRoomList: [],
-      textCk: "1",
-      textKw: "345",
-      type: "2", // 用于判断哪些板块可以操作，1代表可以操作收货信息，2代表质检信息，3特采信息
-      storeHouseName: "",
-      storeHouseId: "",
-      storeRoomId: "",
-      storeRoomName: ""
-    };
+      textCk: '1',
+      textKw: '345',
+      type: '2', // 用于判断哪些板块可以操作，1代表可以操作收货信息，2代表质检信息，3特采信息
+      storeHouseName: '',
+      storeHouseId: '',
+      storeRoomId: '',
+      storeRoomName: ''
+    }
   },
   computed: {
-    options3() {
-      console.log(this.type === "2");
-      if (this.type === "2") {
+    options3 () {
+      console.log(this.type === '2')
+      if (this.type === '2') {
         return [
           {
-            label: "抽检",
+            label: '抽检',
             value: 1,
             disabled: false
           },
           {
-            label: "全检",
+            label: '全检',
             value: 2,
             disabled: false
           }
-        ];
+        ]
       } else {
         return [
           {
-            label: "抽检",
+            label: '抽检',
             value: 1,
             disabled: true
           },
           {
-            label: "全检",
+            label: '全检',
             value: 2,
             disabled: true
           }
-        ];
+        ]
       }
     }
   },
-  created() {
-    this.getInfo();
-    this._getStoreHouse();
-    const type = this.$route.query.type + "";
-    this.type = type;
+  created () {
+    this.getInfo()
+    this._getStoreHouse()
+    const type = this.$route.query.type + ''
+    this.type = type
   },
   methods: {
-    fileSuccess() {
-      console.log(this.wordList);
+    fileSuccess () {
+      console.log(this.wordList)
     },
-    filesAdded(files) {
-      if (this.type !== "2") {
-        console.log(2);
-        return;
+    filesAdded (files) {
+      if (this.type !== '2') {
+        console.log(2)
+        return
       }
-      let hasIgnore = false;
-      const maxSize = 1 * 1024 * 1024; // 1M
+      let hasIgnore = false
+      const maxSize = 1 * 1024 * 1024 // 1M
       for (let k in files) {
-        const file = files[k];
+        const file = files[k]
         if (file.size > maxSize) {
-          file.ignore = true;
-          hasIgnore = true;
+          file.ignore = true
+          hasIgnore = true
         }
       }
       hasIgnore &&
         this.$createToast({
-          type: "warn",
+          type: 'warn',
           time: 1000,
-          txt: "You selected >1M files"
-        }).show();
+          txt: 'You selected >1M files'
+        }).show()
     },
-    fileSubmitted(file) {
-      file.base64Value = file.file.base64;
+    fileSubmitted (file) {
+      file.base64Value = file.file.base64
     },
-    changeQc(value) {
-      console.log(this.info);
+    changeQc (value) {
+      console.log(this.info)
       // this.$set(this.info,'qcFlag',value)
       // this.info.qcFlag=value;
     },
-    changeCk(value, index, text) {
-      console.log("change", value, index, text, this.textCk);
+    changeCk (value, index, text) {
+      console.log('change', value, index, text, this.textCk)
       getStoreRoom({ storeHouseId: value }).then(res => {
-        var romeList = res.storeRoomsConfList;
+        var romeList = res.storeRoomsConfList
         var newRome = romeList.map((item, index) => {
-          return { text: item.storeRoomName, value: item.id };
-        });
-        this.storeRoomList = newRome;
-        this.storeHouseId = value;
-        this.storeHouseName = text;
-        console.log(this.storeHouseName);
-      });
+          return { text: item.storeRoomName, value: item.id }
+        })
+        this.storeRoomList = newRome
+        this.storeHouseId = value
+        this.storeHouseName = text
+        console.log(this.storeHouseName)
+      })
     },
-    changeKw(value, index, text) {
-      this.storeRoomId = value;
-      this.storeRoomName = text;
+    changeKw (value, index, text) {
+      this.storeRoomId = value
+      this.storeRoomName = text
     },
-    _getStoreHouse() {
+    _getStoreHouse () {
       getStoreHouse().then(res => {
-        console.log(res.storeHouseConfList);
-        var houseList = res.storeHouseConfList;
+        console.log(res.storeHouseConfList)
+        var houseList = res.storeHouseConfList
         var newHose = houseList.map((item, index) => {
-          return { text: item.storeHouseName, value: item.id };
-        });
-        this.storeHouseList = newHose;
-      });
+          return { text: item.storeHouseName, value: item.id }
+        })
+        this.storeHouseList = newHose
+      })
     },
-    getInfo() {
-      const purchSubId = this.$route.query.purchSubId;
-      console.log(purchSubId);
+    getInfo () {
+      const purchSubId = this.$route.query.purchSubId
+      console.log(purchSubId)
       inStoreInfo({ purchSubId }).then(res => {
-        console.log(res);
-        this.info = res.inStoreInfo;
-        this.storeHouseId = res.inStoreInfo.storeHouseId;
-        this.storeRoomId = res.inStoreInfo.storeRoomId;
-        console.log(this.storeHouseId, this.storeRoomId);
+        console.log(res)
+        this.info = res.inStoreInfo
+        this.storeHouseId = res.inStoreInfo.storeHouseId
+        this.storeRoomId = res.inStoreInfo.storeRoomId
+        console.log(this.storeHouseId, this.storeRoomId)
         if (this.storeHouseId) {
           getStoreRoom({ storeHouseId: this.storeHouseId }).then(res => {
-            var romeList = res.storeRoomsConfList;
+            var romeList = res.storeRoomsConfList
             var newRome = romeList.map((item, index) => {
-              return { text: item.storeRoomName, value: item.id };
-            });
-            this.storeRoomList = newRome;
-          });
+              return { text: item.storeRoomName, value: item.id }
+            })
+            this.storeRoomList = newRome
+          })
         }
-      });
+      })
     },
-    save() {
-      const purchSubId = this.$route.query.purchSubId;
-      if (this.type === "1") {
+    save () {
+      const purchSubId = this.$route.query.purchSubId
+      if (this.type === '1') {
         if (!this.info.quantity || !this.info.totalPrice || !this.info.up) {
-          this.showToast("收货表单未填写完整");
-          return;
+          this.showToast('收货表单未填写完整')
+          return
         }
         var data = Object.assign({}, { purchSubId }, this.info, {
           storeHouseName: this.storeHouseName || this.info.storeHouseName,
           storeHouseId: this.storeHouseId || this.info.storeHouseId,
           storeRoomId: this.storeRoomId || this.info.storeRoomId,
           storeRoomName: this.storeRoomName || this.info.storeRoomName
-        });
+        })
         purchUpdate(data).then(res => {
-          console.log(res);
-          this.showToast("修改成功");
-        });
-      } else if (this.type === "3") {
+          console.log(res)
+          this.showToast('修改成功')
+        })
+      } else if (this.type === '3') {
         if (
           !this.info.specialUp ||
           !this.info.noQualifiedQty ||
           this.info.reduceRatio === null
         ) {
-          this.showToast("特采表单未填写完整");
-          return;
+          this.showToast('特采表单未填写完整')
+          return
         }
         if (this.info.specialQty > this.info.noQualifiedQty) {
-          this.showToast("特采数量不能大于不良数量");
-          return;
+          this.showToast('特采数量不能大于不良数量')
+          return
         }
-        var data = Object.assign({}, { purchSubId }, this.info);
-        purchSpecial(data).then(res => {});
-      } else if (this.type == "2") {
+        var data = Object.assign({}, { purchSubId }, this.info)
+        purchSpecial(data).then(res => {})
+      } else if (this.type == '2') {
         if (
           !this.info.noQualifiedQty ||
           this.info.qualifiedQty === null ||
           !this.info.qcFlag
         ) {
-          this.showToast("质检表单未填写完整");
-          return;
+          this.showToast('质检表单未填写完整')
+          return
         }
         if (
           this.info.noQualifiedQty + this.info.qualifiedQty >
           this.info.receivedQty
         ) {
-          this.showToast("合格数量与不良数量总数不能大于收货数量");
-          return;
+          this.showToast('合格数量与不良数量总数不能大于收货数量')
+          return
         }
-        var data = Object.assign({}, { purchSubId }, this.info);
-        purchQuality(data).then(res => {});
+        var data = Object.assign({}, { purchSubId }, this.info)
+        purchQuality(data).then(res => {})
       }
     }
   },
   comments: {
     CuUpload
   }
-};
+}
 </script>
 <style lang='less' scoped>
 .radio {

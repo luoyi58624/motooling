@@ -10,7 +10,7 @@
       @pulling-down="onPullingDown"
       @pulling-up="onPullingUp"
     >
-    
+
       <div>
         <template slot="pulldown" slot-scope="props">
           <span v-if="props.isPullingDown"  style="font-size:12px;">正在更新...</span>
