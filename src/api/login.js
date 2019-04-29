@@ -1,10 +1,6 @@
 import request from '@/utils/request'
-import { WEBURL, BASEURL } from '@/utils/utils.js'
-import { encryption } from '@/utils/crypt'
+import { BASEURL, token } from '@/utils/utils.js'
 import md5 from 'md5'
-// import { strToBinary } from '@/utils/utils'
-
-const token = () => localStorage.getItem('token') || ''
 const timestamp = '1547621396'
 const md5String = md5(token() + timestamp + 'Motooling')
 

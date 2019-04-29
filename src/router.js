@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-const getWEBURL = () => localStorage.getItem('WEBURL') || ''
-const getToken = () => localStorage.getItem('token') || ''
+import { WEBURL, token } from '@/utils/utils.js'
 
 Vue.use(Router)
 // router.beforeRouterEnter((to, from, next) => {
@@ -169,7 +168,7 @@ router.beforeEach((to, from, next) => {
     next()
     return
   } else if (path == '/login' || path == '/daohang' || path == '/' || path == '/wxlogin' || path == '/wxloginsuccess' || path == '/wxbindphone') {
-  } else if (!getWEBURL() || !getToken()) {
+  } else if (!WEBURL() || !token()) {
     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
     return
   }

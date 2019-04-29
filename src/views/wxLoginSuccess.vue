@@ -67,8 +67,7 @@ export default {
         })
     }
   },
-    console.log(this.state);
-    localStorage.setItem("WEBURL", 'http://192.168.2.180:8808');
+
   created () {
     this.code = getUrlQueryString('code')
     this.state = decodeURIComponent(getUrlQueryString('state'))

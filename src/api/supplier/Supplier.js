@@ -1,16 +1,12 @@
 import request from '@/utils/request'
-import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
-const WEBURL = localStorage.getItem('WEBURL') || ''
-const token = localStorage.getItem('token') || ''
+import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
-const md5String = md5(token + timestamp + 'Motooling')
-
-console.log(md5String)
+const md5String = md5(token() + timestamp + 'Motooling')
 
 export function getSupplierInfo (params) {
   const data = {
-    token: token,
+    token: token(),
     md5: md5String,
     timestamp: timestamp,
     data: params
@@ -26,7 +22,7 @@ export function getSupplierInfo (params) {
 
 export function addSupplierInfo (params) {
   const data = {
-    token: token,
+    token: token(),
     md5: md5String,
     timestamp: timestamp,
     data: params
@@ -41,7 +37,7 @@ export function addSupplierInfo (params) {
 
 export function supplierSelectList (params) {
   const data = {
-    token: token,
+    token: token(),
     md5: md5String,
     timestamp: timestamp,
     data: params
