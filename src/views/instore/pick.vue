@@ -67,14 +67,18 @@ export default {
     getList () {
       // console.log(depUserList)
       depUserList().then(res => {
-        // this.list = res.depList
-        this.list = res.depList.map(item => {
+        const depList=res.list||[];
+        console.log(depList)
+        this.list = depList.map(item => {
           return Object.assign({}, item, { showList: false })
         })
       })
     },
     show (index) {
-      this.list[index].showList = !this.list[index].showList
+      console.log(index)
+      this.list=[...this.list.slice(0,index),Object.assign({},this.list[index],{showList:true}),...this.list.slice(index+1)]
+      console.log(this.list[index])
+      //this.list[index].showList = !this.list[index].showList
     },
     pick (item) {
       console.log(this.uidList)
