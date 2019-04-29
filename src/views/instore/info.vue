@@ -386,7 +386,7 @@ export default {
     save() {
       const purchSubId = this.$route.query.purchSubId;
       if (this.type === "1") {
-        if (!info.quantity || !info.totalPrice || !info.up) {
+        if (!this.info.quantity || !this.info.totalPrice || !this.info.up) {
           this.showToast("收货表单未填写完整");
           return;
         }
@@ -402,14 +402,14 @@ export default {
         });
       } else if (this.type === "3") {
         if (
-          !info.specialUp ||
-          !info.noQualifiedQty ||
-          info.reduceRatio === null
+          !this.info.specialUp ||
+          !this.info.noQualifiedQty ||
+          this.info.reduceRatio === null
         ) {
           this.showToast("特采表单未填写完整");
           return;
         }
-        if (info.specialQty > info.noQualifiedQty) {
+        if (this.info.specialQty > this.info.noQualifiedQty) {
           this.showToast("特采数量不能大于不良数量");
           return;
         }
