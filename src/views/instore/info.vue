@@ -347,8 +347,7 @@ export default {
         this.storeHouseId = value;
         this.storeHouseName = text;
         console.log(this.storeHouseName);
-      })
-      ;
+      });
     },
     changeKw(value, index, text) {
       this.storeRoomId = value;
@@ -397,14 +396,16 @@ export default {
           storeRoomId: this.storeRoomId || this.info.storeRoomId,
           storeRoomName: this.storeRoomName || this.info.storeRoomName
         });
-        purchUpdate(data).then(res => {
-          console.log(res);
-          this.showToast("修改成功");
-        }).catch(err=>{
-          if(err.msg){
-            this.showToast(err.msg)
-          }
-        });
+        purchUpdate(data)
+          .then(res => {
+            console.log(res);
+            this.showToast("修改成功");
+          })
+          .catch(err => {
+            if (err.msg) {
+              this.showToast(err.msg);
+            }
+          });
       } else if (this.type === "3") {
         if (
           !info.specialUp ||
@@ -419,7 +420,15 @@ export default {
           return;
         }
         var data = Object.assign({}, { purchSubId }, this.info);
-        purchSpecial(data).then(res => {});
+        purchSpecial(data)
+          .then(res => {
+            this.showToast("修改成功");
+          })
+          .catch(err => {
+            if (err.msg) {
+              this.showToast(err.msg);
+            }
+          });
       } else if (this.type == "2") {
         if (
           !this.info.noQualifiedQty ||
@@ -437,12 +446,15 @@ export default {
           return;
         }
         var data = Object.assign({}, { purchSubId }, this.info);
-        purchQuality(data).then(res => {
-          this.showToast('修改成功')
-        }).catch(err => {
-          if (err.msg) {
-            this.showToast(err.msg);
-          }
+        purchQuality(data)
+          .then(res => {
+            this.showToast("修改成功");
+          })
+          .catch(err => {
+            if (err.msg) {
+              this.showToast(err.msg);
+            }
+          });
       }
     }
   },
