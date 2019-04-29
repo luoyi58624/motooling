@@ -4,8 +4,6 @@ import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
 const md5String = md5(token() + timestamp + 'Motooling')
 
-console.log(md5String)
-
 export function getUser (params) {
   const data = {
     token: token(),
@@ -13,7 +11,6 @@ export function getUser (params) {
     timestamp: timestamp,
     data: params
   }
-  console.log(data)
 
   return request({
     url: WEBURL() + '/mtH5/invitationPerson/userInfo',

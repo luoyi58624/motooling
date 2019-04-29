@@ -4,8 +4,6 @@ import md5 from 'md5'
 const timestamp = '1547621396'
 const md5String = md5(token() + timestamp + 'Motooling')
 
-console.log(md5String)
-
 export function getPhoneCode (mobile, type = 1) {
   const data = {
     token: token(),
@@ -16,7 +14,6 @@ export function getPhoneCode (mobile, type = 1) {
       type: type
     }
   }
-  console.log(JSON.stringify(data))
   return request({
     url: BASEURL() + '/mtH5/pushSMS/phoneCodeSend',
     method: 'post',
@@ -31,7 +28,6 @@ export function postWxCode (param) {
     timestamp: timestamp,
     data: param
   }
-  console.log(data)
   return request({
     url: BASEURL() + '/mtH5/wechat/access',
     method: 'post',
@@ -46,7 +42,6 @@ export function wxBindPhone (param) {
     timestamp: timestamp,
     data: param
   }
-  console.log(data)
 
   return request({
     url: BASEURL() + '/mtH5/wechat/bindPhone',

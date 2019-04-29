@@ -24,7 +24,6 @@ export default {
       postWxCode(param)
         .then(function (res) {
           let resObj = res.data
-          let nextpage = localStorage.getItem('nextpage')
           let state = getUrlQueryString('state')
           console.log(resObj)
           if (resObj.code !== '000000') {

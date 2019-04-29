@@ -11,7 +11,6 @@ export function getSupplierInfo (params) {
     timestamp: timestamp,
     data: params
   }
-  console.log(data)
 
   return request({
     url: WEBURL + '/mtH5/invitationSupplier/supplierInfo',
