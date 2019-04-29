@@ -347,7 +347,8 @@ export default {
         this.storeHouseId = value;
         this.storeHouseName = text;
         console.log(this.storeHouseName);
-      });
+      })
+      ;
     },
     changeKw(value, index, text) {
       this.storeRoomId = value;
@@ -399,6 +400,10 @@ export default {
         purchUpdate(data).then(res => {
           console.log(res);
           this.showToast("修改成功");
+        }).catch(err=>{
+          if(err.msg){
+            this.showToast(err.msg)
+          }
         });
       } else if (this.type === "3") {
         if (
@@ -432,7 +437,12 @@ export default {
           return;
         }
         var data = Object.assign({}, { purchSubId }, this.info);
-        purchQuality(data).then(res => {});
+        purchQuality(data).then(res => {
+          this.showToast('修改成功')
+        }).catch(err => {
+          if (err.msg) {
+            this.showToast(err.msg);
+          }
       }
     }
   },
