@@ -38,19 +38,19 @@ export default {
   },
 
   components: {},
-  created(){
+  created () {
     console.log(1)
   },
 
   methods: {
-    pick(){
+    pick () {
       console.log(1)
-      const type=this.$route.query.type
-      const name=this.$route.query.name
+      const type = this.$route.query.type
+      const name = this.$route.query.name
       this.$router.replace({
         path: 'pick',
         query: {
-          type,name
+          type, name
         }
       })
     }

@@ -16,6 +16,7 @@
     <cu-picker :pickerData="depList" @select="depSelect" @cancel="depCancel"
     :alias="depAlias"
     :initialSelect="{val:submitmodel.userInfo.depId,Text:submitmodel.userInfo.depName}"
+    :isRequired="true"
     >
       <div slot="label">
         隶属部门
@@ -24,6 +25,7 @@
     <cu-picker :pickerData="positionList" @select="positionSelect" @cancel="positionCancel"
     :alias="positionAlias"
     :initialSelect="{val:submitmodel.userInfo.positionCode,Text:submitmodel.userInfo.positionName}"
+    :isRequired="true"
     >
       <div slot="label">
         职位
@@ -33,10 +35,11 @@
     </cu-input> -->
     <!-- <cu-input label="referee" v-model="submitmodel.userInfo.referee" placeholder="输入" >
     </cu-input> -->
-    <cu-input label="姓名" v-model="submitmodel.userInfo.username" placeholder="输入" >
+    <cu-input label="姓名" v-model="submitmodel.userInfo.username" :isRequired="true" placeholder="输入" >
     </cu-input>
     <cu-picker :pickerData="genderList" @select="genderSelect" @cancel="genderCancel"
     :initialSelect="{val:submitmodel.userInfo.gender,Text:genderText(submitmodel.userInfo.gender)}"
+    :isRequired="true"
     >
       <div slot="label">
         性别
@@ -44,7 +47,7 @@
     </cu-picker>
     <cu-input label="工作姓名" v-model="submitmodel.userCompanyInfo.workName" placeholder="输入" >
     </cu-input>
-    <cu-input label="工薪等级" v-model="submitmodel.userCompanyInfo.wagesLevel" placeholder="输入" >
+    <cu-input label="工薪等级" v-model="submitmodel.userCompanyInfo.wagesLevel" placeholder="由财务人员填写" disabled>
     </cu-input>
     <!-- <cu-input label="" v-model="submitmodel.userCompanyInfo.nation" placeholder="输入" >
     </cu-input> -->
@@ -63,7 +66,7 @@
     </cu-input> -->
     <cu-input label="政治面貌" v-model="submitmodel.userCompanyInfo.politicalOutlook" placeholder="输入" >
     </cu-input>
-    <cu-input label="联系电话" v-model="submitmodel.userInfo.mobile" placeholder="输入" :disabled="true">
+    <cu-input label="联系电话" v-model="submitmodel.userInfo.mobile" :isRequired="true" placeholder="输入" :disabled="true">
     </cu-input>
     <cu-input label="员工卡号" v-model="submitmodel.userCompanyInfo.cardId" placeholder="输入" >
     </cu-input>
@@ -222,63 +225,63 @@ export default {
           {
             name: 'name',
             label: '姓名',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           {
             name: 'relation',
             label: '关系',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: ''
           },
           {
             name: 'phone',
             label: '联系方式',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: ''
           },
           { name: 'workUnit',
             label: '工作单位',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: ''
           },
           {
             name: 'currentAddress',
             label: '现居地址',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: ''
           }
         ],
         educationListField: [
           { name: 'education',
             label: '学历',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: '132'
           },
           {
             name: 'graduationSchool',
             label: '毕业学校',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: '333'
           },
           {
             name: 'major',
             label: '专业',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: ''
           },
           { name: 'graduationTime',
             label: '毕业时间',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: ''
           },
           { name: 'coverImg',
             label: '证件封面',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: ''
           },
           { name: 'credentialNoImg',
             label: '证件号页',
-            placeholder: '请输入',
+            placeholder: '输入',
             value: ''
           }
         ],
@@ -290,56 +293,56 @@ export default {
           {
             name: 'relation',
             label: '关系',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           {
             name: 'phone',
             label: '联系电话',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           {
             name: 'workUnit',
             label: '工作单位',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           {
             name: 'currentAddress',
             label: '现居地址',
-            placeholder: '请输入'
+            placeholder: '输入'
           }
         ],
         userWorkListField: [
           { name: 'workUnit',
             label: '工作单位',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           { name: 'dutiesMax',
             label: '最高职务',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           { name: 'inaugurationTime',
             label: '就职时间',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           { name: 'quitTime',
             label: '离职时间',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           { name: 'quitReason',
             label: '离职原因',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           { name: 'witness',
             label: '证明人',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           { name: 'witnessPhone',
             label: '证明人电话',
-            placeholder: '请输入'
+            placeholder: '输入'
           },
           { name: 'workAddress',
             label: '工作地址',
-            placeholder: '请输入'
+            placeholder: '输入'
           }
         ]
       },
@@ -496,23 +499,36 @@ export default {
       console.log(this.submitmodel)
       var self = this
       // console.log(JSON.stringify(this.submitmodel))
-      addUser(this.submitmodel).then(function (res) {
-        if (res.data.code === '000000') {
-          self.$createToast({
-            time: 2000,
-            txt: res.data.msg,
-            type: 'correct'
-          }).show()
-        } else {
-          self.$createToast({
-            time: 2000,
-            txt: res.data.msg,
-            type: 'error'
-          }).show()
-        }
-      }).catch(function (err) {
-        console.log(err)
-      })
+      if (this.submitmodel.userInfo.username == '' ||
+        this.submitmodel.userInfo.mobile == '' ||
+        this.submitmodel.userInfo.gender == '' ||
+        this.submitmodel.userInfo.depId == '' ||
+        this.submitmodel.userInfo.positionCode == ''
+      ) {
+        self.$createToast({
+          time: 2000,
+          txt: '请完善资料',
+          type: 'error'
+        }).show()
+      } else {
+        addUser(this.submitmodel).then(function (res) {
+          if (res.data.code === '000000') {
+            self.$createToast({
+              time: 2000,
+              txt: '资料提交成功',
+              type: 'correct'
+            }).show()
+          } else {
+            self.$createToast({
+              time: 2000,
+              txt: res.data.msg,
+              type: 'error'
+            }).show()
+          }
+        }).catch(function (err) {
+          console.log(err)
+        })
+      }
     }
   },
 

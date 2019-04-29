@@ -1,12 +1,8 @@
 import request from '@/utils/request'
-import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
-const token = () => localStorage.getItem('token') || ''
-const WEBURL = () => localStorage.getItem('WEBURL') || ''
+import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
 const md5String = md5(token() + timestamp + 'Motooling')
-
-console.log(md5String)
 
 export function getUser (params) {
   const data = {
@@ -15,7 +11,6 @@ export function getUser (params) {
     timestamp: timestamp,
     data: params
   }
-  console.log(data)
 
   return request({
     url: WEBURL() + '/mtH5/invitationPerson/userInfo',

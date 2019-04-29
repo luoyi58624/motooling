@@ -31,5 +31,5 @@ export function getStringQueryString (str, query) {
 export const WEBURL = () => localStorage.getItem('WEBURL') || ''
 
 export const BASEURL = () => localStorage.getItem('WEBURL') || ''
-console.log('base',BASEURL())
-// export const BASEURL = 'http://192.168.2.110:8809'
+
+export const token = () => localStorage.getItem('token') || ''

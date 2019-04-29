@@ -79,122 +79,121 @@
 </template>
 
 <script>
-import { inStoreList, purchBatchReceived } from "@/api/instore/instore";
-import router from "../../router";
-import myHeader from "@/components/header";
+import { inStoreList, purchBatchReceived } from '@/api/instore/instore'
+import router from '../../router'
+import myHeader from '@/components/header'
 export default {
   components: {
     myHeader
   },
-  data() {
+  data () {
     return {
       list: [],
-      //billNo:'MP19040001'
-      billNo: "MP19010006",
-      listDone:false
-    };
+      // billNo:'MP19040001'
+      billNo: 'MP19010006',
+      listDone: false
+    }
   },
-  created() {
-    this.getList();
+  created () {
+    this.getList()
   },
   computed: {
-    selecteAll() {
-      if( this.list
+    selecteAll () {
+      if (this.list
         .filter(item => {
-          return item.preOrderFlag === 0;
-        }).length==0){
-          return false
-        }
+          return item.preOrderFlag === 0
+        }).length == 0) {
+        return false
+      }
       return this.list
         .filter(item => {
-          return item.preOrderFlag === 0;
+          return item.preOrderFlag === 0
         })
         .every(item => {
-          return item.selected === true;
-        });
+          return item.selected === true
+        })
     }
   },
 
   methods: {
-    purch() {
+    purch () {
       const newList = this.list
-        .filter(item => item.selected&&item.preOrderFlag===0)
+        .filter(item => item.selected && item.preOrderFlag === 0)
         .map(item => {
-          return { purchSubId: item.purchSubId };
-        });
-      console.log(newList);
-      if(newList.length==0){
+          return { purchSubId: item.purchSubId }
+        })
+      console.log(newList)
+      if (newList.length == 0) {
         this.showToast('没有选择货物')
-        return;
-
+        return
       }
       purchBatchReceived({ purchList: newList, purchNo: this.billNo })
         .then(res => {
-          this.showToast("收货成功");
+          this.showToast('收货成功')
         })
         .catch(res => {
-          this.showToast(res.msg);
-        });
+          this.showToast(res.msg)
+        })
     },
-    selectAll() {
+    selectAll () {
       if (this.selecteAll) {
         this.list = this.list
           .filter(item => {
-            return item.preOrderFlag == 1;
+            return item.preOrderFlag == 1
           })
           .map((item, index) => {
-            return Object.assign({}, item, { selected: false });
-          });
+            return Object.assign({}, item, { selected: false })
+          })
       } else {
         this.list = this.list
           .filter(item => {
-            return item.preOrderFlag == 1;
+            return item.preOrderFlag == 1
           })
           .map((item, index) => {
-            return Object.assign({}, item, { selected: true });
-          });
+            return Object.assign({}, item, { selected: true })
+          })
       }
     },
-    getList() {
+    getList () {
       this.showLoading()
       inStoreList({ billNo: this.billNo }).then(res => {
         this.hideLoading()
-        let array = res.inStoreDetailList;
+        let array = res.inStoreDetailList
         for (let i = 0; i < array.length; i++) {
-          array[i].selected = false;
+          array[i].selected = false
         }
-        this.list = array;
-        this.listDone=true;
-      }).catch(err=>{
+        this.list = array
+        this.listDone = true
+      }).catch(err => {
         console.log(err)
-      });
+      })
     },
-    toInfo(purchSubId, type,isNeedQc) {
+    toInfo (purchSubId, type, isNeedQc) {
       // onsole.log(purchId)
-      if(type==1&&isNeedQc==='0'){
+      if (type == 1 && isNeedQc === '0') {
         return
       }
       this.$router.push({
-        path: "/instore/info",
+        path: '/instore/info',
         query: {
           purchSubId,
           type
         }
-      });
+      })
     },
-    select(index) {
+    select (index) {
       this.list = [
         ...this.list.slice(0, index),
         Object.assign({}, this.list[index], {
           selected: !this.list[index].selected
         }),
         ...this.list.slice(index + 1)
-      ];
+      ]
       // this.selecteAll=false;
       // this.list[index].selected=!this.list[index].selected
     }
   }
-};
+}
 </script>
 <style lang='less' scoped>
 .bot {
@@ -309,7 +308,7 @@ export default {
           width: 60px;
           text-align: center;
           line-height: 30px;
-    
+
           margin-left: 10px;
           border-radius: 4px;
           color: #fe4c44;
@@ -321,7 +320,7 @@ export default {
         > button:first-child {
           margin-left: 0;
         }
-       
+
       }
     }
     > .right-wrapper {

@@ -18,12 +18,12 @@
 
 <script>
 export default {
-  data() {
-    return {};
+  data () {
+    return {}
   },
 
   components: {}
-};
+}
 </script>
 <style lang='less' scoped>
 .logo {

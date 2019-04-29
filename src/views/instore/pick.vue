@@ -33,69 +33,69 @@
 </template>
 
 <script>
-var type;
-var name;
-import { depUserList } from "@/api/instore/instore";
+import { depUserList } from '@/api/instore/instore'
+var type
+var name
 export default {
-  data() {
+  data () {
     return {
       list: []
-    };
+    }
   },
-  created() {
-    type = this.$route.query.type;
-    name = this.$route.query.name;
-    console.log(this.$store.state[name]);
-    this.getList();
+  created () {
+    type = this.$route.query.type
+    name = this.$route.query.name
+    console.log(this.$store.state[name])
+    this.getList()
   },
   computed: {
-    selectedList() {
-      return this.$store.state[name];
+    selectedList () {
+      return this.$store.state[name]
     },
-    uidList() {
+    uidList () {
       const arr = this.selectedList.map(item => {
-        return item.uid;
-      });
-      const a = arr || [];
-      return a;
+        return item.uid
+      })
+      const a = arr || []
+      return a
     }
   },
 
   components: {},
 
   methods: {
-    getList() {
+    getList () {
       // console.log(depUserList)
       depUserList().then(res => {
-        //this.list = res.depList
-        this.list = res.depList.map(item=>{
-          return Object.assign({},item,{showList:false})
+        // this.list = res.depList
+        this.list = res.depList.map(item => {
+          return Object.assign({}, item, { showList: false })
         })
-      });
+      })
     },
-    show(index){
-      this.list[index].showList=!this.list[index].showList
+    show (index) {
+      this.list[index].showList = !this.list[index].showList
     },
-    pick(item) {
-      console.log(this.uidList);
-      var selectedList = this.$store.state[name];
-      const uid = item.uid;
+    pick (item) {
+      console.log(this.uidList)
+      var selectedList = this.$store.state[name]
+      const uid = item.uid
       if (this.uidList.includes(uid)) {
         for (var i = 0; i < selectedList.length; i++) {
           if (selectedList[i].uid == uid) {
             selectedList = [
               ...selectedList.slice(0, i),
               ...selectedList.slice(i + 1)
-            ];
+            ]
           }
         }
       } else {
-        selectedList.push(item);
+        selectedList.push(item)
       }
-      this.$store.commit(type, selectedList);
+      this.$store.commit(type, selectedList)
     }
   }
-};
+}
 </script>
 <style lang='less' scoped>
 body {

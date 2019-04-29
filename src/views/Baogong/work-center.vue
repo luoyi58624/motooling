@@ -153,9 +153,9 @@
 </template>
 
 <script>
-import "swiper/dist/css/swiper.css";
-import myHeader from "@/components/header";
-import { swiper, swiperSlide } from "vue-awesome-swiper";
+import 'swiper/dist/css/swiper.css'
+import myHeader from '@/components/header'
+import { swiper, swiperSlide } from 'vue-awesome-swiper'
 import {
   getPmPgList,
   getSettingList,
@@ -166,75 +166,75 @@ import {
   setTask,
   setTaskPrediction,
   setProcessTaskPrediction
-} from "@/api/baogong/baogong";
-import scroll from "@/components/BScroll";
-import { setTimeout } from "timers";
-import { reject, async, Promise } from "q";
-import router from "../../router";
-import { Input, Scroll } from "cube-ui";
-var disX = 0;
-var disY = 0;
-var vm;
-var startTime;
-var endTime; // 预报用
-var popId; // 预报用
-var pgId; // 预报用
-var deviceId; // 预报用
+} from '@/api/baogong/baogong'
+import scroll from '@/components/BScroll'
+import { setTimeout } from 'timers'
+import { reject, async, Promise } from 'q'
+import router from '../../router'
+import { Input, Scroll } from 'cube-ui'
+var disX = 0
+var disY = 0
+var vm
+var startTime
+var endTime // 预报用
+var popId // 预报用
+var pgId // 预报用
+var deviceId // 预报用
 export default {
-  data() {
+  data () {
     return {
       shebeiCurrentIdx: 0,
       swiperOption: {
         pagination: {
-          el: ".swiper-pagination"
+          el: '.swiper-pagination'
         },
         on: {
-          reachEnd: function(event) {
+          reachEnd: function (event) {
             if (vm._shebeiList.length > 1) {
-              vm._getDeviceAndStatus();
+              vm._getDeviceAndStatus()
             }
           },
-          touchEnd: function(event) {
-            this.shebeiCurrentIdx = this.activeIndex;
+          touchEnd: function (event) {
+            this.shebeiCurrentIdx = this.activeIndex
           }
         }
       },
       swiperOption2: {
         pagination: {
-          el: ".swiper-pagination2"
+          el: '.swiper-pagination2'
         },
         on: {
-          reachEnd: function(event) {
+          reachEnd: function (event) {
             if (vm._waitList.length > 1) {
-              vm._getProcessTask();
+              vm._getProcessTask()
             }
           }
         }
       },
       swiperOption3: {
         pagination: {
-          el: ".swiper-pagination3"
+          el: '.swiper-pagination3'
         },
         on: {
-          reachEnd: function(event) {
+          reachEnd: function (event) {
             if (vm._doneList.length > 1) {
-              vm._getProcessTaskDone();
+              vm._getProcessTaskDone()
             }
           },
-          touchEnd: function(event) {
+          touchEnd: function (event) {
             // console.log(event);
           }
         }
       },
-      title: "工作中心",
-      pgId: "",
+      title: '工作中心',
+      pgId: '',
       ullDownRefresh: {
         stop: 55
       },
       selIdx: 0,
       list: [],
       source: {},
-      modalID: "zhezhao",
+      modalID: 'zhezhao',
       shebeiList: [],
       waitList: [],
       doneList: [],
@@ -245,40 +245,40 @@ export default {
       waitHasmore: true,
       doneHasmore: true,
       shebeiArray: []
-    };
+    }
   },
-  created() {
-    vm = this;
-    const token = this.$route.query.token;
-    const uid = this.$route.query.uid;
-    const deviceId = this.$route.query.deviceid;
-    const WEBURL = this.$route.query.weburl;
+  created () {
+    vm = this
+    const token = this.$route.query.token
+    const uid = this.$route.query.uid
+    const deviceId = this.$route.query.deviceid
+    const WEBURL = this.$route.query.weburl
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem('token', token)
     }
     if (uid) {
-      localStorage.setItem("uid", uid);
+      localStorage.setItem('uid', uid)
     }
     if (WEBURL) {
-      localStorage.setItem('WEBURL',WEBURL);
+      localStorage.setItem('WEBURL', WEBURL)
     }
     // localStorage.setItem('token', '63b63bd4-9262-4a08-82ca-17fb7f31f3f0')
     // localStorage.setItem('uid', '12')
-    //localStorage.setItem("WEBURL", "http://www.motooling.com:8808");
+    // localStorage.setItem("WEBURL", "http://www.motooling.com:8808");
     // localStorage.setItem("WEBURL", "http://192.168.2.247:8808");
     // getSettingList().then()
-    const that = this;
+    const that = this
     getPmPgList({ deviceId })
       .then(res => {
         console.log(res.list)
-        that.list = res.list;
-        that.pgId = res.list[0].pgId;
+        that.list = res.list
+        that.pgId = res.list[0].pgId
         // console.log(this.pgId);
-        that.select();
+        that.select()
       })
       .catch(err => {
         // console.log(err);
-      });
+      })
   },
   components: {
     swiper,
@@ -287,112 +287,112 @@ export default {
     scroll
   },
   computed: {
-    allArr() {
+    allArr () {
       // console.log([...this.waitList, ...this.shebeiList, ...this.doneList]);
-      return [...this.waitList, ...this.shebeiList, ...this.doneList];
+      return [...this.waitList, ...this.shebeiList, ...this.doneList]
     },
-    swiper() {
-      return this.$refs.mySwiper.swiper;
+    swiper () {
+      return this.$refs.mySwiper.swiper
     },
-    _shebeiList() {
-      const that = this;
-      var newArr = [];
-      var length = Math.ceil((that.shebeiList.length + 1) / 6);
+    _shebeiList () {
+      const that = this
+      var newArr = []
+      var length = Math.ceil((that.shebeiList.length + 1) / 6)
       // console.log(length);
       for (let j = 0; j < length; j++) {
-        var arr = [];
+        var arr = []
         for (let i = 0; i < 6; i++) {
           if (that.shebeiList[j * 6 + i]) {
             // console.log(that.shebeiList[i]);
-            arr.push(that.shebeiList[j * 6 + i]);
+            arr.push(that.shebeiList[j * 6 + i])
           }
         }
-        newArr.push(arr);
+        newArr.push(arr)
       }
-      return newArr;
+      return newArr
     },
-    _waitList() {
+    _waitList () {
       // console.log(this.waitList);
-      var newArr = [];
-      var length = Math.ceil((this.waitList.length + 1) / 8);
+      var newArr = []
+      var length = Math.ceil((this.waitList.length + 1) / 8)
       for (let j = 0; j < length; j++) {
-        var arr = [];
+        var arr = []
         for (let i = 0; i < 8; i++) {
           if (this.waitList[j * 8 + i]) {
-            arr.push(this.waitList[j * 8 + i]);
+            arr.push(this.waitList[j * 8 + i])
           }
         }
-        newArr.push(arr);
+        newArr.push(arr)
       }
       // console.log(newArr);
-      return newArr;
+      return newArr
     },
-    _doneList() {
+    _doneList () {
       // console.log(this.doneList);
-      var newArr = [];
-      var length = Math.ceil((this.doneList.length + 1) / 8);
+      var newArr = []
+      var length = Math.ceil((this.doneList.length + 1) / 8)
       for (let j = 0; j < length; j++) {
-        var arr = [];
+        var arr = []
         for (let i = 0; i < 8; i++) {
           if (this.doneList[j * 8 + i]) {
-            arr.push(this.doneList[j * 8 + i]);
+            arr.push(this.doneList[j * 8 + i])
           }
         }
-        newArr.push(arr);
+        newArr.push(arr)
       }
       // console.log(newArr);
-      return newArr;
+      return newArr
     }
   },
-  mounted() {},
+  mounted () {},
   methods: {
-    workshop(list) {
+    workshop (list) {
       if (list.length == 0) {
-        this.showToast("没有可选车间");
-        return;
+        this.showToast('没有可选车间')
+        return
       }
       this.picker = this.$createPicker({
-        title: "选择要查看的车间",
+        title: '选择要查看的车间',
         data: [list],
         onSelect: this.selectWork
-      });
-      this.picker.show();
+      })
+      this.picker.show()
     },
-    selectWork(selectedVal, selectedIndex, selectedText) {
+    selectWork (selectedVal, selectedIndex, selectedText) {
       // console.log(selectedVal.join(", "));
       this.$router.push({
-        path: "/baogong/work-shop",
+        path: '/baogong/work-shop',
         query: {
-          id: selectedVal.join(", "),
-          name: selectedText.join(", ")
+          id: selectedVal.join(', '),
+          name: selectedText.join(', ')
         }
-      });
+      })
     },
-    ybwg(id, pid) {
-      deviceId = id;
-      pgId = pid;
+    ybwg (id, pid) {
+      deviceId = id
+      pgId = pid
       // console.log(deviceId);
       const dateTimePicker = this.$createDatePicker({
-        title: "选择预计完工时间",
+        title: '选择预计完工时间',
         min: new Date(),
         value: new Date(),
         columnCount: 5,
         onSelect: this.selectE,
         onCancel: this.cancelHandle
-      });
-      dateTimePicker.show();
+      })
+      dateTimePicker.show()
     },
-    selectE(date, selectedVal, selectedText) {
+    selectE (date, selectedVal, selectedText) {
       endTime =
         selectedVal[0] +
-        "-" +
+        '-' +
         selectedVal[1] +
-        "-" +
+        '-' +
         selectedVal[2] +
-        " " +
+        ' ' +
         selectedVal[3] +
-        ":" +
-        selectedVal[4];
+        ':' +
+        selectedVal[4]
       // console.log(deviceId);
       setProcessTaskPrediction({
         deviceId,
@@ -400,91 +400,91 @@ export default {
         predictEndTime: endTime
       })
         .then(res => {
-          this.showToast("预报加工时间成功");
+          this.showToast('预报加工时间成功')
         })
         .catch(err => {
           if (err.msg) {
-            this.showToast(err.msg);
+            this.showToast(err.msg)
           }
-        });
+        })
     },
-    yubao(id) {
-      popId = id;
+    yubao (id) {
+      popId = id
       const dateTimePicker = this.$createDatePicker({
-        title: "选择预计开始时间",
+        title: '选择预计开始时间',
         min: new Date(),
         value: new Date(),
         columnCount: 5,
         onSelect: this.selectStart,
         onCancel: this.cancelHandle
-      });
-      dateTimePicker.show();
+      })
+      dateTimePicker.show()
     },
-    selectStart(date, selectedVal, selectedText) {
+    selectStart (date, selectedVal, selectedText) {
       // console.log(selectedVal,selectedText)
       startTime =
         selectedVal[0] +
-        "-" +
+        '-' +
         selectedVal[1] +
-        "-" +
+        '-' +
         selectedVal[2] +
-        " " +
+        ' ' +
         selectedVal[3] +
-        ":" +
-        selectedVal[4];
-      console.log(startTime);
+        ':' +
+        selectedVal[4]
+      console.log(startTime)
       const dateTimePicker = this.$createDatePicker({
-        title: "选择预计完工时间",
+        title: '选择预计完工时间',
         min: date,
         value: new Date(),
         columnCount: 5,
         onSelect: this.selectEnd,
         onCancel: this.cancelHandle
-      });
-      dateTimePicker.show();
+      })
+      dateTimePicker.show()
     },
-    selectEnd(date, selectedVal, selectedText) {
+    selectEnd (date, selectedVal, selectedText) {
       endTime =
         selectedVal[0] +
-        "-" +
+        '-' +
         selectedVal[1] +
-        "-" +
+        '-' +
         selectedVal[2] +
-        " " +
+        ' ' +
         selectedVal[3] +
-        ":" +
-        selectedVal[4];
+        ':' +
+        selectedVal[4]
       setTaskPrediction({
         popId,
         predictStartTime: startTime,
         predictEndTime: endTime
       })
         .then(res => {
-          console.log(res);
-          this.showToast("预报加工时间成功");
+          console.log(res)
+          this.showToast('预报加工时间成功')
         })
         .catch(err => {
-          this.showToast("预报加工时间失败");
-        });
+          this.showToast('预报加工时间失败')
+        })
     },
-    showToast(val) {
+    showToast (val) {
       const toast = this.$createToast({
-        type: "txt",
+        type: 'txt',
         txt: val
-      });
-      toast.show();
+      })
+      toast.show()
     },
-    showPopup(refId) {
-      const component = this.$refs[refId];
-      component.show();
+    showPopup (refId) {
+      const component = this.$refs[refId]
+      component.show()
       setTimeout(() => {
-        component.hide();
-      }, 1000);
+        component.hide()
+      }, 1000)
     },
-    fixedE(element) {
+    fixedE (element) {
       // console.log( element.getBoundingClientRect())
     },
-    addWork(
+    addWork (
       deviceId,
       flag,
       memberId,
@@ -503,109 +503,109 @@ export default {
         popId,
         pgId,
         batchProcId
-      });
+      })
     },
-    jiaojie(type, deviceId, flag, pgId) {
+    jiaojie (type, deviceId, flag, pgId) {
       setTask({ type, deviceId, flag, pgId })
         .then(res => {
           // console.log(res);
-          this.select();
-          this.showToast("操作成功");
+          this.select()
+          this.showToast('操作成功')
         })
         .catch(err => {
           if (err.msg) {
-            this.showToast(err.msg);
+            this.showToast(err.msg)
           }
-        });
+        })
     },
-    wangong(type, deviceId, flag, pgId) {
+    wangong (type, deviceId, flag, pgId) {
       setTask({ type, deviceId, flag, pgId })
         .then(res => {
-          console.log(res);
-          this.select();
-          this.showToast("操作成功");
+          console.log(res)
+          this.select()
+          this.showToast('操作成功')
         })
         .catch(err => {
           if (err.msg) {
-            this.showToast(err.msg);
+            this.showToast(err.msg)
           }
-        });
+        })
     },
-    handleSelectShebei(index) {
+    handleSelectShebei (index) {
       // console.log(1);
       for (let i = 0; i < this.shebeiList.length; i++) {
         // this.shebeiList[index].showOption = false;
         // this.$set( this.shebeiList[index],'showOption',false)
         if (i == index) {
-          this.shebeiList[i].showOption = !this.shebeiList[index].showOption;
+          this.shebeiList[i].showOption = !this.shebeiList[index].showOption
         } else {
-          this.shebeiList[i].showOption = false;
+          this.shebeiList[i].showOption = false
         }
       }
       // this.shebeiList[index].showOption = !this.shebeiList[index].showOption;
       // this.shebeiList[index].showOption = false;
     },
-    handleSelectWait(index) {
+    handleSelectWait (index) {
       for (let i = 0; i < this.waitList.length; i++) {
         if (i == index) {
-          this.waitList[i].showOption = !this.waitList[index].showOption;
+          this.waitList[i].showOption = !this.waitList[index].showOption
         } else {
-          this.waitList[i].showOption = false;
+          this.waitList[i].showOption = false
         }
       }
       // this.waitList[index].showOption = !this.waitList[index].showOption;
     },
-    select(pgId, index) {
-      const that = this;
-      if (typeof pgId === "undefined") {
+    select (pgId, index) {
+      const that = this
+      if (typeof pgId === 'undefined') {
       } else {
-        this.pgId = pgId;
+        this.pgId = pgId
       }
-      if (typeof index === "undefined") {
+      if (typeof index === 'undefined') {
       } else {
-        this.selIdx = index;
+        this.selIdx = index
       }
-      that.shebeiList = [];
-      that.doneList = [];
-      that.waitList = [];
-      that.shebeiPage = 1;
-      that.waitPage = 1;
-      that.donePage = 1;
-      that.shebeiHasmore = true;
-      that.waitHasmore = true;
-      that.doneHasmore = true;
-      that._getDeviceAndStatus();
-      that._getProcessTask();
-      that._getProcessTaskDone();
+      that.shebeiList = []
+      that.doneList = []
+      that.waitList = []
+      that.shebeiPage = 1
+      that.waitPage = 1
+      that.donePage = 1
+      that.shebeiHasmore = true
+      that.waitHasmore = true
+      that.doneHasmore = true
+      that._getDeviceAndStatus()
+      that._getProcessTask()
+      that._getProcessTaskDone()
     },
 
-    getPart(type) {
+    getPart (type) {
       // router.replace('/baogong/manage?type='+type)
       this.$router.push({
-        path: "/baogong/manage",
+        path: '/baogong/manage',
         query: {
           type,
           pgId: this.pgId
         }
-      });
+      })
     },
-    tS(e, index, idx) {
+    tS (e, index, idx) {
       // console.log(e.currentTarget)
       // console.log()
       // if (e.target === e.currentTarget) {
-      this.shebeiArray = [];
-      var shebeiDom = document.getElementsByClassName("shebei");
+      this.shebeiArray = []
+      var shebeiDom = document.getElementsByClassName('shebei')
       // var myDom=shebeiDom.slice(idx*8+index-1,idx*8+index)
 
       var myDom = Array.prototype.slice.call(
         shebeiDom,
         this.shebeiCurrentIdx * 6,
         this.shebeiCurrentIdx * 6 + 6
-      );
+      )
       // console.log(shebeiDom);
       // console.log(myDom);
       for (var i = 0; i < myDom.length; i++) {
-        this.shebeiArray.push(myDom[i].getBoundingClientRect());
+        this.shebeiArray.push(myDom[i].getBoundingClientRect())
       }
 
       // console.log(this.shebeiArray);
@@ -613,31 +613,31 @@ export default {
       // var obj=a[0].getBoundingClientRect();
 
       // this.createModal(this.modalID);
-      let element = e.targetTouches[0]; // 记录初始 client 位置，用于计算移动距离
+      let element = e.targetTouches[0] // 记录初始 client 位置，用于计算移动距离
       // console.log(element)
       this.source.client = {
         x: element.clientX,
         y: element.clientY
-      };
+      }
 
       // }
       // console.log(this.source);
     },
-    tM(e, index, idx) {
+    tM (e, index, idx) {
       // console.log(obj)
       // console.log(index);
       // if (e.target === e.currentTarget) {
 
-      let element = e.targetTouches[0];
+      let element = e.targetTouches[0]
       // console.log(this.$refs.moveBox[index])
       // let dom=e.currentTarget[0]
       // let dom=this.$refs.moveBox;
       // 根据初始 client 位置计算移动距离
-      let x = element.clientX - this.source.client.x;
-      let y = element.clientY - this.source.client.y;
-      document.getElementsByClassName("moveBox")[
+      let x = element.clientX - this.source.client.x
+      let y = element.clientY - this.source.client.y
+      document.getElementsByClassName('moveBox')[
         8 * idx + index
-      ].style = `transform: translate(${x}px, ${y}px);z-index:10;`;
+      ].style = `transform: translate(${x}px, ${y}px);z-index:10;`
 
       // let a=element.clientX;
       //  let b=element.clientY;
@@ -663,22 +663,22 @@ export default {
 
       // }
     },
-    tE(e, index, idx) {
+    tE (e, index, idx) {
       // if (e.target === e.currentTarget) {
-      document.getElementsByClassName("moveBox")[
+      document.getElementsByClassName('moveBox')[
         8 * idx + index
-      ].style = `transform: none;z-index:1`;
-      let modal = document.getElementById(this.modalID);
-      let element = e.changedTouches[0];
+      ].style = `transform: none;z-index:1`
+      let modal = document.getElementById(this.modalID)
+      let element = e.changedTouches[0]
       // console.log(e);
       // document.body.removeChild(modal);
-      let a = element.clientX;
-      let b = element.clientY;
-      let x = element.clientX - this.source.client.x;
-      let y = element.clientY - this.source.client.y;
+      let a = element.clientX
+      let b = element.clientY
+      let x = element.clientX - this.source.client.x
+      let y = element.clientY - this.source.client.y
       if (x <= 5 && x >= -5 && y <= 5 && y >= -5) {
-        this.handleSelectWait(idx * 8 + index);
-        return;
+        this.handleSelectWait(idx * 8 + index)
+        return
       }
       for (let i = 0; i < this.shebeiArray.length; i++) {
         // console.log(
@@ -702,23 +702,23 @@ export default {
           // ].style = `background:red`;
           // return this.shebeiCurrentIdx*6+i;
           this.$createDialog({
-            type: "confirm",
-            icon: "",
-            title: "注意",
+            type: 'confirm',
+            icon: '',
+            title: '注意',
             content: `是否确认将此工件加入${
               this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceName
             }`,
             confirmBtn: {
-              text: "确定",
+              text: '确定',
               active: true,
               disabled: false,
-              href: "javascript:;"
+              href: 'javascript:;'
             },
             cancelBtn: {
-              text: "取消",
+              text: '取消',
               active: false,
               disabled: false,
-              href: "javascript:;"
+              href: 'javascript:;'
             },
             onConfirm: () => {
               // this.$createToast({
@@ -736,22 +736,22 @@ export default {
                   popId: this._waitList[idx][index].popId,
                   pgId: this._waitList[idx][index].pgId
                 }).then(res => {
-                  this.showToast("操作成功");
-                  this.select();
-                });
+                  this.showToast('操作成功')
+                  this.select()
+                })
               } else {
                 this.dialog = this.$createDialog({
-                  type: "prompt",
-                  title: "输入添加数量",
+                  type: 'prompt',
+                  title: '输入添加数量',
                   prompt: {
-                    value: "",
+                    value: '',
                     placeholder: `请输入1-${
                       this._waitList[idx][index].partQty
                     }范围内的数字`
                   },
                   onConfirm: (e, promptValue) => {
                     if (
-                      typeof parseInt(promptValue) === "number" &&
+                      typeof parseInt(promptValue) === 'number' &&
                       parseInt(promptValue) >= 0 &&
                       parseInt(promptValue) <=
                         this._waitList[idx][index].partQty * 1
@@ -765,67 +765,67 @@ export default {
                         pgId: this._waitList[idx][index].pgId
                       })
                         .then(res => {
-                          this.showToast("操作成功");
-                          this.select();
+                          this.showToast('操作成功')
+                          this.select()
                         })
                         .catch(err => {
                           if (err.msg) {
-                            this.showToast(err.msg);
+                            this.showToast(err.msg)
                           }
-                        });
+                        })
                     } else {
-                      this.showToast("输入有误，请重新输入");
+                      this.showToast('输入有误，请重新输入')
                     }
                   }
-                }).show();
+                }).show()
               }
             },
             onCancel: () => {}
-          }).show();
+          }).show()
         } else {
         }
       }
     },
-    createModal(id) {
-      let modal = document.getElementById(id);
+    createModal (id) {
+      let modal = document.getElementById(id)
       if (!modal) {
         // 在没有遮罩的时候创建遮罩
-        modal = document.createElement("div");
-        modal.id = id;
-        modal.style.cssText = `position: fixed; left: 0; top: 0; right: 0; bottom: 0; z-index: 999;`;
-        document.body.appendChild(modal);
+        modal = document.createElement('div')
+        modal.id = id
+        modal.style.cssText = `position: fixed; left: 0; top: 0; right: 0; bottom: 0; z-index: 999;`
+        document.body.appendChild(modal)
       }
     },
-    _getDeviceAndStatus() {
-      const that = this;
-      console.log(that.shebeiPage);
+    _getDeviceAndStatus () {
+      const that = this
+      console.log(that.shebeiPage)
       if (this.shebeiHasmore) {
-        this.shebeiHasmore = false;
+        this.shebeiHasmore = false
         getDeviceAndStatus({
           pageNum: that.shebeiPage,
           pageSize: 12,
           pgId: that.pgId
         }).then(res => {
           if (res.list.length == 12) {
-            that.shebeiHasmore = true;
-            that.shebeiPage++;
+            that.shebeiHasmore = true
+            that.shebeiPage++
           }
 
-          var arr = [...that.shebeiList, ...res.list];
+          var arr = [...that.shebeiList, ...res.list]
           for (let i = 0; i < arr.length; i++) {
-            arr[i]["showOption"] = false;
-            arr[i]["oldIdx"] = i;
+            arr[i]['showOption'] = false
+            arr[i]['oldIdx'] = i
           }
-          that.shebeiList = arr;
-        });
+          that.shebeiList = arr
+        })
       } else {
         // console.error("meiyougengduo");
       }
     },
-    _getProcessTask() {
-      const that = this;
+    _getProcessTask () {
+      const that = this
       if (that.waitHasmore) {
-        that.waitHasmore = false;
+        that.waitHasmore = false
         getProcessTask({
           pageNum: that.waitPage,
           pageSize: 16,
@@ -834,28 +834,28 @@ export default {
         })
           .then(res => {
             if (res.list.length == 16) {
-              that.waitHasmore = true;
-              that.waitPage++;
+              that.waitHasmore = true
+              that.waitPage++
             }
-            var arr = [...that.waitList, ...res.list];
+            var arr = [...that.waitList, ...res.list]
             for (let i = 0; i < arr.length; i++) {
-              arr[i]["showOption"] = false;
-              arr[i]["oldIdx"] = i;
+              arr[i]['showOption'] = false
+              arr[i]['oldIdx'] = i
             }
-            that.waitList = arr;
+            that.waitList = arr
           })
           .catch(err => {
             // console.log(3)
-            reject(err);
-          });
+            reject(err)
+          })
       } else {
         // console.error("meiyougengduo");
       }
     },
-    _getProcessTaskDone() {
-      const that = this;
+    _getProcessTaskDone () {
+      const that = this
       if (that.doneHasmore) {
-        that.doneHasmore = false;
+        that.doneHasmore = false
         getProcessTask({
           pageNum: that.donePage,
           pageSize: 16,
@@ -864,43 +864,43 @@ export default {
         })
           .then(res => {
             if (res.list.length == 16) {
-              that.doneHasmore = true;
-              that.donePage++;
+              that.doneHasmore = true
+              that.donePage++
             }
-            var arr = [...that.doneList, ...res.list];
+            var arr = [...that.doneList, ...res.list]
             for (let i = 0; i < arr.length; i++) {
-              arr[i]["showOption"] = false;
-              arr[i]["oldIdx"] = i;
+              arr[i]['showOption'] = false
+              arr[i]['oldIdx'] = i
             }
-            that.doneList = arr;
+            that.doneList = arr
             // console.log(arr);
           })
           .catch(err => {
             // console.log(3)
-            reject(err);
-          });
+            reject(err)
+          })
       } else {
         // console.error("meiyougengduo");
       }
     },
-    toTop(popId) {
+    toTop (popId) {
       setWaitProcessTaskTop({
         popId
       }).then(res => {
-        this.select();
-        this.showToast("设置置顶成功");
+        this.select()
+        this.showToast('设置置顶成功')
         // console.log(res);
-      });
+      })
     }
   },
   watch: {
-    allArr() {
+    allArr () {
       setTimeout(() => {
-        this.$refs.scroll.refresh();
-      }, 300);
+        this.$refs.scroll.refresh()
+      }, 300)
     }
   }
-};
+}
 </script>
 <style scope lang="less">
 body {

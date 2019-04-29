@@ -2,23 +2,23 @@
   <div>
     <br>
     <div>
-      <router-link to="/device/add?deviceid=71&companyid=1">设备资料维护</router-link>
+      <router-link to="/device/add?deviceid=71">设备资料维护</router-link>
     </div>
     <br>
     <div>
-      <router-link to="/person/add?companyid=1&referee=456&companyid=1&weburl=http%3A%2F%2F192.168.2.180%3A8808">邀请人员</router-link>
+      <router-link to="/person/add?referee=456&weburl=http%3A%2F%2F192.168.2.180%3A8808">邀请人员</router-link>
     </div>
     <br>
     <div>
-      <router-link :to="'/supplier/add?companyid=1&code=' + code + '&weburl=http%3A%2F%2F192.168.2.180%3A8808'">邀请供应商</router-link>
+      <router-link :to="'/supplier/add?code=' + code + '&weburl=http%3A%2F%2F192.168.2.180%3A8808'">邀请供应商</router-link>
     </div>
     <br>
     <div>
-      <router-link to="/baogong/work-center?companyid=1&weburl=http%3A%2F%2F192.168.2.180%3A8808">工作中心</router-link>
+      <router-link to="/baogong/work-center?weburl=http%3A%2F%2F192.168.2.180%3A8808">工作中心</router-link>
     </div>
     <br>
     <div>
-      <router-link to="/instore/list?companyid=1&weburl=http%3A%2F%2F192.168.2.180%3A8808">收发货</router-link>
+      <router-link to="/instore/list?weburl=http%3A%2F%2F192.168.2.180%3A8808">收发货</router-link>
     </div>
     <hr>
     <div>
@@ -41,12 +41,12 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       code: encodeURIComponent(
-        "evnxsVc8MAG%2F26dlBwqU84uvqS3C%2F6lYlTbiLPDTPzFxoXWhUXT0yfgLh1feJCgFQYPeag35MQ1pVeTEPguiwX1M%2BjGwi%2B5axdil6eFMuF%2FGd0Kv9%2FCVWyoydpkT8JuB0v2glXO6mgJ3UCZD4iSG0DlWscY7q12Q1Y3MgYUmezw%3D"
+        'evnxsVc8MAG%2F26dlBwqU84uvqS3C%2F6lYlTbiLPDTPzFxoXWhUXT0yfgLh1feJCgFQYPeag35MQ1pVeTEPguiwX1M%2BjGwi%2B5axdil6eFMuF%2FGd0Kv9%2FCVWyoydpkT8JuB0v2glXO6mgJ3UCZD4iSG0DlWscY7q12Q1Y3MgYUmezw%3D'
       )
-    };
+    }
   }
-};
+}
 </script>

@@ -1,6 +1,7 @@
 <template>
-  <div class="constom-input border-bottom-1px">
-    <div class="constom-input_label" v-text="label">
+  <div class="constom-input border-bottom-1px ">
+    <div class="constom-input_label" :class="isRequired?'is-required':''">
+      <span v-text="label"></span>
     </div>
     <div class="constom-input_content">
       <cube-input v-model="newValue" @change="handleInput" :placeholder="placeholder" type="text" :disabled="disabled">
@@ -17,6 +18,10 @@ export default {
   props: {
     label: {
       type: String
+    },
+    isRequired: {
+      type: Boolean,
+      default: false
     },
     disabled: {
       type: Boolean,
@@ -67,11 +72,20 @@ export default {
     align-items: center;
     word-wrap: break-word;
     word-break: break-word;
+    position: relative;
   }
   .constom-input_content{
     flex: 1
   }
   .cube-input::after{
     display: none
+  }
+  .is-required::before{
+    color: red;
+    content: "*";
+    position:absolute;
+    top: 0;
+    left: -8px;
+    font-size: 10px;
   }
   </style>
