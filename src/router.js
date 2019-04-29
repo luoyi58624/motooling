@@ -157,18 +157,21 @@ var router = new Router({
     name: 'search',
     component: () => import('./views/instore/search')
   },
- 
+
 
   ]
 })
 router.beforeEach((to, from, next) => {
   const path=to.path.toLowerCase();
+  if (to.query.weburl){
+    localStorage.WEBURL = decodeURIComponent(to.query.weburl)
+  }
   if (to.query.token && to.query.weburl) {
     next()
-    return; 
+    return;
   } else if (path == '/login' || path == '/daohang' || path == '/'||path=='/wxlogin'||path=='/wxloginsuccess'||path=='/wxbindphone') {
   }else if (!getWEBURL()||!getToken()) {
-     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))  
+     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
      return;
   }
   // setTimeout(()=>{next()},2000)

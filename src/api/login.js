@@ -4,15 +4,15 @@ import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
 // import { strToBinary } from '@/utils/utils'
 
-const token = localStorage.getItem('token') || ''
+const token = () => localStorage.getItem('token') || ''
 const timestamp = '1547621396'
-const md5String = md5(token + timestamp + 'Motooling')
+const md5String = md5(token() + timestamp + 'Motooling')
 
 console.log(md5String)
 
 export function getPhoneCode (mobile, type = 1) {
   const data = {
-    token: token,
+    token: token(),
     md5: md5String,
     timestamp: timestamp,
     data: {
@@ -22,7 +22,7 @@ export function getPhoneCode (mobile, type = 1) {
   }
   console.log(JSON.stringify(data))
   return request({
-    url: BASEURL + '/mtH5/pushSMS/phoneCodeSend',
+    url: BASEURL() + '/mtH5/pushSMS/phoneCodeSend',
     method: 'post',
     data
   })
@@ -30,14 +30,14 @@ export function getPhoneCode (mobile, type = 1) {
 
 export function postWxCode (param) {
   const data = {
-    token: token,
+    token: token(),
     md5: md5String,
     timestamp: timestamp,
     data: param
   }
   console.log(data)
   return request({
-    url: BASEURL + '/mtH5/wechat/access',
+    url: BASEURL() + '/mtH5/wechat/access',
     method: 'post',
     data
   })
@@ -45,7 +45,7 @@ export function postWxCode (param) {
 
 export function wxBindPhone (param) {
   const data = {
-    token: token,
+    token: token(),
     md5: md5String,
     timestamp: timestamp,
     data: param
@@ -53,7 +53,7 @@ export function wxBindPhone (param) {
   console.log(data)
 
   return request({
-    url: BASEURL + '/mtH5/wechat/bindPhone',
+    url: BASEURL() + '/mtH5/wechat/bindPhone',
     method: 'post',
     data
   })

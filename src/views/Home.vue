@@ -2,7 +2,7 @@
   <div class="home">
     <img class="logo" alt="logo" src="../assets/logo.png">
     <div>
-      欢迎使用 motooling
+      欢迎使用 MoTooling
     </div>
   </div>
 </template>
