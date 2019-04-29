@@ -15,10 +15,6 @@
     <div class="hidden">
       <cu-input label="企业域名" v-model="submitmodel.webUrl" placeholder="输入">
       </cu-input>
-      <cu-input label="微信头像" v-model="submitmodel.headImgUrl" placeholder="输入">
-      </cu-input>
-      <cu-input label="昵称" v-model="submitmodel.nickname" placeholder="输入">
-      </cu-input>
       <cu-input label="unionid" v-model="submitmodel.unionid" placeholder="输入">
       </cu-input>
       <cu-input label="openId" v-model="submitmodel.openId" placeholder="输入">
@@ -55,8 +51,6 @@ export default {
         mobile: '',
         city: '',
         country: '',
-        headImgUrl: '',
-        nickname: '',
         openId: '',
         privilege: '',
         province: '',
