@@ -1,6 +1,6 @@
 <template>
     <div class="constom-input border-bottom-1px">
-      <div class="constom-input_label">
+      <div class="constom-input_label" :class="isRequired?'is-required':''">
           <slot name="label"></slot>
       </div>
       <div class="constom-input_content" @click="showPicker">
@@ -12,6 +12,10 @@
 export default {
   name: 'CuPicker',
   props: {
+    isRequired:{
+      type:Boolean,
+      default:false
+    },
     pickerData: {
       type: Array,
       default () {
@@ -131,4 +135,12 @@ export default {
 .cube-input::after{
   display: none
 }
+.is-required::before{
+    color: red;
+    content: "*";
+    position:absolute;
+    top: 10px;
+    left: -8px;
+    font-size: 10px;
+  }
 </style>
