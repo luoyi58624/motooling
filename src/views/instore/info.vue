@@ -8,7 +8,7 @@
       <div>采购单号：{{info.purchNo}}</div>
       <div>物料单号：{{info.matNo}}</div>
 
-      <div>物料名称:{{}}</div>
+      <div>物料描述:{{info.matDesc}}</div>
       <div>规格型号:{{info.matModel}}</div>
       <div>
         <div>采购数量：{{info.quantity}}</div>
@@ -22,7 +22,7 @@
         <div>发送日期：{{info.sendDate?info.sendDate.slice(0,10):''}}</div>
         <div>交货日期：{{info.deliveryDate?info.deliveryDate.slice(0,10):''}}</div>
       </div>
-      <div>备注：{{info.remark}}</div>
+      <div>备注：{{info.remark||'无'}}</div>
     </div>
     <div class="title">收货信息</div>
     <div class="containner second-banner">
@@ -43,7 +43,7 @@
           <input type="number" name id v-model="info.receivedWeight" :disabled="type!=='1'">
         </div>
       </div>
-      <div>
+      <!-- <div>
         <div>
           收货单价
           <input type="number" name id :disabled="type!=='1'">
@@ -52,7 +52,7 @@
           收货金额
           <input type="number" v-model="info.a" name id :disabled="type!=='1'">
         </div>
-      </div>
+      </div> -->
       <div>
         <div>
           收货仓库
@@ -150,8 +150,10 @@
         <div class="big pdf">
           供应商出场检验报告
           <cube-upload
+           v-model="pdfList"
             :action="action"
             @files-added="filesAdded"
+             @file-success="filePdfSuccess"
             ref="upload"
             accept="*.doc application/msword MS Word Document"
           />
@@ -239,7 +241,7 @@ export default {
   data () {
     return {
       action: {
-        target: WEBURL + '/file/h5FileUpload',
+        target: WEBURL() + '/file/h5FileUpload',
         fileName: 'enFile',
         data: { paramsMap: JSON.stringify(req) },
         checkSuccess: (res, file) => {
@@ -252,6 +254,7 @@ export default {
         }
       },
       wordList: [],
+      pdfList:[],
       info: {},
       value: '',
       storeHouseList: [],
@@ -304,8 +307,19 @@ export default {
     this.type = type
   },
   methods: {
+    // inputWord(e){
+    //   console.log(e)
+    //   //this.wordList.push(1)
+    // },
+    //   inputPdf(e){
+    //   console.log(e)
+    //   //this.wordList.push(1)
+    // },
     fileSuccess () {
       console.log(this.wordList)
+    },
+    filePdfSuccess(){
+      console.log(this.pdfList)
     },
     filesAdded (files) {
       if (this.type !== '2') {
@@ -369,6 +383,8 @@ export default {
       inStoreInfo({ purchSubId }).then(res => {
         console.log(res)
         this.info = res.inStoreInfo
+        this.wordList=res.qualityList;
+        this.pdfList=res.factoryReportList;
         this.storeHouseId = res.inStoreInfo.storeHouseId
         this.storeRoomId = res.inStoreInfo.storeRoomId
         console.log(this.storeHouseId, this.storeRoomId)
@@ -438,14 +454,28 @@ export default {
           this.showToast('质检表单未填写完整')
           return
         }
-        if (
-          this.info.noQualifiedQty + this.info.qualifiedQty >
-          this.info.receivedQty
-        ) {
-          this.showToast('合格数量与不良数量总数不能大于收货数量')
-          return
-        }
-        var data = Object.assign({}, { purchSubId }, this.info);
+        // if (
+        //   this.info.noQualifiedQty + this.info.qualifiedQty >
+        //   this.info.receivedQty
+        // ) {
+        //   this.showToast('合格数量与不良数量总数不能大于收货数量')
+        //   return
+        // }
+        const qualityList=this.wordList.map(item=>{
+          if(item.response){
+            return {fileName:item.name,fileUrl:item.response.data.url}
+          }else{
+            return item
+          }
+        })
+        const factoryReportList=this.pdfList.map(item=>{
+          if(item.response){
+            return {fileName:item.name,fileUrl:item.response.data.url}
+          }else{
+            return item
+          }
+        })
+        var data = Object.assign({}, { purchSubId,qualityList,factoryReportList}, this.info);
         purchQuality(data)
           .then(res => {
             this.showToast("修改成功");

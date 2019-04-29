@@ -86,7 +86,21 @@ body {
 
  }
 }
+.word .cube-upload-file-def{
+    background: url('../static/img/word.png');background-size:cover;
+ .cube-upload-file-status.cubeic-right{
+   display:none;
+
+ }
+}
 .pdf .cube-upload-file-state{
+  background: url('../static/img/pdf.png');background-size:cover;
+ .cube-upload-file-status.cubeic-right{
+   display:none;
+
+ }
+}
+.pdf .cube-upload-file-def{
   background: url('../static/img/pdf.png');background-size:cover;
  .cube-upload-file-status.cubeic-right{
    display:none;
