@@ -2,7 +2,7 @@
 <template>
   <div>
     <div class="z-top"></div>
-    <my-header title="采购收货"></my-header>
+    <my-header title="采购收货"  :hasRight="true" settingUrl="/instore/setting"></my-header>
     <div class="title">采购信息</div>
     <div class="containner first-banner">
       <div>采购单号：{{info.purchNo}}</div>
@@ -133,7 +133,7 @@
         </div>
       </div>
       <div>
-        <div class="big word">
+        <div class="big word" :class="{disabled:type!=='2'}">
           质检报告
           <cube-upload
             v-model="wordList"
@@ -147,7 +147,7 @@
         </div>
       </div>
       <div>
-        <div class="big pdf">
+        <div class="big pdf"  :class="{disabled:type!=='2'}">
           供应商出场检验报告
           <cube-upload
            v-model="pdfList"
@@ -315,6 +315,7 @@ export default {
     //   console.log(e)
     //   //this.wordList.push(1)
     // },
+
     fileSuccess () {
       console.log(this.wordList)
     },
@@ -575,9 +576,15 @@ export default {
       }
     }
     > div.big {
+      position:relative;
       > div {
         margin-left: 12px;
       }
+    }
+    > div.disabled::after{
+      position: absolute;
+      top:0;left:0;right:0;bottom:0;z-index:10;
+      content:"";
     }
     > div:nth-child(2) {
       display: flex;
