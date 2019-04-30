@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <my-header title="采购收货"></my-header>
+    <my-header title="采购收货"  :hasRight="true" settingUrl="/instore/setting"></my-header>
     <div class="option">
       <div>
         <div style="color:#4e92ff">按生产订单排序</div>
@@ -45,11 +45,11 @@
             <button
               :disabled="item.isNeedQc=='0'||item.qcQty==0"
               @click.stop="toInfo(item.purchSubId,2)"
-            >质检{{item.isNeedQc}}</button>
+            >质检</button>
             <button
               :disabled="!item.noQualifiedQty>0"
               @click.stop="toInfo(item.purchSubId,3)"
-            >特采{{item.noQualifiedQty}}</button>
+            >特采</button>
           </div>
         </div>
         <div class="right-wrapper" @click.stop="select(index)" v-if="item.preOrderFlag==0">

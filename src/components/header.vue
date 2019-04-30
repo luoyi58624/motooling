@@ -8,7 +8,7 @@
         <span v-show="list.length>0" class="iconfont icon-xiangxia"></span>
       </div>
       <div class="right" v-show="hasRight">
-         <router-link to="/baogong/setting"><span class="iconfont icon-gengduo"></span></router-link>
+         <router-link :to="settingUrl"><span class="iconfont icon-gengduo"></span></router-link>
       </div>
     </div>
       <slide-up-down :active="isShowList" :duration="300" class="list" >
@@ -33,6 +33,12 @@ export default {
       type: String,
       default () {
         return '标题'
+      }
+    },
+    settingUrl:{
+      type:String,
+      default(){
+        return '/baogong/setting'
       }
     },
     selIdx: {

@@ -10,7 +10,7 @@
             {{it.name}}
           </div>
           <div>
-            <img src="../../../static/img/arrow.png" class="arrow" alt>
+            <img src="../../../static/img/arrow.png" class="arrow" alt :class="{down:it.showList}">
           </div>
         </div>
         <div class="list" v-show="it.showList">
@@ -33,80 +33,92 @@
 </template>
 
 <script>
-import { depUserList } from '@/api/instore/instore'
-var type
-var name
+import { depUserList } from "@/api/instore/instore";
+var type;
+var name;
 export default {
-  data () {
+  data() {
     return {
       list: []
-    }
+    };
   },
-  created () {
-    type = this.$route.query.type
-    name = this.$route.query.name
-    console.log(this.$store.state[name])
-    this.getList()
+  created() {
+    type = this.$route.query.type;
+    name = this.$route.query.name;
+    console.log(this.$store.state[name]);
+    this.getList();
   },
   computed: {
-    selectedList () {
-      return this.$store.state[name]
+    selectedList() {
+      return this.$store.state[name];
     },
-    uidList () {
+    uidList() {
       const arr = this.selectedList.map(item => {
-        return item.uid
-      })
-      const a = arr || []
-      return a
+        return item.uid;
+      });
+      const a = arr || [];
+      return a;
     }
   },
 
   components: {},
 
   methods: {
-    getList () {
+    getList() {
       // console.log(depUserList)
       depUserList().then(res => {
-        const depList=res.list||[];
-        console.log(depList)
+        const depList = res.list || [];
+        console.log(depList);
         this.list = depList.map(item => {
-          return Object.assign({}, item, { showList: false })
-        })
-      })
+          return Object.assign({}, item, { showList: false });
+        });
+      });
     },
-    show (index) {
-      console.log(index)
-      this.list=[...this.list.slice(0,index),Object.assign({},this.list[index],{showList:true}),...this.list.slice(index+1)]
-      console.log(this.list[index])
+    show(index) {
+      console.log(index);
+      this.list = [
+        ...this.list.slice(0, index),
+        Object.assign({}, this.list[index], {
+          showList: !this.list[index].showList
+        }),
+        ...this.list.slice(index + 1)
+      ];
+      console.log(this.list[index]);
       //this.list[index].showList = !this.list[index].showList
     },
-    pick (item) {
-      console.log(this.uidList)
-      var selectedList = this.$store.state[name]
-      const uid = item.uid
+    pick(item) {
+      console.log(this.uidList);
+      var selectedList = this.$store.state[name];
+      const uid = item.uid;
       if (this.uidList.includes(uid)) {
         for (var i = 0; i < selectedList.length; i++) {
           if (selectedList[i].uid == uid) {
             selectedList = [
               ...selectedList.slice(0, i),
               ...selectedList.slice(i + 1)
-            ]
+            ];
           }
         }
       } else {
-        selectedList.push(item)
+        selectedList.push(item);
       }
-      this.$store.commit(type, selectedList)
+      this.$store.commit(type, selectedList);
     }
   }
-}
+};
 </script>
 <style lang='less' scoped>
 body {
   background: rgb(248, 249, 254);
 }
-.scroll{
-  position:fixed;top:0;left:0;bottom:0;right:0;background: #fff;z-index:20;
+.scroll {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #fff;
+  z-index: 20;
 }
 ._containner {
   padding: 15px;
@@ -139,6 +151,10 @@ body {
       .arrow {
         margin-right: 0;
         transform: rotate(-90deg);
+         transition: all 0.3s;
+      }
+      .down {
+        transform: rotate(0);
       }
     }
     > div.list {
