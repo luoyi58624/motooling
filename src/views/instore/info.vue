@@ -454,13 +454,13 @@ export default {
           this.showToast('质检表单未填写完整')
           return
         }
-        // if (
-        //   this.info.noQualifiedQty + this.info.qualifiedQty >
-        //   this.info.receivedQty
-        // ) {
-        //   this.showToast('合格数量与不良数量总数不能大于收货数量')
-        //   return
-        // }
+        if (
+          this.info.noQualifiedQty + this.info.qualifiedQty >
+          this.info.receivedQty
+        ) {
+          this.showToast('合格数量与不良数量总数不能大于收货数量')
+          return
+        }
         const qualityList=this.wordList.map(item=>{
           if(item.response){
             return {fileName:item.name,fileUrl:item.response.data.url}
