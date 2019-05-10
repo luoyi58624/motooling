@@ -62,7 +62,7 @@ export default {
       type: Object,
       default () {
         return {
-          target: WEBURL + '/img/h5ImgUpload',
+          target: WEBURL() + '/img/h5ImgUpload',
           fileName: 'imgFile',
           data: { paramsMap: JSON.stringify(req) },
           checkSuccess: (res, file) => {
