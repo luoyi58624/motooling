@@ -518,11 +518,11 @@ export default {
       console.log(this.submitmodel)
       var self = this
       // console.log(JSON.stringify(this.submitmodel))
-      if (this.submitmodel.userInfo.username == '' ||
-        this.submitmodel.userInfo.mobile == '' ||
-        this.submitmodel.userInfo.gender == '' ||
-        this.submitmodel.userInfo.depId == '' ||
-        this.submitmodel.userInfo.positionCode == ''
+      if (!this.submitmodel.userInfo.username ||
+        !this.submitmodel.userInfo.mobile ||
+        !this.submitmodel.userInfo.gender ||
+        !this.submitmodel.userInfo.depId ||
+        !this.submitmodel.userInfo.positionCode
       ) {
         self.$createToast({
           time: 2000,
