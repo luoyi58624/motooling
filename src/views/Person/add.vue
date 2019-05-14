@@ -287,16 +287,6 @@ export default {
             label: '毕业时间',
             placeholder: '输入',
             value: ''
-          },
-          { name: 'coverImg',
-            label: '证件封面',
-            placeholder: '输入',
-            value: ''
-          },
-          { name: 'credentialNoImg',
-            label: '证件号页',
-            placeholder: '输入',
-            value: ''
           }
         ],
         urgentContactsListField: [
@@ -528,11 +518,11 @@ export default {
       console.log(this.submitmodel)
       var self = this
       // console.log(JSON.stringify(this.submitmodel))
-      if (this.submitmodel.userInfo.username == '' ||
-        this.submitmodel.userInfo.mobile == '' ||
-        this.submitmodel.userInfo.gender == '' ||
-        this.submitmodel.userInfo.depId == '' ||
-        this.submitmodel.userInfo.positionCode == ''
+      if (!this.submitmodel.userInfo.username ||
+        !this.submitmodel.userInfo.mobile ||
+        !this.submitmodel.userInfo.gender ||
+        !this.submitmodel.userInfo.depId ||
+        !this.submitmodel.userInfo.positionCode
       ) {
         self.$createToast({
           time: 2000,
