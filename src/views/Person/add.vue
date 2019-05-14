@@ -287,16 +287,6 @@ export default {
             label: '毕业时间',
             placeholder: '输入',
             value: ''
-          },
-          { name: 'coverImg',
-            label: '证件封面',
-            placeholder: '输入',
-            value: ''
-          },
-          { name: 'credentialNoImg',
-            label: '证件号页',
-            placeholder: '输入',
-            value: ''
           }
         ],
         urgentContactsListField: [
