@@ -141,17 +141,15 @@ export default {
       file && this.$refs.upload.removeFile(file)
       this.isChange = true
     },
-    fileSuccess (e) {
-      console.log(this.fileURLs)
+    fileSuccess (e,index) {
       this.$emit('file-success', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
-      console.log(this.fileURLs)
     },
     fileRemoved (e) {
       // console.log(this.fileURLs)
       // 第一个参数为URL集合
       // 第二个参数 解密后的返回值，
       // 第三个参数：文件对象
-      this.$emit('file-remove', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
+      this.$emit('file-remove', this.fileURLs, null, e)
     }
   }
 }
