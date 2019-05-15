@@ -164,8 +164,8 @@
           </cu-input>
         </div>
         <cu-upload
-        @file-success="educationList_coverImg_success(key,...arguments )"
-        @file-remove="educationList_coverImg_remove(key,...arguments )"
+        @file-success="educationList_coverImg_success(key,...arguments)"
+        @file-remove="educationList_coverImg_remove(key,...arguments)"
         :initialFile="submitmodel.educationList[key].coverImg"
         :max='1'>
         <div slot="label">证件封面</div>
@@ -393,7 +393,7 @@ export default {
       } else if (val == 0) {
         return '未定'
       } else {
-        return '未定'
+        return '请选择'
       }
     },
     positionSelect (selected, selectedVal, selectedIndex, selectedText) {
@@ -473,20 +473,17 @@ export default {
     salarycertificatesFaceImgRemove (res, file) {
       this.submitmodel.salary.certificatesFaceImg = ''
     },
-    educationList_coverImg_success(index, res, file) {
-      this.$set(this.submitmodel.educationList[index], 'coverImg', res.toString())
-      console.log('index',index)
-      console.log('res',res)
-      console.log('file',file)
-    },
-    educationList_coverImg_remove(index,res, file) {
+    educationList_coverImg_success (index, res, file) {
       this.$set(this.submitmodel.educationList[index], 'coverImg', res.toString())
     },
-    educationList_credentialNoImg_success(index,res, file) {
+    educationList_coverImg_remove (index, res, file) {
+      this.$set(this.submitmodel.educationList[index], 'coverImg', res.toString())
+    },
+    educationList_credentialNoImg_success (index, res, file) {
       this.$set(this.submitmodel.educationList[index], 'credentialNoImg', res.toString())
     },
-    educationList_credentialNoImg_remove(index,res, file) {
-      this.submitmodel.educationList[index].credentialNoImg=''
+    educationList_credentialNoImg_remove (index, res, file) {
+      this.submitmodel.educationList[index].credentialNoImg = ''
     },
     // 增加子列表
     addList (target) {

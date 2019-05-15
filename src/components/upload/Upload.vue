@@ -56,7 +56,10 @@ export default {
       default: 'image/*'
     },
     initialFile: {
-      type: [String, Array]
+      type: [String, Array],
+      default(){
+        return []
+      }
     },
     action: {
       type: Object,
@@ -102,18 +105,14 @@ export default {
   watch: {
     initialFile: {
       handler: function (curSelect, oldSelect) {
-        // console.log(this.importFiles)
-        // console.log(curSelect, oldSelect)
         if (curSelect) {
           this.initialFile = curSelect
           this.select = this.initialFile
-          // console.log(this.initialFile)
           if (Array.isArray(this.initialFile)) {
             this.importFiles = this.initialFile
           } else {
             this.importFiles = this.initialFile.split(',')
           }
-          console.log(this.importFiles)
         }
       }
     }
@@ -141,7 +140,7 @@ export default {
       file && this.$refs.upload.removeFile(file)
       this.isChange = true
     },
-    fileSuccess (e,index) {
+    fileSuccess (e, index) {
       this.$emit('file-success', this.fileURLs, JSON.parse(decrypt(e.response.resultData)), e)
     },
     fileRemoved (e) {
@@ -151,6 +150,13 @@ export default {
       // 第三个参数：文件对象
       this.$emit('file-remove', this.fileURLs, null, e)
     }
+  },
+  mounted(){
+      if (Array.isArray(this.initialFile)) {
+        this.importFiles = this.initialFile
+      } else {
+        this.importFiles = this.initialFile.split(',')
+      }
   }
 }
 
