@@ -35,9 +35,9 @@ export default {
         return '标题'
       }
     },
-    settingUrl:{
-      type:String,
-      default(){
+    settingUrl: {
+      type: String,
+      default () {
         return '/baogong/setting'
       }
     },

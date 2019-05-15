@@ -254,7 +254,7 @@ export default {
         }
       },
       wordList: [],
-      pdfList:[],
+      pdfList: [],
       info: {},
       value: '',
       storeHouseList: [],
@@ -319,7 +319,7 @@ export default {
     fileSuccess () {
       console.log(this.wordList)
     },
-    filePdfSuccess(){
+    filePdfSuccess () {
       console.log(this.pdfList)
     },
     filesAdded (files) {
@@ -384,8 +384,8 @@ export default {
       inStoreInfo({ purchSubId }).then(res => {
         console.log(res)
         this.info = res.inStoreInfo
-        this.wordList=res.qualityList;
-        this.pdfList=res.factoryReportList;
+        this.wordList = res.qualityList
+        this.pdfList = res.factoryReportList
         this.storeHouseId = res.inStoreInfo.storeHouseId
         this.storeRoomId = res.inStoreInfo.storeRoomId
         console.log(this.storeHouseId, this.storeRoomId)
@@ -412,18 +412,18 @@ export default {
           storeHouseId: this.storeHouseId || this.info.storeHouseId,
           storeRoomId: this.storeRoomId || this.info.storeRoomId,
           storeRoomName: this.storeRoomName || this.info.storeRoomName
-        });
+        })
         purchUpdate(data)
           .then(res => {
-            console.log(res);
-            this.showToast("修改成功");
+            console.log(res)
+            this.showToast('修改成功')
           })
           .catch(err => {
             if (err.msg) {
-              this.showToast(err.msg);
+              this.showToast(err.msg)
             }
-          });
-      } else if (this.type === "3") {
+          })
+      } else if (this.type === '3') {
         if (
           !this.info.specialUp ||
           !this.info.noQualifiedQty ||
@@ -436,17 +436,17 @@ export default {
           this.showToast('特采数量不能大于不良数量')
           return
         }
-        var data = Object.assign({}, { purchSubId }, this.info);
+        var data = Object.assign({}, { purchSubId }, this.info)
         purchSpecial(data)
           .then(res => {
-            this.showToast("修改成功");
+            this.showToast('修改成功')
           })
           .catch(err => {
             if (err.msg) {
-              this.showToast(err.msg);
+              this.showToast(err.msg)
             }
-          });
-      } else if (this.type == "2") {
+          })
+      } else if (this.type == '2') {
         if (
           !this.info.noQualifiedQty ||
           this.info.qualifiedQty === null ||
@@ -462,30 +462,30 @@ export default {
           this.showToast('合格数量与不良数量总数不能大于收货数量')
           return
         }
-        const qualityList=this.wordList.map(item=>{
-          if(item.response){
-            return {fileName:item.name,fileUrl:item.response.data.url}
-          }else{
+        const qualityList = this.wordList.map(item => {
+          if (item.response) {
+            return { fileName: item.name, fileUrl: item.response.data.url }
+          } else {
             return item
           }
         })
-        const factoryReportList=this.pdfList.map(item=>{
-          if(item.response){
-            return {fileName:item.name,fileUrl:item.response.data.url}
-          }else{
+        const factoryReportList = this.pdfList.map(item => {
+          if (item.response) {
+            return { fileName: item.name, fileUrl: item.response.data.url }
+          } else {
             return item
           }
         })
-        var data = Object.assign({}, { purchSubId,qualityList,factoryReportList}, this.info);
+        var data = Object.assign({}, { purchSubId, qualityList, factoryReportList }, this.info)
         purchQuality(data)
           .then(res => {
-            this.showToast("修改成功");
+            this.showToast('修改成功')
           })
           .catch(err => {
             if (err.msg) {
-              this.showToast(err.msg);
+              this.showToast(err.msg)
             }
-          });
+          })
       }
     }
   },
