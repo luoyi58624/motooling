@@ -445,7 +445,7 @@ export default {
       this.submitmodel.idCard.certificatesFaceImg = ''
     },
     idCardcertificatesBackImgSuccess (res, file) {
-      this.$set(this.submitmodel.idCard, 'certificatesFaceImg', res.toString())
+      this.$set(this.submitmodel.idCard, 'certificatesBackImg', res.toString())
     },
     idCardcertificatesBackImgRemove (res, file) {
       this.submitmodel.idCard.certificatesBackImg = ''
