@@ -39,7 +39,6 @@ export default {
   },
   watch: {
     value (curSelect, oldSelect) {
-      console.log(curSelect, oldSelect)
       if (curSelect) {
         this.initialSelect = curSelect
         this.newValue = curSelect

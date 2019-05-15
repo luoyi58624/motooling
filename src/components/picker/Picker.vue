@@ -47,7 +47,6 @@ export default {
   },
   watch: {
     initialSelect (curSelect, oldSelect) {
-      console.log(curSelect, oldSelect)
       if (curSelect) {
         this.initialSelect = curSelect
         this.select = this.initialSelect
@@ -55,7 +54,6 @@ export default {
     }
   },
   data () {
-    console.log(this.initialSelect)
     return {
       select: this.initialSelect,
       // select: {

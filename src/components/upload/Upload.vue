@@ -57,7 +57,7 @@ export default {
     },
     initialFile: {
       type: [String, Array],
-      default(){
+      default () {
         return []
       }
     },
@@ -151,12 +151,12 @@ export default {
       this.$emit('file-remove', this.fileURLs, null, e)
     }
   },
-  mounted(){
-      if (Array.isArray(this.initialFile)) {
-        this.importFiles = this.initialFile
-      } else {
-        this.importFiles = this.initialFile.split(',')
-      }
+  mounted () {
+    if (Array.isArray(this.initialFile)) {
+      this.importFiles = this.initialFile
+    } else {
+      this.importFiles = this.initialFile.split(',')
+    }
   }
 }
 
