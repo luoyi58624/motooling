@@ -62,8 +62,16 @@
     </cu-input>
     <cu-input label="户籍地址" v-model="submitmodel.userInfo.permanentAddress" placeholder="输入" >
     </cu-input>
-    <!-- <cu-input label="是否已婚" v-model="submitmodel.userCompanyInfo.isMarried" placeholder="输入" >
-    </cu-input> -->
+    <cu-input label="现居地址" v-model="submitmodel.userInfo.address" placeholder="输入" >
+    </cu-input>
+    <cu-picker :pickerData="marriedList" @select="marriedSelect" @cancel="marriedCancel"
+    :initialSelect="{val:submitmodel.userInfo.married,Text:genderText(submitmodel.userInfo.married)}"
+    :isRequired="true"
+    >
+      <div slot="label">
+        是否已婚
+      </div>
+    </cu-picker>
     <cu-input label="政治面貌" v-model="submitmodel.userCompanyInfo.politicalOutlook" placeholder="输入" >
     </cu-input>
     <cu-input label="联系电话" v-model="submitmodel.userInfo.mobile" :isRequired="true" placeholder="输入" :disabled="true">
@@ -229,6 +237,10 @@ export default {
       // 部门列表
       depList: [],
 
+      marriedList: [
+        { text: '未婚', value: false },
+        { text: '已婚', value: true }
+      ],
       genderList: [
         { text: '未定', value: 0 },
         { text: '男', value: 1 },
@@ -397,31 +409,31 @@ export default {
       }
     },
     positionSelect (selected, selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal)
-      this.submitmodel.userInfo.positionCode = selectedVal.join(',')
-      this.submitmodel.userInfo.positionName = selectedText.join(',')
+      this.submitmodel.userInfo.positionCode = selectedVal[0]
+      this.submitmodel.userInfo.positionName = selectedText[0]
     },
     positionCancel () {
       console.log('cancel')
     },
     depSelect (selected, selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal)
-      this.submitmodel.userInfo.depId = selectedVal.join(',')
-      this.submitmodel.userInfo.depName = selectedText.join(',')
+      this.submitmodel.userInfo.depId = selectedVal[0]
+      this.submitmodel.userInfo.depName = selectedText[0]
     },
     depCancel () {
 
     },
     nationSelect (selected, selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal)
-      this.submitmodel.userCompanyInfo.nation = selectedVal.join(',')
+      this.submitmodel.userCompanyInfo.nation = selectedVal[0]
     },
     nationCancel () {
       // this.submitmodel.userCompanyInfo.nation = ''
     },
-
+    marriedSelect (selected, selectedVal, selectedIndex, selectedText) {
+      this.submitmodel.userInfo.married = selectedVal[0]
+    },
+    marriedCancel () {},
     genderSelect (selected, selectedVal, selectedIndex, selectedText) {
-      this.submitmodel.userInfo.gender = selectedVal.join(',')
+      this.submitmodel.userInfo.gender = selectedVal[0]
     },
     genderCancel () {
       // this.submitmodel.userInfo.gender = ''
