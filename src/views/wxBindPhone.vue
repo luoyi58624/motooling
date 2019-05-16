@@ -109,7 +109,7 @@ export default {
             localStorage.removeItem('type')
             self.$router.replace('/wxlogin?redirectURL=' + getUrlQueryString('redirectURL'))
           } else {
-            alert('提交失败' + rdata.msg)
+            alert('提交失败：' + rdata.msg)
           }
         }).catch(err => {
           console.log(err)
