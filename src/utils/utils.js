@@ -32,4 +32,4 @@ export const WEBURL = () => localStorage.getItem('WEBURL') || ''
 
 export const BASEURL = () => localStorage.getItem('WEBURL') || ''
 
-export const token = () => localStorage.getItem('token') || ''
+export const token = () => sessionStorage.getItem('token') || ''

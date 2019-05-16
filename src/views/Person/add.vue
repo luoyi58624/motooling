@@ -553,7 +553,7 @@ export default {
     console.log(this.$router.currentRoute)
     var self = this
 
-    if (!localStorage.getItem('token')) {
+    if (!sessionStorage.getItem('token')) {
       // localStorage.setItem('nextpage', fullPath)
       // localStorage.setItem('type', 0)
       // localStorage.setItem('invite_referee', getUrlQueryString('referee'))

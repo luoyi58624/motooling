@@ -254,7 +254,7 @@ export default {
     const deviceId = this.$route.query.deviceid
     const WEBURL = this.$route.query.weburl
     if (token) {
-      localStorage.setItem('token', token)
+      sessionStorage.setItem('token', token)
     }
     if (uid) {
       localStorage.setItem('uid', uid)
@@ -262,7 +262,7 @@ export default {
     if (WEBURL) {
       localStorage.setItem('WEBURL', WEBURL)
     }
-    // localStorage.setItem('token', '63b63bd4-9262-4a08-82ca-17fb7f31f3f0')
+    // sessionStorage.setItem('token', '63b63bd4-9262-4a08-82ca-17fb7f31f3f0')
     // localStorage.setItem('uid', '12')
     // localStorage.setItem("WEBURL", "http://www.motooling.com:8808");
     // localStorage.setItem("WEBURL", "http://192.168.2.247:8808");

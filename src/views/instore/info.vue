@@ -223,7 +223,7 @@ import CuUpload from '@/components/upload/Upload'
 import { WEBURL, BASEURL } from '@/utils/utils.js'
 import md5 from 'md5'
 
-const token = localStorage.getItem('token') || ''
+const token = sessionStorage.getItem('token') || ''
 const timestamp = '1547621396'
 const md5String = md5(token + timestamp + 'Motooling')
 console.log(md5String)

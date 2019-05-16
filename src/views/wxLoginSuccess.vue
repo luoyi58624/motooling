@@ -40,7 +40,7 @@ export default {
             alert('该企业没有站点')
             self.$router.replace('/')
           } else if (resObj.data.statusCode === 1) {
-            localStorage.setItem('token', resObj.data.user.token)
+            sessionStorage.setItem('token', resObj.data.user.token)
             // localStorage.setItem("WEBURL", resObj.data.weburl);
             localStorage.setItem('uid', resObj.data.user.uid)
             let nexturl
