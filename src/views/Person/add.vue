@@ -52,20 +52,20 @@
     <!-- <cu-input label="" v-model="submitmodel.userCompanyInfo.nation" placeholder="输入" >
     </cu-input> -->
     <cu-picker :pickerData="nationList" @select="nationSelect" @cancel="nationCancel"
-    :initialSelect="{val:submitmodel.userInfo.nation,Text:submitmodel.userCompanyInfo.nation}"
+    :initialSelect="{val:submitmodel.userCompanyInfo.nation,Text:submitmodel.userCompanyInfo.nation}"
     >
       <div slot="label">
         民族
       </div>
     </cu-picker>
-    <cu-input label="籍贯" v-model="submitmodel.userInfo.nativePlace" placeholder="输入" >
+    <cu-input label="籍贯" v-model="submitmodel.userCompanyInfo.nativePlace" placeholder="输入" >
     </cu-input>
-    <cu-input label="户籍地址" v-model="submitmodel.userInfo.permanentAddress" placeholder="输入" >
+    <cu-input label="户籍地址" v-model="submitmodel.userCompanyInfo.permanentAddress" placeholder="输入" >
     </cu-input>
     <cu-input label="现居地址" v-model="submitmodel.userInfo.address" placeholder="输入" >
     </cu-input>
     <cu-picker :pickerData="marriedList" @select="marriedSelect" @cancel="marriedCancel"
-    :initialSelect="{val:submitmodel.userInfo.married,Text:genderText(submitmodel.userInfo.married)}"
+    :initialSelect="{val:submitmodel.userCompanyInfo.isMarried,Text:marriedText(submitmodel.userCompanyInfo.isMarried)}"
     >
       <div slot="label">
         是否已婚
@@ -81,7 +81,7 @@
     </cu-input>
     <cu-input label="出生日期" v-model="submitmodel.userInfo.birthday" placeholder="输入" >
     </cu-input>
-    <cu-input label="身份证号" v-model="submitmodel.idCard.idNo" placeholder="输入" >
+    <cu-input label="身份证号" v-model="submitmodel.userInfo.idNo" placeholder="输入" >
     </cu-input>
     <cu-upload
     @file-success="idCardcertificatesFaceImgSuccess"
@@ -407,6 +407,15 @@ export default {
         return '请选择'
       }
     },
+    marriedText(val){
+      if (val == false) {
+        return '未婚'
+      } else if (val == true) {
+        return '已婚'
+      } else {
+        return '请选择'
+      }
+    },
     positionSelect (selected, selectedVal, selectedIndex, selectedText) {
       this.submitmodel.userInfo.positionCode = selectedVal[0]
       this.submitmodel.userInfo.positionName = selectedText[0]
@@ -428,7 +437,7 @@ export default {
       // this.submitmodel.userCompanyInfo.nation = ''
     },
     marriedSelect (selected, selectedVal, selectedIndex, selectedText) {
-      this.submitmodel.userInfo.married = selectedVal[0]
+      this.submitmodel.userCompanyInfo.married = selectedVal[0]
     },
     marriedCancel () {},
     genderSelect (selected, selectedVal, selectedIndex, selectedText) {
@@ -523,8 +532,9 @@ export default {
         })
     },
     submit () {
-      console.log(this.submitmodel)
       var self = this
+      // this.submitmodel.userInfo.idNo = this.submitmodel.idCard.number
+      console.log(this.submitmodel)
       // console.log(JSON.stringify(this.submitmodel))
       if (!this.submitmodel.userInfo.username ||
         !this.submitmodel.userInfo.mobile ||
