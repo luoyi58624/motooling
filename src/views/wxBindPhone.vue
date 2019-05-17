@@ -126,9 +126,10 @@ export default {
     // self.resString = res.data.resultData
     let wechatInfo = sessionStorage.getItem('wechatInfo')
     if (wechatInfo) {
-      submitmodel.unionid = wechatInfo.unionid
-      submitmodel.openId = wechatInfo.openId
-      submitmodel.sex = wechatInfo.sex
+      wechatInfo = JSON.parse(wechatInfo)
+      this.submitmodel.unionid = wechatInfo.unionid
+      this.submitmodel.openId = wechatInfo.openId
+      this.submitmodel.sex = wechatInfo.sex
     }
     // 邀请类型
     if (sessionStorage.getItem('type')) {

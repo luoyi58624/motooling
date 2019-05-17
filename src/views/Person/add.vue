@@ -66,7 +66,6 @@
     </cu-input>
     <cu-picker :pickerData="marriedList" @select="marriedSelect" @cancel="marriedCancel"
     :initialSelect="{val:submitmodel.userInfo.married,Text:genderText(submitmodel.userInfo.married)}"
-    :isRequired="true"
     >
       <div slot="label">
         是否已婚
