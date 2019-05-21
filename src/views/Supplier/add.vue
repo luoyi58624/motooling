@@ -322,7 +322,7 @@ export default {
     let self = this
     let fullPath = this.$router.currentRoute.fullPath
     console.log(this.$router.currentRoute)
-    if (!localStorage.getItem('token')) {
+    if (!sessionStorage.getItem('token')) {
       // localStorage.setItem('nextpage', fullPath)
       // localStorage.setItem('type', 0)
       // localStorage.setItem('invite_code', getUrlQueryString('code'))

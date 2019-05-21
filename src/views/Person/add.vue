@@ -52,29 +52,52 @@
     <!-- <cu-input label="" v-model="submitmodel.userCompanyInfo.nation" placeholder="输入" >
     </cu-input> -->
     <cu-picker :pickerData="nationList" @select="nationSelect" @cancel="nationCancel"
-    :initialSelect="{val:submitmodel.userInfo.nation,Text:submitmodel.userCompanyInfo.nation}"
+    :initialSelect="{val:submitmodel.userCompanyInfo.nation,Text:submitmodel.userCompanyInfo.nation}"
     >
       <div slot="label">
         民族
       </div>
     </cu-picker>
-    <cu-input label="籍贯" v-model="submitmodel.userInfo.nativePlace" placeholder="输入" >
+    <cu-input label="籍贯" v-model="submitmodel.userCompanyInfo.nativePlace" placeholder="输入" >
     </cu-input>
-    <cu-input label="户籍地址" v-model="submitmodel.userInfo.permanentAddress" placeholder="输入" >
+    <cu-input label="户籍地址" v-model="submitmodel.userCompanyInfo.permanentAddress" placeholder="输入" >
     </cu-input>
-    <!-- <cu-input label="是否已婚" v-model="submitmodel.userCompanyInfo.isMarried" placeholder="输入" >
-    </cu-input> -->
+    <cu-input label="现居地址" v-model="submitmodel.userInfo.address" placeholder="输入" >
+    </cu-input>
+    <cu-picker :pickerData="marriedList" @select="marriedSelect" @cancel="marriedCancel"
+    :initialSelect="{val:submitmodel.userCompanyInfo.isMarried,Text:marriedText(submitmodel.userCompanyInfo.isMarried)}"
+    >
+      <div slot="label">
+        是否已婚
+      </div>
+    </cu-picker>
     <cu-input label="政治面貌" v-model="submitmodel.userCompanyInfo.politicalOutlook" placeholder="输入" >
     </cu-input>
     <cu-input label="联系电话" v-model="submitmodel.userInfo.mobile" :isRequired="true" placeholder="输入" :disabled="true">
     </cu-input>
     <cu-input label="员工卡号" v-model="submitmodel.userCompanyInfo.cardId" placeholder="输入" >
     </cu-input>
-    <cu-input label="入职日期" v-model="submitmodel.userCompanyInfo.workStart" placeholder="输入" >
-    </cu-input>
-    <cu-input label="出生日期" v-model="submitmodel.userInfo.birthday" placeholder="输入" >
-    </cu-input>
-    <cu-input label="身份证号" v-model="submitmodel.idCard.idNo" placeholder="输入" >
+    <div class="constom-input border-bottom-1px">
+      <div class="constom-input_label">入职日期</div>
+      <div class="constom-input_content" @click="showWorkStartPicker">
+        <div class="cube-input">
+          <div class="cube-input-field">
+            {{submitmodel.userCompanyInfo.workStart?submitmodel.userCompanyInfo.workStart:'请选择'}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="constom-input border-bottom-1px">
+      <div class="constom-input_label">出生日期</div>
+      <div class="constom-input_content" @click="showBirthdayDatePicker">
+        <div class="cube-input">
+          <div class="cube-input-field">
+            {{submitmodel.userInfo.birthday?submitmodel.userInfo.birthday:'请选择'}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <cu-input label="身份证号" v-model="submitmodel.userInfo.idNo" placeholder="输入" >
     </cu-input>
     <cu-upload
     @file-success="idCardcertificatesFaceImgSuccess"
@@ -229,6 +252,10 @@ export default {
       // 部门列表
       depList: [],
 
+      marriedList: [
+        { text: '未婚', value: false },
+        { text: '已婚', value: true }
+      ],
       genderList: [
         { text: '未定', value: 0 },
         { text: '男', value: 1 },
@@ -396,32 +423,85 @@ export default {
         return '请选择'
       }
     },
+    marriedText (val) {
+      if (val == false) {
+        return '未婚'
+      } else if (val == true) {
+        return '已婚'
+      } else {
+        return '请选择'
+      }
+    },
+    // 出生日期选择
+    showBirthdayDatePicker () {
+      if (!this.birthdayDatePicker) {
+        this.birthdayDatePicker = this.$createDatePicker({
+          title: '出生日期',
+          min: new Date(1900, 1, 1),
+          max: new Date(),
+          value: new Date(),
+          onSelect: this.selectBirthdayDateHandle,
+          onCancel: this.cancelBirthdayDateHandle
+        })
+      }
+      this.birthdayDatePicker.show()
+    },
+    selectBirthdayDateHandle (date, selectedVal, selectedText) {
+      console.log(date)
+      console.log(selectedVal.join('-'))
+      console.log(selectedText.join('-'))
+      this.$set(this.submitmodel.userInfo, 'birthday', selectedVal.join('-'))
+    },
+    cancelBirthdayDateHandle () {
+    },
+    // 入职日期选择
+    showWorkStartPicker () {
+      if (!this.workStartPicker) {
+        this.workStartPicker = this.$createDatePicker({
+          title: '入职日期',
+          min: new Date(1900, 1, 1),
+          max: new Date(),
+          value: new Date(),
+          onSelect: this.selectWorkStartHandle,
+          onCancel: this.cancelWorkStartHandle
+        })
+      }
+      this.workStartPicker.show()
+    },
+    selectWorkStartHandle (date, selectedVal, selectedText) {
+      console.log(date)
+      console.log(selectedVal.join('-'))
+      console.log(selectedText.join('-'))
+      this.$set(this.submitmodel.userCompanyInfo, 'workStart', selectedVal.join('-'))
+    },
+    cancelWorkStartHandle () {
+    },
     positionSelect (selected, selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal)
-      this.submitmodel.userInfo.positionCode = selectedVal.join(',')
-      this.submitmodel.userInfo.positionName = selectedText.join(',')
+      this.submitmodel.userInfo.positionCode = selectedVal[0]
+      this.submitmodel.userInfo.positionName = selectedText[0]
     },
     positionCancel () {
       console.log('cancel')
     },
     depSelect (selected, selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal)
-      this.submitmodel.userInfo.depId = selectedVal.join(',')
-      this.submitmodel.userInfo.depName = selectedText.join(',')
+      this.submitmodel.userInfo.depId = selectedVal[0]
+      this.submitmodel.userInfo.depName = selectedText[0]
     },
     depCancel () {
 
     },
     nationSelect (selected, selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal)
-      this.submitmodel.userCompanyInfo.nation = selectedVal.join(',')
+      this.submitmodel.userCompanyInfo.nation = selectedVal[0]
     },
     nationCancel () {
       // this.submitmodel.userCompanyInfo.nation = ''
     },
-
+    marriedSelect (selected, selectedVal, selectedIndex, selectedText) {
+      this.submitmodel.userCompanyInfo.married = selectedVal[0]
+    },
+    marriedCancel () {},
     genderSelect (selected, selectedVal, selectedIndex, selectedText) {
-      this.submitmodel.userInfo.gender = selectedVal.join(',')
+      this.submitmodel.userInfo.gender = selectedVal[0]
     },
     genderCancel () {
       // this.submitmodel.userInfo.gender = ''
@@ -498,13 +578,29 @@ export default {
       getUser({ uid: this.submitmodel.userInfo.uid })
         .then(
           function (res) {
-            let rdata = res.data
-            Object.assign(self.submitmodel, rdata.data)
-            // self.submitmodel = rdata.data
-            console.log(self.submitmodel)
-            // 覆盖之前数据保存的邀请人
-            if (getUrlQueryString('referee')) {
-              self.submitmodel.userInfo.referee = getUrlQueryString('referee')
+            if (res.data.code === '000000') {
+              let rdata = res.data
+              Object.assign(self.submitmodel, rdata.data)
+              // self.submitmodel = rdata.data
+              console.log(self.submitmodel)
+              // 覆盖之前数据保存的邀请人
+              if (getUrlQueryString('referee')) {
+                self.submitmodel.userInfo.referee = getUrlQueryString('referee')
+              }
+            } else {
+              console.log('res', res)
+              self.$createDialog({
+                time: 2000,
+                title: '错误',
+                content: res.data.msg,
+                type: 'error',
+                confirmBtn: {
+                  text: '确定',
+                  active: true,
+                  disabled: false,
+                  href: 'javascript:;'
+                }
+              }).show()
             }
           }
         ).catch((err) => {
@@ -512,8 +608,9 @@ export default {
         })
     },
     submit () {
-      console.log(this.submitmodel)
       var self = this
+      // this.submitmodel.userInfo.idNo = this.submitmodel.idCard.number
+      console.log(this.submitmodel)
       // console.log(JSON.stringify(this.submitmodel))
       if (!this.submitmodel.userInfo.username ||
         !this.submitmodel.userInfo.mobile ||
@@ -553,7 +650,7 @@ export default {
     console.log(this.$router.currentRoute)
     var self = this
 
-    if (!localStorage.getItem('token')) {
+    if (!sessionStorage.getItem('token')) {
       // localStorage.setItem('nextpage', fullPath)
       // localStorage.setItem('type', 0)
       // localStorage.setItem('invite_referee', getUrlQueryString('referee'))
@@ -651,4 +748,18 @@ export default {
     display: none
   }
 
+  .cube-input-field{
+    display: block;
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+      width: 100%;
+      padding: 0.266667rem;
+      box-sizing: border-box;
+      color: #666;
+      line-height: inherit;
+      background-color: inherit;
+      border-radius: 0.053333rem;
+      outline: none;
+  }
 </style>

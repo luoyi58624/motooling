@@ -109,7 +109,7 @@ export default {
             localStorage.removeItem('type')
             self.$router.replace('/wxlogin?redirectURL=' + getUrlQueryString('redirectURL'))
           } else {
-            alert('提交失败' + rdata.msg)
+            alert('提交失败：' + rdata.msg)
           }
         }).catch(err => {
           console.log(err)
@@ -124,9 +124,12 @@ export default {
     //   this.state =  1
     // }
     // self.resString = res.data.resultData
-    console.log(sessionStorage)
-    if (sessionStorage.getItem('wechatInfo')) {
-      this.submitmodel = JSON.parse(sessionStorage.getItem('wechatInfo'))
+    let wechatInfo = sessionStorage.getItem('wechatInfo')
+    if (wechatInfo) {
+      wechatInfo = JSON.parse(wechatInfo)
+      this.submitmodel.unionid = wechatInfo.unionid
+      this.submitmodel.openId = wechatInfo.openId
+      this.submitmodel.sex = wechatInfo.sex
     }
     // 邀请类型
     if (sessionStorage.getItem('type')) {
