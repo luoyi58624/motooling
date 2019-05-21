@@ -439,7 +439,7 @@ export default {
           title: '出生日期',
           min: new Date(1900, 1, 1),
           max: new Date(),
-          value: new Date(),
+          value: new Date(this.submitmodel.userInfo.birthday),
           onSelect: this.selectBirthdayDateHandle,
           onCancel: this.cancelBirthdayDateHandle
         })
@@ -447,9 +447,6 @@ export default {
       this.birthdayDatePicker.show()
     },
     selectBirthdayDateHandle (date, selectedVal, selectedText) {
-      console.log(date)
-      console.log(selectedVal.join('-'))
-      console.log(selectedText.join('-'))
       this.$set(this.submitmodel.userInfo, 'birthday', selectedVal.join('-'))
     },
     cancelBirthdayDateHandle () {
@@ -461,7 +458,7 @@ export default {
           title: '入职日期',
           min: new Date(1900, 1, 1),
           max: new Date(),
-          value: new Date(),
+          value: new Date(this.submitmodel.userCompanyInfo.workStart),
           onSelect: this.selectWorkStartHandle,
           onCancel: this.cancelWorkStartHandle
         })
@@ -469,9 +466,6 @@ export default {
       this.workStartPicker.show()
     },
     selectWorkStartHandle (date, selectedVal, selectedText) {
-      console.log(date)
-      console.log(selectedVal.join('-'))
-      console.log(selectedText.join('-'))
       this.$set(this.submitmodel.userCompanyInfo, 'workStart', selectedVal.join('-'))
     },
     cancelWorkStartHandle () {
