@@ -439,7 +439,7 @@ export default {
           title: '出生日期',
           min: new Date(1900, 1, 1),
           max: new Date(),
-          value: new Date(this.submitmodel.userInfo.birthday),
+          value: new Date(this.submitmodel.userInfo.birthday?this.submitmodel.userInfo.birthday:Date.now()),
           onSelect: this.selectBirthdayDateHandle,
           onCancel: this.cancelBirthdayDateHandle
         })
@@ -458,7 +458,7 @@ export default {
           title: '入职日期',
           min: new Date(1900, 1, 1),
           max: new Date(),
-          value: new Date(this.submitmodel.userCompanyInfo.workStart),
+          value: new Date(this.submitmodel.userCompanyInfo.workStart?this.submitmodel.userCompanyInfo.workStart:Date.now()),
           onSelect: this.selectWorkStartHandle,
           onCancel: this.cancelWorkStartHandle
         })
