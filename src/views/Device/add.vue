@@ -1,8 +1,14 @@
 <template>
   <div>
-    <cu-input label="id" v-model="submitmodel.device.id" placeholder="输入" >
+    <cu-input label="id" v-model="submitmodel.device.id" placeholder="输入" v-if="false">
     </cu-input>
     <cu-input label="设备编号" v-model="submitmodel.device.deviceNo" placeholder="输入" >
+    </cu-input>
+    <cu-input label="设备描述" v-model="submitmodel.device.deviceName" placeholder="输入" >
+    </cu-input>
+    <cu-input label="设备尺寸(长)" v-model="submitmodel.device.deviceLength" placeholder="输入" >
+    </cu-input>
+    <cu-input label="设备尺寸(宽)" v-model="submitmodel.device.deviceWidth" placeholder="输入" >
     </cu-input>
     <cu-input label="设备品牌" v-model="submitmodel.device.deviceBrand" placeholder="输入" >
     </cu-input>
@@ -19,7 +25,7 @@
     :initialSelect="{val:submitmodel.device.pgId,Text:submitmodel.device.pgName}"
     >
       <div slot="label">
-        隶属工作中心
+        隶属部门
       </div>
     </cu-picker>
     <cu-picker :pickerData="deviceSelectListData.userList" @select="managerSelect" @cancel="managerCancel" :alias="managerAlias"
@@ -45,6 +51,8 @@
     :max='1'>
     <div slot="label">设备参数</div>
     </cu-upload>
+    <cu-input label="参数备注" v-model="submitmodel.device.deviceParam" placeholder="输入" >
+    </cu-input>
     <cu-upload
     @file-success="deviceServiceImgSuccess"
     @file-remove="deviceServiceImgRemove"
@@ -141,6 +149,7 @@ export default {
           isShare: '',
           machineRate: '',
           deviceCost: '',
+          // 设备服务备注
           serviceRemark: ''
         },
         deviceServiceList: [],
@@ -153,9 +162,6 @@ export default {
     }
   },
   methods: {
-    show () {
-      console.log(this.addDeviceInfo)
-    },
     deviceSelect (selected, selectedVal, selectedIndex, selectedText) {
       this.submitmodel.device.type = selectedVal.join(',')
       this.submitmodel.device.typeName = selectedText.join(',')
