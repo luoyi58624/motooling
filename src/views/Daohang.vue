@@ -20,6 +20,10 @@
     <div>
       <router-link to="/instore/list?weburl=http%3A%2F%2F192.168.2.180%3A8808">收发货</router-link>
     </div>
+    <br>
+    <div>
+      <router-link to="/stock/list">库存盘点</router-link>
+    </div>
     <hr>
     <div>
       <h4>以下为中转页面（不要直接进入）</h4>

@@ -155,11 +155,32 @@ var router = new Router({
     path: '/instore/search',
     name: 'search',
     component: () => import('./views/instore/search')
+  },
+  {
+    path: '/stock/list',
+    name: 'stock-list',
+    component: () => import('./views/stock/list')
+  },
+  {
+    path: '/stock/info',
+    name: 'stock-info',
+    component: () => import('./views/stock/info')
+  },
+  {
+    path: '/stock/inventory',
+    name: 'stock-inventory',
+    component: () => import('./views/stock/inventory')
+  },
+  {
+    path: '/stock/statelist',
+    name: 'state-list',
+    component: () => import('./views/stock/stateList')
   }
 
   ]
 })
 router.beforeEach((to, from, next) => {
+  console.log(WEBURL(),token())
   const path = to.path.toLowerCase()
   if (to.query.weburl) {
     localStorage.WEBURL = decodeURIComponent(to.query.weburl)
