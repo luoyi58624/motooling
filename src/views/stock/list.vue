@@ -3,7 +3,7 @@
   <div>
     <div class="bg" v-show="showDrawerData" @click="hideDrawer"></div>
     <div class="search-wrapper" style="z-index:3">
-      <input type="text" placeholder="搜索">
+      <input type="text" placeholder="搜索"  @keyup.enter="search" v-model="queryValues">
     </div>
     <div class="option">
       <div>
@@ -20,34 +20,50 @@
         </div>
       </div>
       <div @click="showDrawer">筛选</div>
-       <slide-up-down :active="showListData" :duration="300" class="slide-up">
-      <div class="option-list">
-        <div :class="{active:timeSort==1}" @click="changeTimeSort('1')">按库存地点排序</div>
-        <div :class="{active:timeSort==2}" @click="changeTimeSort('2')">按盘点单排序</div>
-        <div :class="{active:timeSort==3}" @click="changeTimeSort('3')">按物料类型排序</div>
-      </div>
-    </slide-up-down>
-    </div>
-   
-
-    <div class="list">
-      <div class="manager" @click="toInfo">
-        <div class="img-wrapper">
-          <img src alt class="gjimg">
+      <slide-up-down :active="showListData" :duration="300" class="slide-up">
+        <div class="option-list">
+          <div :class="{active:timeSort==1}" @click="changeTimeSort('1')">按库存地点排序</div>
+          <div :class="{active:timeSort==2}" @click="changeTimeSort('2')">按盘点单排序</div>
+          <div :class="{active:timeSort==3}" @click="changeTimeSort('3')">按物料类型排序</div>
         </div>
-        <div class="info-wrapper">
-          <div class="manage-top">
-            <p>盘 点 单：</p>
+      </slide-up-down>
+    </div>
+    <cube-scroll
+      class="scroll"
+      ref="scroll"
+      :data="list"
+      :options="options"
+      @pulling-down="onPullingDown"
+      @pulling-up="onPullingUp"
+    >
+      <div v-if="list.length==0&&hasMore==false" class="nocontent">暂时没有数据</div>
+      <div class="list">
+        <div class="manager" @click="toInfo(item.id)" v-for="(item,index) in list" :key="index">
+          <div class="img-wrapper">
+            <img src alt class="gjimg">
           </div>
-          <div class="state state1">初始化</div>
-          <div>物料类型:</div>
-          <div>库存地点:</div>
-          <div>日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期:</div>
-          <cube-button :inline="true" style="width:100px;" @click.stop="pandian">盘点</cube-button>
-          <cube-button :inline="true" style="width:100px;" @click.stop="statelist">状态列表</cube-button>
+          <div class="info-wrapper">
+            <div class="manage-top">
+              <p>盘 点 单：{{item.checkBillNo}}</p>
+            </div>
+            <div class="state state1">
+              
+              {{approveList.filter(it=>{return item.approveStep==it.id})[0]['name']}}
+              <!-- {{item.approveStep}}
+              {{approveList}} -->
+              <!-- {{it.approveStep}} -->
+              
+              </div>
+            <div>物料类型: {{item.matTypeName}}</div>
+            <div>库存地点: {{item.storeHouseId}}</div>
+            <div>日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期: {{item.createdAt.slice(0,10)}}</div>
+            <cube-button :inline="true" style="width:100px;" @click.stop="pandian">盘点</cube-button>
+            <cube-button :inline="true" style="width:100px;" @click.stop="statelist">状态列表</cube-button>
+          </div>
         </div>
       </div>
-    </div>
+      <div v-if="hasMore==false&&list.length>0" class="nocontent">没有更多数据了</div>
+    </cube-scroll>
 
     <div class="bot">
       <div class="active">列表</div>
@@ -59,26 +75,37 @@
         <div class="box">
           <div class="title">库存地点</div>
           <div class="wrp">
-            <div class="bn">成品仓</div>
-            <div class="bn">成品仓</div>
-            <div class="bn">半成品仓</div>
-            <div class="bn">标准件仓</div>
+            <div
+              class="bn"
+              v-for="(item) in ivStorelist"
+              :key="item.storeHouseName"
+              @click="selLocation(item.storeHouseId)"
+              :class="{'sel':selivStorelist.includes(item.storeHouseId)}"
+            >{{item.storeHouseName}}</div>
           </div>
         </div>
         <div class="box">
-          <div class="title">库存地点</div>
+          <div class="title">物料类型</div>
           <div class="wrp">
-            <div class="bn">成品仓</div>
-            <div class="bn">半成品仓</div>
-            <div class="bn">标准件仓</div>
+            <div
+              class="bn"
+              v-for="(item) in matTypeList"
+              :key="item.matTypeId"
+              @click="selType(item.matTypeId)"
+              :class="{sel:selmatTypeList.includes(item.matTypeId)}"
+            >{{item.typeName}}</div>
           </div>
         </div>
         <div class="box">
-          <div class="title">库存地点</div>
+          <div class="title">状态</div>
           <div class="wrp">
-            <div class="bn">成品仓</div>
-            <div class="bn">半成品仓</div>
-            <div class="bn">标准件仓</div>
+            <div
+              class="bn"
+              v-for="item in approveList"
+              :key="item.id"
+              @click="selState(item.id)"
+              :class="{sel:selapproveList.includes(item.id)}"
+            >{{item.name}}</div>
           </div>
         </div>
         <div class="box">
@@ -102,71 +129,118 @@
 <script>
 import SlideUpDown from "vue-slide-up-down";
 import router from "../../router";
-import {getStockList} from "../../api/stock/stock"
+import { getStockList, queryStoreHouseTypeList } from "../../api/stock/stock";
 export default {
   data() {
     return {
-      list:[],
-      hasMore:true,
-      isLoading:false,
+      list: [],
+      hasMore: true,
+      isLoading: false,
       showDrawerData: false,
       showListData: false,
       startTime: [],
       endTime: [],
-      queryValues:"",//搜索
-      timeSort:"1",//排序条件(注意：(注意：必填参数,1 按库存地点，2 盘点单，3 按物料类型）)
-      sortType:"",//排序类型(注意：选填参数[排序类型]:1降序,2升序.默认升序)
-      pageNum:1,//页码(注意：选填参数[默认第一页])
-      pageSize:10,//每页条数(注意：选填参数[默认10条])
-      mateTypeId:"",//物料类型(注意：选填参数[多个用，隔开标准件，刀具，量具，毛呸，库存原料，办公用品])
-      storeHouseId:"",//库存地点(注意：选填参数[多个用，隔开深圳仓，东莞仓，广州仓，惠州仓，香港仓珠海仓])
-      approveStep:""//审批状态(注意：选填参数[审批状态[step10-制定中，step11-驳回，step20-待审核，step30-待批准，step0-已通过, step00已通过]多选用逗号拼接)
+      queryValues: "", //搜索
+      timeSort: "1", //排序条件(注意：(注意：必填参数,1 按库存地点，2 盘点单，3 按物料类型）)
+      sortType: "", //排序类型(注意：选填参数[排序类型]:1降序,2升序.默认升序)
+      pageNum: 1, //页码(注意：选填参数[默认第一页])
+      pageSize: 10, //每页条数(注意：选填参数[默认10条])
+      mateTypeId: "", //物料类型(注意：选填参数[多个用，隔开标准件，刀具，量具，毛呸，库存原料，办公用品])
+      storeHouseId: "", //库存地点(注意：选填参数[多个用，隔开深圳仓，东莞仓，广州仓，惠州仓，香港仓珠海仓])
+      approveStep: "", //审批状态(注意：选填参数[审批状态[step10-制定中，step11-驳回，step20-待审核，step30-待批准，step0-已通过, step00已通过]多选用逗号拼接)
+      ivStorelist: [], //仓库列表
+      matTypeList: [], //物料类型列表
+      approveList: [
+        { id: "step10", name: "制定中" },
+        { id: "step11", name: "驳回" },
+        { id: "step20", name: "待审核" },
+        { id: "step30", name: "待批准" },
+        { id: "step0", name: "已通过" }
+      ], //审批状态列表
+      selivStorelist: [], //
+      selmatTypeList: [],
+      selapproveList: [],
+      options: {
+        pullDownRefresh: {
+          threshold: 60,
+          stop: 40,
+          txt: "更新成功"
+        },
+        pullUpLoad: {
+          threshold: 0,
+          txt: {
+            more: ""
+          }
+        }
+      }
     };
   },
-  created(){
+  created() {
     this.getList();
-    
+    this._queryStoreHouseTypeList();
   },
   components: {
     SlideUpDown
   },
   methods: {
-    getList(){
-      if(this.list.length==0){
-         this.showLoading();
-      };
-      if(this.isLoading){return};
-      if(!this.hasMore){
-        this.showToast('没有更多数据了')
+    _queryStoreHouseTypeList() {
+      queryStoreHouseTypeList().then(res => {
+        console.log("############");
+        console.log(res);
+        this.ivStorelist = res.data.ivStorelist;
+        this.matTypeList = res.data.matTypeList;
+      });
+    },
+    getList() {
+      if (this.isLoading) {
         return;
       }
-      this.isLoading=true;
-      getStockList({
-     queryValues:"",
-     timeSort:"1",
-     pageNum:this.pageNum,
-     pageSize:this.pageSize,
-    }).then(res=>{
-      this.hideLoading();
-      console.log(res)
-      if(res.ivStoreCheckBillLogList.length<this.pageSize){
-        this.hasMore=false;
+      if (!this.hasMore) {
+        //this.showToast('没有更多数据了')
+        return;
       }
-       this.pageNum++;
-      this.list=[...this.list,...res.ivStoreCheckBillLogList];
-      this.isLoading=false
-    }).catch(err=>{
-      this.hideLoading();
-
-    })
-
-
+      if (this.list.length == 0) {
+        this.showLoading();
+      }
+      this.isLoading = true;
+      getStockList({
+        queryValues: this.queryValues,
+        timeSort: this.timeSort,
+        pageNum: this.pageNum + "",
+        pageSize: this.pageSize + "",
+        matTypeId: this.selmatTypeList.join(','),
+        storeHouseId: this.selivStorelist.join(','),
+        approveStep: this.selapproveList.join(','),
+        sortType: this.sortType
+      })
+        .then(res => {
+          this.hideLoading();
+          console.log(123);
+          console.log(res.data.ivStoreCheckBillLogList);
+          if (res.data.ivStoreCheckBillLogList.length < this.pageSize) {
+            this.hasMore = false;
+          }
+          this.pageNum++;
+          this.list = [...this.list, ...res.data.ivStoreCheckBillLogList];
+          this.isLoading = false;
+        })
+        .catch(err => {
+          //console.log(err)
+          this.isLoading = false;
+           this.hideLoading();
+          this.showToast(err.msg)
+         
+        });
     },
     showDrawer() {
       this.showDrawerData = true;
     },
     hideDrawer() {
       this.showDrawerData = false;
+      this.list=[];
+      this.hasMore=true;
+      this.pageNum=1;
+      this.getList()
     },
     showList() {
       this.showListData = true;
@@ -203,19 +277,29 @@ export default {
       console.log(selectedVal);
       this.endTime = selectedVal;
     },
-    toInfo() {
+    toInfo(id) {
       console.log(1);
       this.$router.push({
         path: "/stock/info",
-        query: {}
+        query: {
+          id
+        }
       });
     },
-    changeTimeSort(index){
-      this.timeSort=index;
-     this.showListData = false;
+    changeTimeSort(index) {
+      this.timeSort = index;
+      this.list = [];
+      this.pageNum = 1;
+      this.hasMore = true;
+      this.showListData = false;
+      this.getList();
     },
-    changSortType(num){
-      this.sortType=num;
+    changSortType(num) {
+      this.sortType = num;
+      this.list = [];
+      this.pageNum = 1;
+      this.hasMore = true;
+      this.getList();
     },
     pandian() {
       this.$router.push({
@@ -228,6 +312,54 @@ export default {
         path: "/stock/statelist",
         query: {}
       });
+    },
+    onPullingUp() {
+      console.log(this.hasMore);
+      if (this.hasMore) {
+        this.getList();
+      } else {
+        this.$refs.scroll.forceUpdate();
+      }
+    },
+    onPullingDown() {
+      this.list = [];
+      this.hasMore = true;
+      this.pageNum = 1;
+      this.getList();
+    },
+    search(){
+       this.list = [];
+      this.hasMore = true;
+      this.pageNum = 1;
+      this.getList();
+      
+    },
+    //  selivStorelist: [], //
+    //   selmatTypeList: [],
+    //   selapproveList: [],
+    selLocation(id){
+      if(this.selivStorelist.includes(id)){
+        const index=this.selivStorelist.indexOf(id)
+        this.selivStorelist.splice(index,1)
+      }else{
+        this.selivStorelist.push(id)
+      }
+    },
+    selType(id){
+       if(this.selmatTypeList.includes(id)){
+        const index=this.selmatTypeList.indexOf(id)
+        this.selmatTypeList.splice(index,1)
+      }else{
+        this.selmatTypeList.push(id)
+      }
+    },
+    selState(id){
+       if(this.selapproveList.includes(id)){
+        const index=this.selapproveList.indexOf(id)
+        this.selapproveList.splice(index,1)
+      }else{
+        this.selapproveList.push(id)
+      }
     }
   }
 };
@@ -244,11 +376,19 @@ export default {
   transform: translateX(100%);
   opacity: 0;
 }
+.scroll {
+  position: fixed;
+  top: 90px;
+  left: 0;
+  right: 0;
+  bottom: 50px;
+}
 .search-wrapper {
   padding: 10px 15px;
   z-index: 3;
   > input {
-    display:block;width:100%;
+    display: block;
+    width: 100%;
     background: #eeeeee;
     height: 30px;
     border-radius: 20px;
@@ -276,7 +416,6 @@ export default {
   }
 }
 .option-list {
-
   background: #fff;
   z-index: 3;
   width: 95%;
@@ -369,6 +508,7 @@ export default {
 }
 .bot {
   position: fixed;
+  background: #fff;
   bottom: 0;
   left: 0;
   right: 0;
@@ -396,6 +536,7 @@ export default {
   background: rgba(0, 0, 0, 0.5);
 }
 .drawer {
+  overflow-y: auto;
   position: fixed;
   top: 0;
   right: 0;
@@ -428,9 +569,16 @@ export default {
         text-align: center;
         margin-top: 15px;
         display: inline-block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow:hidden;
+
       }
-      > .bn:nth-child(3n+2) {
+      > .bn:nth-child(3n + 2) {
         margin: 15px 15px 0;
+      }
+      >.sel{
+        background: #5695FF;color:#fff;
       }
 
       > .selTime {
@@ -446,9 +594,11 @@ export default {
     }
   }
 }
-.slide-up{
-  position:absolute;width:100%;
-    top: 41px;left:0;
+.slide-up {
+  position: absolute;
+  width: 100%;
+  top: 41px;
+  left: 0;
 }
 .option-list {
   top: 41px;
@@ -468,5 +618,11 @@ export default {
   > div.active {
     color: #4e92ff;
   }
+}
+.nocontent {
+  font-size: 12px;
+  padding: 20px 0;
+  text-align: center;
+  color: #999;
 }
 </style>

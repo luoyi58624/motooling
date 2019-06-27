@@ -19,47 +19,69 @@
       <div class="table">
         <div>
           <div>上期结存</div>
-          <div>2000</div>
+          <div>{{inventory.lastQty}}</div>
         </div>
         <div>
-          <div>上期结存</div>
-          <div>2000</div>
+          <div>本期出库</div>
+          <div>{{inventory.occurOutQty}}</div>
+        </div>
+          <div>
+          <div>本期入库</div>
+          <div>{{inventory.occurInQty}}</div>
+        </div>
+          <div>
+          <div>本期实盘</div>
+          <div>{{inventory.checkRealQty}}</div>
+        </div>
+          <div>
+          <div>本期盘盈</div>
+          <div>{{inventory.checkProfitLossQty}}</div>
+        </div>
+          <div>
+          <div>本期盘亏</div>
+          <div>{{inventory.checkProfitLossQty}}</div>
+        </div>
+          <div>
+          <div>本期结存</div>
+          <div>{{inventory.lastQty}}</div>
         </div>
       </div>
     </div>
     <div class="box2" v-show="currentIndex==2">
+      <div class="nocontent" v-show="pyList.length==0">空空如也</div>
       <div class="list">
-        <div class="manager">
+        <div class="manager" v-for="(item,index) in pyList" :key="index">
           <div class="img-wrapper">
             <img src alt class="gjimg">
           </div>
           <div class="info-wrapper">
             <div>库&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：</div>
 
-            <div>物料编码:</div>
-            <div>物料描述:</div>
+            <div>物料编码: {{item.matNo}}</div>
+            <div>物料描述:{{item.matName}}</div>
             <div>
-              <div>库&nbsp;&nbsp;存&nbsp;数:</div>
-              <div>盘盈</div>
+              <div>库&nbsp;&nbsp;存&nbsp;数: {{item.checkStoreQty}}</div>
+              <div>盘盈: {{}}</div>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="box3" v-show="currentIndex==3">
+      <div class="nocontent" v-show="pkList.length==0">空空如也</div>
       <div class="list">
-        <div class="manager">
+        <div class="manager" v-for="(item,index) in pkList" :key="index">
           <div class="img-wrapper">
             <img src alt class="gjimg">
           </div>
           <div class="info-wrapper">
             <div>库&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：</div>
 
-            <div>物料编码:</div>
-            <div>物料描述:</div>
+            <div>物料编码: {{item.matNo}}</div>
+            <div>物料描述:{{item.matName}}</div>
             <div>
-              <div>库&nbsp;&nbsp;存&nbsp;数:</div>
-              <div>盘盈</div>
+              <div>库&nbsp;&nbsp;存&nbsp;数: {{item.checkStoreQty}}</div>
+              <div>盘盈: {{}}</div>
             </div>
           </div>
         </div>
@@ -73,26 +95,52 @@
 </template>
 
 <script>
-import {queryInventoryCheck,queryCheckProfitLoss} from "../../api/stock/stock"
+import {queryInventoryCheck,queryCheckProfitLoss,getApproveStep} from "../../api/stock/stock"
 export default {
   data() {
     return {
-      currentIndex: 1
+      currentIndex: 1,
+      id:"",
+      inventory:{},//盘点统计
+      pyList:[],
+      pkList:[]
     };
+  },
+  created(){
+     this.id = this.$route.query.id;
+     //this._queryInventoryCheck();
+    //  this._queryCheckProfitLoss("1")
+    //  this._queryCheckProfitLoss("0")
+     this._getApproveStep()
+
   },
 
   methods: {
     changeState(index) {
       this.currentIndex = index;
     },
-    _queryInventoryCheck(){//盘点统计
-      queryInventoryCheck({id:""}).then(res=>{
+    _getApproveStep(){//审批
+      getApproveStep({id:this.id}).then(res=>{
+        console.log("###")
         console.log(res)
       })
     },
-    _queryCheckProfitLoss(id,checkProfitLoss){//checkProfitLoss=1盘盈，=0盘亏
-      queryCheckProfitLoss({id,checkProfitLoss}).then(res=>{
+    _queryInventoryCheck(){//盘点统计
+      queryInventoryCheck({id:this.id}).then(res=>{
+        // console.log(233)
+        // console.log(res)
+        this.inventory=res.data[0]
+      })
+    },
+    _queryCheckProfitLoss(checkProfitLoss){//checkProfitLoss=1盘盈，=0盘亏
+      queryCheckProfitLoss({id:this.id,checkProfitLoss}).then(res=>{
         console.log(res)
+       if(checkProfitLoss==1){
+         this.pyList=res.data
+       }
+       if(checkProfitLoss==0){
+         this.pkList=res.data
+       }
       })
     }
   }
@@ -223,5 +271,11 @@ export default {
     background: #5fd858;
     color: #fff;
   }
+}
+.nocontent {
+  font-size: 12px;
+  padding: 20px 0;
+  text-align: center;
+  color: #999;
 }
 </style>

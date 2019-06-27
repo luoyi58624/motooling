@@ -2,7 +2,7 @@
 <template>
   <div class="body">
        <div class="list">
-        <div class="manager" @click="toInfo">
+        <div class="manager">
           <div class="img-wrapper">
             <img src alt class="gjimg">
           </div>
@@ -42,15 +42,14 @@ export default {
     };
   },
 
-  components: {},
-
-  computed: {},
-
-  mounted: {},
+ created(){
+   this._getInventoryStatus()
+ },
 
   methods: {
     _getInventoryStatus(){
-      _getInventoryStatus({}).then(res=>{
+      getInventoryStatus({}).then(res=>{
+        console.log(res)
         
       })
      
@@ -90,9 +89,7 @@ export default {
     line-height: 25px;
     display: flex;
     justify-content: space-between;
-    > div:last-child {
-   
-    }
+  
   }
   > .state {
     font-size: 14px;

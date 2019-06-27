@@ -28,7 +28,7 @@ export function getStockList (params = {}) {
       data: params
     }
     return request({
-      url: WEBURL() + '/iv/queryInventoryCheck',
+      url: WEBURL() + '/mtH5/iv/queryInventoryCheck',
       method: 'post',
       data
     })
@@ -42,7 +42,7 @@ export function getStockList (params = {}) {
       data: params
     }
     return request({
-      url: WEBURL() + '/iv/queryCheckProfitLoss',
+      url: WEBURL() + '/mtH5/iv/queryCheckProfitLoss',
       method: 'post',
       data
     })
@@ -56,11 +56,42 @@ export function getStockList (params = {}) {
       data: params
     }
     return request({
-      url: WEBURL() + '/iv/getInventoryStatus',
+      url: WEBURL() + '/mtH5/iv/getInventoryStatus',
       method: 'post',
       data
     })
   }
+
+  export function queryStoreHouseTypeList (params = {}) {//获取仓库类型和物料类型
+    const data = {
+      token: token(),
+      md5: getMd5String(),
+      timestamp: timestamp,
+      data: params
+    }
+    return request({
+      url: WEBURL() + '/mtH5/iv/queryStoreHouseTypeList',
+      method: 'post',
+      data
+    })
+  }
+
+
+  export function getApproveStep (params = {}) {//获取仓库类型和物料类型
+    const data = {
+      token: token(),
+      md5: getMd5String(),
+      timestamp: timestamp,
+      data: params
+    }
+    return request({
+      url: WEBURL() + '/mtH5/iv/getApproveStep',
+      method: 'post',
+      data
+    })
+  }
+
+
 
 
 

@@ -134,7 +134,7 @@ export default {
         pullUpLoad: {
           threshold: 0,
           txt: {
-            more: '没有了'
+            more: '没有更多数据'
           }
         }
       },
@@ -207,6 +207,7 @@ export default {
         this.list = []
         this.done = true
         this.hasMore = true
+        this.pageNum=1;
         this._getPartList()
         this.showToast('转出成功')
         console.log(res)
