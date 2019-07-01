@@ -3,7 +3,7 @@
   <div>
     <div class="bg" v-show="showDrawerData" @click="hideDrawer"></div>
     <div class="search-wrapper" style="z-index:3">
-      <input type="text" placeholder="搜索"  @keyup.enter="search" v-model="queryValues">
+      <input type="text" placeholder="搜索" @keyup.enter="search" v-model="queryValues">
     </div>
     <div class="option">
       <div>
@@ -47,13 +47,11 @@
               <p>盘 点 单：{{item.checkBillNo}}</p>
             </div>
             <div class="state state1">
-              
               {{approveList.filter(it=>{return item.approveStep==it.id})[0]['name']}}
               <!-- {{item.approveStep}}
-              {{approveList}} -->
+              {{approveList}}-->
               <!-- {{it.approveStep}} -->
-              
-              </div>
+            </div>
             <div>物料类型: {{item.matTypeName}}</div>
             <div>库存地点: {{item.storeHouseId}}</div>
             <div>日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期: {{item.createdAt.slice(0,10)}}</div>
@@ -65,11 +63,11 @@
       <div v-if="hasMore==false&&list.length>0" class="nocontent">没有更多数据了</div>
     </cube-scroll>
 
-    <div class="bot">
+    <!-- <div class="bot">
       <div class="active">列表</div>
       <div>审核</div>
       <div>批准</div>
-    </div>
+    </div> -->
     <transition name="slide-fade">
       <div class="drawer" v-show="showDrawerData">
         <div class="box">
@@ -208,11 +206,26 @@ export default {
         timeSort: this.timeSort,
         pageNum: this.pageNum + "",
         pageSize: this.pageSize + "",
-        matTypeId: this.selmatTypeList.join(','),
-        storeHouseId: this.selivStorelist.join(','),
-        approveStep: this.selapproveList.join(','),
-        sortType: this.sortType
-      })
+        matTypeId: this.selmatTypeList.join(","),
+        storeHouseId: this.selivStorelist.join(","),
+        approveStep: this.selapproveList.join(","),
+        sortType: this.sortType,
+        startHandleTime:
+          this.startTime.length > 0
+            ? this.startTime[0] + "-" + (this.startTime[1]>=10
+              ? this.startTime[1]
+              : ("0" + this.startTime[1]) )+ "-" + (this.startTime[2]>=10
+              ? this.startTime[2]
+              : ("0" + this.startTime[2]))
+            : "",
+        endHandleTime:  this.endTime.length > 0
+            ? this.endTime[0] + "-" + (this.endTime[1]>=10
+              ? this.endTime[1]
+              : ("0" + this.endTime[1]) )+ "-" + (this.endTime[2]>=10
+              ? this.endTime[2]
+              : ("0" + this.endTime[2]))
+            : ""
+        })
         .then(res => {
           this.hideLoading();
           console.log(123);
@@ -227,9 +240,8 @@ export default {
         .catch(err => {
           //console.log(err)
           this.isLoading = false;
-           this.hideLoading();
-          this.showToast(err.msg)
-         
+          this.hideLoading();
+          this.showToast(err.msg);
         });
     },
     showDrawer() {
@@ -237,10 +249,10 @@ export default {
     },
     hideDrawer() {
       this.showDrawerData = false;
-      this.list=[];
-      this.hasMore=true;
-      this.pageNum=1;
-      this.getList()
+      this.list = [];
+      this.hasMore = true;
+      this.pageNum = 1;
+      this.getList();
     },
     showList() {
       this.showListData = true;
@@ -264,9 +276,13 @@ export default {
       this.startTime = selectedVal;
     },
     showEndDate() {
+      if(this.startTime.length==0){
+        this.showToast('请先选择开始时间');
+        return;
+      }
       this.datePicker = this.$createDatePicker({
         title: "Date Picker",
-        min: new Date(2008, 7, 8),
+        min: new Date(this.startTime),
         max: new Date(),
         value: new Date(),
         onSelect: this.selectEndHandle
@@ -327,38 +343,37 @@ export default {
       this.pageNum = 1;
       this.getList();
     },
-    search(){
-       this.list = [];
+    search() {
+      this.list = [];
       this.hasMore = true;
       this.pageNum = 1;
       this.getList();
-      
     },
     //  selivStorelist: [], //
     //   selmatTypeList: [],
     //   selapproveList: [],
-    selLocation(id){
-      if(this.selivStorelist.includes(id)){
-        const index=this.selivStorelist.indexOf(id)
-        this.selivStorelist.splice(index,1)
-      }else{
-        this.selivStorelist.push(id)
+    selLocation(id) {
+      if (this.selivStorelist.includes(id)) {
+        const index = this.selivStorelist.indexOf(id);
+        this.selivStorelist.splice(index, 1);
+      } else {
+        this.selivStorelist.push(id);
       }
     },
-    selType(id){
-       if(this.selmatTypeList.includes(id)){
-        const index=this.selmatTypeList.indexOf(id)
-        this.selmatTypeList.splice(index,1)
-      }else{
-        this.selmatTypeList.push(id)
+    selType(id) {
+      if (this.selmatTypeList.includes(id)) {
+        const index = this.selmatTypeList.indexOf(id);
+        this.selmatTypeList.splice(index, 1);
+      } else {
+        this.selmatTypeList.push(id);
       }
     },
-    selState(id){
-       if(this.selapproveList.includes(id)){
-        const index=this.selapproveList.indexOf(id)
-        this.selapproveList.splice(index,1)
-      }else{
-        this.selapproveList.push(id)
+    selState(id) {
+      if (this.selapproveList.includes(id)) {
+        const index = this.selapproveList.indexOf(id);
+        this.selapproveList.splice(index, 1);
+      } else {
+        this.selapproveList.push(id);
       }
     }
   }
@@ -381,7 +396,8 @@ export default {
   top: 90px;
   left: 0;
   right: 0;
-  bottom: 50px;
+  bottom: 100px;
+  overflow: hidden;
 }
 .search-wrapper {
   padding: 10px 15px;
@@ -571,14 +587,14 @@ export default {
         display: inline-block;
         white-space: nowrap;
         text-overflow: ellipsis;
-        overflow:hidden;
-
+        overflow: hidden;
       }
       > .bn:nth-child(3n + 2) {
         margin: 15px 15px 0;
       }
-      >.sel{
-        background: #5695FF;color:#fff;
+      > .sel {
+        background: #5695ff;
+        color: #fff;
       }
 
       > .selTime {

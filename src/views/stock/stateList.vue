@@ -19,12 +19,12 @@
         </div>
       </div>
       <div class="bot">
-          <div :class="{active:state==1}">
+          <div :class="{active:state==1}" @click="changeState(1)">
               <img src="../../assets/t1.png" alt=""  v-show="state!=1">
                <img src="../../assets/t2.png" alt="" v-show="state==1">
               <div>待盘</div>
           </div>
-           <div  :class="{active:state==2}">
+           <div  :class="{active:state==2}" @click="changeState(2)">
                <img src="../../assets/t3.png" alt="" v-show="state!=2">
                <img src="../../assets/t4.png" alt="" v-show="state==2">
               <div>已盘</div>
@@ -48,11 +48,12 @@ export default {
 
   methods: {
     _getInventoryStatus(){
-      getInventoryStatus({}).then(res=>{
+      getInventoryStatus({matId:"1"}).then(res=>{
         console.log(res)
-        
       })
-     
+    },
+    changeState(state){
+      this.state=state;
     }
     
   }
