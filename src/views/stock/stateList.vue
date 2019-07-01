@@ -2,7 +2,7 @@
 <template>
   <div class="body">
        <div class="list">
-        <div class="manager" @click="toInfo">
+        <div class="manager">
           <div class="img-wrapper">
             <img src alt class="gjimg">
           </div>
@@ -19,12 +19,12 @@
         </div>
       </div>
       <div class="bot">
-          <div :class="{active:state==1}">
+          <div :class="{active:state==1}" @click="changeState(1)">
               <img src="../../assets/t1.png" alt=""  v-show="state!=1">
                <img src="../../assets/t2.png" alt="" v-show="state==1">
               <div>待盘</div>
           </div>
-           <div  :class="{active:state==2}">
+           <div  :class="{active:state==2}" @click="changeState(2)">
                <img src="../../assets/t3.png" alt="" v-show="state!=2">
                <img src="../../assets/t4.png" alt="" v-show="state==2">
               <div>已盘</div>
@@ -42,18 +42,18 @@ export default {
     };
   },
 
-  components: {},
-
-  computed: {},
-
-  mounted: {},
+ created(){
+   this._getInventoryStatus()
+ },
 
   methods: {
     _getInventoryStatus(){
-      _getInventoryStatus({}).then(res=>{
-        
+      getInventoryStatus({matId:"1"}).then(res=>{
+        console.log(res)
       })
-     
+    },
+    changeState(state){
+      this.state=state;
     }
     
   }
@@ -90,9 +90,7 @@ export default {
     line-height: 25px;
     display: flex;
     justify-content: space-between;
-    > div:last-child {
-   
-    }
+  
   }
   > .state {
     font-size: 14px;
