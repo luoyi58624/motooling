@@ -91,6 +91,35 @@ export function getStockList (params = {}) {
     })
   }
 
+  export function getStoreCheckById (params = {}) {//获取仓库类型和物料类型
+    const data = {
+      token: token(),
+      md5: getMd5String(),
+      timestamp: timestamp,
+      data: params
+    }
+    return request({
+      url: WEBURL() + '/mtH5/iv/getStoreCheckById',
+      method: 'post',
+      data
+    })
+  }
+  export function saveIvStoreCheckBill (params = {}) {//获取仓库类型和物料类型
+    const data = {
+      token: token(),
+      md5: getMd5String(),
+      timestamp: timestamp,
+      data: params
+    }
+    return request({
+      url: WEBURL() + '/mtH5/iv/saveIvStoreCheckBill',
+      method: 'post',
+      data
+    })
+  }
+
+
+
 
 
 

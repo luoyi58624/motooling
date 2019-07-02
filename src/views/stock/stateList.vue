@@ -1,19 +1,36 @@
 <!--  -->
 <template>
   <div class="body">
+    <div class="nocontent" v-show="waitingInventoryList.length==0&&state==1">没有内容</div>
+        <div class="nocontent" v-show="alreadyInventoryList.length==0&&state==2">没有内容</div>
        <div class="list">
-        <div class="manager">
+        <div class="manager" v-for="(item,index) in waitingInventoryList " :key="index" v-show="state==1">
           <div class="img-wrapper">
-            <img src alt class="gjimg">
+            <img :src="item.picPath" alt class="gjimg">
           </div>
           <div class="info-wrapper">
-            <div>库&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：</div>
+            <div>库&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：{{item.storeRoomName}}</div>
 
-            <div>物料编码:</div>
-            <div>物料描述:</div>
+            <div>物料编码:{{item.matNo}}</div>
+            <div>物料描述:{{item.matName}}</div>
             <div>
-              <div>库&nbsp;&nbsp;存&nbsp;数:</div>
-              <div>实盘</div>
+              <div>库&nbsp;&nbsp;存&nbsp;数:{{item.checkStoreQty}}</div>
+              <div>实盘:{{item.checkRealQty}}</div>
+            </div>
+          </div>
+        </div>
+           <div class="manager" v-for="(item,index) in alreadyInventoryList " :key="index"  v-show="state==2">
+          <div class="img-wrapper">
+            <img :src="item.picPath" alt class="gjimg" >
+          </div>
+          <div class="info-wrapper">
+            <div>库&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：{{item.storeRoomName}}</div>
+
+            <div>物料编码:{{item.matNo}}</div>
+            <div>物料描述:{{item.matName}}</div>
+            <div>
+              <div>库&nbsp;&nbsp;存&nbsp;数:{{item.checkStoreQty}}</div>
+              <div>实盘:{{item.checkRealQty}}</div>
             </div>
           </div>
         </div>
@@ -38,7 +55,9 @@ import {getInventoryStatus} from "../../api/stock/stock"
 export default {
   data () {
     return {
-        state:1
+        state:1,
+        alreadyInventoryList:[],
+        waitingInventoryList:[]
     };
   },
 
@@ -48,8 +67,9 @@ export default {
 
   methods: {
     _getInventoryStatus(){
-      getInventoryStatus({matId:"1"}).then(res=>{
-        console.log(res)
+      getInventoryStatus({matId:"4"}).then(res=>{
+        this.alreadyInventoryList=res.data.alreadyInventoryList;
+        this.waitingInventoryList=res.data.waitingInventoryList;
       })
     },
     changeState(state){
@@ -79,6 +99,9 @@ export default {
 .img-wrapper {
   width: 80px;
   margin-right: 10px;
+  >img{
+    width:100%;
+  }
 }
 .info-wrapper {
   font-size: 15px;
@@ -126,5 +149,8 @@ export default {
         color:#5392F7;
 
     }
+}
+.nocontent{
+  text-align: center;padding:20px;line-height:30px;font-size:16px;/*no*/color:#fff;
 }
 </style>
