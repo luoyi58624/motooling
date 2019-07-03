@@ -68,11 +68,7 @@ var router = new Router({
     name: 'person',
     component: () => import('./views/Person/add.vue')
   },
-  {
-    path: '/person/addbackups',
-    name: 'person11',
-    component: () => import('./views/Person/add-backup.vue')
-  },
+
   {
     path: '/supplier/add',
     name: 'supplier',
@@ -180,7 +176,7 @@ var router = new Router({
   ]
 })
 router.beforeEach((to, from, next) => {
-  console.log(WEBURL(),token())
+  console.log(WEBURL(), token())
   const path = to.path.toLowerCase()
   if (to.query.weburl) {
     localStorage.WEBURL = decodeURIComponent(to.query.weburl)
@@ -188,7 +184,7 @@ router.beforeEach((to, from, next) => {
   if (to.query.token && to.query.weburl) {
     next()
     return
-  } else if (path == '/login' || path == '/daohang' || path == '/' || path == '/wxlogin' || path == '/wxloginsuccess' || path == '/wxbindphone') {
+  } else if (path === '/login' || path === '/daohang' || path === '/' || path === '/wxlogin' || path === '/wxloginsuccess' || path === '/wxbindphone') {
   } else if (!WEBURL() || !token()) {
     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
     return

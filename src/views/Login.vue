@@ -43,7 +43,6 @@ export default {
       getPhoneCode(this.loginData.mobile, 1)
         .then(function (res) {
           console.log(res)
-          let resData = res.data
         })
         .catch(err => {
           console.log(err)

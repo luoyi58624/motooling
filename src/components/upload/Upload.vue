@@ -5,7 +5,8 @@
     </div>
     <div class="upload-file-list">
       <div class="file-wrapper">
-        <template v-for="(item,index) in importFiles">
+        <!-- eslint-disable vue/require-v-for-key-->
+        <template v-for="item in importFiles">
           <div v-show="typeof(item)==='string'" class="initial-file">
             <div :style="{backgroundImage:'url('+item+')'}" class="initial-file-img"></div>
           </div>
@@ -28,8 +29,8 @@
   </div>
 </template>
 <script>
-import { encryption, decrypt } from '@/utils/crypt'
-import { WEBURL, BASEURL } from '@/utils/utils.js'
+import { decrypt } from '@/utils/crypt'
+import { WEBURL } from '@/utils/utils.js'
 import md5 from 'md5'
 
 const token = sessionStorage.getItem('token') || ''
@@ -42,9 +43,6 @@ const req = {
   timestamp: timestamp,
   data: {}
 }
-console.log(req)
-const encryptionData = encryption(JSON.stringify(req))
-
 export default {
   name: 'CuUpload',
   model: {
@@ -96,7 +94,6 @@ export default {
       // validity: {},
       // valid: undefined,
       // newValue: this.value
-      files: '',
       isChange: false,
       importFiles: [],
       files: []

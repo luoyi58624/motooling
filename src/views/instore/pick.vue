@@ -92,7 +92,7 @@ export default {
       const uid = item.uid
       if (this.uidList.includes(uid)) {
         for (var i = 0; i < selectedList.length; i++) {
-          if (selectedList[i].uid == uid) {
+          if (selectedList[i].uid === uid) {
             selectedList = [
               ...selectedList.slice(0, i),
               ...selectedList.slice(i + 1)

@@ -220,7 +220,7 @@ import {
 } from '@/api/instore/instore'
 import myHeader from '@/components/header'
 import CuUpload from '@/components/upload/Upload'
-import { WEBURL, BASEURL } from '@/utils/utils.js'
+import { WEBURL } from '@/utils/utils.js'
 import md5 from 'md5'
 
 const token = sessionStorage.getItem('token') || ''
@@ -436,8 +436,8 @@ export default {
           this.showToast('特采数量不能大于不良数量')
           return
         }
-        var data = Object.assign({}, { purchSubId }, this.info)
-        purchSpecial(data)
+        var data2 = Object.assign({}, { purchSubId }, this.info)
+        purchSpecial(data2)
           .then(res => {
             this.showToast('修改成功')
           })
@@ -446,7 +446,7 @@ export default {
               this.showToast(err.msg)
             }
           })
-      } else if (this.type == '2') {
+      } else if (this.type === '2') {
         if (
           !this.info.noQualifiedQty ||
           this.info.qualifiedQty === null ||
@@ -476,8 +476,8 @@ export default {
             return item
           }
         })
-        var data = Object.assign({}, { purchSubId, qualityList, factoryReportList }, this.info)
-        purchQuality(data)
+        var data3 = Object.assign({}, { purchSubId, qualityList, factoryReportList }, this.info)
+        purchQuality(data3)
           .then(res => {
             this.showToast('修改成功')
           })

@@ -68,12 +68,12 @@
         <div>售后服务信息</div>
         <div class="group-sub-title">联系人</div>
     </div>
-    <div v-for="(val, key) in submitmodel.deviceServiceList">
+    <div v-for="(val, key) in submitmodel.deviceServiceList" :key="key">
       <div class="group-item-title">
         <div></div>
         <div @click="deleteList(submitmodel.deviceServiceList,key)">删除</div>
       </div>
-      <div v-for="(item,index) in fields.deviceServiceListField">
+      <div v-for="(item,index) in fields.deviceServiceListField" :key="index">
         <cu-input :label="item.label" v-model="submitmodel.deviceServiceList[key][item.name]" placeholder="输入">
         </cu-input>
       </div>

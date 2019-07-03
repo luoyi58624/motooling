@@ -1,4 +1,3 @@
-<!--  -->
 <template>
   <div>
     <myHeader title="工件管理" :hasRight="true"></myHeader>
@@ -108,9 +107,7 @@
 </template>
 
 <script>
-import { Input, Scroll } from 'cube-ui'
 import myHeader from '@/components/header'
-import scroll from '@/components/BScroll'
 import { getPartList, setPart, getPartProcessLog, setPartPraise } from '@/api/baogong/baogong'
 
 export default {
@@ -207,7 +204,7 @@ export default {
         this.list = []
         this.done = true
         this.hasMore = true
-        this.pageNum=1;
+        this.pageNum = 1
         this._getPartList()
         this.showToast('转出成功')
         console.log(res)
@@ -243,7 +240,7 @@ export default {
           that.$refs.scroll.forceUpdate()
           that.list = [...that.list, ...res.list]
           that.done = true
-          if (res.list.length == that.pageSize) {
+          if (res.list.length === that.pageSize) {
             that.hasMore = true
             that.pageNum++
           } else {

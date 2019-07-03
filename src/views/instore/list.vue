@@ -41,7 +41,7 @@
           <div>数量：{{item.quantity}}</div>
           <div>重量：{{item.a}}</div>
           <div>检验要求:{{item.pcFlag}}</div>
-          <div class="btn-wrapper" v-if="item.preOrderFlag==1">
+          <div class="btn-wrapper" v-if="item.preOrderFlag===1">
             <button
               :disabled="item.isNeedQc=='0'||item.qcQty==0"
               @click.stop="toInfo(item.purchSubId,2)"
@@ -52,10 +52,10 @@
             >特采</button>
           </div>
         </div>
-        <div class="right-wrapper" @click.stop="select(index)" v-if="item.preOrderFlag==0">
+        <div class="right-wrapper" @click.stop="select(index)" v-if="item.preOrderFlag===0">
           <span class="iconfont icon-iconfontxuanzhong4" :class="{active:item.selected}"></span>
         </div>
-        <div class="right-wrapper" v-if="item.preOrderFlag==1">
+        <div class="right-wrapper" v-if="item.preOrderFlag===1">
           <span class="iconfont icon-iconset0141"></span>
         </div>
       </div>
@@ -80,7 +80,6 @@
 
 <script>
 import { inStoreList, purchBatchReceived } from '@/api/instore/instore'
-import router from '../../router'
 import myHeader from '@/components/header'
 export default {
   components: {
@@ -90,7 +89,7 @@ export default {
     return {
       list: [],
       // billNo:'MP19040001'
-      billNo: 'MP19010006',
+      billNo: 'MP19010005',
       listDone: false
     }
   },
@@ -102,7 +101,7 @@ export default {
       if (this.list
         .filter(item => {
           return item.preOrderFlag === 0
-        }).length == 0) {
+        }).length === 0) {
         return false
       }
       return this.list
@@ -123,7 +122,7 @@ export default {
           return { purchSubId: item.purchSubId }
         })
       console.log(newList)
-      if (newList.length == 0) {
+      if (newList.length === 0) {
         this.showToast('没有选择货物')
         return
       }
@@ -139,7 +138,7 @@ export default {
       if (this.selecteAll) {
         this.list = this.list
           .filter(item => {
-            return item.preOrderFlag == 1
+            return item.preOrderFlag === 1
           })
           .map((item, index) => {
             return Object.assign({}, item, { selected: false })
@@ -147,7 +146,7 @@ export default {
       } else {
         this.list = this.list
           .filter(item => {
-            return item.preOrderFlag == 1
+            return item.preOrderFlag === 1
           })
           .map((item, index) => {
             return Object.assign({}, item, { selected: true })
@@ -170,7 +169,7 @@ export default {
     },
     toInfo (purchSubId, type, isNeedQc) {
       // onsole.log(purchId)
-      if (type == 1 && isNeedQc === '0') {
+      if (type === 1 && isNeedQc === '0') {
         return
       }
       this.$router.push({

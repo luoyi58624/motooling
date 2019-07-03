@@ -158,7 +158,6 @@ import myHeader from '@/components/header'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
 import {
   getPmPgList,
-  getSettingList,
   getDeviceAndStatus,
   getProcessTask,
   setStartProcessTask,
@@ -167,13 +166,8 @@ import {
   setTaskPrediction,
   setProcessTaskPrediction
 } from '@/api/baogong/baogong'
-import scroll from '@/components/BScroll'
 import { setTimeout } from 'timers'
-import { reject, async, Promise } from 'q'
-import router from '../../router'
-import { Input, Scroll } from 'cube-ui'
-var disX = 0
-var disY = 0
+import { reject } from 'q'
 var vm
 var startTime
 var endTime // 预报用
@@ -277,14 +271,13 @@ export default {
         that.select()
       })
       .catch(err => {
-        // console.log(err);
+        console.log(err)
       })
   },
   components: {
     swiper,
     swiperSlide,
-    myHeader,
-    scroll
+    myHeader
   },
   computed: {
     allArr () {
@@ -347,7 +340,7 @@ export default {
   mounted () {},
   methods: {
     workshop (list) {
-      if (list.length == 0) {
+      if (list.length === 0) {
         this.showToast('没有可选车间')
         return
       }
@@ -464,6 +457,7 @@ export default {
           this.showToast('预报加工时间成功')
         })
         .catch(err => {
+          console.log(err)
           this.showToast('预报加工时间失败')
         })
     },
@@ -536,7 +530,7 @@ export default {
       for (let i = 0; i < this.shebeiList.length; i++) {
         // this.shebeiList[index].showOption = false;
         // this.$set( this.shebeiList[index],'showOption',false)
-        if (i == index) {
+        if (i === index) {
           this.shebeiList[i].showOption = !this.shebeiList[index].showOption
         } else {
           this.shebeiList[i].showOption = false
@@ -547,7 +541,7 @@ export default {
     },
     handleSelectWait (index) {
       for (let i = 0; i < this.waitList.length; i++) {
-        if (i == index) {
+        if (i === index) {
           this.waitList[i].showOption = !this.waitList[index].showOption
         } else {
           this.waitList[i].showOption = false
@@ -635,9 +629,8 @@ export default {
       // 根据初始 client 位置计算移动距离
       let x = element.clientX - this.source.client.x
       let y = element.clientY - this.source.client.y
-      document.getElementsByClassName('moveBox')[
-        8 * idx + index
-      ].style = `transform: translate(${x}px, ${y}px);z-index:10;`
+      document.getElementsByClassName('moveBox')[8 * idx + index]
+        .style = `transform: translate(${x}px, ${y}px);z-index:10;`
 
       // let a=element.clientX;
       //  let b=element.clientY;
@@ -665,10 +658,9 @@ export default {
     },
     tE (e, index, idx) {
       // if (e.target === e.currentTarget) {
-      document.getElementsByClassName('moveBox')[
-        8 * idx + index
-      ].style = `transform: none;z-index:1`
-      let modal = document.getElementById(this.modalID)
+      document.getElementsByClassName('moveBox')[8 * idx + index]
+        .style = `transform: none;z-index:1`
+      // let modal = document.getElementById(this.modalID)
       let element = e.changedTouches[0]
       // console.log(e);
       // document.body.removeChild(modal);
@@ -806,7 +798,7 @@ export default {
           pageSize: 12,
           pgId: that.pgId
         }).then(res => {
-          if (res.list.length == 12) {
+          if (res.list.length === 12) {
             that.shebeiHasmore = true
             that.shebeiPage++
           }
@@ -833,7 +825,7 @@ export default {
           type: 1
         })
           .then(res => {
-            if (res.list.length == 16) {
+            if (res.list.length === 16) {
               that.waitHasmore = true
               that.waitPage++
             }
@@ -863,7 +855,7 @@ export default {
           type: 2
         })
           .then(res => {
-            if (res.list.length == 16) {
+            if (res.list.length === 16) {
               that.doneHasmore = true
               that.donePage++
             }

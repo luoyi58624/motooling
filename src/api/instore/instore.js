@@ -1,5 +1,4 @@
 import request from '@/utils/newRequest'
-import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
 const WEBURL = localStorage.getItem('WEBURL') || ''
 const token = sessionStorage.getItem('token') || ''
