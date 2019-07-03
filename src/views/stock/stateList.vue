@@ -51,31 +51,31 @@
 </template>
 
 <script>
-import {getInventoryStatus} from "../../api/stock/stock"
+import { getInventoryStatus } from '../../api/stock/stock'
 export default {
   data () {
     return {
-        state:1,
-        alreadyInventoryList:[],
-        waitingInventoryList:[]
-    };
+      state: 1,
+      alreadyInventoryList: [],
+      waitingInventoryList: []
+    }
   },
 
- created(){
-   this._getInventoryStatus()
- },
+  created () {
+    this._getInventoryStatus()
+  },
 
   methods: {
-    _getInventoryStatus(){
-      getInventoryStatus({matId:"4"}).then(res=>{
-        this.alreadyInventoryList=res.data.alreadyInventoryList;
-        this.waitingInventoryList=res.data.waitingInventoryList;
+    _getInventoryStatus () {
+      getInventoryStatus({ matId: '4' }).then(res => {
+        this.alreadyInventoryList = res.data.alreadyInventoryList
+        this.waitingInventoryList = res.data.waitingInventoryList
       })
     },
-    changeState(state){
-      this.state=state;
+    changeState (state) {
+      this.state = state
     }
-    
+
   }
 }
 
@@ -113,7 +113,7 @@ export default {
     line-height: 25px;
     display: flex;
     justify-content: space-between;
-  
+
   }
   > .state {
     font-size: 14px;

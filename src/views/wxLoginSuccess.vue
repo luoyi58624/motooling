@@ -4,7 +4,7 @@
 
 <script>
 import { postWxCode } from '@/api/login'
-import { getUrlQueryString, getStringQueryString } from '@/utils/utils.js'
+import { getUrlQueryString } from '@/utils/utils.js'
 export default {
   data () {
     return {
@@ -28,7 +28,7 @@ export default {
           console.log(resObj)
           if (resObj.code !== '000000') {
             alert(resObj.msg)
-            throw { code: resObj.code, msg: resObj.msg }
+            Promise.reject(resObj.msg)
           }
           self.resString = res.data
           sessionStorage.setItem(

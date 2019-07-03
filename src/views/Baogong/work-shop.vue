@@ -60,8 +60,8 @@ export default {
   }
 }
 function toPercent (point) {
-  if (point == 0) {
-    return 0
+  if (point === '0') {
+    return '0'
   }
   var str = Number(point * 100)
   str += '%'

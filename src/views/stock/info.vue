@@ -99,17 +99,17 @@
         <div>
           <div>创建人:{{spItem.creatorName}}</div>    <p>待创建</p>
           <div class="second">{{spItem.createdAt?(spItem.createdAt.slice(0,10)+" "+spItem.createdAt.slice(11,19)):""}}</div>
-      
+
         </div>
         <div>
           <div>审批人:{{spItem.auditName}}</div>  <p>待审批</p>
           <div class="second">{{spItem.auditTime?(spItem.auditTime.slice(0,10)+" "+spItem.auditTime.slice(11,19)):""}}</div>
-         
+
         </div>
         <div>
           <div>批准人:{{spItem.appName}}</div><p>待批准</p>
-          <div class="second">{{spItem.appTime?(spItem.appTime.slice(0,10)+" "+spItem.appTime.slice(11,19)):""}}</div>  
-         
+          <div class="second">{{spItem.appTime?(spItem.appTime.slice(0,10)+" "+spItem.appTime.slice(11,19)):""}}</div>
+
         </div>
       </div>
       <div class="txtbox">
@@ -125,8 +125,6 @@
     </div>
   </transition>
 
-
-  
   </div>
 </template>
 
@@ -135,63 +133,64 @@ import {
   queryInventoryCheck,
   queryCheckProfitLoss,
   getApproveStep
-} from "../../api/stock/stock";
+} from '../../api/stock/stock'
 export default {
-  data() {
+  data () {
     return {
       currentIndex: 1,
-      id: "",
-      inventory: {}, //盘点统计
+      id: '',
+      inventory: {}, // 盘点统计
       pyList: [],
-      pkList: [],showSp:false,
-      spItem:{}
-    };
+      pkList: [],
+      showSp: false,
+      spItem: {}
+    }
   },
-  created() {
-    this.id = this.$route.query.id;
-    this._queryInventoryCheck();
-     this._queryCheckProfitLoss("1")
-     this._queryCheckProfitLoss("0")
-    this._getApproveStep();
+  created () {
+    this.id = this.$route.query.id
+    this._queryInventoryCheck()
+    this._queryCheckProfitLoss(1)
+    this._queryCheckProfitLoss(0)
+    this._getApproveStep()
   },
 
   methods: {
-    changSp(){
-      this.showSp=!this.showSp;
+    changSp () {
+      this.showSp = !this.showSp
     },
-    changeState(index) {
-      this.currentIndex = index;
+    changeState (index) {
+      this.currentIndex = index
     },
-    _getApproveStep() {
-      //审批
+    _getApproveStep () {
+      // 审批
       getApproveStep({ id: this.id }).then(res => {
-        console.log("###");
-        console.log(res);
-        this.spItem=res.data;
-      });
+        console.log('###')
+        console.log(res)
+        this.spItem = res.data
+      })
     },
-    _queryInventoryCheck() {
-      //盘点统计
+    _queryInventoryCheck () {
+      // 盘点统计
       queryInventoryCheck({ id: this.id }).then(res => {
         // console.log(233)
         // console.log(res)
-        this.inventory = res.data[0];
-      });
+        this.inventory = res.data[0]
+      })
     },
-    _queryCheckProfitLoss(checkProfitLoss) {
-      //checkProfitLoss=1盘盈，=0盘亏
+    _queryCheckProfitLoss (checkProfitLoss) {
+      // checkProfitLoss=1盘盈，=0盘亏
       queryCheckProfitLoss({ id: this.id, checkProfitLoss }).then(res => {
-        console.log(res);
-        if (checkProfitLoss == 1) {
-          this.pyList = res.data;
+        console.log(res)
+        if (checkProfitLoss === 1) {
+          this.pyList = res.data
         }
-        if (checkProfitLoss == 0) {
-          this.pkList = res.data;
+        if (checkProfitLoss === 0) {
+          this.pkList = res.data
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 <style lang='less' scoped>
 .bar {

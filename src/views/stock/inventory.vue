@@ -38,33 +38,33 @@
 </template>
 
 <script>
-import { getStoreCheckById, saveIvStoreCheckBill } from "../../api/stock/stock";
+import { getStoreCheckById, saveIvStoreCheckBill } from '../../api/stock/stock'
 export default {
-  data() {
+  data () {
     return {
-      id: "",
+      id: '',
       info: {}
-    };
+    }
   },
-  created() {
-    this._getStoreCheckById();
+  created () {
+    this._getStoreCheckById()
   },
   methods: {
-    _getStoreCheckById() {
+    _getStoreCheckById () {
       getStoreCheckById({ id: 2 }).then(res => {
-        console.log(res);
-        this.info = res.data;
-      });
+        console.log(res)
+        this.info = res.data
+      })
     },
-    save() {
+    save () {
       saveIvStoreCheckBill(this.info)
-        .then(res => this.showToast("保存成功"))
+        .then(res => this.showToast('保存成功'))
         .catch(err => {
-          console.error(err);
-        });
+          console.error(err)
+        })
     }
   }
-};
+}
 </script>
 <style lang='less' scoped>
 .list {

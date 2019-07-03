@@ -13,7 +13,7 @@ export function getSupplierInfo (params) {
   }
 
   return request({
-    url: WEBURL + '/mtH5/invitationSupplier/supplierInfo',
+    url: WEBURL() + '/mtH5/invitationSupplier/supplierInfo',
     method: 'post',
     data
   })
@@ -28,7 +28,7 @@ export function addSupplierInfo (params) {
   }
 
   return request({
-    url: WEBURL + '/mtH5/invitationSupplier/supplierSave',
+    url: WEBURL() + '/mtH5/invitationSupplier/supplierSave',
     method: 'post',
     data
   })
@@ -43,7 +43,7 @@ export function supplierSelectList (params) {
   }
 
   return request({
-    url: WEBURL + '/mtH5/invitationSupplier/supplierSelectList',
+    url: WEBURL() + '/mtH5/invitationSupplier/supplierSelectList',
     method: 'post',
     data
   })

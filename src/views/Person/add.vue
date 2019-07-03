@@ -143,12 +143,12 @@
     </cu-upload>
     <div>
       <div class="group-title">家庭成员</div>
-        <div v-for="(val, key) in submitmodel.familyList">
+        <div v-for="(val, key) in submitmodel.familyList" :key="key">
           <div class="group-item-title">
             <div>家庭成员 {{key+1}}</div>
             <div @click="deleteList(submitmodel.familyList,key)">删除</div>
           </div>
-          <div v-for="(item,index) in fields.familyListField">
+          <div v-for="item in fields.familyListField" :key="item.label">
             <cu-input :label="item.label" v-model="submitmodel.familyList[key][item.name]" placeholder="输入">
             </cu-input>
           </div>
@@ -160,12 +160,12 @@
         <div>遇事紧急联系人</div>
         <div class="group-sub-title">所在城市紧急联系人</div>
       </div>
-        <div v-for="(val, key) in submitmodel.urgentContactsList">
+        <div v-for="(val, key) in submitmodel.urgentContactsList" :key="key">
           <div class="group-item-title">
             <div>紧急联系人{{key+1}}</div>
             <div @click="deleteList(submitmodel.urgentContactsList,key)">删除</div>
           </div>
-          <div v-for="(item,index) in fields.urgentContactsListField">
+          <div v-for="(item,index) in fields.urgentContactsListField" :key="index">
             <cu-input :label="item.label" v-model="submitmodel.urgentContactsList[key][item.name]" placeholder="输入">
             </cu-input>
           </div>
@@ -177,12 +177,12 @@
         <div>学历</div>
         <div class="group-sub-title">从最高学历填起</div>
       </div>
-      <div v-for="(val, key) in submitmodel.educationList">
+      <div v-for="(val, key) in submitmodel.educationList" :key="key">
           <div class="group-item-title">
             <div>学历 {{key+1}}</div>
             <div><div @click="deleteList(submitmodel.educationList,key)">删除</div></div>
           </div>
-        <div v-for="(item,index) in fields.educationListField">
+        <div v-for="item in fields.educationListField" :key="item.label">
           <cu-input :label="item.label" v-model="submitmodel.educationList[key][item.name]" placeholder="输入">
           </cu-input>
         </div>
@@ -208,12 +208,12 @@
         <div>工作经历</div>
         <div class="group-sub-title">从最近工作经历填起</div>
     </div>
-    <div v-for="(val, key) in submitmodel.userWorkList">
+    <div v-for="(val, key) in submitmodel.userWorkList" :key="key">
       <div class="group-item-title">
         <div>工作经历 {{key+1}}</div>
         <div @click="deleteList(submitmodel.userWorkList,key)">删除</div>
       </div>
-      <div v-for="(item,index) in fields.userWorkListField">
+      <div v-for="item in fields.userWorkListField" :key="item.name">
         <cu-input :label="item.label" v-model="submitmodel.userWorkList[key][item.name]" placeholder="输入">
         </cu-input>
       </div>
@@ -413,20 +413,21 @@ export default {
   },
   methods: {
     genderText (val) {
-      if (val == 1) {
+      console.log(typeof (val))
+      if (val === 1) {
         return '男'
-      } else if (val == 2) {
+      } else if (val === 2) {
         return '女'
-      } else if (val == 0) {
+      } else if (val === 0) {
         return '未定'
       } else {
         return '请选择'
       }
     },
     marriedText (val) {
-      if (val == false) {
+      if (val === false) {
         return '未婚'
-      } else if (val == true) {
+      } else if (val === true) {
         return '已婚'
       } else {
         return '请选择'
@@ -439,7 +440,7 @@ export default {
           title: '出生日期',
           min: new Date(1900, 1, 1),
           max: new Date(),
-          value: new Date(this.submitmodel.userInfo.birthday?this.submitmodel.userInfo.birthday:Date.now()),
+          value: new Date(this.submitmodel.userInfo.birthday ? this.submitmodel.userInfo.birthday : Date.now()),
           onSelect: this.selectBirthdayDateHandle,
           onCancel: this.cancelBirthdayDateHandle
         })
@@ -458,7 +459,7 @@ export default {
           title: '入职日期',
           min: new Date(1900, 1, 1),
           max: new Date(),
-          value: new Date(this.submitmodel.userCompanyInfo.workStart?this.submitmodel.userCompanyInfo.workStart:Date.now()),
+          value: new Date(this.submitmodel.userCompanyInfo.workStart ? this.submitmodel.userCompanyInfo.workStart : Date.now()),
           onSelect: this.selectWorkStartHandle,
           onCancel: this.cancelWorkStartHandle
         })

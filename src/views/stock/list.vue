@@ -125,11 +125,10 @@
 </template>
 
 <script>
-import SlideUpDown from "vue-slide-up-down";
-import router from "../../router";
-import { getStockList, queryStoreHouseTypeList } from "../../api/stock/stock";
+import SlideUpDown from 'vue-slide-up-down'
+import { getStockList, queryStoreHouseTypeList } from '../../api/stock/stock'
 export default {
-  data() {
+  data () {
     return {
       list: [],
       hasMore: true,
@@ -138,23 +137,23 @@ export default {
       showListData: false,
       startTime: [],
       endTime: [],
-      queryValues: "", //搜索
-      timeSort: "1", //排序条件(注意：(注意：必填参数,1 按库存地点，2 盘点单，3 按物料类型）)
-      sortType: "", //排序类型(注意：选填参数[排序类型]:1降序,2升序.默认升序)
-      pageNum: 1, //页码(注意：选填参数[默认第一页])
-      pageSize: 10, //每页条数(注意：选填参数[默认10条])
-      mateTypeId: "", //物料类型(注意：选填参数[多个用，隔开标准件，刀具，量具，毛呸，库存原料，办公用品])
-      storeHouseId: "", //库存地点(注意：选填参数[多个用，隔开深圳仓，东莞仓，广州仓，惠州仓，香港仓珠海仓])
-      approveStep: "", //审批状态(注意：选填参数[审批状态[step10-制定中，step11-驳回，step20-待审核，step30-待批准，step0-已通过, step00已通过]多选用逗号拼接)
-      ivStorelist: [], //仓库列表
-      matTypeList: [], //物料类型列表
+      queryValues: '', // 搜索
+      timeSort: '1', // 排序条件(注意：(注意：必填参数,1 按库存地点，2 盘点单，3 按物料类型）)
+      sortType: '', // 排序类型(注意：选填参数[排序类型]:1降序,2升序.默认升序)
+      pageNum: 1, // 页码(注意：选填参数[默认第一页])
+      pageSize: 10, // 每页条数(注意：选填参数[默认10条])
+      mateTypeId: '', // 物料类型(注意：选填参数[多个用，隔开标准件，刀具，量具，毛呸，库存原料，办公用品])
+      storeHouseId: '', // 库存地点(注意：选填参数[多个用，隔开深圳仓，东莞仓，广州仓，惠州仓，香港仓珠海仓])
+      approveStep: '', // 审批状态(注意：选填参数[审批状态[step10-制定中，step11-驳回，step20-待审核，step30-待批准，step0-已通过, step00已通过]多选用逗号拼接)
+      ivStorelist: [], // 仓库列表
+      matTypeList: [], // 物料类型列表
       approveList: [
-        { id: "step10", name: "制定中" },
-        { id: "step11", name: "驳回" },
-        { id: "step20", name: "待审核" },
-        { id: "step30", name: "待批准" },
-        { id: "step0", name: "已通过" }
-      ], //审批状态列表
+        { id: 'step10', name: '制定中' },
+        { id: 'step11', name: '驳回' },
+        { id: 'step20', name: '待审核' },
+        { id: 'step30', name: '待批准' },
+        { id: 'step0', name: '已通过' }
+      ], // 审批状态列表
       selivStorelist: [], //
       selmatTypeList: [],
       selapproveList: [],
@@ -162,222 +161,222 @@ export default {
         pullDownRefresh: {
           threshold: 60,
           stop: 40,
-          txt: "更新成功"
+          txt: '更新成功'
         },
         pullUpLoad: {
           threshold: 0,
           txt: {
-            more: ""
+            more: ''
           }
         }
       }
-    };
+    }
   },
-  created() {
-    this.getList();
-    this._queryStoreHouseTypeList();
+  created () {
+    this.getList()
+    this._queryStoreHouseTypeList()
   },
   components: {
     SlideUpDown
   },
   methods: {
-    _queryStoreHouseTypeList() {
+    _queryStoreHouseTypeList () {
       queryStoreHouseTypeList().then(res => {
-        console.log("############");
-        console.log(res);
-        this.ivStorelist = res.data.ivStorelist;
-        this.matTypeList = res.data.matTypeList;
-      });
+        console.log('############')
+        console.log(res)
+        this.ivStorelist = res.data.ivStorelist
+        this.matTypeList = res.data.matTypeList
+      })
     },
-    getList() {
+    getList () {
       if (this.isLoading) {
-        return;
+        return
       }
       if (!this.hasMore) {
-        //this.showToast('没有更多数据了')
-        return;
+        // this.showToast('没有更多数据了')
+        return
       }
-      if (this.list.length == 0) {
-        this.showLoading();
+      if (this.list.length === 0) {
+        this.showLoading()
       }
-      this.isLoading = true;
+      this.isLoading = true
       getStockList({
         queryValues: this.queryValues,
         timeSort: this.timeSort,
-        pageNum: this.pageNum + "",
-        pageSize: this.pageSize + "",
-        matTypeId: this.selmatTypeList.join(","),
-        storeHouseId: this.selivStorelist.join(","),
-        approveStep: this.selapproveList.join(","),
+        pageNum: this.pageNum + '',
+        pageSize: this.pageSize + '',
+        matTypeId: this.selmatTypeList.join(','),
+        storeHouseId: this.selivStorelist.join(','),
+        approveStep: this.selapproveList.join(','),
         sortType: this.sortType,
         startHandleTime:
           this.startTime.length > 0
-            ? this.startTime[0] + "-" + (this.startTime[1]>=10
+            ? this.startTime[0] + '-' + (this.startTime[1] >= 10
               ? this.startTime[1]
-              : ("0" + this.startTime[1]) )+ "-" + (this.startTime[2]>=10
+              : ('0' + this.startTime[1])) + '-' + (this.startTime[2] >= 10
               ? this.startTime[2]
-              : ("0" + this.startTime[2]))
-            : "",
-        endHandleTime:  this.endTime.length > 0
-            ? this.endTime[0] + "-" + (this.endTime[1]>=10
-              ? this.endTime[1]
-              : ("0" + this.endTime[1]) )+ "-" + (this.endTime[2]>=10
-              ? this.endTime[2]
-              : ("0" + this.endTime[2]))
-            : ""
-        })
+              : ('0' + this.startTime[2]))
+            : '',
+        endHandleTime: this.endTime.length > 0
+          ? this.endTime[0] + '-' + (this.endTime[1] >= 10
+            ? this.endTime[1]
+            : ('0' + this.endTime[1])) + '-' + (this.endTime[2] >= 10
+            ? this.endTime[2]
+            : ('0' + this.endTime[2]))
+          : ''
+      })
         .then(res => {
-          this.hideLoading();
-          console.log(123);
-          console.log(res.data.ivStoreCheckBillLogList);
+          this.hideLoading()
+          console.log(123)
+          console.log(res.data.ivStoreCheckBillLogList)
           if (res.data.ivStoreCheckBillLogList.length < this.pageSize) {
-            this.hasMore = false;
+            this.hasMore = false
           }
-          this.pageNum++;
-          this.list = [...this.list, ...res.data.ivStoreCheckBillLogList];
-          this.isLoading = false;
+          this.pageNum++
+          this.list = [...this.list, ...res.data.ivStoreCheckBillLogList]
+          this.isLoading = false
         })
         .catch(err => {
-          //console.log(err)
-          this.isLoading = false;
-          this.hideLoading();
-          this.showToast(err.msg);
-        });
+          // console.log(err)
+          this.isLoading = false
+          this.hideLoading()
+          this.showToast(err.msg)
+        })
     },
-    showDrawer() {
-      this.showDrawerData = true;
+    showDrawer () {
+      this.showDrawerData = true
     },
-    hideDrawer() {
-      this.showDrawerData = false;
-      this.list = [];
-      this.hasMore = true;
-      this.pageNum = 1;
-      this.getList();
+    hideDrawer () {
+      this.showDrawerData = false
+      this.list = []
+      this.hasMore = true
+      this.pageNum = 1
+      this.getList()
     },
-    showList() {
-      this.showListData = true;
+    showList () {
+      this.showListData = true
     },
-    hideList() {
-      this.showListData = false;
+    hideList () {
+      this.showListData = false
     },
-    showStartDate() {
+    showStartDate () {
       this.datePicker = this.$createDatePicker({
-        title: "Date Picker",
+        title: 'Date Picker',
         min: new Date(2008, 7, 8),
         max: new Date(),
         value: new Date(),
         onSelect: this.selectHandle,
         onCancel: this.cancelHandle
-      });
-      this.datePicker.show();
+      })
+      this.datePicker.show()
     },
-    selectHandle(date, selectedVal, selectedText) {
-      console.log(selectedVal);
-      this.startTime = selectedVal;
+    selectHandle (date, selectedVal, selectedText) {
+      console.log(selectedVal)
+      this.startTime = selectedVal
     },
-    showEndDate() {
-      if(this.startTime.length==0){
-        this.showToast('请先选择开始时间');
-        return;
+    showEndDate () {
+      if (this.startTime.length === 0) {
+        this.showToast('请先选择开始时间')
+        return
       }
       this.datePicker = this.$createDatePicker({
-        title: "Date Picker",
+        title: 'Date Picker',
         min: new Date(this.startTime),
         max: new Date(),
         value: new Date(),
         onSelect: this.selectEndHandle
-      });
-      this.datePicker.show();
+      })
+      this.datePicker.show()
     },
-    selectEndHandle(date, selectedVal, selectedText) {
-      console.log(selectedVal);
-      this.endTime = selectedVal;
+    selectEndHandle (date, selectedVal, selectedText) {
+      console.log(selectedVal)
+      this.endTime = selectedVal
     },
-    toInfo(id) {
-      console.log(1);
+    toInfo (id) {
+      console.log(1)
       this.$router.push({
-        path: "/stock/info",
+        path: '/stock/info',
         query: {
           id
         }
-      });
+      })
     },
-    changeTimeSort(index) {
-      this.timeSort = index;
-      this.list = [];
-      this.pageNum = 1;
-      this.hasMore = true;
-      this.showListData = false;
-      this.getList();
+    changeTimeSort (index) {
+      this.timeSort = index
+      this.list = []
+      this.pageNum = 1
+      this.hasMore = true
+      this.showListData = false
+      this.getList()
     },
-    changSortType(num) {
-      this.sortType = num;
-      this.list = [];
-      this.pageNum = 1;
-      this.hasMore = true;
-      this.getList();
+    changSortType (num) {
+      this.sortType = num
+      this.list = []
+      this.pageNum = 1
+      this.hasMore = true
+      this.getList()
     },
-    pandian() {
+    pandian () {
       this.$router.push({
-        path: "/stock/inventory",
+        path: '/stock/inventory',
         query: {}
-      });
+      })
     },
-    statelist() {
+    statelist () {
       this.$router.push({
-        path: "/stock/statelist",
+        path: '/stock/statelist',
         query: {}
-      });
+      })
     },
-    onPullingUp() {
-      console.log(this.hasMore);
+    onPullingUp () {
+      console.log(this.hasMore)
       if (this.hasMore) {
-        this.getList();
+        this.getList()
       } else {
-        this.$refs.scroll.forceUpdate();
+        this.$refs.scroll.forceUpdate()
       }
     },
-    onPullingDown() {
-      this.list = [];
-      this.hasMore = true;
-      this.pageNum = 1;
-      this.getList();
+    onPullingDown () {
+      this.list = []
+      this.hasMore = true
+      this.pageNum = 1
+      this.getList()
     },
-    search() {
-      this.list = [];
-      this.hasMore = true;
-      this.pageNum = 1;
-      this.getList();
+    search () {
+      this.list = []
+      this.hasMore = true
+      this.pageNum = 1
+      this.getList()
     },
     //  selivStorelist: [], //
     //   selmatTypeList: [],
     //   selapproveList: [],
-    selLocation(id) {
+    selLocation (id) {
       if (this.selivStorelist.includes(id)) {
-        const index = this.selivStorelist.indexOf(id);
-        this.selivStorelist.splice(index, 1);
+        const index = this.selivStorelist.indexOf(id)
+        this.selivStorelist.splice(index, 1)
       } else {
-        this.selivStorelist.push(id);
+        this.selivStorelist.push(id)
       }
     },
-    selType(id) {
+    selType (id) {
       if (this.selmatTypeList.includes(id)) {
-        const index = this.selmatTypeList.indexOf(id);
-        this.selmatTypeList.splice(index, 1);
+        const index = this.selmatTypeList.indexOf(id)
+        this.selmatTypeList.splice(index, 1)
       } else {
-        this.selmatTypeList.push(id);
+        this.selmatTypeList.push(id)
       }
     },
-    selState(id) {
+    selState (id) {
       if (this.selapproveList.includes(id)) {
-        const index = this.selapproveList.indexOf(id);
-        this.selapproveList.splice(index, 1);
+        const index = this.selapproveList.indexOf(id)
+        this.selapproveList.splice(index, 1)
       } else {
-        this.selapproveList.push(id);
+        this.selapproveList.push(id)
       }
     }
   }
-};
+}
 </script>
 <style lang='less' scoped>
 .slide-fade-enter-active {

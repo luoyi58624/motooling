@@ -77,7 +77,7 @@ export default {
     select (pgId, index, workShopList) {
       this.isShowList = false
       this.pgId = pgId
-      if (this.pgId == 0) {
+      if (this.pgId === 0) {
         var newArray = []
         for (let i = 0; i < workShopList.length; i++) {
           newArray.push({ value: workShopList[i].id, text: workShopList[i].workshopName })

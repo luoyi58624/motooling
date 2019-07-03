@@ -47,14 +47,8 @@
 </template>
 
 <script>
-import { Input } from 'cube-ui'
 import myHeader from '@/components/header'
 import { getSettingList, saveParamList } from '@/api/baogong/baogong'
-const column1 = [
-  { text: '剧毒', value: '剧毒' },
-  { text: '蚂蚁', value: '蚂蚁' },
-  { text: '幽鬼', value: '幽鬼' }
-]
 export default {
   data () {
     return {
@@ -77,7 +71,7 @@ export default {
       console.log(res.list)
       for (var i = 0; i < res.list.length; i++) {
         if (!['p06', 'p07', 'p09', 'p11'].includes(res.list[i].code)) {
-          res.list[i].val = res.list[i].val != 0
+          res.list[i].val = res.list[i].val !== '0'
         }
         this.list = res.list
       }
@@ -96,7 +90,7 @@ export default {
     },
     change (id, code, name, val, unit, remark) {
       saveParamList({
-        list: [{ id: id, code, val: val == true ? 1 : 0 }]
+        list: [{ id: id, code, val: val === true ? 1 : 0 }]
       }).then(res => {
         console.log(res)
         // that.list[8].val = selectedVal.join(", ");

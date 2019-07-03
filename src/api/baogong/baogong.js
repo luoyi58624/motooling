@@ -1,7 +1,6 @@
 import request from '@/utils/newRequest'
-import { encryption } from '@/utils/crypt'
 import md5 from 'md5'
-import { WEBURL, BASEURL, token } from '@/utils/utils.js'
+import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
 const getMd5String = () => md5(token() + timestamp + 'Motooling')
 

@@ -6,19 +6,19 @@
     </div>
     <br>
     <div>
-      <router-link to="/person/add?referee=456&weburl=http%3A%2F%2F192.168.2.180%3A8808">邀请人员</router-link>
+      <router-link to="/person/add?referee=456">邀请人员</router-link>
     </div>
     <br>
     <div>
-      <router-link :to="'/supplier/add?code=' + code + '&weburl=http%3A%2F%2F192.168.2.180%3A8808'">邀请供应商</router-link>
+      <router-link :to="'/supplier/add?code=' + code">邀请供应商</router-link>
     </div>
     <br>
     <div>
-      <router-link to="/baogong/work-center?weburl=http%3A%2F%2F192.168.2.180%3A8808">工作中心</router-link>
+      <router-link to="/baogong/work-center">工作中心</router-link>
     </div>
     <br>
     <div>
-      <router-link to="/instore/list?weburl=http%3A%2F%2F192.168.2.180%3A8808">收发货</router-link>
+      <router-link to="/instore/list">收发货</router-link>
     </div>
     <br>
     <div>
