@@ -171,11 +171,20 @@ var router = new Router({
     path: '/stock/statelist',
     name: 'state-list',
     component: () => import('./views/stock/stateList')
+  },
+  {
+    path: '/receive',
+    name: 'receive',
+    component: () => import('./views/Order/receive'),
+    meta: {
+      title: '订单收货'
+    }
   }
 
   ]
 })
 router.beforeEach((to, from, next) => {
+  // document.title = to.meta.title||'欢迎来得Motooling'
   console.log(WEBURL(), token())
   const path = to.path.toLowerCase()
   if (to.query.weburl) {
