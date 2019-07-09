@@ -1,6 +1,7 @@
 <!--  -->
 <template>
   <div>
+    <Screen/>
     <div class="title">收货信息</div>
     <div class="content">
       <div class="table">
@@ -22,57 +23,16 @@
         </div>
         <div>
           <div>收发货单编号</div>
-          <div>{{}}</div>
+          <div><input type="text" placeholder="请填写"></div>
         </div>
-
       </div>
     </div>
     <div class="title">收货物料</div>
-    <div class="content">
+    <div>
       <div class="list">
-        <div class="wuliao">
-          <div class="left-wrapper">
-            <img src alt />
-          </div>
-          <div class="right-wrapper">
-            <div class="right-top">
-              <div class="right-top-left">
-                <div class="info-bar">
-                  <div>物料编码:</div>
-                  <div>M1232414-34</div>
-                </div>
-                <div class="info-bar">
-                  <div>物料描述:</div>
-                  <div>M1232414-34</div>
-                </div>
-                <div class="info-bar">
-                  <div>物料类型:</div>
-                  <div>M1232414-34</div>
-                </div>
-                <div class="info-bar">
-                  <div>单&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位:</div>
-                  <div>M1232414-34</div>
-                </div>
-                <div class="info-bar">
-                  <div>代收数量:</div>
-                  <div>M1232414-34</div>
-                </div>
-              </div>
-              <div class="right-top-right" v-if="true">
-                <span class="iconfont icon-iconfontxuanzhong4"></span>
-              </div>
-              <!-- <div class="right-wrapper" v-if="true">
-                <span class="iconfont icon-iconset0141"></span>
-              </div>-->
-            </div>
-            <div class="right-bottom">
-              <div style="display:flex;">
-                收货数量&nbsp;&nbsp;
-                <van-stepper min="5" max="8" />
-              </div>
-            </div>
-          </div>
-        </div>
+        <Materiel/>
+        <Materiel/>
+        <Materiel/>
       </div>
     </div>
     <div class="title">备注</div>
@@ -89,9 +49,15 @@
 </template>
 
 <script>
+import materiel from './Components/materiel'
+import screen from './Components/screen'
 export default {
   data () {
     return {}
+  },
+  components: {
+    Materiel: materiel,
+    Screen: screen
   }
 }
 </script>
@@ -117,6 +83,9 @@ export default {
     border-bottom: 1px solid #d8d8d8;
     > div {
       padding: 5px;
+      >input{
+        border:none;
+      }
     }
     > div:first-child {
       width: 100px;
@@ -127,71 +96,39 @@ export default {
     border-bottom: none;
   }
 }
-.list {
-  .wuliao {
-    display: flex;
-    .left-wrapper {
-      width: 100px;
-      > img {
-        width: 100%;
-      }
-    }
-    .right-wrapper {
-      flex: 1;
-      font-size: 14px;
-      color: #a0a0a0;
-      > .right-top {
-        display: flex;
-        align-items: center;
-        > .right-top-left {
-          flex: 1;
-          > .info-bar {
-            padding: 4px 0;
-            display: flex;
-            > div:first-child {
-              width: 64px;
-            }
-          }
-        }
-        > .right-top-right {
-          width: 30px;
-          > span {
-            font-size: 30px;
-          }
-        }
-      }
-      > .right-bottom {
-        display: flex;
-        justify-content: flex-end;
-        > div {
-          display: flex;
-          align-items: center;
-          padding: 10px 0;
-        }
-      }
-    }
-  }
-}
+
 .bz {
-  border: 1px solid #D4D4D4;
+  border: 1px solid #d4d4d4;
   border-radius: 5px;
-  font-size:14px;
+  font-size: 14px;
   width: 100%;
   box-sizing: border-box;
   height: 100px;
   padding: 10px;
   resize: none;
 }
-.bot{
-  position:fixed;bottom:0;left:0;right:0;height:50px;/*no*/border-top:1px solid #F3F3F3;/*no*/display:flex;background: #fff;font-size:14px;/*no*/margin-top:50px;
-  >div{
-    flex:1;text-align:center;line-height:50px;/*no*/
+.bot {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px; /*no*/
+  border-top: 1px solid #f3f3f3; /*no*/
+  display: flex;
+  background: #fff;
+  font-size: 14px; /*no*/
+  margin-top: 50px;
+  > div {
+    flex: 1;
+    text-align: center;
+    line-height: 50px; /*no*/
   }
-  >div:last-child{
-    background: #5FD858;color:#fff;
+  > div:last-child {
+    background: #5fd858;
+    color: #fff;
   }
 }
-.zw{
-  height:50px;/*no*/
+.zw {
+  height: 50px; /*no*/
 }
 </style>
