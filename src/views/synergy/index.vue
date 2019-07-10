@@ -1,0 +1,420 @@
+<template>
+  <div>
+    <div class="member-list-wrap">
+      <div class="member-list">
+        <template v-for="item in memberList" >
+          <img :src="item.avatar" :key="item.id" />
+          <!-- <div>{{item.nickname}}</div> -->
+        </template>
+      </div>
+      <div class="add"><img src="../../assets/icon-add.png" alt="" /></div>
+    </div>
+    <scroll class="talk-contents" ref="scroll">
+      <div>
+        <div
+          class="talk-space"
+          :class="uid != item.data.senderId?'user-talk':'self-talk'"
+          v-for="item in recordList"
+          :key="item.id"
+        >
+          <div
+            class="talk-user-avatar"
+            :style="'background-image: url('+item.data.avatar+')'"
+          ></div>
+          <div class="talk-info">
+            <div class="talk-user-name">
+              {{ item.data.nickname }}
+            </div>
+            <div class="talk-content talk-word-content" v-if="item.data.contentType===1">
+              {{ item.data.content }}
+            </div>
+            <div class="talk-content talk-word-content" v-if="item.data.contentType===2">
+              <img :src="item.data.content">
+            </div>
+          </div>
+        </div>
+      </div>
+    </scroll>
+    <div class="footer" ref="footer">
+      <div class="talker">
+        <div class="input-toggle-button talker-icon-btn">
+          <div class="icon icon-voice-white"></div>
+        </div>
+        <div class="talker-input-wrapper">
+          <input
+            class="talker-input"
+            type="text"
+            placeholder="请输入"
+            v-model="content"
+          />
+        </div>
+        <div class="talker-icon-btn">
+          <div class="icon icon-voice-left"></div>
+        </div>
+        <div class="talker-action">
+          <div class="talker-send" @click="submitWord()">发送</div>
+        </div>
+      </div>
+      <div class="talker-toolbar" style="display: none">
+        <div class="list-item">
+          <div class="item-icon">
+            <div class="icon icon-camera"></div>
+          </div>
+          <div class="center item-text">图片</div>
+        </div>
+        <div class="list-item">
+          <div class="item-icon">
+            <div class="icon icon-record"></div>
+          </div>
+          <div class="center item-text">纪要</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { getOpenSynergy } from '@/api/synergy/synergy.js'
+// import { BetterScroll } from 'cube-ui'
+import scroll from '@/components/BScroll.vue'
+import shortid from 'shortid'
+
+export default {
+  components: {
+    scroll
+  },
+  data () {
+    return {
+      socket: {},
+      uid: localStorage.uid - 0,
+      // 关联类型
+      relationType: '1',
+      // 关联id
+      relationId: '1001',
+      // 公司id
+      companyId: 1,
+      // 输入的文字内容
+      content: '',
+      recordList: [],
+      memberList: [],
+      synergyGroup: {},
+      contentType: {
+        word: 1
+      }
+    }
+  },
+  mounted () {
+    setTimeout(() => {
+      this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
+    }, 500)
+  },
+  methods: {
+    init () {
+      let that = this
+      getOpenSynergy({
+        relationType: this.relationType,
+        relationId: this.relationId
+      })
+        .then(res => {
+          that.synergyGroup = res.synergyGroup
+          that.memberList = res.memberList
+          that.recordList = res.recordList.reverse()
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    im () {
+      this.socket = new WebSocket(
+        'ws://im.motooling.com/mtwebsocket/' +
+            this.companyId +
+            '/' +
+            this.synergyGroup.id +
+            '/' +
+            sessionStorage.token +
+            '/api.unit.testing.motooling.com'
+      )
+      this.socket.onopen = this.websocketonopen
+      this.socket.onerror = this.websocketonerror
+      this.socket.onmessage = this.websocketonmessage
+      this.socket.onclose = this.websocketclose
+    },
+    websocketonopen () {
+      this.socket.send('Hello')
+    },
+    websocketonerror () {
+      console.error('websocketonerror')
+    },
+    websocketonmessage (e) {
+      console.log('websocketonmessage')
+      this.receiveMessage(JSON.parse(e.data))
+    },
+    websocketclose () {
+      console.log('websocketclose')
+    },
+    sendMessage ({ contentType, content, smallImg, duration }) {
+      var message = {
+        requestType: 'h5',
+        serialNumber: shortid.generate(),
+        // msg: message,
+        data: {
+          groupId: this.synergyGroup.id,
+          senderId: this.uid,
+          contentType: contentType
+        }
+      }
+      // 内容
+      if (content) {
+        message.data.content = content
+      }
+      // 小图
+      if (smallImg) {
+        message.data.smallImg = smallImg
+      }
+      // 语音时长
+      if (duration) {
+        message.data.duration = duration
+      }
+      this.socket.send(JSON.stringify(message))
+    },
+    receiveMessage (msg) {
+      if (msg.data.senderId !== this.uid) {
+        this.recordList.push({ data: msg.data })
+      }
+    },
+
+    submitWord () {
+      if (this.content.trim() !== '') {
+        this.sendMessage({
+          contentType: 1,
+          content: this.content
+          // contentType: 2,
+        })
+
+        this.recordList.push({
+          data: {
+            groupId: this.synergyGroup.id,
+            senderId: this.uid,
+            contentType: 1,
+            content: this.content,
+            avatar:
+                'http://139.159.252.168/group1/M00/00/23/wKgBVl0kL76ALiweADUMWi3Uzxg453_200x200.jpg',
+            nickname: '李冬'
+          }
+        })
+        this.content = ''
+      } else {
+        this.$createToast({
+          time: 2000,
+          txt: '请输入要发送的内容',
+          type: 'error'
+        }).show()
+      }
+      this.$refs.scroll.refresh()
+      setTimeout(() => {
+        this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
+      }, 100)
+    }
+  },
+  created () {
+    this.im()
+    this.init()
+  }
+}
+</script>
+<style lang="less" scoped>
+  input {
+    width: 100%;
+    outline: none;
+  }
+  .center {
+    text-align: center;
+  }
+  .member-list-wrap {
+    padding: 5px 30px;
+
+    display: flex;
+    justify-content: center;
+    img {
+      width: 30px;
+      height: 30px;
+      margin: 0 4px;
+    }
+  }
+
+  .member-list {
+    text-align: center;
+    background: #fff;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: scroll;
+  }
+  .talk-contents {
+    position: fixed;
+    top: 45px;
+    left: 0;
+    bottom: 48px;
+    right: 0;
+    background: #eaeaea;
+  }
+  .talk-contents .talk-space {
+    display: flex;
+    padding: 10px;
+  }
+  .talk-contents .talk-space .talk-user-avatar {
+    height: 40px;
+    width: 40px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .talk-contents .talk-space .talk-user-name {
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 0 0 2px;
+  }
+  .talk-contents .talk-space .talk-info {
+    position: relative;
+    padding: 0 6px;
+    width: 100%;
+  }
+  .talk-contents .talk-space .talk-content {
+    background: #fff;
+    display: inline-block;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  .talk-contents .talk-space .talk-content img {
+    max-width: 100%;
+  }
+  .talk-contents .talk-space .talk-word-content {
+    text-align: left;
+    word-break: break-all;
+  }
+  .talk-contents .talk-space .talk-voice-content {
+    height: 26px;
+  }
+  .footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    background-color: #ffffff;
+  }
+  .footer a {
+    color: #2a2a2a;
+  }
+  .talker {
+    border: 1px solid #ccc;
+    display: flex;
+    padding: 4px 0;
+    align-items: center;
+    font-size: 24px;
+  }
+  .talker-input-wrapper {
+    flex: 1;
+    padding: 0 6px;
+  }
+  .talker-input {
+    box-sizing: border-box;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background-color: #ebebeb;
+  }
+  .talker-icon-btn {
+    flex: 0 0 30px; /*no*/
+  }
+  .talker-send {
+    font-size: 25px;
+    border-radius: 4px;
+  }
+  .talker .icon {
+    height: 30px;
+  }
+
+  .icon {
+    flex: 1;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .icon-full-width {
+    width: 100%;
+    height: 100%;
+  }
+  .icon-small {
+    width: 16px;
+    height: 16px;
+  }
+  .icon-voice-white {
+    background-image: url("../../assets/icon-add.png");
+  }
+  .icon-voice-left {
+    background-image: url("../../assets/icon-voice-left.png");
+  }
+  .icon-voice-right {
+    background-image: url("../../assets/icon-voice-right.png");
+  }
+  .icon-add {
+    background-image: url("../../assets/icon-add.png");
+  }
+  .icon-edit {
+    background-image: url("../../assets/icon-edit.png");
+  }
+  .icon-camera {
+    background-image: url("../../assets/icon-camera.png");
+  }
+  .icon-album {
+    background-image: url("../../assets/icon-album.png");
+  }
+  .icon-record {
+    background-image: url("../../assets/icon-record.png");
+  }
+  .talker-action {
+    flex: 0;
+    padding: 0 4px;
+    white-space: nowrap;
+  }
+  .talker-send {
+    color: #333;
+    padding: 4px 6px;
+    border: 1px solid #ccc;
+  }
+  .self-talk {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+  .talker-toolbar {
+    padding: 10px 0;
+    width: 100%;
+    display: flex;
+  }
+  .talker-toolbar .list-item {
+    /* height: 90px; */
+    width: 25%;
+    padding: 0 10px;
+  }
+  .talker-toolbar .item-icon {
+    display: flex;
+    height: 70px;
+    padding: 10px;
+    border-radius: 6px;
+    background-color: #e6e6e6;
+  }
+  .talker-toolbar .item-text {
+    line-height: 1.5;
+  }
+
+  .member-avatar-wrapper {
+    width: 20px;
+    display: inline-block;
+  }
+  .member-avatar-wrapper .member-avatar {
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+</style>
