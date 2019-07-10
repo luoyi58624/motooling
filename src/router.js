@@ -179,6 +179,11 @@ var router = new Router({
     meta: {
       title: '订单收货'
     }
+  },
+  {
+    path: '/synergy',
+    name: 'synergy',
+    component: () => import('./views/synergy/index')
   }
 
   ]
