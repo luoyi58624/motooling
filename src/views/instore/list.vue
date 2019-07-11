@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <my-header title="采购收货"  :hasRight="true" settingUrl="/instore/setting"></my-header>
+    <my-header title="采购收货" :hasRight="true" settingUrl="/instore/setting"></my-header>
     <div class="option">
       <div>
         <div style="color:#4e92ff">按生产订单排序</div>
@@ -17,10 +17,10 @@
       <div @click="()=>{this.showToast('功能暂未开发')}">筛选</div>
     </div>
     <div class="no">
-      <div>PO201807001（深圳聚能）</div>
       <div @click.stop="selectAll">
         <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span>
       </div>
+      <div>PO201807001（深圳聚能）</div>
     </div>
     <div v-if="listDone&&list.length==0" class="nocontent">暂时没有数据</div>
     <div class="list">
@@ -30,41 +30,45 @@
         :key="index"
         @click="toInfo(item.purchSubId,1,item.isNeedQc)"
       >
-        <div class="img-wrapper">
-          <img src alt>
-        </div>
-        <div class="center-wrapper">
-          <div class="title">名称:</div>
-          <div>物料编码：{{item.matNo}}</div>
-          <div>规格型号：{{item.matModel}}</div>
-
-          <div>数量：{{item.quantity}}</div>
-          <div>重量：{{item.a}}</div>
-          <div>检验要求:{{item.pcFlag}}</div>
-          <div class="btn-wrapper" v-if="item.preOrderFlag===1">
-            <button
-              :disabled="item.isNeedQc=='0'||item.qcQty==0"
-              @click.stop="toInfo(item.purchSubId,2)"
-            >质检</button>
-            <button
-              :disabled="!item.noQualifiedQty>0"
-              @click.stop="toInfo(item.purchSubId,3)"
-            >特采</button>
-          </div>
-        </div>
         <div class="right-wrapper" @click.stop="select(index)" v-if="item.preOrderFlag===0">
           <span class="iconfont icon-iconfontxuanzhong4" :class="{active:item.selected}"></span>
         </div>
         <div class="right-wrapper" v-if="item.preOrderFlag===1">
           <span class="iconfont icon-iconset0141"></span>
         </div>
+        <div class="img-wrapper">
+          <img src alt />
+        </div>
+        <div class="center-wrapper">
+          <div class="title">名称:</div>
+          <div>工装号：</div>
+          <div>物料编码：{{item.matNo}}</div>
+          <div>物料描述：</div>
+          <div>外协类型：</div>
+          <div>订单数量：{{item.quantity}}</div>
+          <div>已收：</div>
+          <div>收货数量:<stepper/></div>
+          <!-- <div>规格型号：{{item.matModel}}</div> -->
+          <!-- <div>数量：{{item.quantity}}</div> -->
+          <!-- <div>重量：{{item.a}}</div> -->
+          <!-- <div>检验要求:{{item.pcFlag}}</div> -->
+          <div class="btn-wrapper" v-if="item.preOrderFlag===1">
+            <button
+              :disabled="item.isNeedQc=='0'||item.qcQty==0"
+              @click.stop="toInfo(item.purchSubId,2)"
+            >质检</button>
+            <button :disabled="!item.noQualifiedQty>0" @click.stop="toInfo(item.purchSubId,3)">特采</button>
+          </div>
+
+        </div>
+        <div class="litter-wrapper">
+          <div>不合格：</div>
+          <div>特采：</div>
+          <div>退货：</div>
+        </div>
       </div>
     </div>
     <div class="footer">
-      <div>
-        <div>服务</div>
-        <div>企业圈</div>
-      </div>
       <div>
         <div>收货</div>
         <div>检验</div>
@@ -72,7 +76,7 @@
       </div>
     </div>
     <div class="bot">
-      <div @click="purch">确定</div>
+      <div @click="purch">提交</div>
     </div>
     <div class="zw"></div>
   </div>
@@ -81,15 +85,16 @@
 <script>
 import { inStoreList, purchBatchReceived } from '@/api/instore/instore'
 import myHeader from '@/components/header'
+import stepper from '@/components/stepper'
 export default {
   components: {
-    myHeader
+    myHeader, stepper
   },
   data () {
     return {
       list: [],
       // billNo:'MP19040001'
-      billNo: 'MP19010005',
+      billNo: 'MP19070004',
       listDone: false
     }
   },
@@ -98,10 +103,11 @@ export default {
   },
   computed: {
     selecteAll () {
-      if (this.list
-        .filter(item => {
+      if (
+        this.list.filter(item => {
           return item.preOrderFlag === 0
-        }).length === 0) {
+        }).length === 0
+      ) {
         return false
       }
       return this.list
@@ -137,35 +143,41 @@ export default {
     selectAll () {
       if (this.selecteAll) {
         this.list = this.list
-          .filter(item => {
-            return item.preOrderFlag === 1
-          })
+          // .filter(item => {
+          //   return item.preOrderFlag === 1
+          // })
           .map((item, index) => {
             return Object.assign({}, item, { selected: false })
           })
       } else {
         this.list = this.list
-          .filter(item => {
-            return item.preOrderFlag === 1
-          })
+          // .filter(item => {
+          //   return item.preOrderFlag === 1
+          // })
           .map((item, index) => {
-            return Object.assign({}, item, { selected: true })
+            if (item.preOrderFlag !== 1) {
+              return Object.assign({}, item, { selected: true })
+            } else {
+              return Object.assign({}, item, { selected: false })
+            }
           })
       }
     },
     getList () {
       this.showLoading()
-      inStoreList({ billNo: this.billNo }).then(res => {
-        this.hideLoading()
-        let array = res.inStoreDetailList
-        for (let i = 0; i < array.length; i++) {
-          array[i].selected = false
-        }
-        this.list = array
-        this.listDone = true
-      }).catch(err => {
-        console.log(err)
-      })
+      inStoreList({ billNo: this.billNo })
+        .then(res => {
+          this.hideLoading()
+          let array = res.inStoreDetailList
+          for (let i = 0; i < array.length; i++) {
+            array[i].selected = false
+          }
+          this.list = array
+          this.listDone = true
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     toInfo (purchSubId, type, isNeedQc) {
       // onsole.log(purchId)
@@ -202,17 +214,18 @@ export default {
   left: 0;
   right: 0;
   height: 50px;
-  background: #f8f9fe;
+  background: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   > div {
-    width: 80%;
-    height: 40px;
-    background: #5495ff;
-    color: #fff;
-    font-size: 16px;
-    line-height: 40px;
+    width: 80px;;
+    height: 20px;
+    background: #fff;
+    color: #00A0A0;
+    border:1px solid #929292;
+    font-size: 12px;
+    line-height: 20px;
     text-align: center;
     border-radius: 6px;
   }
@@ -262,7 +275,7 @@ export default {
   font-size: 12px;
   color: #505050;
   align-items: center;
-  > div:nth-child(2) {
+  > div:first-child {
     color: #eee;
     > span {
       font-size: 24px;
@@ -279,7 +292,7 @@ export default {
     border-bottom: 1px solid #e9e9e9;
     padding-bottom: 18px;
     > .img-wrapper {
-      width: 120px;
+      width: 110px;
       > img {
         width: 100px;
       }
@@ -287,6 +300,11 @@ export default {
     > .center-wrapper {
       flex: 1;
       > div {
+        width:100%;
+        display:flex;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
         height: 22px;
         line-height: 22px;
         color: #ababab;
@@ -313,14 +331,24 @@ export default {
           color: #fe4c44;
           border: 1px solid #fe4c44;
         }
-        >button:disabled{
-          color:#999;border-color:#999;
+        > button:disabled {
+          color: #999;
+          border-color: #999;
         }
         > button:first-child {
           margin-left: 0;
         }
-
       }
+    }
+    >.litter-wrapper{
+      width:60px;flex-direction: column;justify-content:flex-end;display:flex;
+      > div {
+        height: 22px;
+        line-height: 22px;
+        color: #ababab;
+        font-size: 12px;
+      }
+
     }
     > .right-wrapper {
       width: 30px;
@@ -342,8 +370,11 @@ export default {
     }
   }
 }
-.nocontent{
-  font-size:12px;padding:20px 0;text-align:center;color:#999;
+.nocontent {
+  font-size: 12px;
+  padding: 20px 0;
+  text-align: center;
+  color: #999;
 }
 .footer {
   display: flex;
@@ -359,7 +390,8 @@ export default {
   > div {
     display: flex;
     flex: 1;
-    color: #505050;
+    color: #fff;
+    background: #5495ff;
     > div {
       flex: 1;
       justify-content: center;

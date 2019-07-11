@@ -51,6 +51,7 @@
 <script>
 import materiel from './Components/materiel'
 import screen from './Components/screen'
+
 export default {
   data () {
     return {}
