@@ -38,7 +38,7 @@
             <div class="right-bottom">
               <div style="display:flex;">
                 收货数量&nbsp;&nbsp;
-                <van-stepper min="5" max="8" />
+              <stepper/>
               </div>
             </div>
           </div>
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import stepper from './stepper'
 export default {
   data () {
     return {
@@ -53,6 +54,9 @@ export default {
   },
   props: {
 
+  },
+  components: {
+    stepper
   }
 }
 
