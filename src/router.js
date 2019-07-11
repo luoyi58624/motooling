@@ -126,6 +126,21 @@ var router = new Router({
     component: () => import('./views/instore/info')
   },
   {
+    path: '/instore/receive',
+    name: 'instore-receive',
+    component: () => import('./views/instore/receive')
+  },
+  {
+    path: '/instore/use',
+    name: 'instore-use',
+    component: () => import('./views/instore/use')
+  },
+  {
+    path: '/instore/testing',
+    name: 'instore-testing',
+    component: () => import('./views/instore/testing')
+  },
+  {
     path: '/instore/setting',
     name: 'instore-setting',
     component: () => import('./views/instore/setting'),

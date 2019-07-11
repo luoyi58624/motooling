@@ -127,4 +127,32 @@ body {
   color:#5495ff;
 }
 
+.table {
+  border: 1px solid #d8d8d8;
+  border-radius: 4px;
+  color: #b0b0b0;
+  > div {
+    display: flex;
+    font-size: 14px;
+    line-height: 20px;
+    border-bottom: 1px solid #d8d8d8;
+    > div {
+      padding: 5px;display:flex;
+      >input{
+        border:none;flex:1;
+      }
+    }
+    >div:nth-child(2){
+       flex:1;
+    }
+    > div:first-child {
+      width: 100px;
+      border-right: 1px solid #d8d8d8;
+    }
+  }
+  > div:last-child {
+    border-bottom: none;
+  }
+}
+
 </style>

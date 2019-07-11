@@ -47,7 +47,7 @@
           <div>外协类型：</div>
           <div>订单数量：{{item.quantity}}</div>
           <div>已收：</div>
-          <div>收货数量:<stepper/></div>
+          <div>收货数量:<stepper v-model="value" :max="5"/></div>
           <!-- <div>规格型号：{{item.matModel}}</div> -->
           <!-- <div>数量：{{item.quantity}}</div> -->
           <!-- <div>重量：{{item.a}}</div> -->
@@ -92,6 +92,7 @@ export default {
   },
   data () {
     return {
+      value: 5,
       list: [],
       // billNo:'MP19040001'
       billNo: 'MP19070004',
