@@ -894,7 +894,7 @@ export default {
   }
 }
 </script>
-<style scope lang="less">
+<style scope lang="less" scoped>
 body {
   background: #fff;
 }
