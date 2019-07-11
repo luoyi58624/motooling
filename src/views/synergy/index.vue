@@ -2,14 +2,20 @@
   <div>
     <div class="member-list-wrap">
       <div class="member-list">
-        <template v-for="item in memberList" >
+        <template v-for="item in memberList">
           <img :src="item.avatar" :key="item.id" />
           <!-- <div>{{item.nickname}}</div> -->
         </template>
       </div>
       <div class="add"><img src="../../assets/icon-add.png" alt="" /></div>
     </div>
-    <scroll class="talk-contents" ref="scroll">
+    <scroll
+      class="talk-contents"
+      ref="scroll"
+      :pulldown="true"
+      @pulldown="pulldown"
+      listenScroll
+    >
       <div>
         <div
           class="talk-space"
@@ -25,18 +31,24 @@
             <div class="talk-user-name">
               {{ item.data.nickname }}
             </div>
-            <div class="talk-content talk-word-content" v-if="item.data.contentType===1">
+            <div
+              class="talk-content talk-word-content"
+              v-if="item.data.contentType===1"
+            >
               {{ item.data.content }}
             </div>
-            <div class="talk-content talk-word-content" v-if="item.data.contentType===2">
-              <img :src="item.data.content">
+            <div
+              class="talk-content talk-word-content"
+              v-if="item.data.contentType===2"
+            >
+              <img :src="item.data.content" />
             </div>
           </div>
         </div>
       </div>
     </scroll>
     <div class="footer" ref="footer">
-      <div class="talker">
+      <form class="talker" @submit="submitWord">
         <div class="input-toggle-button talker-icon-btn">
           <div class="icon icon-voice-white"></div>
         </div>
@@ -52,9 +64,9 @@
           <div class="icon icon-voice-left"></div>
         </div>
         <div class="talker-action">
-          <div class="talker-send" @click="submitWord()">发送</div>
+          <div class="talker-send" @click="submitWord">发送</div>
         </div>
-      </div>
+      </form>
       <div class="talker-toolbar" style="display: none">
         <div class="list-item">
           <div class="item-icon">
@@ -73,7 +85,7 @@
   </div>
 </template>
 <script>
-import { getOpenSynergy } from '@/api/synergy/synergy.js'
+import { getOpenSynergy, synergyRecordPage } from '@/api/synergy/synergy.js'
 // import { BetterScroll } from 'cube-ui'
 import scroll from '@/components/BScroll.vue'
 import shortid from 'shortid'
@@ -99,30 +111,63 @@ export default {
       synergyGroup: {},
       contentType: {
         word: 1
-      }
+      },
+      // 用于下拉翻页获取消息，请求id
+      oldestId: 0
     }
   },
   mounted () {
     setTimeout(() => {
+      this.$refs.scroll.refresh()
       this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
-    }, 500)
+    }, 1000)
   },
   methods: {
     init () {
-      let that = this
       getOpenSynergy({
         relationType: this.relationType,
         relationId: this.relationId
       })
         .then(res => {
-          that.synergyGroup = res.synergyGroup
-          that.memberList = res.memberList
-          that.recordList = res.recordList.reverse()
-          console.log(res)
+          this.synergyGroup = res.synergyGroup
+          this.memberList = res.memberList
+          this.recordList = res.recordList.reverse()
+          this.oldestId = this.recordList[0].data.id
         })
         .catch(err => {
           console.log(err)
         })
+    },
+    // 下拉加载
+    pulldown () {
+      this.getRecordPage(this.oldestId)
+    },
+    // 获取群聊分页记录
+    getRecordPage (id) {
+      synergyRecordPage({
+        pageSize: 10,
+        id: id,
+        groupId: this.synergyGroup.id
+      }).then(res => {
+        if (res.recordList.length !== 0) {
+          this.$refs.scroll.refresh()
+          var oldHeight = this.$refs.scroll.scroll.maxScrollY
+          this.recordList = res.recordList.reverse().concat(this.recordList)
+          this.oldestId = res.recordList[0].data.id
+          setTimeout(() => {
+            this.$refs.scroll.refresh()
+            var newHeight = this.$refs.scroll.scroll.maxScrollY
+            this.$refs.scroll.scrollTo(0, newHeight - oldHeight, 0)
+            this.$refs.scroll.refresh()
+          }, 0)
+        } else {
+          this.$createToast({
+            time: 2000,
+            txt: '没有更多记录啦',
+            type: 'warn'
+          }).show()
+        }
+      })
     },
     im () {
       this.socket = new WebSocket(
@@ -151,6 +196,7 @@ export default {
     },
     websocketclose () {
       console.log('websocketclose')
+      this.im()
     },
     sendMessage ({ contentType, content, smallImg, duration }) {
       var message = {
@@ -183,7 +229,8 @@ export default {
       }
     },
 
-    submitWord () {
+    submitWord (e) {
+      e.preventDefault()
       if (this.content.trim() !== '') {
         this.sendMessage({
           contentType: 1,
