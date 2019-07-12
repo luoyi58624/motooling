@@ -86,6 +86,7 @@
 </template>
 <script>
 import { getOpenSynergy, synergyRecordPage } from '@/api/synergy/synergy.js'
+import { getUser } from '@/api/Person/User.js'
 // import { BetterScroll } from 'cube-ui'
 import scroll from '@/components/BScroll.vue'
 import shortid from 'shortid'
@@ -98,6 +99,8 @@ export default {
     return {
       socket: {},
       uid: localStorage.uid - 0,
+      username: '',
+      avatar: localStorage.avatar,
       // 关联类型
       relationType: '1',
       // 关联id
@@ -123,6 +126,19 @@ export default {
     }, 1000)
   },
   methods: {
+    // 获取用户信息
+    getUserInfo () {
+      getUser({ uid: this.uid })
+        .then(
+          res => {
+            if (res.data.code === '000000') {
+              this.username = res.data.data.userInfo.username
+            }
+          }
+        ).catch(err => {
+          console.log(err)
+        })
+    },
     init () {
       getOpenSynergy({
         relationType: this.relationType,
@@ -244,9 +260,8 @@ export default {
             senderId: this.uid,
             contentType: 1,
             content: this.content,
-            avatar:
-                'http://139.159.252.168/group1/M00/00/23/wKgBVl0kL76ALiweADUMWi3Uzxg453_200x200.jpg',
-            nickname: '李冬'
+            avatar: this.avatar,
+            nickname: this.username
           }
         })
         this.content = ''
@@ -266,6 +281,7 @@ export default {
   created () {
     this.im()
     this.init()
+    this.getUserInfo()
   }
 }
 </script>
