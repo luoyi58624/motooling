@@ -43,6 +43,7 @@ export default {
             sessionStorage.setItem('token', resObj.data.user.token)
             // localStorage.setItem("WEBURL", resObj.data.weburl);
             localStorage.setItem('uid', resObj.data.user.uid)
+            localStorage.setItem('avatar', resObj.data.user.avatar)
             let nexturl
             if (state) {
               nexturl = decodeURIComponent(state)

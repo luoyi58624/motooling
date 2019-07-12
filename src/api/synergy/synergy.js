@@ -19,6 +19,7 @@ export function getOpenSynergy (params) {
   })
 }
 
+// 群聊分页记录
 export function synergyRecordPage (params) {
   const data = {
     token: token(),
