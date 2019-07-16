@@ -5,7 +5,7 @@
       <i class="cubeic-remove"></i>
     </div>
     <div>
-      <input type="text" :value="val" />
+      <input type="number" :value="val" @input="change"/>
     </div>
     <div @click="plus">
       <i class="cubeic-add"></i>
@@ -45,10 +45,24 @@ export default {
       // 触发 input 事件，并传入新值
     },
     minu () {
-      if (this.val > 0) {
+      if (this.val > this.min) {
         this.val = this.val - 1
         this.$emit('input', this.val) // 触发 input 事件，并传入新值
       }
+    },
+    change (e) {
+      const val = e.currentTarget.value
+      if (val > this.max) {
+        console.log(12)
+        console.log(this.val, this.max)
+        this.val = this.max * 1
+      } else if (val < this.min) {
+        this.val = this.min * 1
+      } else {
+        this.val = val * 1
+      }
+      e.currentTarget.value = this.val
+      this.$emit('input', this.val)
     }
   }
 }

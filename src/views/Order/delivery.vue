@@ -1,8 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <Screen />
-    <div class="title">收货信息</div>
+    <div class="title">退货信息</div>
     <div class="content">
       <div class="table">
         <div>
@@ -13,6 +12,10 @@
           <div>仓管员</div>
           <div>{{info.username}}</div>
         </div>
+        <!-- <div>
+          <div>退货人</div>
+          <div>{{}}</div>
+        </div>-->
         <div>
           <div>凭证日期</div>
           <div>{{info.createdAt?info.createdAt.slice(0,10):""}}</div>
@@ -22,6 +25,12 @@
           <div>{{info.updatedAt?info.updatedAt.slice(0,10):""}}</div>
         </div>
         <div>
+          <div>收货凭证号</div>
+          <div>
+            <input type="text" placeholder="请填写" v-model="voucherId" />
+          </div>
+        </div>
+        <div>
           <div>收发货单编号</div>
           <div>
             <input type="text" placeholder="请填写" />
@@ -29,11 +38,10 @@
         </div>
       </div>
     </div>
-    <div class="title">收货物料</div>
+    <div class="title">退货物料</div>
     <div>
       <div class="list">
-        <Materiel :info="wuliao" v-model="wuliao.value"  />
-
+        <Materiel :info="wuliao" v-model="wuliao.value" />
       </div>
     </div>
     <div class="title">备注</div>
@@ -44,22 +52,23 @@
     <div class="bot">
       <div>企业圈</div>
       <div>数量合计</div>
-      <div @click="save">收货</div>
+      <div @click="save">退货</div>
     </div>
   </div>
 </template>
 
 <script>
 import materiel from './Components/materiel'
-import screen from './Components/screen'
-import { getpmPoInStore, inStoreSave } from '@/api/order/order.js'
+
+import { outStoreSave, getpmPoOutStoreById } from '@/api/order/order.js'
 
 export default {
   data () {
     return {
       info: {},
       wuliao: {},
-      remark: ''
+      remark: '',
+      voucherId: '' // 收货凭证号
     }
   },
   created () {
@@ -67,12 +76,11 @@ export default {
     this.getInfo('PO19050003')
   },
   components: {
-    Materiel: materiel,
-    Screen: screen
+    Materiel: materiel
   },
   methods: {
     getInfo (no) {
-      getpmPoInStore({ poNo: no })
+      getpmPoOutStoreById({ poNo: no })
         .then(res => {
           console.log(res)
           this.info = res
@@ -81,11 +89,11 @@ export default {
               { title: '物料编码', content: res.matNo },
               { title: '物料描述', content: res.matName },
               { title: '物料类型', content: res.matTypeName },
-              { title: '单    位', content: res.unitName },
+              { title: '单位', content: res.unitName },
               { title: '待收数量', content: res.toBeReceivedQty }
             ],
             max: res.toBeReceivedQty,
-            value: 1
+            value: res.toBeReceivedQty > 0 ? 1 : 0
           }
         })
         .catch(err => {
@@ -93,15 +101,27 @@ export default {
         })
     },
     save () {
+      if (!this.voucherId) {
+        this.showToast('请填写收货凭证号')
+        return
+      }
       this.showLoading()
-      inStoreSave({ poNo: this.info.poNo, matId: this.info.matId, toBeReceivedQty: this.wuliao.value, remark: this.remark }).then(res => {
-        this.hideLoading()
-        this.showToast('收货成功')
-        this.getInfo()
-      }).catch(err => {
-        this.hideLoading()
-        this.showToast(err.msg ? err.msg : '')
+      outStoreSave({
+        poNo: this.info.poNo,
+        matId: this.info.matId,
+        toBeReceivedQty: this.wuliao.value,
+        remark: this.remark,
+        voucherId: this.voucherId
       })
+        .then(res => {
+          this.hideLoading()
+          this.showToast('退货成功')
+          this.getInfo()
+        })
+        .catch(err => {
+          this.hideLoading()
+          this.showToast(err.msg ? err.msg : '')
+        })
     }
   }
 }

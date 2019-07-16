@@ -199,6 +199,14 @@ var router = new Router({
     path: '/synergy',
     name: 'synergy',
     component: () => import('./views/synergy/index')
+  },
+  {
+    path: '/delivery',
+    name: 'delivery',
+    component: () => import('./views/Order/delivery'),
+    meta: {
+      title: '订单收货'
+    }
   }
 
   ]

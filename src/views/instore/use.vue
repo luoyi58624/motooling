@@ -67,26 +67,30 @@
             <div class="flex-wrapper">
                 <div>
                     特采
-                    <input type="text">
+                    <input type="number">
                 </div>
                  <div>
                     退货
-                    <input type="text">
+                    <input type="number">
                 </div>
             </div>
         </div>
       </div>
        <div>
         <div>罚款</div>
-        <div>尺寸不对</div>
+        <div>
+          <input type="number" placeholder="请填写">
+        </div>
       </div>
        <div>
         <div>备注</div>
-        <div>尺寸不对</div>
+        <div>
+            <input type="number" placeholder="请填写">
+        </div>
       </div>
 
     </div>
-     <div class="bot">
+     <div class="bot" @click="save">
         提交
 
     </div>
@@ -95,19 +99,72 @@
 </template>
 
 <script>
+import {
+  inStoreInfo,
+  // purchUpdate,
+  purchSpecial,
+  // purchQuality,
+  // getStoreHouse,
+  getStoreRoom
+} from '@/api/instore/instore'
 export default {
   data () {
     return {
     }
   },
+  created () {
+    this.getInfo()
+  },
 
-  components: {},
-
-  computed: {},
-
-  mounted: {},
-
-  methods: {}
+  methods: {
+    getInfo () {
+      const purchSubId = this.$route.query.purchSubId
+      console.log(purchSubId)
+      inStoreInfo({ purchSubId }).then(res => {
+        console.log(res)
+        this.info = res.inStoreInfo
+        this.wordList = res.qualityList
+        this.pdfList = res.factoryReportList
+        this.storeHouseId = res.inStoreInfo.storeHouseId
+        this.storeRoomId = res.inStoreInfo.storeRoomId
+        console.log(this.storeHouseId, this.storeRoomId)
+        if (this.storeHouseId) {
+          getStoreRoom({ storeHouseId: this.storeHouseId }).then(res => {
+            var romeList = res.storeRoomsConfList
+            var newRome = romeList.map((item, index) => {
+              return { text: item.storeRoomName, value: item.id }
+            })
+            this.storeRoomList = newRome
+          })
+        }
+      })
+    },
+    save () {
+      if (
+        !this.info.specialUp ||
+          !this.info.noQualifiedQty ||
+          this.info.reduceRatio === null
+      ) {
+        this.showToast('特采表单未填写完整')
+        return
+      }
+      if (this.info.specialQty > this.info.noQualifiedQty) {
+        this.showToast('特采数量不能大于不良数量')
+        return
+      }
+      const purchSubId = this.$route.query.purchSubId
+      var data2 = Object.assign({}, { purchSubId }, this.info)
+      purchSpecial(data2)
+        .then(res => {
+          this.showToast('修改成功')
+        })
+        .catch(err => {
+          if (err.msg) {
+            this.showToast(err.msg)
+          }
+        })
+    }
+  }
 }
 
 </script>

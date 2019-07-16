@@ -41,30 +41,28 @@
         </div>
         <div class="center-wrapper">
           <div class="title">名称:</div>
-          <div>工装号：</div>
           <div>物料编码：{{item.matNo}}</div>
-          <div>物料描述：</div>
-          <div>外协类型：</div>
+          <div>物料描述：{{item.matDesc}}</div>
           <div>订单数量：{{item.quantity}}</div>
-          <div>已收：</div>
-          <div>收货数量:<stepper v-model="value" :max="5"/></div>
+          <div>已收：{{item.receivedQty}}</div>
+          <div>收货数量:<stepper v-model="value" :max="item.quantity-(item.receivedQty?item.receivedQty:0)"/></div>
           <!-- <div>规格型号：{{item.matModel}}</div> -->
           <!-- <div>数量：{{item.quantity}}</div> -->
           <!-- <div>重量：{{item.a}}</div> -->
           <!-- <div>检验要求:{{item.pcFlag}}</div> -->
-          <div class="btn-wrapper" v-if="item.preOrderFlag===1">
+          <!-- <div class="btn-wrapper" v-if="item.preOrderFlag===1">
             <button
               :disabled="item.isNeedQc=='0'||item.qcQty==0"
               @click.stop="toInfo(item.purchSubId,2)"
             >质检</button>
             <button :disabled="!item.noQualifiedQty>0" @click.stop="toInfo(item.purchSubId,3)">特采</button>
-          </div>
+          </div> -->
 
         </div>
         <div class="litter-wrapper">
-          <div>不合格：</div>
-          <div>特采：</div>
-          <div>退货：</div>
+          <div>不合格：{{item.noQualifiedQty||0}}</div>
+          <div>特采：{{item.specialQty||0}}</div>
+          <div>退货：{{item.returnQty||0}}</div>
         </div>
       </div>
     </div>
@@ -177,6 +175,8 @@ export default {
           this.listDone = true
         })
         .catch(err => {
+          this.hideLoading()
+          this.showToast(err.msg)
           console.log(err)
         })
     },

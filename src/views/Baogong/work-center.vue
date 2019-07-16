@@ -730,8 +730,11 @@ export default {
                 }).then(res => {
                   this.showToast('操作成功')
                   this.select()
+                }).catch(err => {
+                  this.showToast(err.msg || '操作失败')
                 })
               } else {
+                this.dialog = ''
                 this.dialog = this.$createDialog({
                   type: 'prompt',
                   title: '输入添加数量',
