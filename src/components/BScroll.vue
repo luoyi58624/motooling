@@ -82,7 +82,6 @@ export default {
     // 保证在DOM渲染完毕后初始化better-scroll
     setTimeout(() => {
       this._initScroll()
-      console.log(this.scroll)
     }, 20)
   },
   methods: {
@@ -117,9 +116,9 @@ export default {
 
       // 是否派发顶部下拉事件，用于下拉刷新
       if (this.pulldown) {
-        this.scroll.on('touchend', pos => {
+        this.scroll.on('touchEnd', (pos) => {
           // 下拉动作
-          if (pos.y > 50) {
+          if (pos.y > 10) {
             this.$emit('pulldown')
           }
         })
