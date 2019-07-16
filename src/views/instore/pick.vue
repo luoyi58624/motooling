@@ -14,7 +14,7 @@
           </div>
         </div>
         <div class="list" v-show="it.showList">
-          <div v-for="(item,index) in it.userList" :key="index" @click.stop="pick(item)">
+          <div v-for="(item,index) in it.childrenList" :key="index" @click.stop="pick(item)">
             <div>
               <span
                 class="iconfont icon-iconfontxuanzhong4"
