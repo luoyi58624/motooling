@@ -3,13 +3,10 @@
   <div class="wrapper">
     <div class="bar">采购信息</div>
     <div class="table">
-      <div>
-        <div>工装号</div>
-        <div></div>
-      </div>
+
       <div>
         <div>物料编码</div>
-        <div></div>
+        <div>{{info.matNo}}</div>
       </div>
       <div>
         <div>物料描述</div>
@@ -23,10 +20,7 @@
         <div>规格型号</div>
         <div>工装号</div>
       </div>
-      <div>
-        <div>外协类型</div>
-        <div>工装号</div>
-      </div>
+
       <div>
         <div>订单数量</div>
         <div>工装号</div>
@@ -41,71 +35,168 @@
       </div>
       <div>
         <div>收货数量</div>
-        <div><input type="text" placeholder="请填写"></div>
+        <div>
+          <input type="number"
+            name
+            id
+            v-model="info.receivedQty"
+            min="1" placeholder="请填写" />
+        </div>
       </div>
       <div>
         <div>收货重量</div>
-        <div><input type="text" placeholder="请填写"></div>
+        <div>
+          <input v-model="info.receivedWeight" type="number" placeholder="请填写" />
+        </div>
       </div>
-       <div>
+      <div>
         <div>收货地址</div>
-        <div></div>
+        <div> <input  type="text" placeholder="请填写" /></div>
       </div>
-       <div>
+      <div>
         <div>收货仓库</div>
-        <div></div>
+        <div>
+          <cube-select
+            class="select"
+            v-model="storeHouseId"
+            title="选择仓库"
+            :options="storeHouseList"
+            :disabled="storeHouseList.length==0"
+            @change="changeCk"
+          ></cube-select>
+        </div>
       </div>
-       <div>
+      <div>
         <div>收货储位</div>
-        <div></div>
-      </div>
-       <div>
-        <div>收货备注</div>
-        <div></div>
-      </div>
-    </div>
-    <div class="bot">
-        提交
+        <div>
 
+          <cube-select
+            class="select"
+            v-model="storeRoomId"
+            title="选择库位"
+            :options="storeRoomList"
+            :disabled="storeRoomList.length==0"
+            @change="changeKw"
+          ></cube-select>
+        </div>
+      </div>
+      <div>
+        <div >收货备注</div>
+        <div>
+          <input type="text" v-model="info.receivedRemark">
+        </div>
+      </div>
     </div>
+    <div class="bot" @click="save">提交</div>
   </div>
 </template>
 
 <script>
+import {
+  inStoreInfo,
+  purchUpdate,
+  // purchSpecial,
+  // purchQuality,
+  getStoreHouse,
+  getStoreRoom
+} from '@/api/instore/instore'
 export default {
   data () {
-    return {}
+    return {
+      storeHouseList: [],
+      storeRoomList: [],
+      info: {},
+      storeHouseName: '',
+      storeHouseId: '',
+      storeRoomId: '',
+      storeRoomName: ''
+    }
+  },
+  created () {
+    this.getInfo()
+    this._getStoreHouse()
   },
 
-  components: {},
-
-  computed: {},
-
-  mounted: {},
-
   methods: {
-    // getInfo () {
-    //   const purchSubId = this.$route.query.purchSubId
-    //   console.log(purchSubId)
-    //   inStoreInfo({ purchSubId }).then(res => {
-    //     console.log(res)
-    //     this.info = res.inStoreInfo
-    //     this.wordList = res.qualityList
-    //     this.pdfList = res.factoryReportList
-    //     this.storeHouseId = res.inStoreInfo.storeHouseId
-    //     this.storeRoomId = res.inStoreInfo.storeRoomId
-    //     console.log(this.storeHouseId, this.storeRoomId)
-    //     if (this.storeHouseId) {
-    //       getStoreRoom({ storeHouseId: this.storeHouseId }).then(res => {
-    //         var romeList = res.storeRoomsConfList
-    //         var newRome = romeList.map((item, index) => {
-    //           return { text: item.storeRoomName, value: item.id }
-    //         })
-    //         this.storeRoomList = newRome
-    //       })
-    //     }
-    //   })
-    // }
+    save () {
+      if (!this.info.receivedQty || !this.info.receivedWeight || !this.info.receivedRemark) {
+        this.showToast('收货表单未填写完整')
+        return
+      }
+      if (!this.storeHouseName) {
+        this.showToast('请选择收货仓库')
+        return
+      }
+      if (!this.storeRoomName) {
+        this.showToast('请选择收货库位')
+        return
+      }
+      const purchSubId = this.$route.query.purchSubId
+      var data = Object.assign({}, { purchSubId }, this.info, {
+        storeHouseName: this.storeHouseName || this.info.storeHouseName,
+        storeHouseId: this.storeHouseId || this.info.storeHouseId,
+        storeRoomId: this.storeRoomId || this.info.storeRoomId,
+        storeRoomName: this.storeRoomName || this.info.storeRoomName
+      })
+      purchUpdate(data)
+        .then(res => {
+          console.log(res)
+          this.showToast('修改成功')
+        })
+        .catch(err => {
+          if (err.msg) {
+            this.showToast(err.msg)
+          }
+        })
+    },
+    getInfo () {
+      const purchSubId = this.$route.query.purchSubId
+      inStoreInfo({ purchSubId }).then(res => {
+        console.log(res)
+        this.info = res.inStoreInfo
+        this.wordList = res.qualityList
+        this.pdfList = res.factoryReportList
+        this.storeHouseId = res.inStoreInfo.storeHouseId
+        this.storeRoomId = res.inStoreInfo.storeRoomId
+        console.log(this.storeHouseId, this.storeRoomId)
+        if (this.storeHouseId) {
+          getStoreRoom({ storeHouseId: this.storeHouseId }).then(res => {
+            var romeList = res.storeRoomsConfList
+            var newRome = romeList.map((item, index) => {
+              return { text: item.storeRoomName, value: item.id }
+            })
+            this.storeRoomList = newRome
+          })
+        }
+      })
+    },
+    changeCk (value, index, text) {
+      console.log('change', value, index, text, this.textCk)
+      getStoreRoom({ storeHouseId: value }).then(res => {
+        var romeList = res.storeRoomsConfList
+        var newRome = romeList.map((item, index) => {
+          return { text: item.storeRoomName, value: item.id }
+        })
+        this.storeRoomList = newRome
+        this.storeHouseId = value
+        this.storeHouseName = text
+        console.log(this.storeHouseName)
+      })
+    },
+    changeKw (value, index, text) {
+      this.storeRoomId = value
+      this.storeRoomName = text
+    },
+    _getStoreHouse () {
+      getStoreHouse().then(res => {
+        console.log(res.storeHouseConfList)
+        var houseList = res.storeHouseConfList
+        var newHose = houseList.map((item, index) => {
+          return { text: item.storeHouseName, value: item.id }
+        })
+        this.storeHouseList = newHose
+      })
+    }
   }
 }
 </script>
@@ -119,7 +210,8 @@ export default {
   .table {
     > div {
       > div:nth-child(2) {
-        text-align: right;justify-content: flex-end;
+        text-align: right;
+        justify-content: flex-end;
       }
 
       input {
@@ -127,8 +219,16 @@ export default {
       }
     }
   }
-  .bot{
-      position:fixed;bottom:0;left:0;right:0;line-height:40px;color:#fff;background: #5496FF;font-size:14px;text-align: center;
+  .bot {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    line-height: 40px;
+    color: #fff;
+    background: #5496ff;
+    font-size: 14px;
+    text-align: center;
   }
 }
 </style>

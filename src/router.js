@@ -211,6 +211,14 @@ var router = new Router({
     path: '/synergy/summary/:type/:groupId/:id',
     name: 'synergySummaryDetail',
     component: () => import('./views/synergy/summary/detail')
+  },
+  {
+    path: '/delivery',
+    name: 'delivery',
+    component: () => import('./views/Order/delivery'),
+    meta: {
+      title: '订单收货'
+    }
   }
   ]
 })
