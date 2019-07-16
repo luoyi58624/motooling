@@ -27,7 +27,10 @@
             class="talk-user-avatar"
             :style="'background-image: url('+item.data.avatar+')'"
           ></div>
-          <div class="talk-info">
+          <div
+            class="talk-info"
+            v-if="item.data.contentType===1||item.data.contentType===2||item.data.contentType===3||item.data.contentType===4"
+          >
             <div class="talk-user-name">
               {{ item.data.nickname }}
             </div>
@@ -37,11 +40,14 @@
             >
               {{ item.data.content }}
             </div>
-            <div
-              class="talk-content talk-word-content"
-              v-if="item.data.contentType===2"
-            >
+            <div class="talk-content" v-if="item.data.contentType===2">
               <img :src="item.data.content" />
+            </div>
+            <div class="talk-content" v-if="item.data.contentType===3">
+              <audio :src="item.data.content" controls="controls"></audio>
+            </div>
+            <div class="talk-content" v-if="item.data.contentType===4">
+              <video :src="item.data.content" controls="controls"></video>
             </div>
           </div>
         </div>
@@ -50,7 +56,7 @@
     <div class="footer" ref="footer">
       <form class="talker" @submit="submitWord">
         <div class="input-toggle-button talker-icon-btn">
-          <div class="icon icon-voice-white"></div>
+          <div class="icon icon-add" @click="showMoreBtn"></div>
         </div>
         <div class="talker-input-wrapper">
           <input
@@ -67,7 +73,7 @@
           <div class="talker-send" @click="submitWord">发送</div>
         </div>
       </form>
-      <div class="talker-toolbar" style="display: none">
+      <div class="talker-toolbar" v-show="moreBtnStatus">
         <div class="list-item">
           <div class="item-icon">
             <div class="icon icon-camera"></div>
@@ -75,10 +81,20 @@
           <div class="center item-text">图片</div>
         </div>
         <div class="list-item">
-          <div class="item-icon">
-            <div class="icon icon-record"></div>
-          </div>
-          <div class="center item-text">纪要</div>
+          <router-link to="/synergy/summary/list">
+            <div class="item-icon">
+              <div class="icon icon-record"></div>
+            </div>
+            <div class="center item-text">纪要</div>
+          </router-link>
+        </div>
+        <div class="list-item">
+          <router-link :to="'/synergy/summary/new/'+this.synergyGroup.id+'/'+newestId">
+            <div class="item-icon">
+              <div class="icon icon-record"></div>
+            </div>
+            <div class="center item-text">生成纪要</div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -109,14 +125,22 @@ export default {
       companyId: 1,
       // 输入的文字内容
       content: '',
-      recordList: [],
+      recordList: [{
+        data: { id: 0 }
+      }],
       memberList: [],
       synergyGroup: {},
       contentType: {
         word: 1
       },
       // 用于下拉翻页获取消息，请求id
-      oldestId: 0
+      oldestId: 0,
+      moreBtnStatus: false
+    }
+  },
+  computed: {
+    newestId () {
+      return this.recordList[this.recordList.length - 1].data.id
     }
   },
   mounted () {
@@ -125,17 +149,19 @@ export default {
       this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
     }, 1000)
   },
+  destroyed () {
+    this.socket.close()
+  },
   methods: {
     // 获取用户信息
     getUserInfo () {
       getUser({ uid: this.uid })
-        .then(
-          res => {
-            if (res.data.code === '000000') {
-              this.username = res.data.data.userInfo.username
-            }
+        .then(res => {
+          if (res.data.code === '000000') {
+            this.username = res.data.data.userInfo.username
           }
-        ).catch(err => {
+        })
+        .catch(err => {
           console.log(err)
         })
     },
@@ -148,11 +174,18 @@ export default {
           this.synergyGroup = res.synergyGroup
           this.memberList = res.memberList
           this.recordList = res.recordList.reverse()
-          this.oldestId = this.recordList[0].data.id
+          if (this.recordList.length > 0) {
+            this.oldestId = this.recordList[0].data.id
+          }
+          // 开启群聊通信
+          this.im()
         })
         .catch(err => {
           console.log(err)
         })
+    },
+    show () {
+      console.log(this.socket.readyState)
     },
     // 下拉加载
     pulldown () {
@@ -186,6 +219,7 @@ export default {
       })
     },
     im () {
+      console.log(12222)
       this.socket = new WebSocket(
         'ws://im.motooling.com/mtwebsocket/' +
             this.companyId +
@@ -193,7 +227,8 @@ export default {
             this.synergyGroup.id +
             '/' +
             sessionStorage.token +
-            '/api.unit.testing.motooling.com'
+            '/' +
+            localStorage.WEBURL.split('//')[1]
       )
       this.socket.onopen = this.websocketonopen
       this.socket.onerror = this.websocketonerror
@@ -205,6 +240,12 @@ export default {
     },
     websocketonerror () {
       console.error('websocketonerror')
+      this.$createToast({
+        time: 2000,
+        txt: '网络正在重连',
+        type: 'loading'
+      }).show()
+      this.im()
     },
     websocketonmessage (e) {
       console.log('websocketonmessage')
@@ -212,7 +253,6 @@ export default {
     },
     websocketclose () {
       console.log('websocketclose')
-      this.im()
     },
     sendMessage ({ contentType, content, smallImg, duration }) {
       var message = {
@@ -237,6 +277,7 @@ export default {
       if (duration) {
         message.data.duration = duration
       }
+      console.log(this.socket)
       this.socket.send(JSON.stringify(message))
     },
     receiveMessage (msg) {
@@ -252,6 +293,8 @@ export default {
           contentType: 1,
           content: this.content
           // contentType: 2,
+          // smallImg:,
+          // duration:3,
         })
 
         this.recordList.push({
@@ -276,10 +319,12 @@ export default {
       setTimeout(() => {
         this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
       }, 100)
+    },
+    showMoreBtn () {
+      this.moreBtnStatus = !this.moreBtnStatus
     }
   },
   created () {
-    this.im()
     this.init()
     this.getUserInfo()
   }
@@ -409,9 +454,6 @@ export default {
     width: 16px;
     height: 16px;
   }
-  .icon-voice-white {
-    background-image: url("../../assets/icon-add.png");
-  }
   .icon-voice-left {
     background-image: url("../../assets/icon-voice-left.png");
   }
@@ -465,6 +507,7 @@ export default {
     background-color: #e6e6e6;
   }
   .talker-toolbar .item-text {
+    font-size: 18px; /* no */
     line-height: 1.5;
   }
 

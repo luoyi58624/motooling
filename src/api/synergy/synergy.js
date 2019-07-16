@@ -83,7 +83,7 @@ export function synergySetUpRead (params) {
 }
 
 // 生成纪要获取信息接口
-export function getGenerateSummaryInfo (params) {
+export function generateSummaryInfo (params) {
   const data = {
     token: token(),
     md5: md5String,
@@ -125,6 +125,22 @@ export function getSummaryInfo (params) {
 
   return request({
     url: WEBURL() + '/mtH5/synergy/getSummaryInfo',
+    method: 'post',
+    data
+  })
+}
+
+// 获取纪要列表
+export function getSummaryList (params) {
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+
+  return request({
+    url: WEBURL() + '/mtH5/synergy/getSummaryList',
     method: 'post',
     data
   })

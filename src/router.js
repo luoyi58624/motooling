@@ -199,8 +199,19 @@ var router = new Router({
     path: '/synergy',
     name: 'synergy',
     component: () => import('./views/synergy/index')
+  },
+  {
+    path: '/synergy/summary/list',
+    name: 'synergySummaryList',
+    component: () => import('./views/synergy/summary/list')
+  },
+  // 生成纪要时，type为new、id为lastRecordId
+  // 获取纪要时，type为view、id为summaryId
+  {
+    path: '/synergy/summary/:type/:groupId/:id',
+    name: 'synergySummaryDetail',
+    component: () => import('./views/synergy/summary/detail')
   }
-
   ]
 })
 router.beforeEach((to, from, next) => {
