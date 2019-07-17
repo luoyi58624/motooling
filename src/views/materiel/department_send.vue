@@ -1,36 +1,43 @@
 <!--  -->
 <template>
   <div>
-    <Screen />
-    <div class="title">收货信息</div>
+    <div class="title">退货信息</div>
     <div class="content">
       <div class="table">
         <div>
-          <div>生产订单</div>
-          <div>{{info.poNo}}</div>
+          <div>领料部门</div>
+          <div></div>
         </div>
         <div>
           <div>仓管员</div>
-          <div>{{info.username}}</div>
+          <div>{{}}</div>
         </div>
+        <!-- <div>
+          <div>退货人</div>
+          <div>{{}}</div>
+        </div>-->
         <div>
           <div>凭证日期</div>
-          <div>{{info.createdAt?info.createdAt.slice(0,10):""}}</div>
+          <div>{{}}</div>
         </div>
         <div>
           <div>记账日期</div>
-          <div>{{info.updatedAt?info.updatedAt.slice(0,10):""}}</div>
+          <div>{{}}</div>
         </div>
         <div>
           <div>收发货单编号</div>
           <div>
-            <input type="text" placeholder="请填写" />
+            <!-- <input type="text" placeholder="请填写" v-model="voucherId" /> -->
+            <div @click="showPicker">{{'请选择'}}</div>
           </div>
         </div>
       </div>
     </div>
-    <div class="title">收货物料</div>
+    <div class="title">退货物料</div>
     <div>
+        <div class="add" @click="add">
+            <i class="cubeic-add"></i>添加物料
+        </div>
       <div class="list">
         <Materiel :info="wuliao" v-model="wuliao.value" />
       </div>
@@ -42,16 +49,16 @@
     <div class="zw"></div>
     <div class="bot">
       <div>企业圈</div>
-      <div>数量合计</div>
-      <div @click="save">收货</div>
+      <div>数量合计：{{wuliao.value}}</div>
+      <div @click="save">退货</div>
     </div>
   </div>
 </template>
 
 <script>
-import materiel from './Components/materiel'
-import screen from './Components/screen'
-import { getpmPoInStore, inStoreSave } from '@/api/order/order.js'
+import materiel from '../Order/Components/materiel'
+
+import { outStoreSave, getpmPoOutStoreById } from '@/api/order/order.js'
 
 export default {
   data () {
@@ -59,62 +66,88 @@ export default {
       info: {},
       wuliao: {},
       remark: '',
-      no: ''
+      voucherId: '',
+      voucherList: '' // 收货列表
     }
   },
   created () {
-    this.no = this.$route.query.no
-    this.getInfo(this.no)
+    const no = this.$route.query.no
+    this.getInfo(no)
   },
   components: {
-    Materiel: materiel,
-    Screen: screen
+    Materiel: materiel
   },
   methods: {
+    showPicker () {
+      if (!this.picker) {
+        this.picker = this.$createPicker({
+          title: '',
+          data: [this.voucherList],
+          onSelect: this.selectHandle
+        })
+      }
+      this.picker.show()
+    },
+    selectHandle (selectedVal, selectedIndex, selectedText) {
+      console.log(selectedVal.join(', '))
+      this.voucherId = selectedVal.join(', ')
+    },
     getInfo (no) {
-      getpmPoInStore({ poNo: no })
+      getpmPoOutStoreById({ poNo: no })
         .then(res => {
           console.log(res)
           this.info = res
+          this.voucherList = res.voucherList.map(item => {
+            return { text: item.voucher_id, value: item.voucher_id }
+          })
           this.wuliao = {
             list: [
               { title: '物料编码', content: res.matNo },
               { title: '物料描述', content: res.matName },
               { title: '物料类型', content: res.matTypeName },
-              { title: '单    位', content: res.unitName },
-              { title: '待收数量', content: res.toBeReceivedQty }
+              { title: '单位', content: res.unitName },
+              { title: '可退数量', content: res.toBeReceivedQty }
             ],
             max: res.toBeReceivedQty,
-            value: 1
+            value: res.toBeReceivedQty > 0 ? 1 : 0
           }
         })
-        .catch(err => {
-          this.showDialog({
-            title: '出错了',
-            content: err.msg,
-            onConfirm: () => {
-              this.$router.go(-1)
-            },
-            onCancel: () => {
-              // this.$router.go(-1)
-            }
-          })
-          // this.showToast(err.msg || '出错了')
+        .catch(() => {
+        //  this.showDialog({
+        //     title:'出错了',
+        //     content:'可能单号有误，将为您返回上一页',
+        //     onConfirm:()=>{
+        //       this.$router.go(-1)
+        //     },
+        //     conCancel:()=>{
+        //       //this.$router.go(-1)
+        //     }
+        //   })
         })
     },
+    add () {
+      this.$router.push({
+        path: '/materiel/select'
+      })
+    },
     save () {
+      if (!this.voucherId) {
+        this.showToast('请选择收货凭证号')
+        return
+      }
       this.showLoading()
-      inStoreSave({
+
+      outStoreSave({
         poNo: this.info.poNo,
         matId: this.info.matId,
         toBeReceivedQty: this.wuliao.value,
-        remark: this.remark
+        remark: this.remark,
+        voucherId: this.voucherId
       })
         .then(res => {
-          console.log(res)
           this.hideLoading()
-          this.showToast('收货成功')
-          // this.getInfo(this.no)
+          this.showToast('退货成功')
+          // this.getInfo()
         })
         .catch(err => {
           this.hideLoading()
@@ -125,6 +158,12 @@ export default {
 }
 </script>
 <style lang='less' scoped>
+.add{
+    font-size:16px;padding:30px;display:flex;justify-content: center;color:#5496FF;
+    >i{
+        font-size:20px;
+    }
+}
 .title {
   padding: 14px;
   font-size: 12px;

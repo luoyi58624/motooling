@@ -24,6 +24,23 @@
     <div>
       <router-link to="/stock/list">库存盘点</router-link>
     </div>
+       <br>
+    <div>
+      <router-link to="/materiel/_nav">退料</router-link>
+    </div>
+       <br>
+    <div>
+      <router-link to="/materiel/nav">发料</router-link>
+    </div>
+       <br>
+    <div>
+      <router-link to="/order/delivery_nav">订单退货查询</router-link>
+    </div>
+       <br>
+    <div>
+      <router-link to="/order/receive_nav">订单收货查询</router-link>
+    </div>
+       <br>
     <hr>
     <div>
       <h4>以下为中转页面（不要直接进入）</h4>

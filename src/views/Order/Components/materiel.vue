@@ -22,7 +22,7 @@
       <div class="right-bottom">
         <div style="display:flex;">
           收货数量&nbsp;&nbsp;
-          <stepper :max="info.max" @input="change" v-model="val"/>
+          <stepper :max="info.max" @input="change" :value="val"/>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@ import stepper from '@/components/stepper'
 export default {
   data () {
     return {
-      val: this.value
+
     }
   },
   props: {
@@ -45,6 +45,11 @@ export default {
     value: {
       type: Number,
       default: 0
+    }
+  },
+  computed: {
+    val () {
+      return this.value
     }
   },
   components: {

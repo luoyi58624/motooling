@@ -116,6 +116,11 @@ var router = new Router({
     component: () => import('./views/Baogong/work-shop.vue')
   },
   {
+    path: '/instore/nav',
+    name: 'instore-nav',
+    component: () => import('./views/instore/nav')
+  },
+  {
     path: '/instore/list',
     name: 'instore-list',
     component: () => import('./views/instore/list')
@@ -219,15 +224,66 @@ var router = new Router({
     meta: {
       title: '订单收货'
     }
+  },
+  {
+    path: '/order/receive_nav',
+    name: 'receive_nav',
+    component: () => import('./views/Order/receive_nav'),
+    meta: {
+      title: '订单收货查询'
+    }
+  },
+  {
+    path: '/order/delivery_nav',
+    name: 'delivery_nav',
+    component: () => import('./views/Order/delivery_nav'),
+    meta: {
+      title: '订单退货查询'
+    }
+  },
+  {
+    path: '/materiel/_nav',
+    name: 'materiel-nav',
+    component: () => import('./views/materiel/_nav'),
+    meta: {
+      title: '退料'
+    }
+  },
+  {
+    path: '/materiel/nav',
+    name: 'materielNav',
+    component: () => import('./views/materiel/nav'),
+    meta: {
+      title: '发料'
+    }
+  },
+  {
+    path: '/materiel/department_send',
+    name: 'department_send',
+    component: () => import('./views/materiel/department_send'),
+    meta: {
+      title: '对部门发料'
+    }
+  },
+  {
+    path: '/materiel/select',
+    name: 'materiel-select',
+    component: () => import('./views/materiel/select'),
+    meta: {
+      title: '选择物料'
+    }
   }
   ]
 })
 router.beforeEach((to, from, next) => {
-  // document.title = to.meta.title||'欢迎来得Motooling'
+  document.title = to.meta.title || '欢迎来得Motooling'
   console.log(WEBURL(), token())
   const path = to.path.toLowerCase()
   if (to.query.weburl) {
     localStorage.WEBURL = decodeURIComponent(to.query.weburl)
+  }
+  if (to.query.token) {
+    sessionStorage.token = decodeURIComponent(to.query.token)
   }
   if (to.query.token && to.query.weburl) {
     next()
