@@ -18,6 +18,7 @@
           纪要内容
         </div>
         <div class="summary-recordlist">
+          <template v-if="summaryRecordList.length>0">
           <div class="content-item" v-for="item in summaryRecordList" :key="item.id">
             <span> {{ item.username }} </span>:
             <template v-if="item.contentType===1">
@@ -40,10 +41,14 @@
             </template>
             <div class="right">{{ item.senderTime }}</div>
           </div>
+          </template>
+          <template v-if="summaryRecordList.length===0">
+            没有可供生成会议纪要的聊天记录
+          </template>
         </div>
       </div>
     </div>
-    <div class="bottom" v-if="type==='new'">
+    <div class="bottom" v-if="type==='new' && summaryRecordList.length>0">
       <input
         type="text"
         placeholder="结论"
@@ -82,7 +87,6 @@ export default {
   },
   created () {
     this.init()
-    console.log(this.type)
   },
   methods: {
     init () {

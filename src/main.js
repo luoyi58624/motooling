@@ -25,7 +25,9 @@ function showLoading (val) {
   toast.show()
 }
 function hideLoading () {
-  toast.hide()
+  if (toast) {
+    toast.hide()
+  };
 }
 Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading
