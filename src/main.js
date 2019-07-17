@@ -47,7 +47,9 @@ function showDialog (par = {}) {
   }).show()
 }
 function hideLoading () {
-  toast.hide()
+  if (toast) {
+    toast.hide()
+  };
 }
 Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading

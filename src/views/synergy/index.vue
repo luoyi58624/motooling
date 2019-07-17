@@ -4,7 +4,7 @@
       <div class="member-list">
         <template v-for="item in memberList">
           <img :src="item.avatar" :key="item.id" />
-          <!-- <div>{{item.nickname}}</div> -->
+          <!-- <div>{{item.username}}</div> -->
         </template>
       </div>
       <div class="add"><img src="../../assets/icon-add.png" alt="" /></div>
@@ -32,7 +32,7 @@
             v-if="item.data.contentType===1||item.data.contentType===2||item.data.contentType===3||item.data.contentType===4"
           >
             <div class="talk-user-name">
-              {{ item.data.nickname }}
+              {{ item.data.username }}
             </div>
             <div
               class="talk-content talk-word-content"
@@ -55,8 +55,8 @@
     </scroll>
     <div class="footer" ref="footer">
       <form class="talker" @submit="submitWord">
-        <div class="input-toggle-button talker-icon-btn">
-          <div class="icon icon-add" @click="showMoreBtn"></div>
+        <div class="talker-icon-btn">
+          <div class="icon icon-voice-right"></div>
         </div>
         <div class="talker-input-wrapper">
           <input
@@ -66,9 +66,10 @@
             v-model="content"
           />
         </div>
-        <div class="talker-icon-btn">
-          <div class="icon icon-voice-left"></div>
+        <div class="input-toggle-button talker-icon-btn">
+          <div class="icon icon-add" @click="showMoreBtn"></div>
         </div>
+
         <div class="talker-action">
           <div class="talker-send" @click="submitWord">发送</div>
         </div>
@@ -89,7 +90,9 @@
           </router-link>
         </div>
         <div class="list-item">
-          <router-link :to="'/synergy/summary/new/'+this.synergyGroup.id+'/'+newestId">
+          <router-link
+            :to="'/synergy/summary/new/'+this.synergyGroup.id+'/'+newestId"
+          >
             <div class="item-icon">
               <div class="icon icon-record"></div>
             </div>
@@ -113,6 +116,7 @@ export default {
   },
   data () {
     return {
+      isClose: false,
       socket: {},
       uid: localStorage.uid - 0,
       username: '',
@@ -125,9 +129,11 @@ export default {
       companyId: 1,
       // 输入的文字内容
       content: '',
-      recordList: [{
-        data: { id: 0 }
-      }],
+      recordList: [
+        {
+          data: { id: 0 }
+        }
+      ],
       memberList: [],
       synergyGroup: {},
       contentType: {
@@ -135,14 +141,15 @@ export default {
       },
       // 用于下拉翻页获取消息，请求id
       oldestId: 0,
+      newestId: 0,
       moreBtnStatus: false
     }
   },
-  computed: {
-    newestId () {
-      return this.recordList[this.recordList.length - 1].data.id
-    }
-  },
+  // computed: {
+  //   newestId () {
+  //     return this.recordList[this.recordList.length - 1].data.id
+  //   }
+  // },
   mounted () {
     setTimeout(() => {
       this.$refs.scroll.refresh()
@@ -150,6 +157,7 @@ export default {
     }, 1000)
   },
   destroyed () {
+    this.isClose = true
     this.socket.close()
   },
   methods: {
@@ -184,9 +192,6 @@ export default {
           console.log(err)
         })
     },
-    show () {
-      console.log(this.socket.readyState)
-    },
     // 下拉加载
     pulldown () {
       this.getRecordPage(this.oldestId)
@@ -219,33 +224,33 @@ export default {
       })
     },
     im () {
-      console.log(12222)
-      this.socket = new WebSocket(
-        'ws://im.motooling.com/mtwebsocket/' +
-            this.companyId +
-            '/' +
-            this.synergyGroup.id +
-            '/' +
-            sessionStorage.token +
-            '/' +
-            localStorage.WEBURL.split('//')[1]
-      )
-      this.socket.onopen = this.websocketonopen
-      this.socket.onerror = this.websocketonerror
-      this.socket.onmessage = this.websocketonmessage
-      this.socket.onclose = this.websocketclose
+      if (
+        this.isClose === false &&
+          (Object.keys(this.socket).length === 0 ||
+            (this.socket && this.socket.readyState === 3))
+      ) {
+        this.socket = new WebSocket(
+          'ws://im.motooling.com/mtwebsocket/' +
+              this.companyId +
+              '/' +
+              this.synergyGroup.id +
+              '/' +
+              sessionStorage.token +
+              '/' +
+              localStorage.WEBURL.split('//')[1]
+        )
+        this.socket.onopen = this.websocketonopen
+        this.socket.onerror = this.websocketonerror
+        this.socket.onmessage = this.websocketonmessage
+        this.socket.onclose = this.websocketclose
+      }
     },
     websocketonopen () {
       this.socket.send('Hello')
+      this.hideLoading()
     },
     websocketonerror () {
       console.error('websocketonerror')
-      this.$createToast({
-        time: 2000,
-        txt: '网络正在重连',
-        type: 'loading'
-      }).show()
-      this.im()
     },
     websocketonmessage (e) {
       console.log('websocketonmessage')
@@ -253,6 +258,10 @@ export default {
     },
     websocketclose () {
       console.log('websocketclose')
+      this.showLoading('网络正在连接...')
+      if (this.isClose === false) {
+        this.im()
+      }
     },
     sendMessage ({ contentType, content, smallImg, duration }) {
       var message = {
@@ -277,15 +286,31 @@ export default {
       if (duration) {
         message.data.duration = duration
       }
-      console.log(this.socket)
-      this.socket.send(JSON.stringify(message))
+      if (this.socket.readyState === 1) {
+        this.socket.send(JSON.stringify(message))
+      } else {
+        this.im()
+      }
     },
     receiveMessage (msg) {
       if (msg.data.senderId !== this.uid) {
         this.recordList.push({ data: msg.data })
+      } else {
+        this.recordList.push({
+          data: Object.assign(
+            {
+              avatar: this.avatar,
+              username: this.username
+            },
+            msg.data
+          )
+        })
       }
+      this.$refs.scroll.refresh()
+      setTimeout(() => {
+        this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
+      }, 100)
     },
-
     submitWord (e) {
       e.preventDefault()
       if (this.content.trim() !== '') {
@@ -297,16 +322,16 @@ export default {
           // duration:3,
         })
 
-        this.recordList.push({
-          data: {
-            groupId: this.synergyGroup.id,
-            senderId: this.uid,
-            contentType: 1,
-            content: this.content,
-            avatar: this.avatar,
-            nickname: this.username
-          }
-        })
+        // this.recordList.push({
+        // data: {
+        //   groupId: this.synergyGroup.id,
+        //   senderId: this.uid,
+        //   contentType: 1,
+        //   content: this.content,
+        //   avatar: this.avatar,
+        //   username: this.username
+        // }
+        // })
         this.content = ''
       } else {
         this.$createToast({
@@ -315,10 +340,6 @@ export default {
           type: 'error'
         }).show()
       }
-      this.$refs.scroll.refresh()
-      setTimeout(() => {
-        this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
-      }, 100)
     },
     showMoreBtn () {
       this.moreBtnStatus = !this.moreBtnStatus
@@ -356,6 +377,8 @@ export default {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: scroll;
+    overflow-y: hidden;
+    align-self: center;
   }
   .talk-contents {
     position: fixed;
@@ -409,6 +432,7 @@ export default {
     background-color: #ffffff;
   }
   .footer a {
+    display: block;
     color: #2a2a2a;
   }
   .talker {
