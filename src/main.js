@@ -24,12 +24,35 @@ function showLoading (val) {
   })
   toast.show()
 }
+function showDialog (par = {}) {
+  this.$createDialog({
+    type: 'confirm',
+
+    title: par.title,
+    content: par.content,
+    confirmBtn: {
+      text: '确定',
+      active: true,
+      disabled: false,
+      href: 'javascript:;'
+    },
+    cancelBtn: {
+      text: '取消',
+      active: false,
+      disabled: false,
+      href: 'javascript:;'
+    },
+    onConfirm: par.onConfirm,
+    onCancel: par.onCancel
+  }).show()
+}
 function hideLoading () {
   toast.hide()
 }
 Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading
 Vue.prototype.hideLoading = hideLoading
+Vue.prototype.showDialog = showDialog
 new Vue({
   router,
   store,
