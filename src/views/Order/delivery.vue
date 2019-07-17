@@ -27,7 +27,8 @@
         <div>
           <div>收货凭证号</div>
           <div>
-            <input type="text" placeholder="请填写" v-model="voucherId" />
+            <!-- <input type="text" placeholder="请填写" v-model="voucherId" /> -->
+            <div @click="showPicker">{{voucherId||'请选择'}}</div>
           </div>
         </div>
         <div>
@@ -51,7 +52,7 @@
     <div class="zw"></div>
     <div class="bot">
       <div>企业圈</div>
-      <div>数量合计</div>
+      <div>数量合计：{{wuliao.value}}</div>
       <div @click="save">退货</div>
     </div>
   </div>
@@ -68,44 +69,72 @@ export default {
       info: {},
       wuliao: {},
       remark: '',
-      voucherId: '' // 收货凭证号
+      voucherId: '',
+      voucherList: '' // 收货列表
     }
   },
   created () {
-    // const no = this.$route.query.no
-    this.getInfo('PO19050003')
+    const no = this.$route.query.no
+    this.getInfo(no)
   },
   components: {
     Materiel: materiel
   },
   methods: {
+    showPicker () {
+      if (!this.picker) {
+        this.picker = this.$createPicker({
+          title: '',
+          data: [this.voucherList],
+          onSelect: this.selectHandle
+        })
+      }
+      this.picker.show()
+    },
+    selectHandle (selectedVal, selectedIndex, selectedText) {
+      console.log(selectedVal.join(', '))
+      this.voucherId = selectedVal.join(', ')
+    },
     getInfo (no) {
       getpmPoOutStoreById({ poNo: no })
         .then(res => {
           console.log(res)
           this.info = res
+          this.voucherList = res.voucherList.map(item => {
+            return { text: item.voucher_id, value: item.voucher_id }
+          })
           this.wuliao = {
             list: [
               { title: '物料编码', content: res.matNo },
               { title: '物料描述', content: res.matName },
               { title: '物料类型', content: res.matTypeName },
               { title: '单位', content: res.unitName },
-              { title: '待收数量', content: res.toBeReceivedQty }
+              { title: '可退数量', content: res.toBeReceivedQty }
             ],
             max: res.toBeReceivedQty,
             value: res.toBeReceivedQty > 0 ? 1 : 0
           }
         })
-        .catch(err => {
-          this.showToast(err.msg || '出错了')
+        .catch(() => {
+          this.showDialog({
+            title: '出错了',
+            content: '可能单号有误，将为您返回上一页',
+            onConfirm: () => {
+              this.$router.go(-1)
+            },
+            onCancel: () => {
+              this.$router.go(-1)
+            }
+          })
         })
     },
     save () {
       if (!this.voucherId) {
-        this.showToast('请填写收货凭证号')
+        this.showToast('请选择收货凭证号')
         return
       }
       this.showLoading()
+
       outStoreSave({
         poNo: this.info.poNo,
         matId: this.info.matId,
@@ -116,7 +145,7 @@ export default {
         .then(res => {
           this.hideLoading()
           this.showToast('退货成功')
-          this.getInfo()
+          // this.getInfo()
         })
         .catch(err => {
           this.hideLoading()

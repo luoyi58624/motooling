@@ -93,11 +93,13 @@ export default {
       value: 5,
       list: [],
       // billNo:'MP19040001'
-      billNo: 'MP19070004',
+      // billNo: 'MP19070004',
+      billNo: '',
       listDone: false
     }
   },
   created () {
+    this.billNo = this.$route.query.no
     this.getList()
   },
   computed: {
@@ -176,7 +178,17 @@ export default {
         })
         .catch(err => {
           this.hideLoading()
-          this.showToast(err.msg)
+          this.showDialog({
+            title: '出错了',
+            content: err.msg,
+            onConfirm: () => {
+              this.$router.go(-1)
+            },
+            conCancel: () => {
+              // this.$router.go(-1)
+            }
+          })
+          // this.showToast(err.msg)
           console.log(err)
         })
     },
