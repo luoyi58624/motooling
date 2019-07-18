@@ -276,7 +276,7 @@ var router = new Router({
   ]
 })
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title || '欢迎来得Motooling'
+  document.title = to.meta.title || 'MoTooling'
   console.log(WEBURL(), token())
   const path = to.path.toLowerCase()
   if (to.query.weburl) {
