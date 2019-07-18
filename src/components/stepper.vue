@@ -1,13 +1,13 @@
 <!--  -->
 <template>
-  <div class="stepper">
-    <div @click="minu">
+  <div class="stepper" @click.stop="()=>{}">
+    <div @click.stop="minu">
       <i class="cubeic-remove"></i>
     </div>
     <div>
       <input type="number" :value="val" @input="change"/>
     </div>
-    <div @click="plus">
+    <div @click.stop="plus">
       <i class="cubeic-add"></i>
     </div>
   </div>
