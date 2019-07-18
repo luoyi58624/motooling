@@ -20,16 +20,11 @@
       <div @click.stop="selectAll">
         <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span>
       </div>
-      <div>PO201807001（深圳聚能）</div>
+      <div>{{billNo}}</div>
     </div>
     <div v-if="listDone&&list.length==0" class="nocontent">暂时没有数据</div>
     <div class="list">
-      <div
-        class="boxer"
-        v-for="(item,index) in list"
-        :key="index"
-        @click="toInfo(item.purchSubId,1,item.isNeedQc)"
-      >
+      <div class="boxer" v-for="(item,index) in list" :key="index" @click="toInfo(item.purchSubId)">
         <div class="right-wrapper" @click.stop="select(index)" v-if="item.preOrderFlag===0">
           <span class="iconfont icon-iconfontxuanzhong4" :class="{active:item.selected}"></span>
         </div>
@@ -43,9 +38,12 @@
           <div class="title">名称:</div>
           <div>物料编码：{{item.matNo}}</div>
           <div>物料描述：{{item.matDesc}}</div>
-          <div>订单数量：{{item.quantity}}</div>
+          <div>订单数量：{{item.totalQuantity}}</div>
           <div>已收：{{item.receivedQty}}</div>
-          <div>收货数量:<stepper v-model="value" :max="item.quantity-(item.receivedQty?item.receivedQty:0)"/></div>
+          <div>
+            收货数量:
+            <stepper v-model="item.quantity" :max="item.totalQuantity-item.receivedQty" />
+          </div>
           <!-- <div>规格型号：{{item.matModel}}</div> -->
           <!-- <div>数量：{{item.quantity}}</div> -->
           <!-- <div>重量：{{item.a}}</div> -->
@@ -56,8 +54,7 @@
               @click.stop="toInfo(item.purchSubId,2)"
             >质检</button>
             <button :disabled="!item.noQualifiedQty>0" @click.stop="toInfo(item.purchSubId,3)">特采</button>
-          </div> -->
-
+          </div>-->
         </div>
         <div class="litter-wrapper">
           <div>不合格：{{item.noQualifiedQty||0}}</div>
@@ -68,9 +65,9 @@
     </div>
     <div class="footer">
       <div>
-        <div>收货</div>
-        <div>检验</div>
-        <div>特采</div>
+        <div :class="{active:type===1}" @click="changeType(1)">收货</div>
+        <div :class="{active:type===2}" @click="changeType(2)">检验</div>
+        <div :class="{active:type===3}" @click="changeType(3)">特采</div>
       </div>
     </div>
     <div class="bot">
@@ -86,7 +83,8 @@ import myHeader from '@/components/header'
 import stepper from '@/components/stepper'
 export default {
   components: {
-    myHeader, stepper
+    myHeader,
+    stepper
   },
   data () {
     return {
@@ -95,11 +93,12 @@ export default {
       // billNo:'MP19040001'
       // billNo: 'MP19070004',
       billNo: '',
-      listDone: false
+      listDone: false,
+      type: 1
     }
   },
   created () {
-    this.billNo = this.$route.query.no
+    this.billNo = this.$route.query.no || 'MP19050004'
     this.getList()
   },
   computed: {
@@ -122,11 +121,15 @@ export default {
   },
 
   methods: {
+    changeType (type) {
+      this.type = type
+      this.getList()
+    },
     purch () {
       const newList = this.list
-        .filter(item => item.selected && item.preOrderFlag === 0)
+        .filter(item => item.selected)
         .map(item => {
-          return { purchSubId: item.purchSubId }
+          return { purchSubId: item.purchSubId, quantity: item.quantity }
         })
       console.log(newList)
       if (newList.length === 0) {
@@ -166,7 +169,7 @@ export default {
     },
     getList () {
       this.showLoading()
-      inStoreList({ billNo: this.billNo })
+      inStoreList({ billNo: this.billNo, type: this.type })
         .then(res => {
           this.hideLoading()
           let array = res.inStoreDetailList
@@ -182,7 +185,7 @@ export default {
             title: '出错了',
             content: err.msg,
             onConfirm: () => {
-              this.$router.go(-1)
+              // this.$router.go(-1)
             },
             conCancel: () => {
               // this.$router.go(-1)
@@ -192,18 +195,27 @@ export default {
           console.log(err)
         })
     },
-    toInfo (purchSubId, type, isNeedQc) {
+    toInfo (purchSubId) {
       // onsole.log(purchId)
-      if (type === 1 && isNeedQc === '0') {
-        return
+      // if (type === 1 && isNeedQc === '0') {
+      //   return
+      // }
+      if (this.type === 1) {
+        this.$router.push({
+          path: '/instore/receive',
+          query: {
+            purchSubId
+          }
+        })
       }
-      this.$router.push({
-        path: '/instore/info',
-        query: {
-          purchSubId,
-          type
-        }
-      })
+      if (this.type === 2) {
+        this.$router.push({
+          path: '/instore/testing',
+          query: {
+            purchSubId
+          }
+        })
+      }
     },
     select (index) {
       this.list = [
@@ -232,11 +244,11 @@ export default {
   justify-content: center;
   align-items: center;
   > div {
-    width: 80px;;
+    width: 80px;
     height: 20px;
     background: #fff;
-    color: #00A0A0;
-    border:1px solid #929292;
+    color: #00a0a0;
+    border: 1px solid #929292;
     font-size: 12px;
     line-height: 20px;
     text-align: center;
@@ -313,8 +325,8 @@ export default {
     > .center-wrapper {
       flex: 1;
       > div {
-        width:100%;
-        display:flex;
+        width: 100%;
+        display: flex;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
@@ -353,15 +365,17 @@ export default {
         }
       }
     }
-    >.litter-wrapper{
-      width:60px;flex-direction: column;justify-content:flex-end;display:flex;
+    > .litter-wrapper {
+      width: 60px;
+      flex-direction: column;
+      justify-content: flex-end;
+      display: flex;
       > div {
         height: 22px;
         line-height: 22px;
         color: #ababab;
         font-size: 12px;
       }
-
     }
     > .right-wrapper {
       width: 30px;
@@ -411,6 +425,10 @@ export default {
       align-items: center;
       display: flex;
     }
+  }
+  > div.active {
+    color: #5495ff;
+    background: #fff;
   }
   > div:nth-child(2) {
     > div {
