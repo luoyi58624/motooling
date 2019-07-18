@@ -59,6 +59,7 @@ export default {
   .wrap {
     background: #eaeaea;
     height: 100%;
+    font-size: 16px; /* no */
   }
   .item-meta {
     display: flex;
