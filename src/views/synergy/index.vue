@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="member-list-wrap">
+    <div class="member-list-wrap" v-if="isEnable">
       <div class="member-list">
         <template v-for="item in memberList">
           <img :src="item.avatar" :key="item.id" />
           <!-- <div>{{item.username}}</div> -->
         </template>
       </div>
-      <div class="add"><img src="../../assets/icon-add.png" alt="" /></div>
+      <div><img src="../../assets/icon-add.png" alt="" /></div>
     </div>
     <scroll
       class="talk-contents"
@@ -31,14 +31,13 @@
             class="talk-info"
             v-if="item.data.contentType===1||item.data.contentType===2||item.data.contentType===3||item.data.contentType===4"
           >
-            <div class="talk-user-name">
+            <div class="talk-user-name" v-if="uid != item.data.senderId">
               {{ item.data.username }}
-            </div>
-            <div
+            </div><div
               class="talk-content talk-word-content"
               v-if="item.data.contentType===1"
             >
-              {{ item.data.content }}
+            {{ item.data.content }}
             </div>
             <div class="talk-content" v-if="item.data.contentType===2">
               <img :src="item.data.content" />
@@ -53,7 +52,7 @@
         </div>
       </div>
     </scroll>
-    <div class="footer" ref="footer">
+    <div class="footer" ref="footer" v-if="isEnable">
       <form class="talker" @submit="submitWord">
         <div class="talker-icon-btn">
           <div class="icon icon-voice-right"></div>
@@ -80,6 +79,12 @@
             <div class="icon icon-camera"></div>
           </div>
           <div class="center item-text">图片</div>
+        </div>
+        <div class="list-item">
+          <div class="item-icon">
+            <div class="icon icon-album"></div>
+          </div>
+          <div class="center item-text">相册</div>
         </div>
         <div class="list-item">
           <router-link to="/synergy/summary/list">
@@ -116,6 +121,7 @@ export default {
   },
   data () {
     return {
+      isEnable: true,
       isClose: false,
       socket: {},
       uid: localStorage.uid - 0,
@@ -141,15 +147,18 @@ export default {
       },
       // 用于下拉翻页获取消息，请求id
       oldestId: 0,
-      newestId: 0,
+      // newestId: 0,
       moreBtnStatus: false
     }
   },
-  // computed: {
-  //   newestId () {
-  //     return this.recordList[this.recordList.length - 1].data.id
-  //   }
-  // },
+  computed: {
+    newestId () {
+      if (this.recordList && this.recordList.length > 0) {
+        return this.recordList[this.recordList.length - 1].data.id
+      }
+      return 0
+    }
+  },
   mounted () {
     setTimeout(() => {
       this.$refs.scroll.refresh()
@@ -189,7 +198,12 @@ export default {
           this.im()
         })
         .catch(err => {
-          console.log(err)
+          this.isEnable = false
+          this.$createToast({
+            time: 0,
+            txt: err.msg,
+            type: 'warn'
+          }).show()
         })
     },
     // 下拉加载
@@ -221,6 +235,12 @@ export default {
             type: 'warn'
           }).show()
         }
+      }).catch(err => {
+        this.$createToast({
+          time: 2000,
+          txt: err.msg,
+          type: 'warn'
+        }).show()
       })
     },
     im () {
@@ -258,8 +278,8 @@ export default {
     },
     websocketclose () {
       console.log('websocketclose')
-      this.showLoading('网络正在连接...')
       if (this.isClose === false) {
+        this.showLoading('网络正在连接...')
         this.im()
       }
     },
@@ -360,14 +380,14 @@ export default {
     text-align: center;
   }
   .member-list-wrap {
-    padding: 5px 30px;
-
+    padding: 8px 30px; /* no*/
     display: flex;
     justify-content: center;
+    font-size: 0;
     img {
-      width: 30px;
-      height: 30px;
-      margin: 0 4px;
+      width: 30px; /* no*/
+      height: 30px; /* no*/
+      margin: 0 4px; /* no*/
     }
   }
 
@@ -381,10 +401,10 @@ export default {
     align-self: center;
   }
   .talk-contents {
-    position: fixed;
-    top: 45px;
+    position: absolute;
+    top: 46px; /* no*/
     left: 0;
-    bottom: 48px;
+    bottom: 48px; /* no*/
     right: 0;
     background: #eaeaea;
   }
@@ -399,21 +419,22 @@ export default {
     flex-shrink: 0;
   }
   .talk-contents .talk-space .talk-user-name {
-    font-size: 14px;
-    line-height: 1.5;
-    padding: 0 0 2px;
+    font-size: 14px; /* no */
+    line-height: 1.2;
+    padding: 0 0 2px; /* no */
   }
   .talk-contents .talk-space .talk-info {
     position: relative;
-    padding: 0 6px;
+    padding: 0 6px; /* no*/
     width: 100%;
+    font-size: 0;
   }
   .talk-contents .talk-space .talk-content {
     background: #fff;
     display: inline-block;
     padding: 6px 8px;
     border-radius: 6px;
-    font-size: 16px;
+    font-size: 16px; /* no */
   }
   .talk-contents .talk-space .talk-content img {
     max-width: 100%;
@@ -520,18 +541,19 @@ export default {
   }
   .talker-toolbar .list-item {
     /* height: 90px; */
-    width: 25%;
-    padding: 0 10px;
+    box-sizing: border-box;
+    width: 93.75px;
+    padding: 10px;
   }
   .talker-toolbar .item-icon {
     display: flex;
-    height: 70px;
+    height: 53.75px;
     padding: 10px;
     border-radius: 6px;
     background-color: #e6e6e6;
   }
   .talker-toolbar .item-text {
-    font-size: 18px; /* no */
+    font-size: 14px; /* no */
     line-height: 1.5;
   }
 
