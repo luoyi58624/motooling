@@ -401,7 +401,7 @@ export default {
     align-self: center;
   }
   .talk-contents {
-    position: absolute;
+    position: fixed;
     top: 46px; /* no*/
     left: 0;
     bottom: 48px; /* no*/
