@@ -3,39 +3,40 @@
   <div class="wrapper">
     <div class="bar">物料信息</div>
     <div class="table">
-      <div>
+     <div>
         <div>物料编码</div>
-        <div></div>
+        <div>{{info.matNo}}</div>
       </div>
       <div>
         <div>物料描述</div>
-        <div>工装号</div>
+        <div>{{info.matDesc}}</div>
       </div>
       <div>
         <div>物料类型</div>
-        <div>工装号</div>
+        <div>{{info.matTypeName}}</div>
       </div>
       <div>
         <div>规格型号</div>
-        <div>工装号</div>
+        <div>{{info.matModel}}</div>
       </div>
+
       <div>
         <div>订单数量</div>
-        <div>工装号</div>
+        <div>{{info.totalQuantity}}</div>
       </div>
       <div>
         <div>已收数量</div>
-        <div>工装号</div>
+        <div>{{info.receivedQty}}</div>
       </div>
       <div>
         <div>待检数量</div>
-        <div>工装号</div>
+        <div>{{info.waitQcQty}}</div>
       </div>
     </div>
 
     <div class="bar">质检信息</div>
     <div class="table">
-      <div>
+      <!-- <div>
         <div>检验方式</div>
         <div>
            <div class="radio">
@@ -47,8 +48,21 @@
             />
           </div>
         </div>
-      </div>
+      </div> -->
       <div>
+        <div>结论</div>
+        <div>
+           <div class="radio">
+             <cube-radio-group
+              v-model="info.qcResult"
+              :options="options3"
+              :horizontal="true"
+
+            />
+          </div>
+        </div>
+      </div>
+      <div v-show="info.qcResult==2">
         <div>明细</div>
         <div>
           <div class="flex-wrapper">
@@ -135,12 +149,12 @@ export default {
       info: {},
       options3: [
         {
-          label: '抽检',
+          label: '合格',
           value: 1,
           disabled: false
         },
         {
-          label: '全检',
+          label: '不合格(或未测完)',
           value: 2,
           disabled: false
         }
@@ -153,7 +167,6 @@ export default {
   methods: {
     getInfo () {
       const purchSubId = this.$route.query.purchSubId
-      console.log(purchSubId)
       inStoreInfo({ purchSubId }).then(res => {
         console.log(res)
         this.info = res.inStoreInfo
@@ -174,19 +187,20 @@ export default {
       })
     },
     save () {
-      if (
-        !this.info.noQualifiedQty ||
-          this.info.qualifiedQty === null ||
-          !this.info.qcFlag || !this.info.qcRemark
-      ) {
-        this.showToast('质检表单未填写完整')
+      if (!this.info.qcResult) {
+        this.showToast('请选择结论')
         return
+      }
+      if (this.info.qcResult === '1') {
+        console.log(123)
+        this.info.qualifiedQty = this.info.waitQcQty
+        this.info.noQualifiedQty = 0
       }
       if (
         this.info.noQualifiedQty + this.info.qualifiedQty >
-          this.info.receivedQty
+          this.info.waitQcQty
       ) {
-        this.showToast('合格数量与不良数量总数不能大于收货数量')
+        this.showToast('合格数量与不良数量总数不能大于待检数量')
         return
       }
       const qualityList = this.wordList.map(item => {

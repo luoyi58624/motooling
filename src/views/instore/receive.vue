@@ -10,28 +10,28 @@
       </div>
       <div>
         <div>物料描述</div>
-        <div>工装号</div>
+        <div>{{info.matDesc}}</div>
       </div>
       <div>
         <div>物料类型</div>
-        <div>工装号</div>
+        <div>{{info.matTypeName}}</div>
       </div>
       <div>
         <div>规格型号</div>
-        <div>工装号</div>
+        <div>{{info.matModel}}</div>
       </div>
 
       <div>
         <div>订单数量</div>
-        <div>工装号</div>
+        <div>{{info.totalQuantity}}</div>
       </div>
       <div>
         <div>已收数量</div>
-        <div>工装号</div>
+        <div>{{info.receivedQty}}</div>
       </div>
       <div>
         <div>待收数量</div>
-        <div>工装号</div>
+        <div>{{info.quantity}}</div>
       </div>
       <div>
         <div>收货数量</div>
@@ -39,14 +39,14 @@
           <input type="number"
             name
             id
-            v-model="info.receivedQty"
+            v-model="quantity"
             min="1" placeholder="请填写" />
         </div>
       </div>
       <div>
         <div>收货重量</div>
         <div>
-          <input v-model="info.receivedWeight" type="number" placeholder="请填写" />
+          <input v-model="waitTotalWeight" type="number" placeholder="请填写" />
         </div>
       </div>
       <div>
@@ -83,7 +83,7 @@
       <div>
         <div >收货备注</div>
         <div>
-          <input type="text" v-model="info.receivedRemark">
+          <input type="text" v-model="info.receivedRemark" placeholder="请填写">
         </div>
       </div>
     </div>
@@ -109,7 +109,9 @@ export default {
       storeHouseName: '',
       storeHouseId: '',
       storeRoomId: '',
-      storeRoomName: ''
+      storeRoomName: '',
+      waitTotalWeight: '',
+      quantity: ''
     }
   },
   created () {
@@ -119,24 +121,29 @@ export default {
 
   methods: {
     save () {
-      if (!this.info.receivedQty || !this.info.receivedWeight || !this.info.receivedRemark) {
+      if (!this.quantity || !this.waitTotalWeight || !this.info.receivedRemark) {
         this.showToast('收货表单未填写完整')
         return
       }
-      if (!this.storeHouseName) {
+      if (!this.storeHouseId) {
         this.showToast('请选择收货仓库')
         return
       }
-      if (!this.storeRoomName) {
+      if (!this.storeRoomId) {
         this.showToast('请选择收货库位')
         return
+      }
+      if (this.quantity > this.info.quantity) {
+        this.showToast('收货数量不能大于待收数量')
       }
       const purchSubId = this.$route.query.purchSubId
       var data = Object.assign({}, { purchSubId }, this.info, {
         storeHouseName: this.storeHouseName || this.info.storeHouseName,
         storeHouseId: this.storeHouseId || this.info.storeHouseId,
         storeRoomId: this.storeRoomId || this.info.storeRoomId,
-        storeRoomName: this.storeRoomName || this.info.storeRoomName
+        storeRoomName: this.storeRoomName || this.info.storeRoomName,
+        quantity: this.quantity,
+        waitTotalWeight: this.waitTotalWeight
       })
       purchUpdate(data)
         .then(res => {
@@ -158,7 +165,6 @@ export default {
         this.pdfList = res.factoryReportList
         this.storeHouseId = res.inStoreInfo.storeHouseId
         this.storeRoomId = res.inStoreInfo.storeRoomId
-        console.log(this.storeHouseId, this.storeRoomId)
         if (this.storeHouseId) {
           getStoreRoom({ storeHouseId: this.storeHouseId }).then(res => {
             var romeList = res.storeRoomsConfList
