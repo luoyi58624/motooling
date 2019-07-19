@@ -98,7 +98,7 @@ export default {
     },
     getGenerateSummaryInfo () {
       generateSummaryInfo({
-        groupId: 25,
+        groupId: this.$route.params.groupId,
         lastRecordId: this.lastRecordId
       })
         .then(res => {
@@ -106,9 +106,16 @@ export default {
           this.summaryRecordList = res.recordList
           this.contentList = res.recordList
         })
-        .catch(err => {
-          console.log(err)
-        })
+        .catch(
+          (err) => {
+            console.log(err)
+            this.$createToast({
+              time: 5000,
+              txt: err.msg,
+              type: 'error'
+            }).show()
+          }
+        )
     },
     // 获取纪要详情
     getGenerateSummary () {
@@ -122,7 +129,14 @@ export default {
           this.contentList = res.contentList
         })
         .catch(
-          (err) => console.log(err)
+          (err) => {
+            console.log(err)
+            this.$createToast({
+              time: 5000,
+              txt: err.msg,
+              type: 'error'
+            }).show()
+          }
         )
     },
 
