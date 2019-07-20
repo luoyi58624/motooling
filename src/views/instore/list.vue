@@ -2,7 +2,7 @@
 <template>
   <div>
     <my-header title="采购收货" :hasRight="true" settingUrl="/instore/setting"></my-header>
-    <div class="option">
+    <!-- <div class="option">
       <div>
         <div style="color:#4e92ff">按生产订单排序</div>
         <div :class="{active:true}">
@@ -15,7 +15,8 @@
         </div>
       </div>
       <div @click="()=>{this.showToast('功能暂未开发')}">筛选</div>
-    </div>
+    </div> -->
+    <screen class="screen"/>
     <div class="no">
       <div >
         <span @click.stop="selectAll" v-show="type===1" class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span>
@@ -82,10 +83,12 @@
 import { inStoreList, purchBatchReceived } from '@/api/instore/instore'
 import myHeader from '@/components/header'
 import stepper from '@/components/stepper'
+import screen from '@/components/screen'
 export default {
   components: {
     myHeader,
-    stepper
+    stepper,
+    screen
   },
   data () {
     return {
@@ -136,6 +139,7 @@ export default {
       }
       purchBatchReceived({ purchList: newList, purchNo: this.billNo })
         .then(res => {
+          this.getList()
           this.showToast('收货成功')
         })
         .catch(res => {
@@ -231,6 +235,9 @@ export default {
 }
 </script>
 <style lang='less' scoped>
+.screen{
+  position:fixed;top:40px;left:0;right:0;
+}
 .bot {
   z-index: 10;
   position: fixed;
@@ -298,7 +305,7 @@ export default {
   border-bottom: 1px solid #e9e9e9;
   font-size: 12px;
   color: #505050;
-  align-items: center;
+  align-items: center;margin-top:80px;
   > div:first-child {
     color: #eee;
     > span {

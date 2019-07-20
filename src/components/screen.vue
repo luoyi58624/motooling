@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div>
+  <div style="z-index:100">
         <div class="bg" v-show="showDrawerData" @click="hideDrawer"></div>
     <div>
       <div class="option">

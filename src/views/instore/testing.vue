@@ -3,7 +3,7 @@
   <div class="wrapper">
     <div class="bar">物料信息</div>
     <div class="table">
-     <div>
+      <div>
         <div>物料编码</div>
         <div>{{info.matNo}}</div>
       </div>
@@ -48,17 +48,12 @@
             />
           </div>
         </div>
-      </div> -->
+      </div>-->
       <div>
         <div>结论</div>
         <div>
-           <div class="radio">
-             <cube-radio-group
-              v-model="qcResult"
-              :options="options3"
-              :horizontal="true"
-
-            />
+          <div class="radio">
+            <cube-radio-group v-model="qcResult" :options="options3" :horizontal="true" />
           </div>
         </div>
       </div>
@@ -70,26 +65,25 @@
               合格数量
               <input type="number" name id v-model="qualifiedQty" style="text-align:center;" />
             </div>
-              <div>
-            不良数量
-            <input type="number" name id v-model="noQualifiedQty" style="text-align:center;"/>
+            <div>
+              不良数量
+              <input type="number" name id v-model="noQualifiedQty" style="text-align:center;" />
+            </div>
           </div>
-          </div>
-
         </div>
       </div>
       <div>
         <div>检验模板</div>
-        <div>请选择</div>
+        <div @click="showMb">请选择</div>
       </div>
       <div>
         <div>质检报告</div>
         <div>
-           <cube-upload class=""
+          <cube-upload
+            class
             v-model="wordList"
             disabled="disabled"
             :action="action"
-
             @files-added="filesAdded"
             ref="upload"
             accept="*.doc application/msword MS Word Document"
@@ -99,12 +93,89 @@
       <div>
         <div>问题描述</div>
         <div>
-          <input type="text"   v-model="info.qcRemark" placeholder="请填写">
+          <input type="text" v-model="info.qcRemark" placeholder="请填写" />
         </div>
       </div>
     </div>
     <div class="box_bar"></div>
     <div class="bot" @click="save">提交</div>
+    <div class="mbbg" v-show="showmb" @click="hideMb"></div>
+    <transition name="slide-fade">
+      <div class="moban" v-show="showmb">
+        <div class="title">检验模板选择</div>
+        <div class="box">
+          <div class="box-title">客户</div>
+          <div class="box-content">
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称名称名称名称名称名称</cube-checkbox>
+              </div>
+            </div>
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称</cube-checkbox>
+              </div>
+            </div>
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称</cube-checkbox>
+              </div>
+            </div>
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称</cube-checkbox>
+              </div>
+            </div>
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称</cube-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="box">
+          <div class="box-title">客户</div>
+          <div class="box-content">
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称</cube-checkbox>
+              </div>
+            </div>
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称</cube-checkbox>
+              </div>
+            </div>
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称</cube-checkbox>
+              </div>
+            </div>
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称</cube-checkbox>
+              </div>
+            </div>
+            <div>
+              <img src="../../assets/mb.png" alt />
+              <div>
+                <cube-checkbox :value="true">名称</cube-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="btn">确定</div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -133,6 +204,7 @@ const req = {
 export default {
   data () {
     return {
+      showmb: false,
       action: {
         target: WEBURL() + '/file/h5FileUpload',
         fileName: 'enFile',
@@ -169,6 +241,12 @@ export default {
     this.getInfo()
   },
   methods: {
+    showMb () {
+      this.showmb = true
+    },
+    hideMb () {
+      this.showmb = false
+    },
     getInfo () {
       const purchSubId = this.$route.query.purchSubId
       inStoreInfo({ purchSubId }).then(res => {
@@ -181,7 +259,7 @@ export default {
             url: item.fileUrl
           }
         })
-        this.pdfList = res.factoryReportList
+        //  this.pdfList = res.factoryReportList;
         this.storeHouseId = res.inStoreInfo.storeHouseId
         this.storeRoomId = res.inStoreInfo.storeRoomId
         // if (this.storeHouseId) {
@@ -209,7 +287,7 @@ export default {
       this.qualifiedQty = this.qualifiedQty ? this.qualifiedQty : '0'
       if (
         this.noQualifiedQty * 1 + this.qualifiedQty * 1 >
-          this.info.waitQcQty
+        this.info.waitQcQty
       ) {
         this.showToast('合格数量与不良数量总数不能大于待检数量')
         return
@@ -225,22 +303,25 @@ export default {
           return item
         }
       })
-      const factoryReportList = this.pdfList.map(item => {
-        if (item.response) {
-          return { fileName: item.name, fileUrl: item.response.data.url }
-        } else {
-          return item
-        }
-      })
+      // const factoryReportList = this.pdfList.map(item => {
+      //   if (item.response) {
+      //     return { fileName: item.name, fileUrl: item.response.data.url };
+      //   } else {
+      //     return item;
+      //   }
+      // });
       const purchSubId = this.$route.query.purchSubId
-      var data3 = Object.assign({}, this.info, { purchSubId,
+      var data3 = Object.assign({}, this.info, {
+        purchSubId,
         qualityList,
         qcResult: this.qcResult,
-        factoryReportList,
+        factoryReportList: [],
         noQualifiedQty: this.noQualifiedQty,
-        qualifiedQty: this.qualifiedQty })
+        qualifiedQty: this.qualifiedQty
+      })
       purchQuality(data3)
         .then(res => {
+          this.getInfo()
           this.showToast('质检成功')
         })
         .catch(err => {
@@ -266,13 +347,10 @@ export default {
           txt: 'You selected >1M files'
         }).show()
     }
-
   }
-
 }
 </script>
 <style lang='less' scoped>
-
 .wrapper {
   padding: 15px;
   .bar {
@@ -286,8 +364,9 @@ export default {
         text-align: right;
         justify-content: flex-end;
       }
-      >div{
-           display:felx;align-items:center;
+      > div {
+        display: felx;
+        align-items: center;
       }
 
       input {
@@ -295,8 +374,8 @@ export default {
       }
     }
   }
-  .box_bar{
-    height:40px;
+  .box_bar {
+    height: 40px;
   }
   .bot {
     position: fixed;
@@ -324,10 +403,95 @@ export default {
     }
   }
 }
-/deep/.cube-upload-file-def{
-  background-color: #5395FC;
+.mbbg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 20;
 }
-.cube-upload-file-def::after{
+.moban {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: #fff;
+  z-index: 21;
+  padding: 10px;
+  overflow-y: auto;padding-bottom:50px;
+  > .title {
+    font-size: 14px;
+    color: #c2c2c2;
+  }
+  > .box {
+    margin-top: 10px;
+    .box-title {
+      font-size: 14px;
+      color: #c2c2c2;
+    }
+    > .box-content {
+      > div {
+        margin-top: 10px;
+        float: left;
+        width: 25%;
+        text-align: center;
+        font-size: 12px;
+        text-align: center;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        > img {
+          width: 60%;
+        }
+        > div {
+          text-align: center;
+        }
+      }
+    }
+    > .box-content::after {
+      display: table;
+      clear: both;
+      content: "";
+    }
+  }
+  >.btn{
+    width:80%;position:fixed;height:30px;line-height:30px;text-align:center;color:#fff;background:#5594FD ;font-size:12px;border-radius:4px;bottom:10px;
+   left:50%;transform: translateX(-50%)
+  }
+}
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active for below version 2.1.8 */ {
+  transform: translateY(100%);
+  opacity: 0;
+}
+/deep/.cube-upload-file-def {
+  background-color: #5395fc;
+}
+/deep/.cube-checkbox-label {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  padding: 0 10%;
+}
+/deep/.cube-checkbox.cube-checkbox_checked,
+.cube-checkbox-wrap {
+  padding: 0;
+  text-align: center;
 
+}
+.cube-checkbox-wrap{
+   padding: 0 10%;
 }
 </style>
