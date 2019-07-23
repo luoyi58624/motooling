@@ -4,12 +4,14 @@
       <div class="member-list">
         <template v-for="item in synergyMemberList">
           <img :src="item.avatar" :key="item.id" />
+
           <!-- <div>{{item.username}}</div> -->
         </template>
       </div>
       <div @click="addUser('changeSynergyMemberList','synergyMemberList')"><img src="../../assets/icon-add.png" alt="" /></div>
     </div>
     <scroll
+      :data="recordList"
       class="talk-contents"
       ref="scroll"
       :pulldown="true"
@@ -76,12 +78,13 @@
         </div>
       </form>
       <div class="talker-toolbar" v-show="moreBtnStatus">
-        <div class="list-item">
+        <label class="list-item" for="uploadImageField">
           <div class="item-icon">
             <div class="icon icon-camera"></div>
           </div>
           <div class="center item-text">图片</div>
-        </div>
+        </label>
+        <input type="file" id="uploadImageField" multiple hidden @change="uploadImage">
         <div class="list-item">
           <div class="item-icon">
             <div class="icon icon-album"></div>
@@ -112,6 +115,7 @@
 </template>
 <script>
 import { getOpenSynergy, synergyRecordPage, synergyAddMember } from '@/api/synergy/synergy.js'
+import { imgUpload, fileUpload } from '@/api/upload/upload.js'
 import { getUser } from '@/api/Person/User.js'
 // import { BetterScroll } from 'cube-ui'
 import scroll from '@/components/BScroll.vue'
@@ -213,9 +217,19 @@ export default {
           return { uid: item.uid }
         })
       }).then((res) => {
-        console.log(123)
+        console.log(res)
+        this.$createToast({
+          time: 2000,
+          txt: '添加群成员成功',
+          type: 'correct'
+        }).show()
       }).catch((err) => {
         console.log(err)
+        this.$createToast({
+          time: 2000,
+          txt: err.msg,
+          type: 'error'
+        }).show()
       })
     },
     addUser (type, name) {
@@ -289,6 +303,36 @@ export default {
           type: 'warn'
         }).show()
       })
+    },
+    uploadImage (e) {
+      let files = e.target.files
+      for (let i = 0; i < files.length; i++) {
+        if (/image*/.test(files[i].type)) {
+          console.log('image')
+          imgUpload(files[i])
+            .then((res) => {
+              console.log(res)
+              this.sendMessage({
+                contentType: 2,
+                content: res.rawUrl,
+                smallImg: res.Url
+              })
+            }).catch((err) => {
+              console.log(err)
+            })
+        } else {
+          fileUpload(files[i])
+            .then((res) => {
+              console.log(res)
+              this.sendMessage({
+                contentType: 1,
+                content: res.url
+              })
+            }).catch((err) => {
+              console.log(err)
+            })
+        }
+      }
     },
     im () {
       if (
@@ -484,6 +528,8 @@ export default {
     font-size: 16px; /* no */
   }
   .talk-contents .talk-space .talk-content img {
+    object-fit: contain;
+    height: 100px; /* no */
     max-width: 100%;
   }
   .talk-contents .talk-space .talk-word-content {
