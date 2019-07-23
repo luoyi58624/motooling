@@ -164,7 +164,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style scoped lang="less">
   video,
   audio {
     max-width: 100%;
@@ -192,7 +192,13 @@ export default {
   .summary-recordlist {
     line-height: 1.3;
     word-break: break-all;
+    .content-item {
+      img{
+        max-width: 100%;
+      }
+    }
   }
+
   .bottom {
     position: fixed;
     bottom: 0;
