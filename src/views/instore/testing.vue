@@ -54,7 +54,7 @@
         <div>
            <div class="radio">
              <cube-radio-group
-              v-model="info.qcResult"
+              v-model="qcResult"
               :options="options3"
               :horizontal="true"
 
@@ -62,17 +62,17 @@
           </div>
         </div>
       </div>
-      <div v-show="info.qcResult==2">
+      <div v-show="qcResult==2">
         <div>明细</div>
         <div>
           <div class="flex-wrapper">
             <div>
               合格数量
-              <input type="number" name id v-model="info.qualifiedQty" />
+              <input type="number" name id v-model="qualifiedQty" style="text-align:center;" />
             </div>
               <div>
             不良数量
-            <input type="number" name id v-model="info.noQualifiedQty" />
+            <input type="number" name id v-model="noQualifiedQty" style="text-align:center;"/>
           </div>
           </div>
 
@@ -85,7 +85,7 @@
       <div>
         <div>质检报告</div>
         <div>
-           <cube-upload
+           <cube-upload class=""
             v-model="wordList"
             disabled="disabled"
             :action="action"
@@ -103,6 +103,7 @@
         </div>
       </div>
     </div>
+    <div class="box_bar"></div>
     <div class="bot" @click="save">提交</div>
   </div>
 </template>
@@ -112,9 +113,9 @@ import {
   inStoreInfo,
   // purchUpdate,
   // purchSpecial,
-  purchQuality,
+  purchQuality
   // getStoreHouse,
-  getStoreRoom
+  // getStoreRoom
 } from '@/api/instore/instore'
 import { WEBURL } from '@/utils/utils.js'
 import md5 from 'md5'
@@ -158,7 +159,10 @@ export default {
           value: 2,
           disabled: false
         }
-      ]
+      ],
+      qualifiedQty: '',
+      noQualifiedQty: '',
+      qcResult: ''
     }
   },
   created () {
@@ -170,37 +174,48 @@ export default {
       inStoreInfo({ purchSubId }).then(res => {
         console.log(res)
         this.info = res.inStoreInfo
-        this.wordList = res.qualityList
+        this.wordList = res.qualityList.map(item => {
+          return {
+            name: item.fileName,
+            file: File,
+            url: item.fileUrl
+          }
+        })
         this.pdfList = res.factoryReportList
         this.storeHouseId = res.inStoreInfo.storeHouseId
         this.storeRoomId = res.inStoreInfo.storeRoomId
-        console.log(this.storeHouseId, this.storeRoomId)
-        if (this.storeHouseId) {
-          getStoreRoom({ storeHouseId: this.storeHouseId }).then(res => {
-            var romeList = res.storeRoomsConfList
-            var newRome = romeList.map((item, index) => {
-              return { text: item.storeRoomName, value: item.id }
-            })
-            this.storeRoomList = newRome
-          })
-        }
+        // if (this.storeHouseId) {
+        //   getStoreRoom({ storeHouseId: this.storeHouseId }).then(res => {
+        //     var romeList = res.storeRoomsConfList
+        //     var newRome = romeList.map((item, index) => {
+        //       return { text: item.storeRoomName, value: item.id }
+        //     })
+        //     this.storeRoomList = newRome
+        //   })
+        // }
       })
     },
     save () {
-      if (!this.info.qcResult) {
+      if (!this.qcResult) {
         this.showToast('请选择结论')
         return
       }
-      if (this.info.qcResult === '1') {
-        console.log(123)
-        this.info.qualifiedQty = this.info.waitQcQty
-        this.info.noQualifiedQty = 0
+      if (this.qcResult === 1) {
+        this.qualifiedQty = this.info.waitQcQty
+        this.noQualifiedQty = 0
       }
+
+      this.noQualifiedQty = this.noQualifiedQty ? this.noQualifiedQty : '0'
+      this.qualifiedQty = this.qualifiedQty ? this.qualifiedQty : '0'
       if (
-        this.info.noQualifiedQty + this.info.qualifiedQty >
+        this.noQualifiedQty * 1 + this.qualifiedQty * 1 >
           this.info.waitQcQty
       ) {
         this.showToast('合格数量与不良数量总数不能大于待检数量')
+        return
+      }
+      if (this.noQualifiedQty * 1 + this.qualifiedQty * 1 === 0) {
+        this.showToast('未填写合格与不合格数量')
         return
       }
       const qualityList = this.wordList.map(item => {
@@ -218,10 +233,15 @@ export default {
         }
       })
       const purchSubId = this.$route.query.purchSubId
-      var data3 = Object.assign({}, { purchSubId, qualityList, factoryReportList }, this.info)
+      var data3 = Object.assign({}, this.info, { purchSubId,
+        qualityList,
+        qcResult: this.qcResult,
+        factoryReportList,
+        noQualifiedQty: this.noQualifiedQty,
+        qualifiedQty: this.qualifiedQty })
       purchQuality(data3)
         .then(res => {
-          this.showToast('修改成功')
+          this.showToast('质检成功')
         })
         .catch(err => {
           if (err.msg) {
@@ -252,6 +272,7 @@ export default {
 }
 </script>
 <style lang='less' scoped>
+
 .wrapper {
   padding: 15px;
   .bar {
@@ -265,11 +286,17 @@ export default {
         text-align: right;
         justify-content: flex-end;
       }
+      >div{
+           display:felx;align-items:center;
+      }
 
       input {
         text-align: right;
       }
     }
+  }
+  .box_bar{
+    height:40px;
   }
   .bot {
     position: fixed;
@@ -296,5 +323,11 @@ export default {
       text-align: center;
     }
   }
+}
+/deep/.cube-upload-file-def{
+  background-color: #5395FC;
+}
+.cube-upload-file-def::after{
+
 }
 </style>

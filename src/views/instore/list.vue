@@ -17,15 +17,16 @@
       <div @click="()=>{this.showToast('功能暂未开发')}">筛选</div>
     </div>
     <div class="no">
-      <div @click.stop="selectAll">
-        <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span>
+      <div >
+        <span @click.stop="selectAll" v-show="type===1" class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span>
       </div>
       <div>{{billNo}}</div>
     </div>
     <div v-if="listDone&&list.length==0" class="nocontent">暂时没有数据</div>
     <div class="list">
       <div class="boxer" v-for="(item,index) in list" :key="index" @click="toInfo(item.purchSubId)">
-        <div class="right-wrapper" @click.stop="select(index)" v-if="item.preOrderFlag===0">
+        <div class="iqc" v-show="type==2||type==3">IQC</div>
+        <div class="right-wrapper" @click.stop="select(index)"  v-show="type===1">
           <span class="iconfont icon-iconfontxuanzhong4" :class="{active:item.selected}"></span>
         </div>
         <div class="right-wrapper" v-if="item.preOrderFlag===1">
@@ -40,7 +41,7 @@
           <div>物料描述：{{item.matDesc}}</div>
           <div>订单数量：{{item.totalQuantity}}</div>
           <div>已收：{{item.receivedQty}}</div>
-          <div>
+          <div v-show="type===1">
             收货数量:
             <stepper v-model="item.quantity" :max="item.totalQuantity-item.receivedQty" />
           </div>
@@ -57,21 +58,21 @@
           </div>-->
         </div>
         <div class="litter-wrapper">
-          <div>不合格：{{item.noQualifiedQty||0}}</div>
-          <div>特采：{{item.specialQty||0}}</div>
-          <div>退货：{{item.returnQty||0}}</div>
+          <div v-show="type==2||type==3">不合格：{{item.noQualifiedQty||0}}</div>
+          <div v-show="type==3">特采：{{item.specialQty||0}}</div>
+          <div v-show="type==3">退货：{{item.returnQty||0}}</div>
         </div>
       </div>
     </div>
     <div class="footer">
       <div>
-        <div :class="{active:type===1}" @click="changeType(1)">收货</div>
-        <div :class="{active:type===2}" @click="changeType(2)">检验</div>
-        <div :class="{active:type===3}" @click="changeType(3)">特采</div>
+        <div class="nav" :class="{active:type===1}" @click="changeType(1)">收货</div>
+        <div  class="nav" :class="{active:type===2}" @click="changeType(2)">检验</div>
+        <div  class="nav" :class="{active:type===3}" @click="changeType(3)">特采</div>
       </div>
     </div>
     <div class="bot">
-      <div @click="purch">提交</div>
+      <div @click="purch" v-if="type===1">提交</div>
     </div>
     <div class="zw"></div>
   </div>
@@ -105,15 +106,12 @@ export default {
     selecteAll () {
       if (
         this.list.filter(item => {
-          return item.preOrderFlag === 0
+          return item
         }).length === 0
       ) {
         return false
       }
       return this.list
-        .filter(item => {
-          return item.preOrderFlag === 0
-        })
         .every(item => {
           return item.selected === true
         })
@@ -147,9 +145,6 @@ export default {
     selectAll () {
       if (this.selecteAll) {
         this.list = this.list
-          // .filter(item => {
-          //   return item.preOrderFlag === 1
-          // })
           .map((item, index) => {
             return Object.assign({}, item, { selected: false })
           })
@@ -159,11 +154,7 @@ export default {
           //   return item.preOrderFlag === 1
           // })
           .map((item, index) => {
-            if (item.preOrderFlag !== 1) {
-              return Object.assign({}, item, { selected: true })
-            } else {
-              return Object.assign({}, item, { selected: false })
-            }
+            return Object.assign({}, item, { selected: true })
           })
       }
     },
@@ -211,6 +202,14 @@ export default {
       if (this.type === 2) {
         this.$router.push({
           path: '/instore/testing',
+          query: {
+            purchSubId
+          }
+        })
+      }
+      if (this.type === 3) {
+        this.$router.push({
+          path: '/instore/use',
           query: {
             purchSubId
           }
@@ -315,7 +314,10 @@ export default {
   > .boxer {
     display: flex;
     border-bottom: 1px solid #e9e9e9;
-    padding-bottom: 18px;
+    padding-bottom: 18px;position:relative;
+    >.iqc{
+     position: absolute;right:10px;top:10px;border:1px solid red;color:red;padding:2px 10px;font-size:12px;border-radius: 4px;
+    }
     > .img-wrapper {
       width: 110px;
       > img {
@@ -366,7 +368,7 @@ export default {
       }
     }
     > .litter-wrapper {
-      width: 60px;
+      width: 80px;
       flex-direction: column;
       justify-content: flex-end;
       display: flex;
@@ -437,5 +439,9 @@ export default {
       color: #fff;
     }
   }
+}
+.nav.active{
+   color: #5495ff;
+    background: #fff;
 }
 </style>
