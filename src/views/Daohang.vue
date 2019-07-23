@@ -40,6 +40,10 @@
     <div>
       <router-link to="/order/receive_nav">订单收货查询</router-link>
     </div>
+      <br>
+    <div>
+      <router-link to="/synergy">协同</router-link>
+    </div>
        <br>
     <hr>
     <div>

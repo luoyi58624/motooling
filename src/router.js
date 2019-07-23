@@ -203,7 +203,10 @@ var router = new Router({
   {
     path: '/synergy',
     name: 'synergy',
-    component: () => import('./views/synergy/index')
+    component: () => import('./views/synergy/index'),
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/synergy/summary/list',
