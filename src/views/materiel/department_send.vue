@@ -6,16 +6,16 @@
       <div class="table">
         <div>
           <div>领料部门</div>
-          <div></div>
+          <div @click="showDep">{{depName||'请选择'}}</div>
         </div>
         <div>
           <div>仓管员</div>
           <div>{{}}</div>
         </div>
-        <!-- <div>
-          <div>退货人</div>
-          <div>{{}}</div>
-        </div>-->
+        <div>
+          <div>领料人</div>
+          <div @click="showName">{{name||'请选择'}}</div>
+        </div>
         <div>
           <div>凭证日期</div>
           <div>{{}}</div>
@@ -28,18 +28,18 @@
           <div>收发货单编号</div>
           <div>
             <!-- <input type="text" placeholder="请填写" v-model="voucherId" /> -->
-            <div @click="showPicker">{{'请选择'}}</div>
+            <div>{{'请选择'}}</div>
           </div>
         </div>
       </div>
     </div>
     <div class="title">退货物料</div>
     <div>
-        <div class="add" @click="add">
-            <i class="cubeic-add"></i>添加物料
-        </div>
+      <div class="add" @click="add">
+        <i class="cubeic-add"></i>添加物料
+      </div>
       <div class="list">
-        <Materiel :info="wuliao" v-model="wuliao.value" />
+        <Materiel :info="wuliao" />
       </div>
     </div>
     <div class="title">备注</div>
@@ -49,7 +49,7 @@
     <div class="zw"></div>
     <div class="bot">
       <div>企业圈</div>
-      <div>数量合计：{{wuliao.value}}</div>
+      <div>数量合计：{{}}</div>
       <div @click="save">退货</div>
     </div>
   </div>
@@ -58,111 +58,87 @@
 <script>
 import materiel from '../Order/Components/materiel'
 
-import { outStoreSave, getpmPoOutStoreById } from '@/api/order/order.js'
+import { depUserList } from '@/api/materiel.js'
 
 export default {
   data () {
     return {
-      info: {},
-      wuliao: {},
+      list: [],
       remark: '',
-      voucherId: '',
-      voucherList: '' // 收货列表
+      depList: [],
+      nameList: [],
+      depName: '',
+      depId: '',
+      wuliao: {},
+      name: '',
+      applyManId: ''
     }
   },
   created () {
-    const no = this.$route.query.no
-    this.getInfo(no)
+    depUserList().then(res => {
+      this.list = res.list
+      // console.log(res.list)
+      this.depList = res.list.map((item, index) => {
+        return { text: item.name, value: index }
+      })
+    })
   },
   components: {
     Materiel: materiel
   },
   methods: {
-    showPicker () {
-      if (!this.picker) {
-        this.picker = this.$createPicker({
-          title: '',
-          data: [this.voucherList],
-          onSelect: this.selectHandle
-        })
-      }
-      this.picker.show()
-    },
-    selectHandle (selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal.join(', '))
-      this.voucherId = selectedVal.join(', ')
-    },
-    getInfo (no) {
-      getpmPoOutStoreById({ poNo: no })
-        .then(res => {
-          console.log(res)
-          this.info = res
-          this.voucherList = res.voucherList.map(item => {
-            return { text: item.voucher_id, value: item.voucher_id }
-          })
-          this.wuliao = {
-            list: [
-              { title: '物料编码', content: res.matNo },
-              { title: '物料描述', content: res.matName },
-              { title: '物料类型', content: res.matTypeName },
-              { title: '单位', content: res.unitName },
-              { title: '可退数量', content: res.toBeReceivedQty }
-            ],
-            max: res.toBeReceivedQty,
-            value: res.toBeReceivedQty > 0 ? 1 : 0
-          }
-        })
-        .catch(() => {
-        //  this.showDialog({
-        //     title:'出错了',
-        //     content:'可能单号有误，将为您返回上一页',
-        //     onConfirm:()=>{
-        //       this.$router.go(-1)
-        //     },
-        //     conCancel:()=>{
-        //       //this.$router.go(-1)
-        //     }
-        //   })
-        })
-    },
+
     add () {
       this.$router.push({
         path: '/materiel/select'
       })
     },
-    save () {
-      if (!this.voucherId) {
-        this.showToast('请选择收货凭证号')
+    save () {},
+    showDep () {
+      this.$createPicker({
+        title: 'Picker',
+        data: [this.depList],
+        onSelect: this.selectHandle,
+        onCancel: this.cancelHandle
+      }).show()
+    },
+    selectHandle (selectedVal, selectedIndex, selectedText) {
+      this.depIdx = selectedVal.join(', ')
+      this.depName = this.list[this.depIdx]['name']
+      this.depId = this.list[this.depIdx]['depId']
+      this.nameList = this.list[this.depIdx]['childrenList'].map(item => {
+        return { text: item.username, value: item.uid }
+      })
+    },
+    showName () {
+      if (!this.depName) {
+        this.showToast('还没有选择部门')
         return
       }
-      this.showLoading()
-
-      outStoreSave({
-        poNo: this.info.poNo,
-        matId: this.info.matId,
-        toBeReceivedQty: this.wuliao.value,
-        remark: this.remark,
-        voucherId: this.voucherId
-      })
-        .then(res => {
-          this.hideLoading()
-          this.showToast('退货成功')
-          // this.getInfo()
-        })
-        .catch(err => {
-          this.hideLoading()
-          this.showToast(err.msg ? err.msg : '')
-        })
+      this.$createPicker({
+        title: '选择领料人',
+        data: [this.nameList],
+        onSelect: this.selectName,
+        onCancel: () => {}
+      }).show()
+    },
+    selectName (selectedVal, selectedIndex, selectedText) {
+      this.applyManId = selectedVal.join(', ')
+      this.name = selectedText.join(', ')
     }
   }
 }
 </script>
 <style lang='less' scoped>
-.add{
-    font-size:16px;padding:30px;display:flex;justify-content: center;color:#5496FF;
-    >i{
-        font-size:20px;
-    }
+.add {
+  font-size: 16px;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  color: #5496ff;
+  > i {
+    font-size: 20px;
+  }
 }
 .title {
   padding: 14px;

@@ -254,7 +254,6 @@ export default {
       }
     },
     onPullingUp () {
-      console.log(this.hasMore)
       const that = this
       if (that.hasMore) {
         that._getPartList()

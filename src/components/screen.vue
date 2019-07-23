@@ -50,8 +50,8 @@ export default {
     return {
       timeSort: 1,
       showListData: false,
-      sortType: 1,
-      showDrawerData: false
+      showDrawerData: false,
+      sortType: 2
     }
   },
   props: {
@@ -77,10 +77,13 @@ export default {
   methods: {
     changeTimeSort (value) {
       this.timeSort = value
+      console.log(value)
       this.showListData = false
+      this.$emit('changeA', value)
     },
     changSortType (num) {
       this.sortType = num
+      this.$emit('changeB', num)
     },
     showList () {
       this.showListData = !this.showListData

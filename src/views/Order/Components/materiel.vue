@@ -12,8 +12,8 @@
             <div>{{item.content}}</div>
           </div>
         </div>
-        <div class="right-top-right" v-if="true">
-          <span class="iconfont icon-iconfontxuanzhong4"></span>
+        <div class="right-top-right" v-if="true" @click="select">
+          <span class="iconfont icon-iconfontxuanzhong4" :class="{active:selected}"></span>
         </div>
         <!-- <div class="right-wrapper" v-if="true">
                 <span class="iconfont icon-iconset0141"></span>
@@ -45,6 +45,14 @@ export default {
     value: {
       type: Number,
       default: 0
+    },
+    selected: {
+      type: Boolean,
+      defalut: false
+    },
+    index: {
+      type: Number,
+      defalut: 0
     }
   },
   computed: {
@@ -58,11 +66,17 @@ export default {
   methods: {
     change (value) {
       this.$emit('input', value)
+    },
+    select () {
+      this.$emit('changeSel', !this.selected, this.index)
     }
   }
 }
 </script>
 <style lang='less' scoped>
+.active {
+    color: #4e92ff;
+  }
 .wuliao {
   border-bottom: 1px solid #f2f2f2;
   padding-right: 15px;
@@ -88,7 +102,7 @@ export default {
           padding: 4px 0;
           display: flex;
           > div:first-child {
-            width: 64px;
+            width: 60px;text-align: right;padding-right:4px;
           }
         }
       }
