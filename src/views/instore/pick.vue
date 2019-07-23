@@ -29,6 +29,9 @@
         </div>
       </div>
     </div>
+    <div @click="save()" class="confirm-btn">
+      确定
+    </div>
   </cube-scroll>
 </template>
 
@@ -103,6 +106,9 @@ export default {
         selectedList.push(item)
       }
       this.$store.commit(type, selectedList)
+    },
+    save () {
+      this.$router.go(-1)
     }
   }
 }
@@ -189,5 +195,16 @@ body {
   .select-box:first-child {
     margin-top: 0;
   }
+}
+.confirm-btn{
+  display: block;
+  box-sizing: border-box;
+  font-size: 20px;
+  text-align: center;
+  padding: 10px;
+  background: #5898FC;
+  color: #fff;
+  margin: 0 10px 10px;
+  border-radius: 6px;
 }
 </style>

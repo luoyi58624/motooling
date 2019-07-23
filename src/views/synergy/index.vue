@@ -2,12 +2,12 @@
   <div>
     <div class="member-list-wrap" v-if="isEnable">
       <div class="member-list">
-        <template v-for="item in memberList">
+        <template v-for="item in synergyMemberList">
           <img :src="item.avatar" :key="item.id" />
           <!-- <div>{{item.username}}</div> -->
         </template>
       </div>
-      <div><img src="../../assets/icon-add.png" alt="" /></div>
+      <div @click="addUser('changeSynergyMemberList','synergyMemberList')"><img src="../../assets/icon-add.png" alt="" /></div>
     </div>
     <scroll
       class="talk-contents"
@@ -52,11 +52,14 @@
         </div>
       </div>
     </scroll>
+
     <div class="footer" ref="footer" v-if="isEnable">
       <form class="talker" @submit="submitWord">
+
         <div class="talker-icon-btn">
           <div class="icon icon-voice-right"></div>
         </div>
+
         <div class="talker-input-wrapper">
           <input
             class="talker-input"
@@ -68,7 +71,6 @@
         <div class="input-toggle-button talker-icon-btn">
           <div class="icon icon-add" @click="showMoreBtn"></div>
         </div>
-
         <div class="talker-action">
           <div class="talker-send" @click="submitWord">发送</div>
         </div>
@@ -87,7 +89,9 @@
           <div class="center item-text">相册</div>
         </div>
         <div class="list-item">
-          <router-link to="/synergy/summary/list">
+          <router-link
+            :to="'/synergy/summary/new/'+this.synergyGroup.id+'/'+newestId"
+          >
             <div class="item-icon">
               <div class="icon icon-record"></div>
             </div>
@@ -95,13 +99,11 @@
           </router-link>
         </div>
         <div class="list-item">
-          <router-link
-            :to="'/synergy/summary/new/'+this.synergyGroup.id+'/'+newestId"
-          >
+          <router-link to="/synergy/summary/list">
             <div class="item-icon">
               <div class="icon icon-record"></div>
             </div>
-            <div class="center item-text">生成纪要</div>
+            <div class="center item-text">记录</div>
           </router-link>
         </div>
       </div>
@@ -109,7 +111,7 @@
   </div>
 </template>
 <script>
-import { getOpenSynergy, synergyRecordPage } from '@/api/synergy/synergy.js'
+import { getOpenSynergy, synergyRecordPage, synergyAddMember } from '@/api/synergy/synergy.js'
 import { getUser } from '@/api/Person/User.js'
 // import { BetterScroll } from 'cube-ui'
 import scroll from '@/components/BScroll.vue'
@@ -140,7 +142,7 @@ export default {
           data: { id: 0 }
         }
       ],
-      memberList: [],
+      resMemberList: [],
       synergyGroup: {},
       contentType: {
         word: 1
@@ -157,6 +159,23 @@ export default {
         return this.recordList[this.recordList.length - 1].data.id
       }
       return 0
+    },
+    synergyMemberList () {
+      if (this.$store.state.synergyMemberList && this.$store.state.synergyMemberList.length > 0) {
+        return this.$store.state.synergyMemberList
+      } else {
+        return this.resMemberList
+      }
+    }
+  },
+  beforeRouteEnter (to, from, next) {
+    if (from.name === 'instore-pick') {
+      next(vm => {
+      // 通过 `vm` 访问组件实例
+        vm.addSynergyAddMember()
+      })
+    } else {
+      next()
     }
   },
   mounted () {
@@ -182,6 +201,33 @@ export default {
           console.log(err)
         })
     },
+    // 群成员添加
+    addSynergyAddMember () {
+      console.log(this.synergyGroup)
+      synergyAddMember({
+        groupId: this.synergyGroup.id,
+        inviterId: this.uid,
+        companyId: this.companyId,
+        companyName: this.companyName,
+        uList: this.synergyMemberList.map(function (item) {
+          return { uid: item.uid }
+        })
+      }).then((res) => {
+        console.log(123)
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    addUser (type, name) {
+      console.log(2111)
+      this.$router.push({
+        path: '/instore/setting/select',
+        query: {
+          type,
+          name
+        }
+      })
+    },
     init () {
       getOpenSynergy({
         relationType: this.relationType,
@@ -189,19 +235,20 @@ export default {
       })
         .then(res => {
           this.synergyGroup = res.synergyGroup
-          this.memberList = res.memberList
+          this.resMemberList = res.memberList
           this.recordList = res.recordList.reverse()
           if (this.recordList.length > 0) {
             this.oldestId = this.recordList[0].data.id
           }
           // 开启群聊通信
           this.im()
+          this.$store.commit('changeSynergyMemberList', this.resMemberList || [])
         })
         .catch(err => {
           this.isEnable = false
           this.$createToast({
             time: 0,
-            txt: err.msg,
+            txt: err.msg || '协同开启失败，请检查网络',
             type: 'warn'
           }).show()
         })
