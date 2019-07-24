@@ -5,7 +5,7 @@
     <div class="content">
       <div class="table">
         <div>
-          <div>领料部门</div>
+          <div>退料部门</div>
           <div @click="showDep">{{depName||'请选择'}}</div>
         </div>
         <div>
@@ -13,7 +13,7 @@
           <div>{{}}</div>
         </div>
         <div>
-          <div>领料人</div>
+          <div>退料人</div>
           <div @click="showName">{{name||'请选择'}}</div>
         </div>
         <div>
@@ -24,12 +24,15 @@
           <div>记账日期</div>
           <div @click="showjzdate">{{chalkupDate||'请选择'}}</div>
         </div>
+         <div>
+          <div>发料凭证</div>
+          <div @click="showpz">{{voucherNo||'请选择'}}</div>
+        </div>
         <div>
           <div>收发货单编号</div>
           <div>
-            <!-- <input type="text" placeholder="请填写" v-model="voucherId" /> -->
             <div>
-              <input type="text" placeholder="请填写" v-model="indentNo"/>
+              <input type="text" placeholder="请填写" v-model="indentNo">
             </div>
           </div>
         </div>
@@ -48,9 +51,6 @@
           @changeSel="select"
         />
       </div>
-       <div class="add" @click="add">
-        <i class="cubeic-add"></i>添加物料
-      </div>
     </div>
     <div class="title">备注</div>
     <div class="content">
@@ -59,8 +59,8 @@
     <div class="zw"></div>
     <div class="bot">
       <div>企业圈</div>
-      <div>数量合计：{{allQuantity}}</div>
-      <div @click="save">发料</div>
+      <div>数量合计：{{allQuantify}}</div>
+      <div @click="save">退料</div>
     </div>
   </div>
 </template>
@@ -68,7 +68,7 @@
 <script>
 import materiel from '../Order/Components/materiel'
 
-import { depUserList, deptApplyMat } from '@/api/materiel.js'
+import { depUserList, deptReturnMatList, deptReturnMat, voucherNoList } from '@/api/materiel.js'
 
 export default {
   data () {
@@ -84,9 +84,30 @@ export default {
       applyManId: '',
       transDate: '',
       chalkupDate: '',
-      indentNo: '' }
+      voucherList: [],
+      voucherNo: '',
+      wuliaoList: [],
+      indentNo: '',
+      uid: ''
+    }
   },
   created () {
+    const uid = localStorage.getItem('uid')
+    if (!uid) {
+      let fullPath = this.$router.currentRoute.fullPath
+      console.log(fullPath)
+      this.$router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
+      return
+    } else {
+      this.uid = uid
+    }
+    voucherNoList().then(res => {
+      console.log(1)
+      console.log(res)
+      this.voucherList = res.list.map(item => {
+        return { text: item.voucherNo, value: item.voucherNo }
+      })
+    })
     depUserList().then(res => {
       this.list = res.list
       // console.log(res.list)
@@ -99,10 +120,7 @@ export default {
     Materiel: materiel
   },
   computed: {
-    wuliaoList () {
-      return this.$store.state.wuliaoList
-    },
-    allQuantity () {
+    allQuantify () {
       return this.wuliaoList.reduce((total, item) => {
         if (item.selected) {
           return total + item.value * 1
@@ -127,16 +145,12 @@ export default {
       })
     },
     save () {
-      if (this.allQuantity === 0) {
+      if (this.allQuantify === 0) {
         this.showToast('没有选择物料')
         return
       }
       if (!this.depId) {
         this.showToast('还没有选择退料部门')
-        return
-      }
-      if (!this.applyManId) {
-        this.showToast('还没有选择发料人')
         return
       }
       if (!this.transDate) {
@@ -151,22 +165,26 @@ export default {
         this.showToast('未填写收发货单编号')
         return
       }
+
       var list = this.wuliaoList.map(item => {
         const _item = item.info
         _item.quantity = item.value
         return _item
       })
       const depId = this.depId
-      const depName = this.depName
-      const applyManId = this.applyManId
+      //  const depName=this.depName;
+      //  const applyManId=this.applyManId;
       const transDate = this.transDate
-      const chalkupDate = this.chalkupDate
       const indentNo = this.indentNo
-      console.log(123)
-      deptApplyMat({ depId, depName, applyManId, transDate, chalkupDate, indentNo, list }).then(res => {
+      const chalkupDate = this.chalkupDate
+      //  const indentNo=this.indentNo;
+      const voucherNo = this.voucherNo
+      const uid = this.uid
+      deptReturnMat({ depId, transDate, uid, chalkupDate, indentNo, voucherNo, list }).then(res => {
+        this.showToast('操作成功')
+        this.getList(this.voucherNo)
+
         console.log(res)
-        this.$store.commit('changeWuliaoList', [])
-        this.showToast('发料成功')
       }).catch(err => {
         if (err.msg) {
           this.showToast(err.msg)
@@ -194,9 +212,63 @@ export default {
     pz (date, selectedVal, selectedText) {
       this.transDate = selectedVal.join('-')
     },
+    showpz () {
+      if (this.voucherList.length === 0) {
+        this.showToast('暂无可选')
+        return
+      }
+      this.picker = this.$createPicker({
+        title: '选择发料凭证',
+        data: [this.voucherList],
+        onSelect: this.pzno
+      }).show()
+    },
+    pzno (selectedVal, selectedIndex, selectedText) {
+      this.voucherNo = selectedVal.join(', ')
+      this.getList(this.voucherNo)
+      //      deptReturnMatList({voucherNo:this.voucherNo}).then(res=>{
+
+    //       this.wuliaoList=res.list.map(item => {
+    //           return {
+    //             list: [
+    //               { title: '物料编码', content: item.matNo },
+    //               { title: '物料描述', content: item.matName },
+    //               { title: '规格型号', content: item.matModel },
+    //               { title: '仓库', content: item.storeHouseName },
+    //               { title: '可退数量', content: item.stockQty }
+    //             ],
+    //             max: item.stockQty,
+    //             value: item.stockQty,
+    //             selected: true,
+    //             matId:item.matId,
+    //             info:item
+    //           }
+    //         })
+    //   })
+    },
+    getList (no) {
+      deptReturnMatList({ voucherNo: no }).then(res => {
+        this.wuliaoList = res.list.map(item => {
+          return {
+            list: [
+              { title: '物料编码', content: item.matNo },
+              { title: '物料描述', content: item.matName },
+              { title: '规格型号', content: item.matModel },
+              { title: '仓库', content: item.storeHouseName },
+              { title: '可退数量', content: item.stockQty }
+            ],
+            max: item.stockQty,
+            value: item.stockQty,
+            selected: true,
+            matId: item.matId,
+            info: item
+          }
+        })
+      })
+    },
     showDep () {
       this.$createPicker({
-        title: '领料部门',
+        title: '退料部门',
         data: [this.depList],
         onSelect: this.selectHandle
       }).show()

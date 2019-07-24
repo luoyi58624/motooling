@@ -209,6 +209,7 @@ export default {
       })
       purchSpecial(data2)
         .then(res => {
+          this.getInfo()
           this.showToast('修改成功')
         })
         .catch(err => {

@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div>
+  <div style="z-index:100">
         <div class="bg" v-show="showDrawerData" @click="hideDrawer"></div>
     <div>
       <div class="option">
@@ -37,6 +37,7 @@
     </div>
     <transition name="slide-fade">
       <div class="drawer" v-show="showDrawerData">
+        <slot></slot>
         <cube-button @click="hideDrawer">确定</cube-button>
       </div>
     </transition>
@@ -50,8 +51,8 @@ export default {
     return {
       timeSort: 1,
       showListData: false,
-      sortType: 1,
-      showDrawerData: false
+      showDrawerData: false,
+      sortType: 2
     }
   },
   props: {
@@ -77,10 +78,13 @@ export default {
   methods: {
     changeTimeSort (value) {
       this.timeSort = value
+      console.log(value)
       this.showListData = false
+      this.$emit('changeA', value)
     },
     changSortType (num) {
       this.sortType = num
+      this.$emit('changeB', num)
     },
     showList () {
       this.showListData = !this.showListData
@@ -93,6 +97,7 @@ export default {
     },
     hideDrawer () {
       this.showDrawerData = false
+      this.$emit('hd')
     }
   }
 }

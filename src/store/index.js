@@ -14,7 +14,9 @@ export default new Vuex.Store({
     ratifyerList: [], // 特采人员list
     ratifyerManagerList: [],
     // 协同成员
-    synergyMemberList: []
+    synergyMemberList: [],
+    // 对部门发料
+    wuliaoList: []
   },
   mutations: {
     changeReciveList (state, newArr) {
@@ -37,6 +39,9 @@ export default new Vuex.Store({
     },
     changeSynergyMemberList (state, newArr) {
       state.synergyMemberList = newArr
+    },
+    changeWuliaoList (state, newArr) {
+      state.wuliaoList = newArr
     }
   }
 })
