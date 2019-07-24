@@ -265,7 +265,16 @@ var router = new Router({
     name: 'department_send',
     component: () => import('./views/materiel/department_send'),
     meta: {
-      title: '对部门发料'
+      title: '对部门发料',
+      keepAlive: true
+    }
+  },
+  {
+    path: '/materiel/department_back',
+    name: 'department_back',
+    component: () => import('./views/materiel/department_back'),
+    meta: {
+      title: '对部门退料'
     }
   },
   {

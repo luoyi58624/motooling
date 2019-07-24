@@ -37,6 +37,7 @@
     </div>
     <transition name="slide-fade">
       <div class="drawer" v-show="showDrawerData">
+        <slot></slot>
         <cube-button @click="hideDrawer">确定</cube-button>
       </div>
     </transition>
@@ -96,6 +97,7 @@ export default {
     },
     hideDrawer () {
       this.showDrawerData = false
+      this.$emit('hd')
     }
   }
 }

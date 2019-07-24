@@ -31,3 +31,70 @@ export function matList (obj = {}) {
     data
   })
 }
+export function voucherNoList (obj = {}) {
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/depReturnMat/voucherNoList',
+    method: 'post',
+    data
+  })
+}
+export function deptReturnMatList (obj = {}) {
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/voucher/deptReturnMatList',
+    method: 'post',
+    data
+  })
+}
+
+export function deptReturnMat (obj = {}) { // 对部门退料
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/store/deptReturnMat',
+    method: 'post',
+    data
+  })
+}
+
+export function matTypeList (obj = {}) { // 获取物料类型列表
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/matTypeList',
+    method: 'post',
+    data
+  })
+}
+export function deptApplyMat (obj = {}) { // 对部门发料
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/iv/deptApplyMat',
+    method: 'post',
+    data
+  })
+}

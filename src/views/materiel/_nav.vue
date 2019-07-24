@@ -5,7 +5,7 @@
       <div class="title">请选择发料类型</div>
       <div class="con">
         <div>对工装退料</div>
-        <div>对部门退料</div>
+        <div @click="bumen">对部门退料</div>
       </div>
     </div>
   </div>
@@ -15,6 +15,13 @@
 export default {
   data () {
     return {}
+  },
+  methods: {
+    bumen () {
+      this.$router.push({
+        path: '/materiel/department_back'
+      })
+    }
   }
 }
 </script>

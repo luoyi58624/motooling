@@ -65,7 +65,7 @@ export default {
   },
   methods: {
     change (value) {
-      this.$emit('input', value)
+      this.$emit('input', value, this.index)
     },
     select () {
       this.$emit('changeSel', !this.selected, this.index)
@@ -103,6 +103,9 @@ export default {
           display: flex;
           > div:first-child {
             width: 60px;text-align: right;padding-right:4px;
+          }
+          >div:nth-child(2){
+            overflow: hidden;white-space: nowrap;text-overflow: ellipsis;width:120px;
           }
         }
       }
