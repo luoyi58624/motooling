@@ -41,7 +41,7 @@
             >
             {{ item.data.content }}
             </div>
-            <div class="talk-content" v-if="item.data.contentType===2">
+            <div class="talk-content" v-if="item.data.contentType===2" @click="showImagePreview(item.data.content)">
               <img :src="item.data.content" />
             </div>
             <div class="talk-content" v-if="item.data.contentType===3">
@@ -454,6 +454,13 @@ export default {
     },
     showMoreBtn () {
       this.moreBtnStatus = !this.moreBtnStatus
+    },
+
+    // 图片预览
+    showImagePreview (url) {
+      this.$createImagePreview({
+        imgs: [url]
+      }).show()
     }
   },
   created () {
