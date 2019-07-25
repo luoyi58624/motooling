@@ -320,6 +320,28 @@ export default {
             }).catch((err) => {
               console.log(err)
             })
+        } else if (/audio*/.test(files[i].type)) {
+          fileUpload(files[i])
+            .then((res) => {
+              console.log(res)
+              this.sendMessage({
+                contentType: 3,
+                content: res.url
+              })
+            }).catch((err) => {
+              console.log(err)
+            })
+        } else if (/video*/.test(files[i].type)) {
+          fileUpload(files[i])
+            .then((res) => {
+              console.log(res)
+              this.sendMessage({
+                contentType: 4,
+                content: res.url
+              })
+            }).catch((err) => {
+              console.log(err)
+            })
         } else {
           fileUpload(files[i])
             .then((res) => {
@@ -502,18 +524,18 @@ export default {
     position: fixed;
     top: 46px; /* no*/
     left: 0;
-    bottom: 48px; /* no*/
+    bottom: 44px; /* no*/
     right: 0;
     background: #eaeaea;
   }
   .talk-contents .talk-space {
     display: flex;
-    padding: 10px;
+    padding: 10px; /* no */
   }
   .talk-contents .talk-space .talk-user-avatar {
-    height: 40px;
-    width: 40px;
-    border-radius: 6px;
+    height: 40px; /* no */
+    width: 40px; /* no */
+    border-radius: 6px; /* no */
     flex-shrink: 0;
   }
   .talk-contents .talk-space .talk-user-name {
@@ -530,13 +552,18 @@ export default {
   .talk-contents .talk-space .talk-content {
     background: #fff;
     display: inline-block;
-    padding: 6px 8px;
-    border-radius: 6px;
+    padding: 6px 8px; /* no */
+    border-radius: 6px; /* no */
     font-size: 16px; /* no */
   }
   .talk-contents .talk-space .talk-content img {
     object-fit: contain;
     height: 100px; /* no */
+    max-width: 100%;
+  }
+  .talk-contents .talk-space .talk-content video {
+    object-fit: contain;
+    height: 140px; /* no */
     max-width: 100%;
   }
   .talk-contents .talk-space .talk-word-content {
@@ -557,32 +584,28 @@ export default {
     color: #2a2a2a;
   }
   .talker {
-    border: 1px solid #ccc;
+    border: 1px solid #ccc; /* no */
     display: flex;
-    padding: 4px 0;
+    padding: 4px 0; /* no */
     align-items: center;
-    font-size: 24px;
+    font-size: 16px; /* no */
   }
   .talker-input-wrapper {
     flex: 1;
-    padding: 0 6px;
+    padding: 0 6px; /* no */
   }
   .talker-input {
     box-sizing: border-box;
     border: none;
-    padding: 6px 8px;
-    border-radius: 6px;
+    padding: 6px 8px; /* no */
+    border-radius: 6px; /* no */
     background-color: #ebebeb;
   }
   .talker-icon-btn {
-    flex: 0 0 30px; /*no*/
-  }
-  .talker-send {
-    font-size: 25px;
-    border-radius: 4px;
+    flex: 0 0 40px; /*no*/
   }
   .talker .icon {
-    height: 30px;
+    height: 30px; /* no */
   }
 
   .icon {
@@ -629,6 +652,8 @@ export default {
     color: #333;
     padding: 4px 6px;
     border: 1px solid #ccc;
+    font-size: 18px;  /* no */
+    border-radius: 4px;
   }
   .self-talk {
     flex-direction: row-reverse;
