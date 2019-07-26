@@ -23,7 +23,7 @@ export function imgUpload (params) {
 }
 
 // 文件上传
-export function fileUpload (params) {
+export function fileUpload (params, filename) {
   let form = new FormData()
   const data = {
     token: token(),
@@ -32,7 +32,7 @@ export function fileUpload (params) {
     data: {}
   }
   form.set('paramsMap', JSON.stringify(data))
-  form.append('enFile', params)
+  form.append('enFile', params, filename)
   return request({
     url: WEBURL() + '/file/h5FileUpload',
     method: 'post',

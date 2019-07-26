@@ -8,7 +8,9 @@
           <!-- <div>{{item.username}}</div> -->
         </template>
       </div>
-      <div @click="addUser('changeSynergyMemberList','synergyMemberList')"><img src="../../assets/icon-add.png" alt="" /></div>
+      <div @click="addUser('changeSynergyMemberList','synergyMemberList')">
+        <img src="../../assets/icon-add.png" alt="" />
+      </div>
     </div>
     <scroll
       :data="recordList"
@@ -35,17 +37,27 @@
           >
             <div class="talk-user-name" v-if="uid != item.data.senderId">
               {{ item.data.username }}
-            </div><div
+            </div>
+            <div
               class="talk-content talk-word-content"
               v-if="item.data.contentType===1"
             >
-            {{ item.data.content }}
+              {{ item.data.content }}
             </div>
-            <div class="talk-content" v-if="item.data.contentType===2">
+            <div
+              class="talk-content"
+              v-if="item.data.contentType===2"
+              @click="showImagePreview(item.data.content)"
+            >
               <img :src="item.data.content" />
             </div>
-            <div class="talk-content" v-if="item.data.contentType===3">
-              <audio :src="item.data.content" controls="controls"></audio>
+            <div
+              class="talk-content"
+              v-if="item.data.contentType===3"
+              @click="playAudio(item.data.content)"
+            >
+              <!-- <audio :src="item.data.content" controls></audio> -->
+              <div class="talk-audio-content">{{ item.data.duration }} "</div>
             </div>
             <div class="talk-content" v-if="item.data.contentType===4">
               <video :src="item.data.content" controls="controls"></video>
@@ -54,11 +66,16 @@
         </div>
       </div>
     </scroll>
+    <audio :src="currentAudioSrc" ref="audio"></audio>
 
     <div class="footer" ref="footer" v-if="isEnable">
       <form class="talker" @submit="submitWord">
-
-        <div class="talker-icon-btn">
+        <div class="talker-icon-btn" @click="startRecorder">
+          <!-- <div class="talker-icon-btn" @touchstart="startRecorder" @touchend="stopRecorder"> -->
+          <div class="icon icon-voice-right"></div>
+        </div>
+        <div class="talker-icon-btn" @click="stopRecorder">
+          <!-- <div class="talker-icon-btn" @touchstart="startRecorder" @touchend="stopRecorder"> -->
           <div class="icon icon-voice-right"></div>
         </div>
 
@@ -84,7 +101,13 @@
           </div>
           <div class="center item-text">图片</div>
         </label>
-        <input type="file" id="uploadImageField" multiple hidden @change="uploadImage">
+        <input
+          type="file"
+          id="uploadImageField"
+          multiple
+          hidden
+          @change="uploadImage"
+        />
         <div class="list-item">
           <div class="item-icon">
             <div class="icon icon-album"></div>
@@ -114,7 +137,11 @@
   </div>
 </template>
 <script>
-import { getOpenSynergy, synergyRecordPage, synergyAddMember } from '@/api/synergy/synergy.js'
+import {
+  getOpenSynergy,
+  synergyRecordPage,
+  synergyAddMember
+} from '@/api/synergy/synergy.js'
 import { imgUpload, fileUpload } from '@/api/upload/upload.js'
 import { getUser } from '@/api/Person/User.js'
 // import { BetterScroll } from 'cube-ui'
@@ -154,7 +181,10 @@ export default {
       // 用于下拉翻页获取消息，请求id
       oldestId: 0,
       // newestId: 0,
-      moreBtnStatus: false
+      moreBtnStatus: false,
+      /* eslint-disable no-undef */
+      rec: Recorder({ type: 'mp3' }),
+      currentAudioSrc: ''
     }
   },
   computed: {
@@ -165,7 +195,10 @@ export default {
       return 0
     },
     synergyMemberList () {
-      if (this.$store.state.synergyMemberList && this.$store.state.synergyMemberList.length > 0) {
+      if (
+        this.$store.state.synergyMemberList &&
+          this.$store.state.synergyMemberList.length > 0
+      ) {
         return this.$store.state.synergyMemberList
       } else {
         return this.resMemberList
@@ -175,7 +208,7 @@ export default {
   beforeRouteEnter (to, from, next) {
     if (from.name === 'instore-pick') {
       next(vm => {
-      // 通过 `vm` 访问组件实例
+        // 通过 `vm` 访问组件实例
         vm.addSynergyAddMember()
       })
     } else {
@@ -205,6 +238,55 @@ export default {
           console.log(err)
         })
     },
+    startRecorder () {
+      var self = this
+      this.rec.open(
+        function () {
+          // 打开麦克风授权获得相关资源
+          self.rec.start() // 开始录音
+        },
+        function (msg, isUserNotAllow) {
+          // 用户拒绝未授权或不支持
+          console.log(
+            (isUserNotAllow ? 'UserNotAllow，' : '') + '无法录音:' + msg
+          )
+        }
+      )
+    },
+    stopRecorder () {
+      var self = this
+      this.rec.stop(
+        function (blob, duration) {
+          // 到达指定条件停止录音
+          console.log(URL.createObjectURL(blob), '时长:' + duration + 'ms')
+          self.rec.close() // 释放录音资源
+          // 已经拿到blob文件对象想干嘛就干嘛：立即播放、上传
+          fileUpload(blob, 'rec.mp3')
+            .then(res => {
+              console.log(res)
+              self.sendMessage({
+                contentType: 3,
+                content: res.url,
+                duration: parseInt(duration / 1000)
+              })
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        function (msg) {
+          console.log('录音失败:' + msg)
+        }
+      )
+    },
+    uploadRecorder () {
+      fileUpload()
+    },
+    playAudio (src) {
+      console.log(12313)
+      this.$refs.audio.src = src
+      this.$refs.audio.play()
+    },
     // 群成员添加
     addSynergyAddMember () {
       console.log(this.synergyGroup)
@@ -216,21 +298,23 @@ export default {
         uList: this.synergyMemberList.map(function (item) {
           return { uid: item.uid }
         })
-      }).then((res) => {
-        console.log(res)
-        this.$createToast({
-          time: 2000,
-          txt: '添加群成员成功',
-          type: 'correct'
-        }).show()
-      }).catch((err) => {
-        console.log(err)
-        this.$createToast({
-          time: 2000,
-          txt: err.msg,
-          type: 'error'
-        }).show()
       })
+        .then(res => {
+          console.log(res)
+          this.$createToast({
+            time: 2000,
+            txt: '添加群成员成功',
+            type: 'correct'
+          }).show()
+        })
+        .catch(err => {
+          console.log(err)
+          this.$createToast({
+            time: 2000,
+            txt: err.msg,
+            type: 'error'
+          }).show()
+        })
     },
     addUser (type, name) {
       console.log(2111)
@@ -256,7 +340,10 @@ export default {
           }
           // 开启群聊通信
           this.im()
-          this.$store.commit('changeSynergyMemberList', this.resMemberList || [])
+          this.$store.commit(
+            'changeSynergyMemberList',
+            this.resMemberList || []
+          )
         })
         .catch(err => {
           this.isEnable = false
@@ -277,32 +364,36 @@ export default {
         pageSize: 10,
         id: id,
         groupId: this.synergyGroup.id
-      }).then(res => {
-        if (res.recordList.length !== 0) {
-          this.$refs.scroll.refresh()
-          var oldHeight = this.$refs.scroll.scroll.maxScrollY
-          this.recordList = res.recordList.reverse().concat(this.recordList)
-          this.oldestId = res.recordList[0].data.id
-          setTimeout(() => {
+      })
+        .then(res => {
+          if (res.recordList.length !== 0) {
             this.$refs.scroll.refresh()
-            var newHeight = this.$refs.scroll.scroll.maxScrollY
-            this.$refs.scroll.scrollTo(0, newHeight - oldHeight, 0)
-            this.$refs.scroll.refresh()
-          }, 0)
-        } else {
+            var oldHeight = this.$refs.scroll.scroll.maxScrollY
+            this.recordList = res.recordList
+              .reverse()
+              .concat(this.recordList)
+            this.oldestId = res.recordList[0].data.id
+            setTimeout(() => {
+              this.$refs.scroll.refresh()
+              var newHeight = this.$refs.scroll.scroll.maxScrollY
+              this.$refs.scroll.scrollTo(0, newHeight - oldHeight, 0)
+              this.$refs.scroll.refresh()
+            }, 0)
+          } else {
+            this.$createToast({
+              time: 2000,
+              txt: '没有更多记录啦',
+              type: 'warn'
+            }).show()
+          }
+        })
+        .catch(err => {
           this.$createToast({
             time: 2000,
-            txt: '没有更多记录啦',
+            txt: err.msg,
             type: 'warn'
           }).show()
-        }
-      }).catch(err => {
-        this.$createToast({
-          time: 2000,
-          txt: err.msg,
-          type: 'warn'
-        }).show()
-      })
+        })
     },
     uploadImage (e) {
       let files = e.target.files
@@ -310,25 +401,51 @@ export default {
         if (/image*/.test(files[i].type)) {
           console.log('image')
           imgUpload(files[i])
-            .then((res) => {
+            .then(res => {
               console.log(res)
               this.sendMessage({
                 contentType: 2,
                 content: res.rawUrl,
                 smallImg: res.Url
               })
-            }).catch((err) => {
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        } else if (/audio*/.test(files[i].type)) {
+          fileUpload(files[i])
+            .then(res => {
+              console.log(res)
+              this.sendMessage({
+                contentType: 3,
+                content: res.url
+              })
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        } else if (/video*/.test(files[i].type)) {
+          fileUpload(files[i])
+            .then(res => {
+              console.log(res)
+              this.sendMessage({
+                contentType: 4,
+                content: res.url
+              })
+            })
+            .catch(err => {
               console.log(err)
             })
         } else {
           fileUpload(files[i])
-            .then((res) => {
+            .then(res => {
               console.log(res)
               this.sendMessage({
                 contentType: 1,
                 content: res.url
               })
-            }).catch((err) => {
+            })
+            .catch(err => {
               console.log(err)
             })
         }
@@ -454,6 +571,13 @@ export default {
     },
     showMoreBtn () {
       this.moreBtnStatus = !this.moreBtnStatus
+    },
+
+    // 图片预览
+    showImagePreview (url) {
+      this.$createImagePreview({
+        imgs: [url]
+      }).show()
     }
   },
   created () {
@@ -495,18 +619,18 @@ export default {
     position: fixed;
     top: 46px; /* no*/
     left: 0;
-    bottom: 48px; /* no*/
+    bottom: 44px; /* no*/
     right: 0;
     background: #eaeaea;
   }
   .talk-contents .talk-space {
     display: flex;
-    padding: 10px;
+    padding: 10px; /* no */
   }
   .talk-contents .talk-space .talk-user-avatar {
-    height: 40px;
-    width: 40px;
-    border-radius: 6px;
+    height: 40px; /* no */
+    width: 40px; /* no */
+    border-radius: 6px; /* no */
     flex-shrink: 0;
   }
   .talk-contents .talk-space .talk-user-name {
@@ -523,13 +647,18 @@ export default {
   .talk-contents .talk-space .talk-content {
     background: #fff;
     display: inline-block;
-    padding: 6px 8px;
-    border-radius: 6px;
+    padding: 6px 8px; /* no */
+    border-radius: 6px; /* no */
     font-size: 16px; /* no */
   }
   .talk-contents .talk-space .talk-content img {
     object-fit: contain;
     height: 100px; /* no */
+    max-width: 100%;
+  }
+  .talk-contents .talk-space .talk-content video {
+    object-fit: contain;
+    height: 140px; /* no */
     max-width: 100%;
   }
   .talk-contents .talk-space .talk-word-content {
@@ -550,32 +679,28 @@ export default {
     color: #2a2a2a;
   }
   .talker {
-    border: 1px solid #ccc;
+    border: 1px solid #ccc; /* no */
     display: flex;
-    padding: 4px 0;
+    padding: 4px 0; /* no */
     align-items: center;
-    font-size: 24px;
+    font-size: 16px; /* no */
   }
   .talker-input-wrapper {
     flex: 1;
-    padding: 0 6px;
+    padding: 0 6px; /* no */
   }
   .talker-input {
     box-sizing: border-box;
     border: none;
-    padding: 6px 8px;
-    border-radius: 6px;
+    padding: 6px 8px; /* no */
+    border-radius: 6px; /* no */
     background-color: #ebebeb;
   }
   .talker-icon-btn {
-    flex: 0 0 30px; /*no*/
-  }
-  .talker-send {
-    font-size: 25px;
-    border-radius: 4px;
+    flex: 0 0 40px; /*no*/
   }
   .talker .icon {
-    height: 30px;
+    height: 30px; /* no */
   }
 
   .icon {
@@ -622,6 +747,8 @@ export default {
     color: #333;
     padding: 4px 6px;
     border: 1px solid #ccc;
+    font-size: 18px; /* no */
+    border-radius: 4px;
   }
   .self-talk {
     flex-direction: row-reverse;
