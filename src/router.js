@@ -126,6 +126,31 @@ var router = new Router({
     component: () => import('./views/instore/list')
   },
   {
+    path: '/assinstore/list',
+    name: 'assinstore-list',
+    component: () => import('./views/AssInstore/list')
+  },
+  {
+    path: '/assinstore/receive',
+    name: 'assinstore-receive',
+    component: () => import('./views/AssInstore/receive')
+  },
+  {
+    path: '/assinstore/testing',
+    name: 'assinstore-testing',
+    component: () => import('./views/AssInstore/testing')
+  },
+  {
+    path: '/assinstore/use',
+    name: 'assinstore-use',
+    component: () => import('./views/AssInstore/use')
+  },
+  {
+    path: '/assinstore/nav',
+    name: 'assinstore-nav',
+    component: () => import('./views/AssInstore/nav')
+  },
+  {
     path: '/instore/info',
     name: 'instore-info',
     component: () => import('./views/instore/info')

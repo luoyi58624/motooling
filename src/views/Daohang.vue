@@ -22,6 +22,10 @@
     </div>
     <br>
     <div>
+      <router-link to="/assinstore/list">外协采购收发货</router-link>
+    </div>
+    <br>
+    <div>
       <router-link to="/stock/list">库存盘点</router-link>
     </div>
        <br>
