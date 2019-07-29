@@ -256,6 +256,7 @@ export default {
         function () {
           // 打开麦克风授权获得相关资源
           self.rec.start() // 开始录音
+          self.showLoading('请说话...')
         },
         function (msg, isUserNotAllow) {
           // 用户拒绝未授权或不支持
@@ -269,6 +270,7 @@ export default {
     },
     stopRecorder () {
       var self = this
+      this.hideLoading()
       this.rec.stop(
         function (blob, duration) {
           // 到达指定条件停止录音
