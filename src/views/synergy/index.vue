@@ -47,20 +47,26 @@
             <div
               class="talk-content"
               v-if="item.data.contentType===2"
-              @click="showImagePreview(item.data.content)"
+              @click="showImagePreview(fileAddressFormatFunc(item.data.content))"
             >
-              <img :src="item.data.content" />
+              <img :src="fileAddressFormatFunc(item.data.smallImg)" />
             </div>
             <div
               class="talk-content"
               v-if="item.data.contentType===3"
-              @click="playAudio(item.data.content)"
+              @click="playAudio(fileAddressFormatFunc(item.data.content))"
             >
               <!-- <audio :src="item.data.content" controls></audio> -->
-              <div class="talk-audio-content">{{ item.data.duration }} "</div>
+              <div class="talk-audio-content">{{ item.data.duration }}"</div>
             </div>
             <div class="talk-content" v-if="item.data.contentType===4">
-              <video :src="item.data.content" controls="controls"></video>
+              <video :src="fileAddressFormatFunc(item.data.content)" controls="controls"></video>
+            </div>
+            <div
+              class="talk-content talk-word-content"
+              v-if="item.data.contentType===5"
+            >
+              {{ item.data.content }}
             </div>
           </div>
         </div>
@@ -70,16 +76,12 @@
 
     <div class="footer" ref="footer" v-if="isEnable">
       <form class="talker" @submit="submitWord">
-        <div class="talker-icon-btn" @click="startRecorder">
-          <!-- <div class="talker-icon-btn" @touchstart="startRecorder" @touchend="stopRecorder"> -->
-          <div class="icon icon-voice-right"></div>
+        <div class="talker-icon-btn" @click="isVoice=!isVoice">
+          <div class="talker-icon-btn">
+            <div class="icon icon-voice-right"></div>
+          </div>
         </div>
-        <div class="talker-icon-btn" @click="stopRecorder">
-          <!-- <div class="talker-icon-btn" @touchstart="startRecorder" @touchend="stopRecorder"> -->
-          <div class="icon icon-voice-right"></div>
-        </div>
-
-        <div class="talker-input-wrapper">
+        <div class="talker-input-wrapper" v-if="isVoice">
           <input
             class="talker-input"
             type="text"
@@ -87,11 +89,16 @@
             v-model="content"
           />
         </div>
+         <div class="talker-input-wrapper" v-if="!isVoice">
+          <button type="button" class="rec-btn" @touchstart="startRecorder" @touchend="stopRecorder">
+            按住说话
+          </button>
+        </div>
         <div class="input-toggle-button talker-icon-btn">
           <div class="icon icon-add" @click="showMoreBtn"></div>
         </div>
         <div class="talker-action">
-          <div class="talker-send" @click="submitWord">发送</div>
+          <button type="submit" class="talker-send" @click="submitWord">发送</button>
         </div>
       </form>
       <div class="talker-toolbar" v-show="moreBtnStatus">
@@ -137,6 +144,7 @@
   </div>
 </template>
 <script>
+import { fileAddressFormat } from '@/utils/utils.js'
 import {
   getOpenSynergy,
   synergyRecordPage,
@@ -155,6 +163,7 @@ export default {
   data () {
     return {
       isEnable: true,
+      isVoice: false,
       isClose: false,
       socket: {},
       uid: localStorage.uid - 0,
@@ -226,6 +235,9 @@ export default {
     this.socket.close()
   },
   methods: {
+    fileAddressFormatFunc (url) {
+      return fileAddressFormat(url)
+    },
     // 获取用户信息
     getUserInfo () {
       getUser({ uid: this.uid })
@@ -247,9 +259,11 @@ export default {
         },
         function (msg, isUserNotAllow) {
           // 用户拒绝未授权或不支持
-          console.log(
-            (isUserNotAllow ? 'UserNotAllow，' : '') + '无法录音:' + msg
-          )
+          self.$createToast({
+            time: 2000,
+            txt: (isUserNotAllow ? 'UserNotAllow，' : '') + '无法录音:' + msg,
+            type: 'warn'
+          }).show()
         }
       )
     },
@@ -261,21 +275,34 @@ export default {
           console.log(URL.createObjectURL(blob), '时长:' + duration + 'ms')
           self.rec.close() // 释放录音资源
           // 已经拿到blob文件对象想干嘛就干嘛：立即播放、上传
-          fileUpload(blob, 'rec.mp3')
-            .then(res => {
-              console.log(res)
-              self.sendMessage({
-                contentType: 3,
-                content: res.url,
-                duration: parseInt(duration / 1000)
+          if (duration > 1000) {
+            fileUpload(blob, 'rec.mp3')
+              .then(res => {
+                console.log(res)
+                self.sendMessage({
+                  contentType: 3,
+                  content: res.url,
+                  duration: parseInt(duration / 1000)
+                })
               })
-            })
-            .catch(err => {
-              console.log(err)
-            })
+              .catch(err => {
+                console.log(err)
+              })
+          } else {
+            self.$createToast({
+              time: 2000,
+              txt: '说活时间太短',
+              type: 'warn'
+            }).show()
+          }
         },
         function (msg) {
-          console.log('录音失败:' + msg)
+          this.$createDialog({
+            type: 'alert',
+            title: '录音失败',
+            content: msg,
+            icon: 'cubeic-alert'
+          }).show()
         }
       )
     },
@@ -418,7 +445,8 @@ export default {
               console.log(res)
               this.sendMessage({
                 contentType: 3,
-                content: res.url
+                content: res.rawImgUrl,
+                smallImg: res.imgUrl
               })
             })
             .catch(err => {
@@ -430,7 +458,7 @@ export default {
               console.log(res)
               this.sendMessage({
                 contentType: 4,
-                content: res.url
+                content: res.fileUrl
               })
             })
             .catch(err => {
@@ -442,7 +470,7 @@ export default {
               console.log(res)
               this.sendMessage({
                 contentType: 1,
-                content: res.url
+                content: res.fileUrl
               })
             })
             .catch(err => {
@@ -679,11 +707,16 @@ export default {
     color: #2a2a2a;
   }
   .talker {
-    border: 1px solid #ccc; /* no */
     display: flex;
     padding: 4px 0; /* no */
     align-items: center;
     font-size: 16px; /* no */
+    button{
+      background-color:#fff;
+      border: 1px solid #ccc; /* no */
+      border-radius: 4px; /* no */
+      padding: 8px; /* no */
+    }
   }
   .talker-input-wrapper {
     flex: 1;
@@ -746,9 +779,7 @@ export default {
   .talker-send {
     color: #333;
     padding: 4px 6px;
-    border: 1px solid #ccc;
     font-size: 18px; /* no */
-    border-radius: 4px;
   }
   .self-talk {
     flex-direction: row-reverse;
@@ -776,7 +807,13 @@ export default {
     font-size: 14px; /* no */
     line-height: 1.5;
   }
-
+  .rec-btn{
+    padding:6px 8px;
+    // height:22px;
+    text-align:center;
+    border:1px solid;
+    width: 100%;
+  }
   .member-avatar-wrapper {
     width: 20px;
     display: inline-block;

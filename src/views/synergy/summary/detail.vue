@@ -27,17 +27,17 @@
               </span>
             </template>
             <template v-if="item.contentType===2">
-              <span>
-                <img :src="item.content" />
+              <span @click="showImagePreview(fileAddressFormatFunc(item.content))">
+                <img :src="fileAddressFormatFunc(item.smallImg)" />
               </span>
             </template>
             <template v-if="item.contentType===3">
               <span>
-                <audio :src="item.content" controls></audio>
+                <audio :src="fileAddressFormatFunc(item.content)" controls></audio>
               </span>
             </template>
             <template v-if="item.contentType===4">
-              <video :src="item.content" controls></video>
+              <video :src="fileAddressFormatFunc(item.content)" controls></video>
             </template>
             <div class="right">{{ item.senderTime }}</div>
           </div>
@@ -60,6 +60,7 @@
   </div>
 </template>
 <script>
+import { fileAddressFormat } from '@/utils/utils.js'
 import {
   generateSummaryInfo,
   generateSummary,
@@ -89,6 +90,9 @@ export default {
     this.init()
   },
   methods: {
+    fileAddressFormatFunc (url) {
+      return fileAddressFormat(url)
+    },
     init () {
       if (this.type === 'new') {
         this.getGenerateSummaryInfo()

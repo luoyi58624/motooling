@@ -33,3 +33,14 @@ export const WEBURL = () => localStorage.getItem('WEBURL') || ''
 export const BASEURL = () => localStorage.getItem('WEBURL') || ''
 
 export const token = () => sessionStorage.getItem('token') || ''
+
+export function fileAddressFormat (url) {
+  var fileAddress = 'http://139.159.252.168/'
+  if (!url) {
+    return ''
+  } else if (url.indexOf('http') === 0) {
+    return url
+  } else if (url.indexOf('http') !== 0) {
+    return fileAddress + url
+  }
+}
