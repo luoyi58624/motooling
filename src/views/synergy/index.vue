@@ -432,8 +432,8 @@ export default {
               console.log(res)
               this.sendMessage({
                 contentType: 2,
-                content: res.rawUrl,
-                smallImg: res.Url
+                content: res.rawImgUrl,
+                smallImg: res.imgUrl
               })
             })
             .catch(err => {
@@ -449,8 +449,7 @@ export default {
               console.log(res)
               this.sendMessage({
                 contentType: 3,
-                content: res.rawImgUrl,
-                smallImg: res.imgUrl
+                content: res.fileUrl
               })
             })
             .catch(err => {
