@@ -19,7 +19,7 @@ instance.interceptors.request.use(
     return config
   }, error => {
     console.log(error)
-    Promise.reject(error)
+    return Promise.reject(error)
   }
 )
 
@@ -43,7 +43,7 @@ instance.interceptors.response.use(
     //   type: 'txt'
     // })
     // this.toast.show()
-    Promise.reject(error)
+    return Promise.reject(error)
   }
 )
 

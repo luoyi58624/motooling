@@ -81,7 +81,7 @@
             <div class="icon icon-voice-right"></div>
           </div>
         </div>
-        <div class="talker-input-wrapper" v-if="isVoice">
+        <div class="talker-input-wrapper" v-if="!isVoice">
           <input
             class="talker-input"
             type="text"
@@ -89,7 +89,7 @@
             v-model="content"
           />
         </div>
-         <div class="talker-input-wrapper" v-if="!isVoice">
+         <div class="talker-input-wrapper" v-if="isVoice">
           <button type="button" class="rec-btn" @touchstart="startRecorder" @touchend="stopRecorder">
             按住说话
           </button>
@@ -437,7 +437,11 @@ export default {
               })
             })
             .catch(err => {
-              console.log(err)
+              this.$createToast({
+                time: 2000,
+                txt: err.message,
+                type: 'warn'
+              }).show()
             })
         } else if (/audio*/.test(files[i].type)) {
           fileUpload(files[i])
@@ -450,7 +454,11 @@ export default {
               })
             })
             .catch(err => {
-              console.log(err)
+              this.$createToast({
+                time: 2000,
+                txt: err.message,
+                type: 'warn'
+              }).show()
             })
         } else if (/video*/.test(files[i].type)) {
           fileUpload(files[i])
@@ -462,7 +470,11 @@ export default {
               })
             })
             .catch(err => {
-              console.log(err)
+              this.$createToast({
+                time: 2000,
+                txt: err.message,
+                type: 'warn'
+              }).show()
             })
         } else {
           fileUpload(files[i])
@@ -474,7 +486,11 @@ export default {
               })
             })
             .catch(err => {
-              console.log(err)
+              this.$createToast({
+                time: 2000,
+                txt: err.message,
+                type: 'warn'
+              }).show()
             })
         }
       }
