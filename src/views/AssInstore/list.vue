@@ -87,7 +87,7 @@ export default {
     }
   },
   created () {
-    this.billNo = this.$route.query.no || 'AP19070002'
+    this.billNo = this.$route.query.no || 'AP19070003'
     this.getList()
   },
   computed: {
