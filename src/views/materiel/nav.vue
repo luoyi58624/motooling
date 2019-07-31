@@ -4,7 +4,7 @@
     <div class="tab">
       <div class="title">请选择发料类型</div>
       <div class="con">
-        <div>对工装发料</div>
+        <div @click="work">对工装发料</div>
         <div @click="bumen">对部门发料</div>
       </div>
     </div>
@@ -20,6 +20,11 @@ export default {
     bumen () {
       this.$router.push({
         path: '/materiel/department_send'
+      })
+    },
+    work () {
+      this.$router.push({
+        path: '/materiel/work_send'
       })
     }
   }

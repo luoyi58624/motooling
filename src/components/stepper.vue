@@ -54,7 +54,10 @@ export default {
       }
     },
     change (e) {
-      var val = e.currentTarget.value
+      // console.log(123)
+      // var val = Math.floor(e.currentTarget.value*1)
+      // this.val=val
+      var val = e.currentTarget.value * 1
       if (val > this.max) {
         val = this.max * 1
       } else if (val < this.min) {
