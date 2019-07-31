@@ -164,8 +164,9 @@ export default {
       const purchSubId = this.$route.query.purchSubId
       assInStoreInfo({ purchSubId }).then(res => {
         console.log(res)
+        console.log(res.inStoreInfo.qualityList)
         this.info = res.inStoreInfo
-        this.wordList = res.qualityList
+        this.wordList = res.inStoreInfo.qualityList
         this.pdfList = res.factoryReportList
         this.storeHouseId = res.inStoreInfo.storeHouseId
         this.storeRoomId = res.inStoreInfo.storeRoomId

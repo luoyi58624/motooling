@@ -309,6 +309,23 @@ var router = new Router({
     meta: {
       title: '选择物料'
     }
+  },
+  {
+    path: '/materiel/work_back',
+    name: 'work_back',
+    component: () => import('./views/materiel/work_back'),
+    meta: {
+      title: '对工装退料'
+    }
+  },
+  {
+    path: '/materiel/work_send',
+    name: 'work_send',
+    component: () => import('./views/materiel/work_send'),
+    meta: {
+      title: '对工装发料',
+      keepAlive: true
+    }
   }
   ]
 })

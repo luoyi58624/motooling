@@ -99,3 +99,83 @@ export function deptApplyMat (obj = {}) { // 对部门发料
     data
   })
 }
+
+export function moldNoList (obj = {}) { // 获取工装号列表
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/poStore/moldNoList',
+    method: 'post',
+    data
+  })
+}
+export function inStorePOTooling (obj = {}) { // 根据工装号列表查询工装发料信息
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/poStore/inStorePOTooling',
+    method: 'post',
+    data
+  })
+}
+export function toolingInStoreSave (obj = {}) { // 对工装发料
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/poStore/toolingInStoreSave',
+    method: 'post',
+    data
+  })
+}
+export function outStorePOTooling (obj = {}) { // 根据工装号查询退料详情接口
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/poStore/outStorePOTooling',
+    method: 'post',
+    data
+  })
+}
+export function moldNoOutList (obj = {}) { // 查询可退料工装列表
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/poStore/moldNoOutList',
+    method: 'post',
+    data
+  })
+}
+
+export function toolingOutStoreSave (obj = {}) { // 对工装退料
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/poStore/toolingOutStoreSave',
+    method: 'post',
+    data
+  })
+}
