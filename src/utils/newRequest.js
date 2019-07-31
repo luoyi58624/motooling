@@ -49,7 +49,7 @@ instance.interceptors.response.use(
     //   type: 'txt'
     // })
     // this.toast.show()
-    Promise.reject(error)
+    return Promise.reject(error)
   }
 )
 
