@@ -32,7 +32,7 @@
           <div class="title">名称:</div>
           <div>物料编码：{{item.matNo}}</div>
           <div>物料描述：{{item.matDesc}}</div>
-          <div>外协类型{{}}</div>
+          <div>外协类型{{item.assTypeName}}</div>
           <div>订单数量：{{item.totalQuantity}}</div>
           <div>已收：{{item.receivedQty}}</div>
           <div v-show="type===1">

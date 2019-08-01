@@ -336,6 +336,9 @@ router.beforeEach((to, from, next) => {
   if (to.query.weburl) {
     localStorage.WEBURL = decodeURIComponent(to.query.weburl)
   }
+  if (to.query.uid) {
+    localStorage.uid = decodeURIComponent(to.query.uid)
+  }
   if (to.query.token) {
     sessionStorage.token = decodeURIComponent(to.query.token)
   }

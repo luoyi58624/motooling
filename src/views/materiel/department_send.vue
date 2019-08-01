@@ -118,8 +118,8 @@ export default {
       newList[index]['value'] = value
       this.$store.commit('changeWuliaoList', newList || [])
     },
-    select () {
-
+    select (value, index) {
+      this.wuliaoList[index]['selected'] = value
     },
     add () {
       this.$router.push({

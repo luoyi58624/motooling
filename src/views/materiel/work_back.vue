@@ -98,6 +98,7 @@ export default {
   },
   created () {
     const uid = localStorage.getItem('uid')
+    console.log(uid)
     if (!uid) {
       let fullPath = this.$router.currentRoute.fullPath
       this.$router.replace(
@@ -106,12 +107,6 @@ export default {
     } else {
       this.uid = uid
     }
-    // depUserList().then(res => {
-    //   this.list = res.list
-    //   this.depList = res.list.map((item, index) => {
-    //     return { text: item.name, value: index }
-    //   })
-    // })
   },
   components: {
     Materiel: materiel
@@ -137,6 +132,9 @@ export default {
       this.$router.push({
         path: '/materiel/select'
       })
+    },
+    save () {
+
     },
     // save () {
     //   if (this.allQuantify === 0) {

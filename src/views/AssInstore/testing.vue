@@ -109,7 +109,10 @@
             <div v-for="(item,index) in mbList.customerList" :key="index">
               <img src="../../assets/mb.png" alt @click="down(item.fileUrl)" />
               <div>
-                <cube-checkbox @input="selMb($event,item.tmplId)" :value="SelMbList.includes(item.tmplId)" >{{item.fileName}}</cube-checkbox>
+                <cube-checkbox
+                  @input="selMb($event,item.tmplId)"
+                  :value="SelMbList.includes(item.tmplId)"
+                >{{item.fileName}}</cube-checkbox>
               </div>
             </div>
           </div>
@@ -120,7 +123,10 @@
             <div v-for="(item,index) in mbList.companyList" :key="index">
               <img src="../../assets/mb.png" alt @click="down(item.fileUrl)" />
               <div>
-                <cube-checkbox  @input="selMb($event,item.tmplId)" :value="SelMbList.includes(item.tmplId)">{{item.fileName}}</cube-checkbox>
+                <cube-checkbox
+                  @input="selMb($event,item.tmplId)"
+                  :value="SelMbList.includes(item.tmplId)"
+                >{{item.fileName}}</cube-checkbox>
               </div>
             </div>
           </div>
@@ -131,13 +137,16 @@
             <div v-for="(item,index) in mbList.industryList" :key="index">
               <img src="../../assets/mb.png" alt @click="down(item.fileUrl)" />
               <div>
-                <cube-checkbox  @input="selMb($event,item.tmplId)" :value="SelMbList.includes(item.tmplId)">{{item.fileName}}</cube-checkbox>
+                <cube-checkbox
+                  @input="selMb($event,item.tmplId)"
+                  :value="SelMbList.includes(item.tmplId)"
+                >{{item.fileName}}</cube-checkbox>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="btn">确定</div>
+        <div class="btn" @click="hideMb">确定</div>
       </div>
     </transition>
   </div>
@@ -200,7 +209,7 @@ export default {
       noQualifiedQty: '', // 不合格数
       qcResult: '',
       mbList: {}, // 模板文件
-      SelMbList: []// 已选择的模板文件
+      SelMbList: [] // 已选择的模板文件
     }
   },
   created () {
@@ -209,7 +218,9 @@ export default {
   methods: {
     selMb (value, id) {
       if (this.SelMbList.includes(id)) {
-        this.SelMbList = this.SelMbList.filter(item => { return item !== id })
+        this.SelMbList = this.SelMbList.filter(item => {
+          return item !== id
+        })
       } else {
         this.SelMbList.push(id)
       }
@@ -241,7 +252,9 @@ export default {
             url: item.fileUrl
           }
         })
-        this.SelMbList = res.inStoreInfo.factoryReportList.map(item => item.tmplId)
+        this.SelMbList = res.inStoreInfo.factoryReportList.map(
+          item => item.tmplId
+        )
         this.mbList = res.inStoreInfo.qcTemplet
         this.storeHouseId = res.inStoreInfo.storeHouseId
         this.storeRoomId = res.inStoreInfo.storeRoomId
@@ -389,6 +402,7 @@ export default {
   z-index: 20;
 }
 .moban {
+  border-radius: 4px 4px 0 0;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -474,7 +488,6 @@ export default {
 }
 /deep/.cube-checkbox.cube-checkbox_checked,
 .cube-checkbox-wrap {
-  padding: 0;
   text-align: center;
 }
 .cube-checkbox-wrap {

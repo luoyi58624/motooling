@@ -73,21 +73,21 @@ import { depUserList, deptReturnMatList, deptReturnMat, voucherNoList } from '@/
 export default {
   data () {
     return {
-      list: [],
-      remark: '',
-      depList: [],
-      nameList: [],
-      depName: '',
-      depId: '',
+      list: [], // 部门与人员列表
+      remark: '', // 备注
+      depList: [], // 部门列表
+      nameList: [], // 人员列表
+      depName: '', // 已选部门名
+      depId: '', // 部门id
       wuliao: {},
-      name: '',
+      name: '', // 已选人员名
       applyManId: '',
-      transDate: '',
-      chalkupDate: '',
-      voucherList: [],
-      voucherNo: '',
-      wuliaoList: [],
-      indentNo: '',
+      transDate: '', // 凭证日期
+      chalkupDate: '', // 记账日期
+      voucherList: [], // 发料凭证列表
+      voucherNo: '', // 选择的凭证号
+      wuliaoList: [], // 物料list
+      indentNo: '', // 收发货单编号
       uid: ''
     }
   },
@@ -136,8 +136,8 @@ export default {
       newList[index]['value'] = value
       this.$store.commit('changeWuliaoList', newList || [])
     },
-    select () {
-
+    select (value, index) {
+      this.wuliaoList[index]['selected'] = value
     },
     add () {
       this.$router.push({

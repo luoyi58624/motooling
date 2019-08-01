@@ -157,5 +157,8 @@ body {
     border-bottom: none;
   }
 }
+.cube-checkbox.cube-checkbox_checked{
+  padding:0 20px;
+}
 
 </style>
