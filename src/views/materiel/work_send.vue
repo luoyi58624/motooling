@@ -7,7 +7,7 @@
         <div>
           <div>工装号</div>
           <div>
-            <div @click="slecteNo">{{"请选择"}}</div>
+            <div @click="slecteNo">{{moldNo||"请选择"}}</div>
           </div>
         </div>
         <div>
@@ -19,7 +19,7 @@
           <div>{{info.username}}</div>
         </div>
         <div>
-          <div>退料人</div>
+          <div>领料人</div>
           <div>{{}}</div>
         </div>
         <div>
@@ -48,7 +48,16 @@
     <div class="title">发料物料</div>
     <div>
       <div class="list">
-        <Materiel :info="wuliao" v-model="wuliao.value" />
+        <div v-for="(item,index) in wuliaoList" :key="index">
+          <Materiel
+            @input="changeValue"
+            :info="item"
+            v-model="item.value"
+            :selected="item.selected"
+            :index="index"
+            @changeSel="select"
+          />
+        </div>
       </div>
     </div>
     <div class="title">备注</div>
@@ -58,7 +67,7 @@
     <div class="zw"></div>
     <div class="bot">
       <div>企业圈</div>
-      <div>数量合计：{{wuliao.value}}</div>
+      <div>数量合计：{{allQuantity}}</div>
       <div @click="save">发料</div>
     </div>
   </div>
@@ -68,9 +77,10 @@
 import materiel from '../Order/Components/materiel'
 
 import {
-  outStoreSave
-} from '@/api/order/order.js'
-import { moldNoList, inStorePOTooling } from '@/api/materiel.js'
+  moldNoList,
+  inStorePOTooling,
+  toolingInStoreSave
+} from '@/api/materiel.js'
 
 export default {
   data () {
@@ -81,7 +91,8 @@ export default {
       voucherId: '',
       voucherList: '', // 收货列表
       noList: [], // 工装号列表
-      moldNo: ''// 选中的工装号
+      moldNo: '', // 选中的工装号
+      wuliaoList: []
     }
   },
   created () {
@@ -92,20 +103,33 @@ export default {
   components: {
     Materiel: materiel
   },
+  computed: {
+    allQuantity () {
+      return this.wuliaoList.reduce((total, item) => {
+        console.log(total)
+        if (item.selected) {
+          return total + item.value ? item.value * 1 : 0
+        } else {
+          return total
+        }
+      }, 0)
+    }
+  },
   methods: {
     getNoList () {
       // 获取工装列表
-      moldNoList().then(res => {
-        console.log(res.list)
-        this.noList = res.list.map(item => {
-          return { text: item.moldNo, value: item.id }
+      moldNoList()
+        .then(res => {
+          console.log(res.list)
+          this.noList = res.list.map(item => {
+            return { text: item.moldNo, value: item.id }
+          })
         })
-        console.log(this.noList)
-      }).catch(err => {
-        if (err.msg) {
-          this.showToast(err.msg)
-        }
-      })
+        .catch(err => {
+          if (err.msg) {
+            this.showToast(err.msg)
+          }
+        })
     },
     slecteNo () {
       if (this.noList.length === 0) {
@@ -122,14 +146,42 @@ export default {
       this.moldNo = selectedText.join(', ')
       this.getInfo()
     },
-    getInfo () { // 获取发料信息
-      inStorePOTooling({ moldNo: this.moldNo }).then(res => {
-        console.log(res)
-      }).catch(err => {
-        if (err.msg) {
-          this.showToast(err.msg)
-        }
-      })
+    select (value, index) {
+      this.wuliaoList[index]['selected'] = value
+    },
+    changeValue (value, index) {
+      // var newList = this.wuliaoList
+      // newList[index]['value'] = value
+    },
+    getInfo () {
+      // 获取发料信息
+      inStorePOTooling({ moldNo: this.moldNo })
+        .then(res => {
+          console.log(res)
+          this.wuliaoList = res.map(item => {
+            console.log(item)
+            return {
+              list: [
+                { title: '物料编码', content: item.matNo },
+                { title: '物料描述', content: item.matName },
+                { title: '规格型号', content: item.matModel },
+                { title: '仓库', content: item.storeHouseName },
+                { title: '库存数量', content: item.stockQty },
+                { title: '应发数量', content: item.stockQty }
+              ],
+              max: item.stockQty,
+              value: item.stockQty,
+              selected: true,
+              matId: item.matId,
+              info: item
+            }
+          })
+        })
+        .catch(err => {
+          if (err.msg) {
+            this.showToast(err.msg)
+          }
+        })
     },
 
     showPicker () {
@@ -146,37 +198,6 @@ export default {
       console.log(selectedVal.join(', '))
       this.voucherId = selectedVal.join(', ')
     },
-    // getInfo(no) {
-    //   getpmPoOutStoreById({ poNo: no })
-    //     .then(res => {
-    //       console.log(res);
-    //       this.info = res;
-    //       this.voucherList = res.voucherList.map(item => {
-    //         return { text: item.voucher_id, value: item.voucher_id };
-    //       });
-    //       this.wuliao = {
-    //         list: [
-    //           { title: "物料编码", content: res.matNo },
-    //           { title: "物料描述", content: res.matName },
-    //           { title: "物料类型", content: res.matTypeName },
-    //           { title: "单位", content: res.unitName },
-    //           { title: "可退数量", content: res.toBeReceivedQty }
-    //         ],
-    //         max: res.toBeReceivedQty,
-    //         value: res.toBeReceivedQty > 0 ? 1 : 0
-    //       };
-    //     })
-    //     .catch(() => {
-    //       // this.showDialog({
-    //       //   title: "出错了",
-    //       //   content: "可能单号有误，将为您返回上一页",
-    //       //   onConfirm: () => {
-    //       //     this.$router.go(-1);
-    //       //   },
-    //       //   onCancel: () => {}
-    //       // });
-    //     });
-    // },
     save () {
       if (!this.voucherId) {
         this.showToast('请选择收货凭证号')
@@ -184,7 +205,7 @@ export default {
       }
       this.showLoading()
 
-      outStoreSave({
+      toolingInStoreSave({
         poNo: this.info.poNo,
         matId: this.info.matId,
         toBeReceivedQty: this.wuliao.value,

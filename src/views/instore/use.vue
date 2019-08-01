@@ -51,7 +51,9 @@
       </div>
       <div>
         <div>检验模板</div>
-        <div></div>
+        <div>
+          <div @click="mb">查看</div>
+        </div>
       </div>
       <div>
         <div>质检报告</div>
@@ -138,6 +140,25 @@ export default {
   },
 
   methods: {
+    mb () {
+      const list = this.factoryReportList.map(item => {
+        return { text: item.fileName, value: item.fileUrl }
+      })
+      if (list.length === 0) {
+        this.showToast('没有内容')
+        return
+      }
+      this.$createPicker({
+        title: '',
+        data: [list],
+        onSelect: this.selmb,
+        onCancel: () => {}
+      }).show()
+    },
+    selmb (selectedVal, selectedIndex, selectedText) {
+      const url = selectedVal.join(', ')
+      window.open(url)
+    },
     zj () {
       const list = this.wordList.map(item => {
         return {
@@ -145,6 +166,10 @@ export default {
           value: item.fileUrl
         }
       })
+      if (list.length === 0) {
+        this.showToast('没有内容')
+        return
+      }
       this.picker = this.$createPicker({
         title: '',
         data: [list],
@@ -167,8 +192,8 @@ export default {
           this.info.noQualifiedQty * 1 -
           this.info.specialQty * 1 -
           this.info.returnQty * 1
-        this.wordList = res.qualityList
-        this.pdfList = res.factoryReportList
+        this.wordList = res.inStoreInfo.qualityList
+        this.factoryReportList = res.inStoreInfo.factoryReportList
         this.storeHouseId = res.inStoreInfo.storeHouseId
         this.storeRoomId = res.inStoreInfo.storeRoomId
         console.log(this.storeHouseId, this.storeRoomId)
@@ -210,7 +235,7 @@ export default {
       purchSpecial(data2)
         .then(res => {
           this.getInfo()
-          this.showToast('修改成功')
+          this.showToast('特采成功')
         })
         .catch(err => {
           if (err.msg) {
