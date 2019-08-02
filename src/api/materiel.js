@@ -179,3 +179,29 @@ export function toolingOutStoreSave (obj = {}) { // 对工装退料
     data
   })
 }
+export function listPickingName (obj = {}) { // 对工装退料获取领料人
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/poStore/listPickingName',
+    method: 'post',
+    data
+  })
+}
+export function listToolingVoucherNo (obj = {}) { // 对工装退料查询凭证号
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return request({
+    url: BASEURL() + '/mth5/poStore/listToolingVoucherNo',
+    method: 'post',
+    data
+  })
+}

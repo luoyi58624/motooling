@@ -82,8 +82,8 @@ export default {
       wuliao: {},
       name: '',
       applyManId: '',
-      transDate: '',
-      chalkupDate: '',
+      transDate: '', // 凭证日期
+      chalkupDate: '', // 记账日期
       indentNo: '' }
   },
   created () {
@@ -173,7 +173,7 @@ export default {
         }
       })
     },
-    showpzdate () {
+    showpzdate () { // 选择凭证日期
       this.$createDatePicker({
         title: '凭证日期',
         min: new Date(2008, 7, 8),
@@ -182,7 +182,7 @@ export default {
         onSelect: this.pz
       }).show()
     },
-    showjzdate () {
+    showjzdate () { // 选择记账日期
       this.$createDatePicker({
         title: '记账日期',
         min: new Date(2008, 7, 8),
@@ -191,7 +191,7 @@ export default {
         onSelect: this.jz
       }).show()
     },
-    pz (date, selectedVal, selectedText) {
+    pz (date, selectedVal, selectedText) { // 已选择凭证日期
       this.transDate = selectedVal.join('-')
     },
     showDep () {
@@ -201,7 +201,7 @@ export default {
         onSelect: this.selectHandle
       }).show()
     },
-    jz (date, selectedVal, selectedText) {
+    jz (date, selectedVal, selectedText) { // 已选择记账日期
       this.chalkupDate = selectedVal.join('-')
     },
     selectHandle (selectedVal, selectedIndex, selectedText) {
