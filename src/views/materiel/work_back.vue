@@ -84,12 +84,7 @@ import {
 export default {
   data () {
     return {
-      list: [], //
       remark: '', //
-      depList: [], //
-      depName: '', // 部门名
-      depId: '', //
-      wuliao: {}, //
       noList: [], // 可退料工装列表
       moldNo: '', // 选择的工装号
       nameList: [], // 退料人列表
@@ -118,16 +113,16 @@ export default {
     }
   },
   created () {
-    const uid = localStorage.getItem('uid')
-    console.log(uid)
-    if (!uid) {
-      let fullPath = this.$router.currentRoute.fullPath
-      this.$router.replace(
-        '/login?redirectURL=' + encodeURIComponent(fullPath)
-      )
-    } else {
-      this.uid = uid
-    }
+    // const uid = localStorage.getItem("uid");
+    // console.log(uid);
+    // if (!uid) {
+    //   let fullPath = this.$router.currentRoute.fullPath;
+    //   this.$router.replace(
+    //     "/login?redirectURL=" + encodeURIComponent(fullPath)
+    //   );
+    // } else {
+    //   this.uid = uid;
+    // }
     this.getNoList()
     this.getName()
   },
@@ -233,11 +228,17 @@ export default {
                 { title: '物料描述', content: item.matName },
                 { title: '规格型号', content: item.matModel },
                 { title: '仓库', content: item.storeHouseName },
-                { title: '库存数量', content: item.stockQty ? item.stockQty : 0 },
+                {
+                  title: '库存数量',
+                  content: item.stockQty ? item.stockQty : 0
+                },
                 { title: '应发数量', content: item.quantity1 }
               ],
               max: Math.min(item.stockQty ? item.stockQty : 0, item.quantity1),
-              value: Math.min(item.stockQty ? item.stockQty : 0, item.quantity1) > 0 ? item.quantity : 0,
+              value:
+                Math.min(item.stockQty ? item.stockQty : 0, item.quantity1) > 0
+                  ? item.quantity
+                  : 0,
               selected: true,
               matId: item.matId,
               info: item
@@ -255,7 +256,7 @@ export default {
       if (!this.moldNo) {
         this.showToast('请选择工装号')
         return
-      };
+      }
 
       //  if(!this.remark){
       //    this.showToast('请填写备注');
@@ -264,19 +265,19 @@ export default {
       if (!this.bomTypeText) {
         this.showToast('请选择BOM类型')
         return
-      };
+      }
       if (!this.indentNo) {
         this.showToast('请填写收发货单号')
         return
-      };
+      }
       if (!this.voucherNo) {
         this.showToast('请选择凭证号')
         return
-      };
+      }
       if (!this.chalkupDate) {
         this.showToast('请选择记账日期')
         return
-      };
+      }
       if (this.allQuantify === 0) {
         this.showToast('没有选择物料')
         return
@@ -342,7 +343,8 @@ export default {
     pz (date, selectedVal, selectedText) {
       this.transDate = selectedVal.join('-')
     },
-    getVoucher () { // 获取凭证号
+    getVoucher () {
+      // 获取凭证号
       if (!this.moldNo) {
         this.showToast('没有选择工装号')
         return
@@ -356,7 +358,8 @@ export default {
           console.log('凭证号', res)
           this.voucherList = res.map(item => {
             return {
-              text: item.voucherNo, value: item.voucherNo
+              text: item.voucherNo,
+              value: item.voucherNo
             }
           })
         })
@@ -366,7 +369,8 @@ export default {
           }
         })
     },
-    showpz () { // 选择让凭证号
+    showpz () {
+      // 选择让凭证号
       if (this.voucherList.length === 0) {
         this.showToast('暂无可选')
         return

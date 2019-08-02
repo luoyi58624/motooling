@@ -16,7 +16,7 @@
         </div>
         <div>
           <div>仓管员</div>
-          <div>{{info.username}}</div>
+          <div>{{}}</div>
         </div>
         <div>
           <div>领料人</div>
@@ -79,10 +79,7 @@ import {
 export default {
   data () {
     return {
-      info: {},
-      wuliao: {},
-      remark: '',
-      voucherId: '',
+      remark: '', // 备注
       voucherList: '', // 收货列表
       noList: [], // 工装号列表
       moldNo: '', // 选中的工装号
@@ -100,7 +97,7 @@ export default {
           value: '2'
         }
       ],
-      indentNo: '',
+      indentNo: '', // 收发货单编号
       billNo: '', // 收发货单边行
       bomTypeText: '', // bom类型名称
       bomTypeValue: '', // bom类型值
@@ -109,8 +106,6 @@ export default {
     }
   },
   created () {
-    // const no = this.$route.query.no
-    // this.getInfo(no);
     this.getNoList()
     this.getName()
   },
@@ -230,11 +225,17 @@ export default {
                 { title: '物料描述', content: item.matName },
                 { title: '规格型号', content: item.matModel },
                 { title: '仓库', content: item.storeHouseName },
-                { title: '库存数量', content: item.stockQty ? item.stockQty : 0 },
+                {
+                  title: '库存数量',
+                  content: item.stockQty ? item.stockQty : 0
+                },
                 { title: '应发数量', content: item.quantity1 }
               ],
               max: Math.min(item.stockQty ? item.stockQty : 0, item.quantity1),
-              value: Math.min(item.stockQty ? item.stockQty : 0, item.quantity1) > 0 ? item.quantity : 0,
+              value:
+                Math.min(item.stockQty ? item.stockQty : 0, item.quantity1) > 0
+                  ? item.quantity
+                  : 0,
               selected: true,
               matId: item.matId,
               info: item
@@ -246,21 +247,6 @@ export default {
             this.showToast(err.msg)
           }
         })
-    },
-
-    showPicker () {
-      if (!this.picker) {
-        this.picker = this.$createPicker({
-          title: '',
-          data: [this.voucherList],
-          onSelect: this.selectHandle
-        })
-      }
-      this.picker.show()
-    },
-    selectHandle (selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal.join(', '))
-      this.voucherId = selectedVal.join(', ')
     },
     showpzdate () {
       // 选择凭证日期
@@ -295,19 +281,19 @@ export default {
       if (!this.moldNo) {
         this.showToast('请选择工装号')
         return
-      };
+      }
       if (!this.indentNo) {
         this.showToast('请填写收发货单编号')
         return
-      };
+      }
       if (!this.transDate) {
         this.showToast('请选择凭证日期')
         return
-      };
+      }
       if (!this.chalkupDate) {
         this.showToast('请选择记账日期')
         return
-      };
+      }
       if (this.allQuantify === 0) {
         this.showToast('没有选择物料')
         return
