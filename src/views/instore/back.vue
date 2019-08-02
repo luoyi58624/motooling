@@ -1,25 +1,25 @@
 <!--  -->
 <template>
   <div>
-    <div class="title">退料信息</div>
+    <div class="title">退货信息</div>
     <div class="content">
       <div class="table">
         <div>
-          <div>工装号</div>
+          <div>采购订单</div>
           <div>
-            <div @click="slecteNo">{{moldNo||"请选择"}}</div>
+
           </div>
         </div>
         <div>
-          <div>BOM类型</div>
-          <div @click="selectBom">{{bomTypeText||'请选择'}}</div>
+          <div>供应商</div>
+          <div @click="selectBom"></div>
         </div>
         <div>
           <div>仓管员</div>
           <div>{{}}</div>
         </div>
         <div>
-          <div>退料人</div>
+          <div>退货人</div>
           <div @click="selectName">{{name||'请选择'}}</div>
         </div>
         <div>
@@ -31,7 +31,7 @@
           <div @click="showjzdate">{{chalkupDate||'请选择'}}</div>
         </div>
         <div>
-          <div>发料凭证</div>
+          <div>收货凭证</div>
           <div @click="showpz">{{voucherNo||'请选择'}}</div>
         </div>
         <div>
@@ -44,7 +44,7 @@
         </div>
       </div>
     </div>
-    <div class="title">退料物料</div>
+    <div class="title">退货物料</div>
     <div>
       <div v-for="(item,index) in wuliaoList" :key="index">
         <Materiel
