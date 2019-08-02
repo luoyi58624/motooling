@@ -173,7 +173,10 @@ var router = new Router({
   {
     path: '/instore/back',
     name: 'instore-back',
-    component: () => import('./views/instore/back')
+    component: () => import('./views/instore/back'),
+    meta: {
+      title: '采购退货'
+    }
   },
   {
     path: '/instore/setting',
