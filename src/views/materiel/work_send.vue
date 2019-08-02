@@ -12,7 +12,7 @@
         </div>
         <div>
           <div>BOM类型</div>
-          <div>{{info.poNo}}</div>
+          <div @click="selectBom">{{bomTypeText||'请选择'}}</div>
         </div>
         <div>
           <div>仓管员</div>
@@ -20,27 +20,20 @@
         </div>
         <div>
           <div>领料人</div>
-          <div>{{}}</div>
+          <div @click="selectName">{{name||'请选择'}}</div>
         </div>
         <div>
           <div>凭证日期</div>
-          <div>{{info.createdAt?info.createdAt.slice(0,10):""}}</div>
+          <div @click="showpzdate">{{transDate||'请选择'}}</div>
         </div>
         <div>
           <div>记账日期</div>
-          <div>{{info.updatedAt?info.updatedAt.slice(0,10):""}}</div>
-        </div>
-        <div>
-          <div>发料凭证</div>
-          <div>
-            <!-- <input type="text" placeholder="请填写" v-model="voucherId" /> -->
-            <div @click="showPicker">{{voucherId||'请选择'}}</div>
-          </div>
+          <div @click="showjzdate">{{chalkupDate||'请选择'}}</div>
         </div>
         <div>
           <div>收发货单编号</div>
           <div>
-            <input type="text" placeholder="请填写" />
+            <input type="text" placeholder="请填写" v-model="indentNo" />
           </div>
         </div>
       </div>
@@ -79,7 +72,8 @@ import materiel from '../Order/Components/materiel'
 import {
   moldNoList,
   inStorePOTooling,
-  toolingInStoreSave
+  toolingInStoreSave,
+  listPickingName
 } from '@/api/materiel.js'
 
 export default {
@@ -92,13 +86,33 @@ export default {
       voucherList: '', // 收货列表
       noList: [], // 工装号列表
       moldNo: '', // 选中的工装号
-      wuliaoList: []
+      wuliaoList: [],
+      transDate: '', // 凭证日期
+      chalkupDate: '', // 记账日期
+      bomTypeList: [
+        // bom类型列表
+        {
+          text: '主BOM',
+          value: '1'
+        },
+        {
+          text: '辅BOM',
+          value: '2'
+        }
+      ],
+      indentNo: '',
+      billNo: '', // 收发货单边行
+      bomTypeText: '', // bom类型名称
+      bomTypeValue: '', // bom类型值
+      nameList: [], // 领料人列表
+      name: '' // 领料人
     }
   },
   created () {
     // const no = this.$route.query.no
     // this.getInfo(no);
     this.getNoList()
+    this.getName()
   },
   components: {
     Materiel: materiel
@@ -108,7 +122,7 @@ export default {
       return this.wuliaoList.reduce((total, item) => {
         console.log(total)
         if (item.selected) {
-          return total + item.value ? item.value * 1 : 0
+          return total + item.value * 1
         } else {
           return total
         }
@@ -116,6 +130,52 @@ export default {
     }
   },
   methods: {
+    selectName () {
+      // ‘选择领料人
+      if (this.nameList.length === 0) {
+        this.showToast('没有可选领料人')
+        return
+      }
+      this.$createPicker({
+        title: '选择领料人',
+        data: [this.nameList],
+        onSelect: this.selectedName
+      }).show()
+    },
+    selectedName (selectedVal, selectedIndex, selectedText) {
+      this.name = selectedText.join(', ')
+    },
+    selectBom () {
+      // 选择bom类型
+      this.$createPicker({
+        title: '选择BOM类型',
+        data: [this.bomTypeList],
+        onSelect: this.selectedBom
+      }).show()
+    },
+    getName () {
+      // 获取领料人
+      listPickingName()
+        .then(res => {
+          console.log('领料人', res)
+          this.nameList = res.map(item => {
+            return {
+              text: item.username,
+              value: item.uid
+            }
+          })
+        })
+        .catch(err => {
+          if (err.msg) {
+            this.showTost(err.msg)
+          }
+        })
+    },
+    selectedBom (selectedVal, selectedIndex, selectedText) {
+      this.bomTypeText = selectedText.join(', ')
+      this.bomTypeValue = selectedVal.join(', ')
+      this.getInfo()
+    },
     getNoList () {
       // 获取工装列表
       moldNoList()
@@ -144,6 +204,10 @@ export default {
     },
     selectedNo (selectedVal, selectedIndex, selectedText) {
       this.moldNo = selectedText.join(', ')
+      if (!this.bomTypeText) {
+        this.bomTypeValue = 1
+        this.bomTypeText = '主BOM'
+      }
       this.getInfo()
     },
     select (value, index) {
@@ -155,7 +219,7 @@ export default {
     },
     getInfo () {
       // 获取发料信息
-      inStorePOTooling({ moldNo: this.moldNo })
+      inStorePOTooling({ moldNo: this.moldNo, bomType: this.bomTypeValue })
         .then(res => {
           console.log(res)
           this.wuliaoList = res.map(item => {
@@ -166,11 +230,11 @@ export default {
                 { title: '物料描述', content: item.matName },
                 { title: '规格型号', content: item.matModel },
                 { title: '仓库', content: item.storeHouseName },
-                { title: '库存数量', content: item.stockQty },
-                { title: '应发数量', content: item.stockQty }
+                { title: '库存数量', content: item.stockQty ? item.stockQty : 0 },
+                { title: '应发数量', content: item.quantity1 }
               ],
-              max: item.stockQty,
-              value: item.stockQty,
+              max: Math.min(item.stockQty ? item.stockQty : 0, item.quantity1),
+              value: Math.min(item.stockQty ? item.stockQty : 0, item.quantity1) > 0 ? item.quantity : 0,
               selected: true,
               matId: item.matId,
               info: item
@@ -198,28 +262,88 @@ export default {
       console.log(selectedVal.join(', '))
       this.voucherId = selectedVal.join(', ')
     },
+    showpzdate () {
+      // 选择凭证日期
+      this.$createDatePicker({
+        title: '凭证日期',
+        min: new Date(2008, 7, 8),
+        max: new Date(2020, 9, 20),
+        value: new Date(),
+        onSelect: this.pz
+      }).show()
+    },
+    showjzdate () {
+      // 选择记账日期
+      this.$createDatePicker({
+        title: '记账日期',
+        min: new Date(2008, 7, 8),
+        max: new Date(2020, 9, 20),
+        value: new Date(),
+        onSelect: this.jz
+      }).show()
+    },
+    pz (date, selectedVal, selectedText) {
+      // 已选择凭证日期
+      this.transDate = selectedVal.join('-')
+    },
+    jz (date, selectedVal, selectedText) {
+      // 已选择记账日期
+      this.chalkupDate = selectedVal.join('-')
+    },
     save () {
-      if (!this.voucherId) {
-        this.showToast('请选择收货凭证号')
+      console.log(this.moldNo)
+      if (!this.moldNo) {
+        this.showToast('请选择工装号')
+        return
+      };
+      if (!this.indentNo) {
+        this.showToast('请填写收发货单编号')
+        return
+      };
+      if (!this.transDate) {
+        this.showToast('请选择凭证日期')
+        return
+      };
+      if (!this.chalkupDate) {
+        this.showToast('请选择记账日期')
+        return
+      };
+      if (this.allQuantify === 0) {
+        this.showToast('没有选择物料')
         return
       }
+      if (!this.name) {
+        this.showToast('没有选择领料人')
+        return
+      }
+      const list = this.wuliaoList
+        .map(item => {
+          if (item.selected && item.value > 0) {
+            return Object.assign({}, item.info, { quantity: item.value })
+          }
+        })
+        .filter(item => {
+          return item
+        })
       this.showLoading()
 
       toolingInStoreSave({
-        poNo: this.info.poNo,
-        matId: this.info.matId,
-        toBeReceivedQty: this.wuliao.value,
-        remark: this.remark,
-        voucherId: this.voucherId
+        billNo: this.moldNo,
+        transDate: this.transDate,
+        chalkupDate: this.chalkupDate,
+        list: list,
+        indentNo: this.indentNo,
+        username: this.name,
+        bomtype: this.bomTypeValue
       })
         .then(res => {
           this.hideLoading()
-          this.showToast('退货成功')
-          // this.getInfo()
+          this.showToast('操作成功')
+          this.getInfo()
         })
         .catch(err => {
           this.hideLoading()
-          this.showToast(err.msg ? err.msg : '')
+          this.showToast(err.msg ? err.msg : '错误')
         })
     }
   }
