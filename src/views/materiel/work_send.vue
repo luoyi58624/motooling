@@ -294,7 +294,7 @@ export default {
         this.showToast('请选择记账日期')
         return
       }
-      if (this.allQuantify === 0) {
+      if (!this.allQuantify) {
         this.showToast('没有选择物料')
         return
       }
