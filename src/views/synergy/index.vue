@@ -9,7 +9,7 @@
         </template>
       </div>
       <div @click="addUser('changeSynergyMemberList','synergyMemberList')">
-        <img src="../../assets/icon-add.png" alt="" />
+        <img src="../../assets/icon-add.png" />
       </div>
     </div>
     <scroll
@@ -27,23 +27,16 @@
           v-for="item in recordList"
           :key="item.id"
         >
-          <div
-            class="talk-user-avatar"
-            :style="'background-image: url('+item.data.avatar+')'"
-          ></div>
+          <div class="talk-user-avatar" :style="'background-image: url('+item.data.avatar+')'"></div>
           <div
             class="talk-info"
             v-if="item.data.contentType===1||item.data.contentType===2||item.data.contentType===3||item.data.contentType===4"
           >
-            <div class="talk-user-name" v-if="uid != item.data.senderId">
-              {{ item.data.username }}
-            </div>
+            <div class="talk-user-name" v-if="uid != item.data.senderId">{{ item.data.username }}</div>
             <div
               class="talk-content talk-word-content"
               v-if="item.data.contentType===1"
-            >
-              {{ item.data.content }}
-            </div>
+            >{{ item.data.content }}</div>
             <div
               class="talk-content"
               v-if="item.data.contentType===2"
@@ -65,9 +58,7 @@
             <div
               class="talk-content talk-word-content"
               v-if="item.data.contentType===5"
-            >
-              {{ item.data.content }}
-            </div>
+            >{{ item.data.content }}</div>
           </div>
         </div>
       </div>
@@ -82,17 +73,15 @@
           </div>
         </div>
         <div class="talker-input-wrapper" v-if="!isVoice">
-          <input
-            class="talker-input"
-            type="text"
-            placeholder="请输入"
-            v-model="content"
-          />
+          <input class="talker-input" type="text" placeholder="请输入" v-model="content" />
         </div>
-         <div class="talker-input-wrapper" v-if="isVoice">
-          <button type="button" class="rec-btn" @touchstart="startRecorder" @touchend="stopRecorder">
-            按住说话
-          </button>
+        <div class="talker-input-wrapper" v-if="isVoice">
+          <button
+            type="button"
+            class="rec-btn"
+            @touchstart="startRecorder"
+            @touchend="stopRecorder"
+          >按住说话</button>
         </div>
         <div class="input-toggle-button talker-icon-btn">
           <div class="icon icon-add" @click="showMoreBtn"></div>
@@ -108,13 +97,7 @@
           </div>
           <div class="center item-text">图片</div>
         </label>
-        <input
-          type="file"
-          id="uploadImageField"
-          multiple
-          hidden
-          @change="uploadImage"
-        />
+        <input type="file" id="uploadImageField" multiple hidden @change="uploadImage" />
         <div class="list-item">
           <div class="item-icon">
             <div class="icon icon-album"></div>
@@ -122,9 +105,7 @@
           <div class="center item-text">相册</div>
         </div>
         <div class="list-item">
-          <router-link
-            :to="'/synergy/summary/new/'+this.synergyGroup.id+'/'+newestId"
-          >
+          <router-link :to="'/synergy/summary/new/'+this.synergyGroup.id+'/'+newestId">
             <div class="item-icon">
               <div class="icon icon-record"></div>
             </div>
@@ -206,7 +187,7 @@ export default {
     synergyMemberList () {
       if (
         this.$store.state.synergyMemberList &&
-          this.$store.state.synergyMemberList.length > 0
+        this.$store.state.synergyMemberList.length > 0
       ) {
         return this.$store.state.synergyMemberList
       } else {
@@ -260,11 +241,13 @@ export default {
         },
         function (msg, isUserNotAllow) {
           // 用户拒绝未授权或不支持
-          self.$createToast({
-            time: 2000,
-            txt: (isUserNotAllow ? 'UserNotAllow，' : '') + '无法录音:' + msg,
-            type: 'warn'
-          }).show()
+          self
+            .$createToast({
+              time: 2000,
+              txt: (isUserNotAllow ? 'UserNotAllow，' : '') + '无法录音:' + msg,
+              type: 'warn'
+            })
+            .show()
         }
       )
     },
@@ -281,7 +264,7 @@ export default {
             fileUpload(blob, 'rec.mp3')
               .then(res => {
                 console.log(res)
-                self.sendMessage({
+                self.sendMessage(2, {
                   contentType: 3,
                   content: res.url,
                   duration: parseInt(duration / 1000)
@@ -291,11 +274,13 @@ export default {
                 console.log(err)
               })
           } else {
-            self.$createToast({
-              time: 2000,
-              txt: '说活时间太短',
-              type: 'warn'
-            }).show()
+            self
+              .$createToast({
+                time: 2000,
+                txt: '说活时间太短',
+                type: 'warn'
+              })
+              .show()
           }
         },
         function (msg) {
@@ -398,9 +383,7 @@ export default {
           if (res.recordList.length !== 0) {
             this.$refs.scroll.refresh()
             var oldHeight = this.$refs.scroll.scroll.maxScrollY
-            this.recordList = res.recordList
-              .reverse()
-              .concat(this.recordList)
+            this.recordList = res.recordList.reverse().concat(this.recordList)
             this.oldestId = res.recordList[0].data.id
             setTimeout(() => {
               this.$refs.scroll.refresh()
@@ -432,7 +415,7 @@ export default {
           imgUpload(files[i])
             .then(res => {
               console.log(res)
-              this.sendMessage({
+              this.sendMessage(2, {
                 contentType: 2,
                 content: res.rawImgUrl,
                 smallImg: res.imgUrl
@@ -449,7 +432,7 @@ export default {
           fileUpload(files[i])
             .then(res => {
               console.log(res)
-              this.sendMessage({
+              this.sendMessage(2, {
                 contentType: 3,
                 content: res.fileUrl
               })
@@ -465,7 +448,7 @@ export default {
           fileUpload(files[i])
             .then(res => {
               console.log(res)
-              this.sendMessage({
+              this.sendMessage(2, {
                 contentType: 4,
                 content: res.fileUrl
               })
@@ -481,7 +464,7 @@ export default {
           fileUpload(files[i])
             .then(res => {
               console.log(res)
-              this.sendMessage({
+              this.sendMessage(2, {
                 contentType: 1,
                 content: res.fileUrl
               })
@@ -499,18 +482,19 @@ export default {
     im () {
       if (
         this.isClose === false &&
-          (Object.keys(this.socket).length === 0 ||
-            (this.socket && this.socket.readyState === 3))
+        (Object.keys(this.socket).length === 0 ||
+          (this.socket && this.socket.readyState === 3))
       ) {
         this.socket = new WebSocket(
           'ws://im.motooling.com/mtwebsocket/' +
-              this.companyId +
-              '/' +
-              this.synergyGroup.id +
-              '/' +
-              sessionStorage.token +
-              '/' +
-              localStorage.WEBURL.split('//')[1]
+          // 'ws://192.168.2.180:8070/mtwebsocket/' +
+            this.companyId +
+            '/' +
+            this.synergyGroup.id +
+            '/' +
+            sessionStorage.token +
+            '/' +
+            localStorage.WEBURL.split('//')[1]
         )
         this.socket.onopen = this.websocketonopen
         this.socket.onerror = this.websocketonerror
@@ -519,7 +503,22 @@ export default {
       }
     },
     websocketonopen () {
-      this.socket.send('Hello')
+      let that = this
+      let heartCheck = {
+        timeout: 30000,
+        timeoutObj: null,
+        reset: function () {
+          clearInterval(this.timeoutObj)
+          return this
+        },
+        start: function () {
+          this.timeoutObj = setInterval(function () {
+            that.sendMessage(1)
+            console.log('ping')
+          }, this.timeout)
+        }
+      }
+      heartCheck.reset().start()
       this.hideLoading()
     },
     websocketonerror () {
@@ -534,40 +533,65 @@ export default {
       if (this.isClose === false) {
         this.showLoading('网络正在连接...')
         this.im()
+      } else {
+        console.log(22221)
+        this.websocketonopen.heartCheck.reset()
       }
     },
-    sendMessage ({ contentType, content, smallImg, duration }) {
+    sendMessage (type, { contentType, content, smallImg, duration } = {}, data) {
       var message = {
         requestType: 'h5',
-        serialNumber: shortid.generate(),
+        serialNumber: 'h5' + shortid.generate(),
         // msg: message,
         data: {
           groupId: this.synergyGroup.id,
-          senderId: this.uid,
-          contentType: contentType
+          senderId: this.uid
         }
       }
-      // 内容
-      if (content) {
-        message.data.content = content
-      }
-      // 小图
-      if (smallImg) {
-        message.data.smallImg = smallImg
-      }
-      // 语音时长
-      if (duration) {
-        message.data.duration = duration
+      // ping消息
+      if (type === 1) {
+        message = {
+          requestType: 'ping',
+          serialNumber: null,
+          data: {
+          }
+        }
+      } else if (type === 2) {
+        // 发送消息
+        message.data.contentType = contentType
+        // 内容
+        if (content) {
+          message.data.content = content
+        }
+        // 小图
+        if (smallImg) {
+          message.data.smallImg = smallImg
+        }
+        // 语音时长
+        if (duration) {
+          message.data.duration = duration
+        }
+      } else if (type === 3) {
+        message.data.contentType = contentType
+        // 响应消息
+        message = data
+      } else {
+
       }
       if (this.socket.readyState === 1) {
+        console.log(message)
         this.socket.send(JSON.stringify(message))
       } else {
         this.im()
       }
     },
     receiveMessage (msg) {
+      // 不是自己的消息
       if (msg.data.senderId !== this.uid) {
-        this.recordList.push({ data: msg.data })
+        if (msg.data.responseType === '666666') {
+          this.recordList.push({ data: msg.data })
+          this.sendMessage(3, null, msg)
+        }
       } else {
         this.recordList.push({
           data: Object.assign(
@@ -587,7 +611,7 @@ export default {
     submitWord (e) {
       e.preventDefault()
       if (this.content.trim() !== '') {
-        this.sendMessage({
+        this.sendMessage(2, {
           contentType: 1,
           content: this.content
           // contentType: 2,
@@ -632,215 +656,215 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-  input {
-    width: 100%;
-    outline: none;
+input {
+  width: 100%;
+  outline: none;
+}
+.center {
+  text-align: center;
+}
+.member-list-wrap {
+  padding: 8px 30px; /* no*/
+  display: flex;
+  justify-content: center;
+  font-size: 0;
+  img {
+    width: 30px; /* no*/
+    height: 30px; /* no*/
+    margin: 0 4px; /* no*/
   }
-  .center {
-    text-align: center;
-  }
-  .member-list-wrap {
-    padding: 8px 30px; /* no*/
-    display: flex;
-    justify-content: center;
-    font-size: 0;
-    img {
-      width: 30px; /* no*/
-      height: 30px; /* no*/
-      margin: 0 4px; /* no*/
-    }
-  }
+}
 
-  .member-list {
-    text-align: center;
-    background: #fff;
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    align-self: center;
+.member-list {
+  text-align: center;
+  background: #fff;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  align-self: center;
+}
+.talk-contents {
+  position: fixed;
+  top: 46px; /* no*/
+  left: 0;
+  bottom: 44px; /* no*/
+  right: 0;
+  background: #eaeaea;
+}
+.talk-contents .talk-space {
+  display: flex;
+  padding: 10px; /* no */
+}
+.talk-contents .talk-space .talk-user-avatar {
+  height: 40px; /* no */
+  width: 40px; /* no */
+  border-radius: 6px; /* no */
+  flex-shrink: 0;
+}
+.talk-contents .talk-space .talk-user-name {
+  font-size: 14px; /* no */
+  line-height: 1.2;
+  padding: 0 0 2px; /* no */
+}
+.talk-contents .talk-space .talk-info {
+  position: relative;
+  padding: 0 6px; /* no*/
+  width: 100%;
+  font-size: 0;
+}
+.talk-contents .talk-space .talk-content {
+  background: #fff;
+  display: inline-block;
+  padding: 6px 8px; /* no */
+  border-radius: 6px; /* no */
+  font-size: 16px; /* no */
+}
+.talk-contents .talk-space .talk-content img {
+  object-fit: contain;
+  height: 100px; /* no */
+  max-width: 100%;
+}
+.talk-contents .talk-space .talk-content video {
+  object-fit: contain;
+  height: 140px; /* no */
+  max-width: 100%;
+}
+.talk-contents .talk-space .talk-word-content {
+  text-align: left;
+  word-break: break-all;
+}
+.talk-contents .talk-space .talk-voice-content {
+  height: 26px;
+}
+.footer {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  background-color: #ffffff;
+}
+.footer a {
+  display: block;
+  color: #2a2a2a;
+}
+.talker {
+  display: flex;
+  padding: 4px 0; /* no */
+  align-items: center;
+  font-size: 16px; /* no */
+  button {
+    background-color: #fff;
+    border: 1px solid #ccc; /* no */
+    border-radius: 4px; /* no */
+    padding: 8px; /* no */
   }
-  .talk-contents {
-    position: fixed;
-    top: 46px; /* no*/
-    left: 0;
-    bottom: 44px; /* no*/
-    right: 0;
-    background: #eaeaea;
-  }
-  .talk-contents .talk-space {
-    display: flex;
-    padding: 10px; /* no */
-  }
-  .talk-contents .talk-space .talk-user-avatar {
-    height: 40px; /* no */
-    width: 40px; /* no */
-    border-radius: 6px; /* no */
-    flex-shrink: 0;
-  }
-  .talk-contents .talk-space .talk-user-name {
-    font-size: 14px; /* no */
-    line-height: 1.2;
-    padding: 0 0 2px; /* no */
-  }
-  .talk-contents .talk-space .talk-info {
-    position: relative;
-    padding: 0 6px; /* no*/
-    width: 100%;
-    font-size: 0;
-  }
-  .talk-contents .talk-space .talk-content {
-    background: #fff;
-    display: inline-block;
-    padding: 6px 8px; /* no */
-    border-radius: 6px; /* no */
-    font-size: 16px; /* no */
-  }
-  .talk-contents .talk-space .talk-content img {
-    object-fit: contain;
-    height: 100px; /* no */
-    max-width: 100%;
-  }
-  .talk-contents .talk-space .talk-content video {
-    object-fit: contain;
-    height: 140px; /* no */
-    max-width: 100%;
-  }
-  .talk-contents .talk-space .talk-word-content {
-    text-align: left;
-    word-break: break-all;
-  }
-  .talk-contents .talk-space .talk-voice-content {
-    height: 26px;
-  }
-  .footer {
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-    background-color: #ffffff;
-  }
-  .footer a {
-    display: block;
-    color: #2a2a2a;
-  }
-  .talker {
-    display: flex;
-    padding: 4px 0; /* no */
-    align-items: center;
-    font-size: 16px; /* no */
-    button{
-      background-color:#fff;
-      border: 1px solid #ccc; /* no */
-      border-radius: 4px; /* no */
-      padding: 8px; /* no */
-    }
-  }
-  .talker-input-wrapper {
-    flex: 1;
-    padding: 0 6px; /* no */
-  }
-  .talker-input {
-    box-sizing: border-box;
-    border: none;
-    padding: 6px 8px; /* no */
-    border-radius: 6px; /* no */
-    background-color: #ebebeb;
-  }
-  .talker-icon-btn {
-    flex: 0 0 40px; /*no*/
-  }
-  .talker .icon {
-    height: 30px; /* no */
-  }
+}
+.talker-input-wrapper {
+  flex: 1;
+  padding: 0 6px; /* no */
+}
+.talker-input {
+  box-sizing: border-box;
+  border: none;
+  padding: 6px 8px; /* no */
+  border-radius: 6px; /* no */
+  background-color: #ebebeb;
+}
+.talker-icon-btn {
+  flex: 0 0 40px; /*no*/
+}
+.talker .icon {
+  height: 30px; /* no */
+}
 
-  .icon {
-    flex: 1;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-  .icon-full-width {
-    width: 100%;
-    height: 100%;
-  }
-  .icon-small {
-    width: 16px;
-    height: 16px;
-  }
-  .icon-voice-left {
-    background-image: url("../../assets/icon-voice-left.png");
-  }
-  .icon-voice-right {
-    background-image: url("../../assets/icon-voice-right.png");
-  }
-  .icon-add {
-    background-image: url("../../assets/icon-add.png");
-  }
-  .icon-edit {
-    background-image: url("../../assets/icon-edit.png");
-  }
-  .icon-camera {
-    background-image: url("../../assets/icon-camera.png");
-  }
-  .icon-album {
-    background-image: url("../../assets/icon-album.png");
-  }
-  .icon-record {
-    background-image: url("../../assets/icon-record.png");
-  }
-  .talker-action {
-    flex: 0;
-    padding: 0 4px;
-    white-space: nowrap;
-  }
-  .talker-send {
-    color: #333;
-    padding: 4px 6px;
-    font-size: 18px; /* no */
-  }
-  .self-talk {
-    flex-direction: row-reverse;
-    text-align: right;
-  }
-  .talker-toolbar {
-    padding: 10px 0;
-    width: 100%;
-    display: flex;
-  }
-  .talker-toolbar .list-item {
-    /* height: 90px; */
-    box-sizing: border-box;
-    width: 93.75px;
-    padding: 10px;
-  }
-  .talker-toolbar .item-icon {
-    display: flex;
-    height: 53.75px;
-    padding: 10px;
-    border-radius: 6px;
-    background-color: #e6e6e6;
-  }
-  .talker-toolbar .item-text {
-    font-size: 14px; /* no */
-    line-height: 1.5;
-  }
-  .rec-btn{
-    padding:6px 8px;
-    // height:22px;
-    text-align:center;
-    border:1px solid;
-    width: 100%;
-  }
-  .member-avatar-wrapper {
-    width: 20px;
-    display: inline-block;
-  }
-  .member-avatar-wrapper .member-avatar {
-    display: inline-block;
-    height: 30px;
-    width: 30px;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-  }
+.icon {
+  flex: 1;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.icon-full-width {
+  width: 100%;
+  height: 100%;
+}
+.icon-small {
+  width: 16px;
+  height: 16px;
+}
+.icon-voice-left {
+  background-image: url("../../assets/icon-voice-left.png");
+}
+.icon-voice-right {
+  background-image: url("../../assets/icon-voice-right.png");
+}
+.icon-add {
+  background-image: url("../../assets/icon-add.png");
+}
+.icon-edit {
+  background-image: url("../../assets/icon-edit.png");
+}
+.icon-camera {
+  background-image: url("../../assets/icon-camera.png");
+}
+.icon-album {
+  background-image: url("../../assets/icon-album.png");
+}
+.icon-record {
+  background-image: url("../../assets/icon-record.png");
+}
+.talker-action {
+  flex: 0;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+.talker-send {
+  color: #333;
+  padding: 4px 6px;
+  font-size: 18px; /* no */
+}
+.self-talk {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+.talker-toolbar {
+  padding: 10px 0;
+  width: 100%;
+  display: flex;
+}
+.talker-toolbar .list-item {
+  /* height: 90px; */
+  box-sizing: border-box;
+  width: 93.75px;
+  padding: 10px;
+}
+.talker-toolbar .item-icon {
+  display: flex;
+  height: 53.75px;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #e6e6e6;
+}
+.talker-toolbar .item-text {
+  font-size: 14px; /* no */
+  line-height: 1.5;
+}
+.rec-btn {
+  padding: 6px 8px;
+  // height:22px;
+  text-align: center;
+  border: 1px solid;
+  width: 100%;
+}
+.member-avatar-wrapper {
+  width: 20px;
+  display: inline-block;
+}
+.member-avatar-wrapper .member-avatar {
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
 </style>
