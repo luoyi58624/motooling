@@ -556,8 +556,7 @@ export default {
           data: {
           }
         }
-      } else if (type === 2) {
-        // 发送消息
+      } else if (type === 2) { // 发送消息
         message.data.contentType = contentType
         // 内容
         if (content) {
@@ -571,9 +570,7 @@ export default {
         if (duration) {
           message.data.duration = duration
         }
-      } else if (type === 3) {
-        message.data.contentType = contentType
-        // 响应消息
+      } else if (type === 3) { // 响应消息
         message = data
       } else {
 
@@ -586,11 +583,15 @@ export default {
       }
     },
     receiveMessage (msg) {
+      console.log(msg)
       // 不是自己的消息
       if (msg.data.senderId !== this.uid) {
-        if (msg.data.responseType === '666666') {
+        if (msg.responseType === '666666') {
+          console.log(666666)
           this.recordList.push({ data: msg.data })
-          this.sendMessage(3, null, msg)
+          var sendMsg = Object.assign({}, msg)
+          sendMsg.requestType = '555555'
+          this.sendMessage(3, {}, sendMsg)
         }
       } else {
         this.recordList.push({
