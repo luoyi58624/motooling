@@ -486,7 +486,7 @@ export default {
           (this.socket && this.socket.readyState === 3))
       ) {
         this.socket = new WebSocket(
-          'ws://im.motooling.com/mtwebsocket/' +
+          'wss://im.motooling.com/mtwebsocket/' +
           // 'ws://192.168.2.180:8070/mtwebsocket/' +
             this.companyId +
             '/' +
