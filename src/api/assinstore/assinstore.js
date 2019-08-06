@@ -160,3 +160,43 @@ export function getNotifyType (params = {}) {
     data
   })
 }
+export function getOutsourcingeOutStore (params = {}) { // 外协采购退货详情
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mth5/poStore/getOutsourcingeOutStore',
+    method: 'post',
+    data
+  })
+}
+export function assPurchIsBack (params = {}) { // 外协采购退货
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mtH5/ivStore/assPurchIsBack',
+    method: 'post',
+    data
+  })
+}
+
+export function getSupNameAndVoucher (params = {}) { // 外协采购退货
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mth5/poStore/getSupNameAndVoucher',
+    method: 'post',
+    data
+  })
+}

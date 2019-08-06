@@ -146,6 +146,14 @@ var router = new Router({
     component: () => import('./views/AssInstore/use')
   },
   {
+    path: '/assinstore/back',
+    name: 'assinstore-back',
+    component: () => import('./views/AssInstore/back'),
+    meta: {
+      title: '采购退货'
+    }
+  },
+  {
     path: '/assinstore/nav',
     name: 'assinstore-nav',
     component: () => import('./views/AssInstore/nav')
