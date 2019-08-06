@@ -147,6 +147,7 @@ export default {
       isVoice: false,
       isClose: false,
       socket: {},
+      imurl: '',
       uid: localStorage.uid - 0,
       username: '',
       avatar: localStorage.avatar,
@@ -486,7 +487,7 @@ export default {
           (this.socket && this.socket.readyState === 3))
       ) {
         this.socket = new WebSocket(
-          'wss://im.motooling.com/mtwebsocket/' +
+          'ws://' + this.imurl + '/mtwebsocket/' +
           // 'ws://192.168.2.180:8070/mtwebsocket/' +
             this.companyId +
             '/' +
@@ -539,10 +540,12 @@ export default {
       }
     },
     sendMessage (type, { contentType, content, smallImg, duration } = {}, data) {
+      // 随机id 生成
+      var sid = shortid.generate()
       var message = {
         requestType: 'h5',
-        serialNumber: 'h5' + shortid.generate(),
-        // msg: message,
+        serialNumber: 'h5' + sid,
+
         data: {
           groupId: this.synergyGroup.id,
           senderId: this.uid
@@ -651,6 +654,10 @@ export default {
     }
   },
   created () {
+    this.relationId = this.$route.params.id
+    this.relationType = this.$route.params.typeid
+    this.imurl = localStorage.imurl
+    console.log(this.relationId)
     this.init()
     this.getUserInfo()
   }
