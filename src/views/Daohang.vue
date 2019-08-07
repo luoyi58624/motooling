@@ -18,11 +18,20 @@
     </div>
     <br>
     <div>
-      <router-link to="/instore/list">收发货</router-link>
+      <router-link to="/instore/list">采购收货</router-link>
+    </div>
+
+    <br>
+     <div>
+      <router-link to="/instore/back_nav">采购退货</router-link>
     </div>
     <br>
     <div>
-      <router-link to="/assinstore/list">外协采购收发货</router-link>
+      <router-link to="/assinstore/list">外协采购收货</router-link>
+    </div>
+    <br>
+     <div>
+      <router-link to="/assinstore/back_nav">外协采购退货</router-link>
     </div>
     <br>
     <div>

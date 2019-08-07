@@ -21,7 +21,7 @@
       </div>
       <div class="right-bottom">
         <div style="display:flex;">
-          收货数量&nbsp;&nbsp;
+          {{stepperName}}&nbsp;&nbsp;
           <stepper :max="info.max" @input="change" :value="val"/>
         </div>
       </div>
@@ -53,6 +53,10 @@ export default {
     index: {
       type: Number,
       defalut: 0
+    },
+    stepperName: {
+      type: String,
+      default: '收货数量'
     }
   },
   computed: {
