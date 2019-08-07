@@ -6,13 +6,11 @@
       <div class="table">
         <div>
           <div>采购订单</div>
-          <div>
-
-          </div>
+          <div>{{billNo}}</div>
         </div>
         <div>
           <div>供应商</div>
-          <div @click="selectBom"></div>
+          <div>{{supName}}</div>
         </div>
         <div>
           <div>仓管员</div>
@@ -53,6 +51,7 @@
           v-model="item.value"
           :selected="item.selected"
           :index="index"
+          stepperName='退货数量'
           @changeSel="select"
         />
       </div>
@@ -65,7 +64,7 @@
     <div class="bot">
       <div>企业圈</div>
       <div>数量合计：{{allQuantify}}</div>
-      <div @click="save">退料</div>
+      <div @click="save">退货</div>
     </div>
   </div>
 </template>
@@ -74,20 +73,18 @@
 import materiel from '../Order/Components/materiel'
 
 import {
-  moldNoOutList,
-  outStorePOTooling,
-  listToolingVoucherNo,
-  listPickingName,
-  toolingOutStoreSave
-} from '@/api/materiel.js'
-
+  getPurchaseOutStore,
+  purchaseOutStoreSave,
+  getPurchaseOutVoucher
+} from '@/api/instore/instore.js'
+import { listPickingName } from '@/api/materiel.js'
 export default {
   data () {
     return {
       remark: '', //
       noList: [], // 可退料工装列表
       moldNo: '', // 选择的工装号
-      nameList: [], // 退料人列表
+      nameList: [], // 退货人列表
       name: '', // 退料人
       bomTypeList: [
         // bom类型列表
@@ -109,12 +106,34 @@ export default {
       wuliaoList: [], //
       indentNo: '', //
       uid: '', //
+      supName: '', // 供应商名称
       bomTypeText: '' // bom类型名称
     }
   },
   created () {
-    this.getNoList()
-    this.getName()
+    // console.log(getPurchaseOutStore)
+    this.billNo = this.$route.query.no
+    this.getInfo()
+    getPurchaseOutVoucher({ billNo: this.billNo }).then(res => {
+      console.log(res)
+      this.supName = res.supName
+      this.voucherList = res.voucherList.map(item => ({
+        value: item.voucherId,
+        text: item.voucherNo
+      }))
+    })
+    listPickingName()
+      .then(res => {
+        this.nameList = res.map(item => ({
+          value: item.uid,
+          text: item.username
+        }))
+      })
+      .catch(err => {
+        if (err.msg) {
+          this.showToast(err.msg)
+        }
+      })
   },
   components: {
     Materiel: materiel
@@ -149,36 +168,10 @@ export default {
           }
         })
     },
-    getNoList () {
-      // 获取工装列表
-      moldNoOutList()
-        .then(res => {
-          console.log(res.list)
-          this.noList = res.list.map(item => {
-            return { text: item.moldNo, value: item.id }
-          })
-        })
-        .catch(err => {
-          if (err.msg) {
-            this.showToast(err.msg)
-          }
-        })
-    },
     changeValue (value, index) {
       var newList = this.wuliaoList
       newList[index]['value'] = value
       this.$store.commit('changeWuliaoList', newList || [])
-    },
-    slecteNo () {
-      if (this.noList.length === 0) {
-        this.showToast('没有工装号可供选择')
-        return
-      }
-      this.$createPicker({
-        title: '选择工装号',
-        data: [this.noList],
-        onSelect: this.selectedNo
-      }).show()
     },
     selectBom () {
       // 选择bom类型
@@ -206,29 +199,22 @@ export default {
       this.wuliaoList[index]['selected'] = value
     },
     getInfo () {
-      // 获取发料信息
-      outStorePOTooling({ moldNo: this.moldNo, bomType: this.bomTypeValue })
+      // 获取物料信息
+      getPurchaseOutStore({ billNo: this.billNo })
         .then(res => {
           console.log(res)
           this.wuliaoList = res.map(item => {
             console.log(item)
             return {
               list: [
+                { title: '工装号', content: item.billNo },
                 { title: '物料编码', content: item.matNo },
                 { title: '物料描述', content: item.matName },
-                { title: '规格型号', content: item.matModel },
-                { title: '仓库', content: item.storeHouseName },
-                {
-                  title: '库存数量',
-                  content: item.stockQty ? item.stockQty : 0
-                },
-                { title: '应发数量', content: item.quantity1 }
+                { title: '外协类型', content: item.assTypeName },
+                { title: '可退数量', content: item.quantity1 }
               ],
-              max: Math.min(item.stockQty ? item.stockQty : 0, item.quantity1),
-              value:
-                Math.min(item.stockQty ? item.stockQty : 0, item.quantity1) > 0
-                  ? item.quantity
-                  : 0,
+              max: 1,
+              value: Math.min(item.quantity1, 1),
               selected: true,
               matId: item.matId,
               info: item
@@ -243,19 +229,11 @@ export default {
     },
 
     save () {
-      if (!this.moldNo) {
-        this.showToast('请选择工装号')
+      if (!this.name) {
+        this.showToast('请选择退料人')
         return
       }
 
-      //  if(!this.remark){
-      //    this.showToast('请填写备注');
-      //    retrun
-      // };
-      if (!this.bomTypeText) {
-        this.showToast('请选择BOM类型')
-        return
-      }
       if (!this.indentNo) {
         this.showToast('请填写收发货单号')
         return
@@ -267,6 +245,13 @@ export default {
       if (!this.chalkupDate) {
         this.showToast('请选择记账日期')
         return
+      }
+      if (!this.voucherNo) {
+        this.showToast('请选择收货凭证')
+        return
+      }
+      if (!this.indentNo) {
+        this.showToast('请填写收发货单编号')
       }
       if (this.allQuantify === 0) {
         this.showToast('没有选择物料')
@@ -282,25 +267,23 @@ export default {
         .filter(item => {
           return item
         })
-      console.log(list)
-      const bmoype = this.bomTypeValue
-      const billNo = this.moldNo
+
+      const billNo = this.billNo
       const transDate = this.transDate
       const chalkupDate = this.chalkupDate
+      const supName = this.supName
+      const supLinkmanName = ''
       const voucherNo = this.voucherNo
       const indentNo = this.indentNo
-      const uid = this.uid
-      const remark = this.remark
-      toolingOutStoreSave({
-        bmoype,
+      purchaseOutStoreSave({
         billNo,
         transDate,
-        uid,
         chalkupDate,
+        supName,
+        supLinkmanName,
         indentNo,
         voucherNo,
-        list,
-        remark
+        list
       })
         .then(res => {
           this.showToast('操作成功')
@@ -335,29 +318,6 @@ export default {
     },
     getVoucher () {
       // 获取凭证号
-      if (!this.moldNo) {
-        this.showToast('没有选择工装号')
-        return
-      }
-      if (!this.bomTypeValue) {
-        this.showToast('没有选择BOM类型')
-        return
-      }
-      listToolingVoucherNo({ moldNo: this.moldNo, bomType: this.bomTypeValue })
-        .then(res => {
-          console.log('凭证号', res)
-          this.voucherList = res.map(item => {
-            return {
-              text: item.voucherNo,
-              value: item.voucherNo
-            }
-          })
-        })
-        .catch(err => {
-          if (err.msg) {
-            this.showToast(err.msg)
-          }
-        })
     },
     showpz () {
       // 选择让凭证号
@@ -365,6 +325,7 @@ export default {
         this.showToast('暂无可选')
         return
       }
+      console.log(this.voucherList)
       this.picker = this.$createPicker({
         title: '选择发料凭证',
         data: [this.voucherList],
@@ -372,30 +333,12 @@ export default {
       }).show()
     },
     pzno (selectedVal, selectedIndex, selectedText) {
-      this.voucherNo = selectedVal.join(', ')
-      this.getList(this.voucherNo)
+      this.voucherNo = selectedText.join(', ')
     },
-    getList (no) {
-    },
-    showDep () {
-      this.$createPicker({
-        title: '退料部门',
-        data: [this.depList],
-        onSelect: this.selectHandle
-      }).show()
-    },
+    getList (no) {},
+
     jz (date, selectedVal, selectedText) {
       this.chalkupDate = selectedVal.join('-')
-    },
-    selectHandle (selectedVal, selectedIndex, selectedText) {
-      this.depIdx = selectedVal.join(', ')
-      this.depName = this.list[this.depIdx]['name']
-      this.depId = this.list[this.depIdx]['depId']
-      this.nameList = this.list[this.depIdx]['childrenList'].map(item => {
-        return { text: item.username, value: item.uid }
-      })
-      this.name = ''
-      this.applyManId = ''
     },
     selectName () {
       // ‘选择领料人

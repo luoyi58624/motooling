@@ -146,11 +146,27 @@ var router = new Router({
     component: () => import('./views/AssInstore/use')
   },
   {
+    path: '/instore/back_nav',
+    name: 'instore-back_nav',
+    component: () => import('./views/instore/back_nav'),
+    meta: {
+      title: '采购退货'
+    }
+  },
+  {
     path: '/assinstore/back',
     name: 'assinstore-back',
     component: () => import('./views/AssInstore/back'),
     meta: {
-      title: '采购退货'
+      title: '外协采购退货'
+    }
+  },
+  {
+    path: '/assinstore/back_nav',
+    name: 'assinstore-back_nav',
+    component: () => import('./views/AssInstore/back_nav'),
+    meta: {
+      title: '外协采购退货'
     }
   },
   {

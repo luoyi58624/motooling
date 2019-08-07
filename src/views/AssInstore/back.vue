@@ -51,6 +51,7 @@
           v-model="item.value"
           :selected="item.selected"
           :index="index"
+          stepperName="退货数量"
           @changeSel="select"
         />
       </div>
@@ -110,7 +111,7 @@ export default {
     }
   },
   created () {
-    this.billNo = 'AP19070003'
+    this.billNo = this.$route.query.no
     // getOutsourcingeOutStore({billNo:this.billNo}).then(res=>{
     //   console.log(res)
     // })
@@ -122,6 +123,10 @@ export default {
         value: item.voucherId,
         text: item.voucherNo
       }))
+    }).catch(err => {
+      if (err.msg) {
+        this.showToast(err.msg)
+      }
     })
     listPickingName()
       .then(res => {

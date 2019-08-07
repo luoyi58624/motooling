@@ -18,7 +18,7 @@
 export default {
   data () {
     return {
-      value: 'AP19070003'
+      value: 'MP19040001'
     }
   },
   methods: {
@@ -28,7 +28,7 @@ export default {
         return
       }
       this.$router.push({
-        path: '/assinstore/back',
+        path: '/instore/back',
         query: {
           no: this.value
         }

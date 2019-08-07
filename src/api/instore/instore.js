@@ -181,3 +181,45 @@ export function getNotifyType (params = {}) { // 库位
     data
   })
 }
+
+export function purchaseOutStoreSave (params = {}) { // 采购退货
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mth5/poStore/purchaseOutStoreSave',
+    method: 'post',
+    data
+  })
+}
+
+export function getPurchaseOutStore (params = {}) { // 采购退货详情
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mth5/poStore/getPurchaseOutStore',
+    method: 'post',
+    data
+  })
+}
+
+export function getPurchaseOutVoucher (params = {}) { // 采购退货供应商及凭证号
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mth5/poStore/getPurchaseOutVoucher',
+    method: 'post',
+    data
+  })
+}
