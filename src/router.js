@@ -258,7 +258,7 @@ var router = new Router({
     }
   },
   {
-    path: '/synergy',
+    path: '/synergy/:typeid/:id',
     name: 'synergy',
     component: () => import('./views/synergy/index'),
     meta: {
@@ -373,6 +373,9 @@ router.beforeEach((to, from, next) => {
   }
   if (to.query.token) {
     sessionStorage.token = decodeURIComponent(to.query.token)
+  }
+  if (to.query.imurl) {
+    localStorage.imurl = decodeURIComponent(to.query.imurl)
   }
   if (to.query.token && to.query.weburl) {
     next()
