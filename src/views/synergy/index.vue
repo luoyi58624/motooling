@@ -207,6 +207,11 @@ export default {
     }
   },
   mounted () {
+    window.onresize = () => {
+      return (() => {
+        this.$refs.scroll.refresh()
+      })()
+    }
     setTimeout(() => {
       this.$refs.scroll.refresh()
       this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
