@@ -98,14 +98,13 @@ export default {
         }
       ],
       billNo: '', // 收发货单边行
-      applyManId: '', //
-      transDate: '', //
-      chalkupDate: '', //
+      transDate: '', // 凭证日期
+      chalkupDate: '', // 记账日期
       voucherList: [], // 发料凭证列表
       voucherNo: '', // 发料凭证
-      wuliaoList: [], //
-      indentNo: '', //
-      uid: '', //
+      wuliaoList: [], // 物料列表
+      indentNo: '', // 收发货单号
+      uid: '', // 用户uid
       supName: '', // 供应商名称
       bomTypeText: '' // bom类型名称
     }
@@ -116,18 +115,20 @@ export default {
     //   console.log(res)
     // })
     this.getInfo()
-    getSupNameAndVoucher({ billNo: this.billNo }).then(res => {
-      console.log(res)
-      this.supName = res.supName
-      this.voucherList = res.voucherList.map(item => ({
-        value: item.voucherId,
-        text: item.voucherNo
-      }))
-    }).catch(err => {
-      if (err.msg) {
-        this.showToast(err.msg)
-      }
-    })
+    getSupNameAndVoucher({ billNo: this.billNo })
+      .then(res => {
+        console.log(res)
+        this.supName = res.supName
+        this.voucherList = res.voucherList.map(item => ({
+          value: item.voucherId,
+          text: item.voucherNo
+        }))
+      })
+      .catch(err => {
+        if (err.msg) {
+          this.showToast(err.msg)
+        }
+      })
     listPickingName()
       .then(res => {
         this.nameList = res.map(item => ({
