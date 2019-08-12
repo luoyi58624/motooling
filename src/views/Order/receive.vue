@@ -11,7 +11,7 @@
         </div>
         <div>
           <div>仓管员</div>
-          <div>{{info.username}}</div>
+          <div>{{username}}</div>
         </div>
         <div>
           <div>凭证日期</div>
@@ -52,7 +52,7 @@
 import materiel from './Components/materiel'
 import screen from './Components/screen'
 import { getpmPoInStore, inStoreSave } from '@/api/order/order.js'
-
+import { username } from '@/utils/utils.js'
 export default {
   data () {
     return {
@@ -63,6 +63,7 @@ export default {
     }
   },
   created () {
+    this.username = username()
     this.no = this.$route.query.no
     this.getInfo(this.no)
   },

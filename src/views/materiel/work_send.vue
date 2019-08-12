@@ -16,7 +16,7 @@
         </div>
         <div>
           <div>仓管员</div>
-          <div>{{}}</div>
+          <div>{{username}}</div>
         </div>
         <div>
           <div>领料人</div>
@@ -75,7 +75,7 @@ import {
   toolingInStoreSave,
   listPickingName
 } from '@/api/materiel.js'
-
+import { username } from '@/utils/utils.js'
 export default {
   data () {
     return {
@@ -106,6 +106,7 @@ export default {
     }
   },
   created () {
+    this.username = username()
     this.getNoList()
     this.getName()
   },

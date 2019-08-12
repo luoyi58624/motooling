@@ -36,7 +36,7 @@ export const fileServerUrl = () => localStorage.getItem('fileServerUrl') || ''
 
 export const token = () => sessionStorage.getItem('token') || ''
 
-export const username = () => sessionStorage.getItem('username') || ''
+export const username = () => localStorage.getItem('username') || ''
 
 export function fileAddressFormat (url) {
   if (!url) {

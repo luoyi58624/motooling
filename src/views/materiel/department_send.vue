@@ -10,7 +10,7 @@
         </div>
         <div>
           <div>仓管员</div>
-          <div>{{}}</div>
+          <div>{{username}}</div>
         </div>
         <div>
           <div>领料人</div>
@@ -70,6 +70,8 @@ import materiel from '../Order/Components/materiel'
 
 import { depUserList, deptApplyMat } from '@/api/materiel.js'
 
+import { username } from '@/utils/utils.js'
+
 export default {
   data () {
     return {
@@ -87,6 +89,7 @@ export default {
       indentNo: '' }
   },
   created () {
+    this.username = username()
     depUserList().then(res => {
       this.list = res.list
       // console.log(res.list)
