@@ -44,6 +44,8 @@ export default {
             // localStorage.setItem("WEBURL", resObj.data.weburl);
             localStorage.setItem('uid', resObj.data.user.uid)
             localStorage.setItem('avatar', resObj.data.user.avatar)
+            localStorage.setItem('username', resObj.data.user.username)
+            localStorage.setItem('fileServerUrl', resObj.data.fileServerUrl)
             let nexturl
             if (state) {
               nexturl = decodeURIComponent(state)
