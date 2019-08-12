@@ -16,7 +16,7 @@
         </div>
         <div>
           <div>仓管员</div>
-          <div>{{}}</div>
+          <div>{{username}}</div>
         </div>
         <div>
           <div>退料人</div>
@@ -80,7 +80,7 @@ import {
   listPickingName,
   toolingOutStoreSave
 } from '@/api/materiel.js'
-
+import { username } from '@/utils/utils.js'
 export default {
   data () {
     return {
@@ -113,6 +113,7 @@ export default {
     }
   },
   created () {
+    this.username = username()
     this.getNoList()
     this.getName()
   },
@@ -375,8 +376,7 @@ export default {
       this.voucherNo = selectedVal.join(', ')
       this.getList(this.voucherNo)
     },
-    getList (no) {
-    },
+    getList (no) {},
     showDep () {
       this.$createPicker({
         title: '退料部门',

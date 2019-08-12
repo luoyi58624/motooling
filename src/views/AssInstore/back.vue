@@ -14,7 +14,7 @@
         </div>
         <div>
           <div>仓管员</div>
-          <div>{{}}</div>
+          <div>{{username}}</div>
         </div>
         <div>
           <div>退货人</div>
@@ -71,7 +71,7 @@
 
 <script>
 import materiel from '../Order/Components/materiel'
-
+import { username } from '@/utils/utils.js'
 import {
   getOutsourcingeOutStore,
   assPurchIsBack,
@@ -110,6 +110,7 @@ export default {
     }
   },
   created () {
+    this.username = username()
     this.billNo = this.$route.query.no
     // getOutsourcingeOutStore({billNo:this.billNo}).then(res=>{
     //   console.log(res)
