@@ -18,7 +18,8 @@ export function imgUpload (params) {
   return request({
     url: WEBURL() + '/img/h5ImgUpload',
     method: 'post',
-    data: form
+    data: form,
+    timeout: 0
   })
 }
 
@@ -36,6 +37,7 @@ export function fileUpload (params, filename) {
   return request({
     url: WEBURL() + '/file/h5FileUpload',
     method: 'post',
-    data: form
+    data: form,
+    timeout: 0
   })
 }
