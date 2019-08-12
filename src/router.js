@@ -258,14 +258,6 @@ var router = new Router({
     }
   },
   {
-    path: '/synergy/:typeid/:id',
-    name: 'synergy',
-    component: () => import('./views/synergy/index'),
-    meta: {
-      keepAlive: true
-    }
-  },
-  {
     path: '/synergy/summary/list',
     name: 'synergySummaryList',
     component: () => import('./views/synergy/summary/list')
@@ -276,6 +268,14 @@ var router = new Router({
     path: '/synergy/summary/:type/:groupId/:id',
     name: 'synergySummaryDetail',
     component: () => import('./views/synergy/summary/detail')
+  },
+  {
+    path: '/synergy/:typeid/:id',
+    name: 'synergy',
+    component: () => import('./views/synergy/index'),
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/delivery',

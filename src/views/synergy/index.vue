@@ -210,6 +210,7 @@ export default {
     window.onresize = () => {
       return (() => {
         this.$refs.scroll.refresh()
+        console.log('resize')
       })()
     }
     setTimeout(() => {
