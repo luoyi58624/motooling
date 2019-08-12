@@ -47,11 +47,11 @@
     </div>
        <br>
     <div>
-      <router-link to="/order/delivery_nav">订单退货查询</router-link>
+      <router-link to="/order/delivery_nav">生产订单退货查询</router-link>
     </div>
        <br>
     <div>
-      <router-link to="/order/receive_nav">订单收货查询</router-link>
+      <router-link to="/order/receive_nav">生产订单收货查询</router-link>
     </div>
       <br>
     <div>

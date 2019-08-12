@@ -358,6 +358,30 @@ var router = new Router({
       title: '对工装发料',
       keepAlive: true
     }
+  },
+  {
+    path: '/scan/nav-send',
+    name: 'scan-nav',
+    component: () => import('./views/scan/nav-send'),
+    meta: {
+      title: '退料'
+    }
+  },
+  {
+    path: '/scan/nav-back',
+    name: 'scan-nav',
+    component: () => import('./views/scan/nav-back'),
+    meta: {
+      title: '退货'
+    }
+  },
+  {
+    path: '/scan/nav-receive',
+    name: 'scan-nav',
+    component: () => import('./views/scan/nav-receive'),
+    meta: {
+      title: '收货'
+    }
   }
   ]
 })
