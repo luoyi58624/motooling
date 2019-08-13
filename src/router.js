@@ -364,7 +364,7 @@ var router = new Router({
     name: 'scan-nav',
     component: () => import('./views/scan/nav-send'),
     meta: {
-      title: '退料'
+      title: '发料'
     }
   },
   {
