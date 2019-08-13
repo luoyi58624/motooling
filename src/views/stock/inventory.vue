@@ -26,7 +26,7 @@
       <div>
         <div>备注</div>
         <div>
-          <textarea name id cols="30" rows="10" v-model="info.checkProfitLossReason"></textarea>
+          <textarea name id cols="30" rows="10" border class="bz" v-model="remark"></textarea>
         </div>
       </div>
     </div>
@@ -113,5 +113,19 @@ export default {
 }
 .box {
   height: 80px;
+}
+.bz {
+  margin:10px 0;
+  margin-right:20px;
+
+  border: 1px solid #d4d4d4;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100px;
+  padding: 10px;
+  resize: none;
+  line-height:20px;
 }
 </style>
