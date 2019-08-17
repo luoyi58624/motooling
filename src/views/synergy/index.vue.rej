@@ -1,0 +1,13 @@
+diff a/src/views/synergy/index.vue b/src/views/synergy/index.vue	(rejected hunks)
+@@ -233,2 +233,2 @@ export default {
+-    focus(){//输入框聚焦时事件
+-    console.log(1)
++    focus () { // 输入框聚焦时事件
++      console.log(1)
+@@ -241,3 +240,3 @@ export default {
+-    blur(){//输入框失去焦点
+-    console.log(2)
+-        setTimeout(() => {
++    blur () { // 输入框失去焦点
++      console.log(2)
++      setTimeout(() => {
