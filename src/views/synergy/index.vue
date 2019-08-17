@@ -3,7 +3,7 @@
     <div class="member-list-wrap" v-if="isEnable">
       <div class="member-list">
         <template v-for="item in synergyMemberList">
-          <img :src="item.avatar" :key="item.id" />
+          <img :src="item.avatar?item.avatar:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566036126029&di=a517d7ca4047c0d749a9526b65e98498&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201704%2F27%2F20170427155254_Kctx8.thumb.700_0.jpeg'" :key="item.id" onerror="onerror=null;src='https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566036126029&di=a517d7ca4047c0d749a9526b65e98498&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201704%2F27%2F20170427155254_Kctx8.thumb.700_0.jpeg'"/>
 
           <!-- <div>{{item.username}}</div> -->
         </template>
@@ -13,8 +13,9 @@
       </div>
     </div>
     <scroll
-      :data="[recordList,moreBtnStatus]"
+      :data="watchData"
       class="talk-contents"
+      :class="{'active':moreBtnStatus}"
       ref="scroll"
       :pulldown="true"
       @pulldown="pulldown"
@@ -197,6 +198,9 @@ export default {
       } else {
         return this.resMemberList
       }
+    },
+    watchData () {
+      return [...this.recordList, this.moreBtnStatus]
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -669,6 +673,15 @@ export default {
     console.log(this.relationId)
     this.init()
     this.getUserInfo()
+  },
+  watch: {
+    moreBtnStatus (val) {
+      console.log(val)
+      setTimeout(() => {
+        this.$refs.scroll.refresh()
+        this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
+      }, 300)
+    }
   }
 }
 </script>
@@ -689,6 +702,7 @@ input {
     width: 30px; /* no*/
     height: 30px; /* no*/
     margin: 0 4px; /* no*/
+    object-fit: cover;
   }
 }
 
@@ -708,6 +722,9 @@ input {
   bottom: 44px; /* no*/
   right: 0;
   background: #eaeaea;
+}
+.talk-contents.active{
+  bottom:157px;/* no*/
 }
 .talk-contents .talk-space {
   display: flex;
@@ -844,21 +861,23 @@ input {
   text-align: right;
 }
 .talker-toolbar {
-  padding: 10px 0;
+  padding: 10px 0;/* no */
   width: 100%;
   display: flex;
+  justify-content: space-between;
 }
 .talker-toolbar .list-item {
   /* height: 90px; */
   box-sizing: border-box;
-  width: 93.75px;
-  padding: 10px;
+  width: 93.75px;/* no */
+  height: 93.75px;/* no */
+  padding: 10px;/* no */
 }
 .talker-toolbar .item-icon {
   display: flex;
-  height: 53.75px;
-  padding: 10px;
-  border-radius: 6px;
+  height: 53.75px;/* no */
+  padding: 10px;/* no */
+  border-radius: 6px;/* no */
   background-color: #e6e6e6;
 }
 .talker-toolbar .item-text {
