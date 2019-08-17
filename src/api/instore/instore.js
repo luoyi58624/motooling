@@ -223,3 +223,17 @@ export function getPurchaseOutVoucher (params = {}) { // 采购退货供应商�
     data
   })
 }
+
+export function getDeliveryAndReturn (params = {}) { // 获取收退货接口
+  const data = {
+    token: token,
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL + '/mth5/poStore/getDeliveryAndReturn',
+    method: 'post',
+    data
+  })
+}

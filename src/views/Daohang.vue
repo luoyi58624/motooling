@@ -37,6 +37,14 @@
     <div>
       <router-link to="/stock/list">库存盘点</router-link>
     </div>
+      <br>
+    <div>
+      <router-link to="/order/delivery_nav">生产订单退货查询</router-link>
+    </div>
+       <br>
+    <div>
+      <router-link to="/order/receive_nav">生产订单收货查询</router-link>
+    </div>
        <br>
     <div>
       <router-link to="/materiel/_nav">退料</router-link>
@@ -45,13 +53,14 @@
     <div>
       <router-link to="/materiel/nav">发料</router-link>
     </div>
-       <br>
-    <div>
-      <router-link to="/order/delivery_nav">生产订单退货查询</router-link>
+
+      <br>
+        <div>
+      <router-link to="/scan/nav-receive">收货</router-link>
     </div>
-       <br>
-    <div>
-      <router-link to="/order/receive_nav">生产订单收货查询</router-link>
+      <br>
+        <div>
+      <router-link to="/scan/nav-back">退货</router-link>
     </div>
       <br>
     <div>

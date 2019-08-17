@@ -13,7 +13,7 @@
       </div>
     </div>
     <scroll
-      :data="recordList"
+      :data="[recordList,moreBtnStatus]"
       class="talk-contents"
       ref="scroll"
       :pulldown="true"
@@ -90,6 +90,7 @@
           <button type="submit" class="talker-send" @click="submitWord">发送</button>
         </div>
       </form>
+      <transition name="slide-fade">
       <div class="talker-toolbar" v-show="moreBtnStatus">
         <label class="list-item" for="uploadImageField">
           <div class="item-icon">
@@ -121,6 +122,8 @@
           </router-link>
         </div>
       </div>
+      </transition>
+
     </div>
   </div>
 </template>
@@ -143,7 +146,7 @@ export default {
   },
   data () {
     return {
-      isEnable: true,
+      isEnable: true, // 是否有权限
       isVoice: false,
       isClose: false,
       socket: {},
@@ -880,5 +883,15 @@ input {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
+}
+.slide-fade-enter-active {
+  transition: all 0.3s ;
+}
+.slide-fade-leave-active {
+  transition: all 0.3s ;
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active for below version 2.1.8 */ {
+  transform: translateY(100%);
 }
 </style>
