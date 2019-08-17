@@ -18,7 +18,7 @@
 export default {
   data () {
     return {
-      value: ''
+      value: 'PO19050002'
     }
   },
   methods: {

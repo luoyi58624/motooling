@@ -734,10 +734,11 @@ export default {
                   this.showToast(err.msg || '操作失败')
                 })
               } else {
-                this.dialog = ''
-                this.dialog = this.$createDialog({
+                this.$createDialog({
                   type: 'prompt',
-                  title: '输入添加数量',
+                  title: `输入添加数量(范围1-${
+                    this._waitList[idx][index].partQty
+                  })`,
                   prompt: {
                     value: '',
                     placeholder: `请输入1-${

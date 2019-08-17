@@ -116,6 +116,14 @@ var router = new Router({
     component: () => import('./views/Baogong/work-shop.vue')
   },
   {
+    path: '/spotcheck',
+    name: 'spotcheck',
+    component: () => import('./views/Baogong/spotcheck.vue'),
+    meta: {
+      title: '设备点检'
+    }
+  },
+  {
     path: '/instore/nav',
     name: 'instore-nav',
     component: () => import('./views/instore/nav')
@@ -364,12 +372,12 @@ var router = new Router({
     name: 'scan-nav',
     component: () => import('./views/scan/nav-send'),
     meta: {
-      title: '退料'
+      title: '发料'
     }
   },
   {
     path: '/scan/nav-back',
-    name: 'scan-nav',
+    name: 'nav-back',
     component: () => import('./views/scan/nav-back'),
     meta: {
       title: '退货'
@@ -377,7 +385,7 @@ var router = new Router({
   },
   {
     path: '/scan/nav-receive',
-    name: 'scan-nav',
+    name: 'nav-receive',
     component: () => import('./views/scan/nav-receive'),
     meta: {
       title: '收货'
