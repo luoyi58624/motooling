@@ -231,14 +231,13 @@ export default {
   },
   methods: {
     focus () { // 输入框聚焦时事件
-      console.log(1)
+      this.moreBtnStatus = false
       setTimeout(() => {
         this.$refs.scroll.refresh()
         this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
       }, 300)
     },
     blur () { // 输入框失去焦点
-      console.log(2)
       setTimeout(() => {
         this.$refs.scroll.refresh()
         this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
