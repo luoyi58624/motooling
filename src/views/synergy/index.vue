@@ -74,7 +74,7 @@
           </div>
         </div>
         <div class="talker-input-wrapper" v-if="!isVoice">
-          <input class="talker-input" type="text" placeholder="请输入" v-model="content" />
+          <input class="talker-input" type="text" placeholder="请输入" v-model="content" @focus="focus" @blur="blur" />
         </div>
         <div class="talker-input-wrapper" v-if="isVoice">
           <button
@@ -230,6 +230,20 @@ export default {
     this.socket.close()
   },
   methods: {
+    focus () { // 输入框聚焦时事件
+      console.log(1)
+      setTimeout(() => {
+        this.$refs.scroll.refresh()
+        this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
+      }, 300)
+    },
+    blur () { // 输入框失去焦点
+      console.log(2)
+      setTimeout(() => {
+        this.$refs.scroll.refresh()
+        this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
+      }, 300)
+    },
     fileAddressFormatFunc (url) {
       return fileAddressFormat(url)
     },
@@ -675,8 +689,7 @@ export default {
     this.getUserInfo()
   },
   watch: {
-    moreBtnStatus (val) {
-      console.log(val)
+    moreBtnStatus () {
       setTimeout(() => {
         this.$refs.scroll.refresh()
         this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
