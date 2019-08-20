@@ -19,7 +19,7 @@
       @pulldown="pulldown"
       listenScroll
     >
-      <div>
+      <div class="scroll-content">
         <div
           class="talk-space"
           :class="uid != item.data.senderId?'user-talk':'self-talk'"
@@ -697,6 +697,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.scroll-content{
+  min-height: 101%;
+}
 input {
   width: 100%;
   outline: none;
