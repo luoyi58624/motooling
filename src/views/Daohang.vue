@@ -1,6 +1,8 @@
 <template>
   <div>
     <br>
+    <div class="version">版本号：{{version}}</div>
+    <br>
     <div>
       <router-link to="/device/add?deviceid=71">设备资料维护</router-link>
     </div>
@@ -87,13 +89,25 @@
 </template>
 
 <script>
+var version = require('../../package.json').version
 export default {
   data () {
     return {
       code: encodeURIComponent(
         'evnxsVc8MAG%2F26dlBwqU84uvqS3C%2F6lYlTbiLPDTPzFxoXWhUXT0yfgLh1feJCgFQYPeag35MQ1pVeTEPguiwX1M%2BjGwi%2B5axdil6eFMuF%2FGd0Kv9%2FCVWyoydpkT8JuB0v2glXO6mgJ3UCZD4iSG0DlWscY7q12Q1Y3MgYUmezw%3D'
-      )
+      ),
+      version: ''
     }
+  },
+  created () {
+    console.log(version)
+    this.version = version
   }
 }
 </script>
+<style lang="less">
+.version{
+  font-size:12px;/*no*/
+
+}
+</style>
