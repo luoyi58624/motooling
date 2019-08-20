@@ -3,12 +3,10 @@
     <div class="member-list-wrap" v-if="isEnable">
       <div class="member-list">
         <template v-for="item in synergyMemberList">
-          <img :src="item.avatar?item.avatar:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566036126029&di=a517d7ca4047c0d749a9526b65e98498&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201704%2F27%2F20170427155254_Kctx8.thumb.700_0.jpeg'" :key="item.id" onerror="onerror=null;src='https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1566036126029&di=a517d7ca4047c0d749a9526b65e98498&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201704%2F27%2F20170427155254_Kctx8.thumb.700_0.jpeg'"/>
-
-          <!-- <div>{{item.username}}</div> -->
+          <img :src="item.avatar?item.avatar:require('@/assets/person.png')" :key="item.id">
         </template>
       </div>
-      <div @click="addUser('changeSynergyMemberList','synergyMemberList')">
+      <div @click="addUser('changeSy nergyMemberList','synergyMemberList')">
         <img src="../../assets/icon-add.png" />
       </div>
     </div>
