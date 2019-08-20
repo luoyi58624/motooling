@@ -233,6 +233,7 @@ export default {
     focus () { // 输入框聚焦时事件
       this.moreBtnStatus = false
       setTimeout(() => {
+        console.log(123)
         this.$refs.scroll.refresh()
         this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
       }, 300)
@@ -708,8 +709,10 @@ input {
 .member-list-wrap {
   padding: 8px 30px; /* no*/
   display: flex;
+  position:fixed;top:0;left:0;right:0;
   justify-content: center;
   font-size: 0;
+  background: #fff;
   img {
     width: 30px; /* no*/
     height: 30px; /* no*/
