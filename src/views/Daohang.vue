@@ -100,7 +100,6 @@ export default {
     }
   },
   created () {
-    console.log(version)
     this.version = version
   }
 }

@@ -287,3 +287,30 @@ export function workshopList (params = {}) {
     data
   })
 }
+
+export function pcPurchAssOrderInfo (params = {}) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL() + '/mtH5/deviceCheck/pcPurchAssOrderInfo',
+    method: 'post',
+    data
+  })
+}
+export function saveAssOrderInfo (params = {}) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL() + '/mtH5/deviceCheck/saveAssOrderInfo',
+    method: 'post',
+    data
+  })
+}
