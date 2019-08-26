@@ -38,6 +38,7 @@
 
                     <span v-show="ie.showOption" style class="iconfont icon-xiangshang-"></span>
                     <div v-show="ie.showOption">
+                       <div @click="spotcheck(ie.deviceId)">点检</div>
                       <div @click="wangong(2,ie.deviceId,1,ie.pgId)">完成</div>
                       <div @click="jiaojie(1,ie.deviceId,1,ie.pgId)">交接</div>
                       <div @click="ybwg(ie.deviceId,ie.pgId)">预报</div>
@@ -50,8 +51,8 @@
                   class="state"
                   :class="{free:ie.deviceStatus==0,ing:ie.deviceStatus==1,repair:ie.deviceStatus=='其他'}"
                 >{{ie.deviceName }}</div>
-                <div class="right-on">未点检</div>
-                <div class="right-on" v-if="ie.deviceStatus===!0&&ie.deviceStatus===!1">维修中</div>
+                <!-- <div class="right-on">未点检{{ie.deviceStatus}}</div> -->
+                <div class="right-on" v-if="ie.deviceStatus!=='0'&&ie.deviceStatus!=='1'">维修中</div>
               </div>
             </div>
           </swiper-slide>
@@ -339,6 +340,14 @@ export default {
   },
   mounted () {},
   methods: {
+    spotcheck (deviceId) {
+      this.$router.push({
+        query: {
+          deviceId: deviceId
+        },
+        path: '/spotcheck'
+      })
+    },
     workshop (list) {
       if (list.length === 0) {
         this.showToast('没有可选车间')
