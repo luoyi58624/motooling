@@ -222,24 +222,27 @@ export default {
         }
       },
       title: '工作中心',
-      pgId: '',
+      pgId: '', // 工作中心id
       ullDownRefresh: {
         stop: 55
       },
       selIdx: 0,
-      list: [],
-      source: {},
+      list: [], // 工作中心列表
+      source: {}, // 手移动工件时所需要的定位
       modalID: 'zhezhao',
-      shebeiList: [],
-      waitList: [],
-      doneList: [],
-      shebeiPage: 1,
+      shebeiList: [], // 设备列表
+      waitList: [], // 待加工工件列表
+      doneList: [], // 已完成工件列表
+      shebeiPage: 1, // 获取设备列表页码
+      shebeiPageSize: 12, // 获取设备列表每页的数量
       waitPage: 1,
+      waitPageSize: 16,
       donePage: 1,
-      shebeiHasmore: true,
+      donePageSize: 16,
+      shebeiHasmore: true, // 设备列表是否有更多
       waitHasmore: true,
       doneHasmore: true,
-      shebeiArray: []
+      shebeiArray: []// 当前显示在页面上的设备列表
     }
   },
   created () {
@@ -257,18 +260,12 @@ export default {
     if (WEBURL) {
       localStorage.setItem('WEBURL', WEBURL)
     }
-    // sessionStorage.setItem('token', '63b63bd4-9262-4a08-82ca-17fb7f31f3f0')
-    // localStorage.setItem('uid', '12')
-    // localStorage.setItem("WEBURL", "http://www.motooling.com:8808");
-    // localStorage.setItem("WEBURL", "http://192.168.2.247:8808");
-    // getSettingList().then()
     const that = this
     getPmPgList({ deviceId })
       .then(res => {
         console.log(res.list)
         that.list = res.list
         that.pgId = res.list[0].pgId
-        // console.log(this.pgId);
         that.select()
       })
       .catch(err => {
@@ -592,87 +589,34 @@ export default {
         }
       })
     },
-    tS (e, index, idx) {
-      // console.log(e.currentTarget)
-      // console.log()
-      // if (e.target === e.currentTarget) {
+    tS (e, index, idx) { // 开始移动工件
       this.shebeiArray = []
       var shebeiDom = document.getElementsByClassName('shebei')
-      // var myDom=shebeiDom.slice(idx*8+index-1,idx*8+index)
-
       var myDom = Array.prototype.slice.call(
         shebeiDom,
         this.shebeiCurrentIdx * 6,
         this.shebeiCurrentIdx * 6 + 6
       )
-      // console.log(shebeiDom);
-      // console.log(myDom);
       for (var i = 0; i < myDom.length; i++) {
         this.shebeiArray.push(myDom[i].getBoundingClientRect())
       }
-
-      // console.log(this.shebeiArray);
-      // this.fixedE(a)
-      // var obj=a[0].getBoundingClientRect();
-
-      // this.createModal(this.modalID);
       let element = e.targetTouches[0] // 记录初始 client 位置，用于计算移动距离
-      // console.log(element)
       this.source.client = {
         x: element.clientX,
         y: element.clientY
       }
-
-      // }
-      // console.log(this.source);
     },
-    tM (e, index, idx) {
-      // console.log(obj)
-      // console.log(index);
-      // if (e.target === e.currentTarget) {
-
+    tM (e, index, idx) { // 工件移动中
       let element = e.targetTouches[0]
-      // console.log(this.$refs.moveBox[index])
-      // let dom=e.currentTarget[0]
-      // let dom=this.$refs.moveBox;
-      // 根据初始 client 位置计算移动距离
       let x = element.clientX - this.source.client.x
       let y = element.clientY - this.source.client.y
       document.getElementsByClassName('moveBox')[8 * idx + index]
         .style = `transform: translate(${x}px, ${y}px);z-index:10;`
-
-      // let a=element.clientX;
-      //  let b=element.clientY;
-      // for(let i=0;i< this.shebeiArray.length;i++){
-      //   console.log(a,this.shebeiArray[i].left,a,this.shebeiArray[i].right,b,this.shebeiArray[i].bottom,b,this.shebeiArray[i].top)
-      //   if(a> this.shebeiArray[i].left&&a<this.shebeiArray[i].right&&b<this.shebeiArray[i].bottom&&b>this.shebeiArray[i].top){
-      //      document.getElementsByClassName("moveBox")[
-      //   8 * idx + index
-      // ].style = `transform: translate(${x}px, ${y}px);z-index:10;`;
-      //   }else{
-      //       document.getElementsByClassName("moveBox")[
-      //   8 * idx + index
-      // ].style = `transform: translate(${x}px, ${y}px);z-index:10;`;
-      //   }
-
-      // }
-
-      // 移动当前元素
-      // console.log(this.$refs.moveBox[index])
-      // console.log(this.$refs.moveBox);
-      // console.log(fatI*8+index)
-      // document.getElementsByClassName('moveBox')[0].style="background:red;"
-
-      // }
     },
-    tE (e, index, idx) {
-      // if (e.target === e.currentTarget) {
+    tE (e, index, idx) { // 松手
       document.getElementsByClassName('moveBox')[8 * idx + index]
         .style = `transform: none;z-index:1`
-      // let modal = document.getElementById(this.modalID)
       let element = e.changedTouches[0]
-      // console.log(e);
-      // document.body.removeChild(modal);
       let a = element.clientX
       let b = element.clientY
       let x = element.clientX - this.source.client.x
@@ -682,26 +626,12 @@ export default {
         return
       }
       for (let i = 0; i < this.shebeiArray.length; i++) {
-        // console.log(
-        //   a,
-        //   this.shebeiArray[i].left,
-        //   a,
-        //   this.shebeiArray[i].right,
-        //   b,
-        //   this.shebeiArray[i].bottom,
-        //   b,
-        //   this.shebeiArray[i].top
-        // );
         if (
           a > this.shebeiArray[i].left &&
           a < this.shebeiArray[i].right &&
           b < this.shebeiArray[i].bottom &&
           b > this.shebeiArray[i].top
-        ) {
-          //      document.getElementsByClassName("moveBox")[
-          //   8 * idx + index
-          // ].style = `background:red`;
-          // return this.shebeiCurrentIdx*6+i;
+        ) { // 若松手位置是设备所在位置
           this.$createDialog({
             type: 'confirm',
             icon: '',
@@ -722,12 +652,6 @@ export default {
               href: 'javascript:;'
             },
             onConfirm: () => {
-              // this.$createToast({
-              //   type: 'warn',
-              //   time: 1000,
-              //   txt: '点击确认按钮'
-              // }).show()
-              // setStartProcessTask({deviceId:this.shebeiList[ this.shebeiCurrentIdx*6+i].deviceId,flag:1,partQty:1,popId:this._waitList[idx][index].popId,pgId:this._waitList[idx][index].pgId})
               if (this._waitList[idx][index].partQty === 1) {
                 setStartProcessTask({
                   deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
@@ -808,10 +732,10 @@ export default {
         this.shebeiHasmore = false
         getDeviceAndStatus({
           pageNum: that.shebeiPage,
-          pageSize: 12,
+          pageSize: that.shebeiPageSize,
           pgId: that.pgId
         }).then(res => {
-          if (res.list.length === 12) {
+          if (res.list.length === that.shebeiPageSize) {
             that.shebeiHasmore = true
             that.shebeiPage++
           }
@@ -833,12 +757,12 @@ export default {
         that.waitHasmore = false
         getProcessTask({
           pageNum: that.waitPage,
-          pageSize: 16,
+          pageSize: that.waitPageSize,
           pgId: that.pgId,
           type: 1
         })
           .then(res => {
-            if (res.list.length === 16) {
+            if (res.list.length === that.waitPageSize) {
               that.waitHasmore = true
               that.waitPage++
             }
@@ -863,12 +787,12 @@ export default {
         that.doneHasmore = false
         getProcessTask({
           pageNum: that.donePage,
-          pageSize: 16,
+          pageSize: that.donePageSize,
           pgId: that.pgId,
           type: 2
         })
           .then(res => {
-            if (res.list.length === 16) {
+            if (res.list.length === that.donePageSize) {
               that.doneHasmore = true
               that.donePage++
             }
