@@ -24,30 +24,7 @@
         href="http://wechat.motooling.com/mthtml/baogong/work-center?weburl=http://api.unit.testing.motooling.com"
       >工作中心</a>
     </div>
-    <br />
-    <div>
-      <a
-        href="http://wechat.motooling.com/mthtml/instore/list?weburl=http://api.unit.testing.motooling.com"
-      >采购收货</a>
-    </div>
-    <br />
-    <div>
-      <a
-        href="http://wechat.motooling.com/mthtml/instore/back_nav?weburl=http://api.unit.testing.motooling.com"
-      >采购退货</a>
-    </div>
-    <br />
-    <div>
-      <a
-        href="http://wechat.motooling.com/mthtml/assinstore/list?weburl=http://api.unit.testing.motooling.com"
-      >外协采购收货</a>
-    </div>
-    <br />
-    <div>
-      <a
-        href="http://wechat.motooling.com/mthtml/assinstore/back_nav?weburl=http://api.unit.testing.motooling.com"
-      >外协采购退货</a>
-    </div>
+
     <br />
     <div>
       <a
@@ -55,18 +32,7 @@
       >库存盘点</a>
     </div>
     <br />
-    <div>
-      <a
-        href="http://wechat.motooling.com/mthtml/order/delivery_nav?weburl=http://api.unit.testing.motooling.com"
-      >生产订单退货查询</a>
-    </div>
-    <br />
-    <div>
-      <a
-        href="http://wechat.motooling.com/mthtml/order/receive_nav?weburl=http://api.unit.testing.motooling.com"
-      >生产订单收货查询</a>
-    </div>
-    <br />
+
     <div>
       <a
         href="http://wechat.motooling.com/mthtml/materiel/_nav?weburl=http://api.unit.testing.motooling.com"
