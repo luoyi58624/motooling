@@ -59,6 +59,14 @@ var router = new Router({
     component: () => import('./views/Daohang.vue')
   },
   {
+    path: '/list',
+    name: 'scan-nav',
+    component: () => import('./views/List.vue'),
+    meta: {
+      title: '列表'
+    }
+  },
+  {
     path: '/device/add',
     name: 'device',
     component: () => import('./views/Device/add.vue')
@@ -412,7 +420,7 @@ router.beforeEach((to, from, next) => {
   if (to.query.token && to.query.weburl) {
     next()
     return
-  } else if (path === '/login' || path === '/daohang' || path === '/' || path === '/wxlogin' || path === '/wxloginsuccess' || path === '/wxbindphone') {
+  } else if (path === '/login' || path === '/daohang' || path === '/list' || path === '/' || path === '/wxlogin' || path === '/wxloginsuccess' || path === '/wxbindphone') {
   } else if (!WEBURL() || !token()) {
     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
     return
