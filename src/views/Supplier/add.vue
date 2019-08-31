@@ -5,7 +5,6 @@
     </div>
     <div class="group-title">
       <div>基本信息</div>
-      <div class="group-sub-title">联系人</div>
     </div>
     <div class="hidden">
       <cu-input label="code" v-model="submitmodel.code" placeholder="输入">
@@ -28,7 +27,6 @@
 
     <div class="group-title">
       <div>联系人信息</div>
-      <div class="group-sub-title">联系人</div>
     </div>
     <div v-for="(val, key) in submitmodel.supplierContactorList" :key='key'>
       <div class="group-item-title">
