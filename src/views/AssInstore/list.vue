@@ -13,7 +13,7 @@
           :class="{active:selecteAll}"
         ></span>
       </div>
-      <div>{{billNo}}</div>
+      <div>{{}}</div>
     </div>
     <div v-if="listDone&&list.length==0" class="nocontent">暂时没有数据</div>
     <div class="list">
@@ -89,6 +89,7 @@ export default {
   created () {
     this.billNo = this.$route.query.no || 'AP19070003'
     this.getList()
+    document.getElementsByTagName('title')[0].innerText = this.billNo
   },
   computed: {
     selecteAll () {

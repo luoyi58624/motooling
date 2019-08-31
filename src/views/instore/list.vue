@@ -21,7 +21,7 @@
       <div >
         <span @click.stop="selectAll" v-show="type===1" class="iconfont icon-iconfontxuanzhong4" :class="{active:selecteAll}"></span>
       </div>
-      <div>{{billNo}}</div>
+      <div></div>
     </div>
     <div v-if="listDone&&list.length==0" class="nocontent">暂时没有数据</div>
     <div class="list">
@@ -104,6 +104,7 @@ export default {
   created () {
     this.billNo = this.$route.query.no || 'MP19050004'
     this.getList()
+    document.getElementsByTagName('title')[0].innerText = this.billNo
   },
   computed: {
     selecteAll () {
