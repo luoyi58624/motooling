@@ -13,7 +13,7 @@
           :class="{active:selecteAll}"
         ></span>
       </div>
-      <div>{{billNo}}</div>
+      <div>{{}}</div>
     </div>
     <div v-if="listDone&&list.length==0" class="nocontent">暂时没有数据</div>
     <div class="list">
