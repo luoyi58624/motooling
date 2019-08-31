@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <div class="title">退货信息</div>
+    <div class="title">发料信息</div>
     <div class="content">
       <div class="table">
         <div>
@@ -35,7 +35,7 @@
         </div>
       </div>
     </div>
-    <div class="title">退货物料</div>
+    <div class="title">发料物料</div>
     <div>
 
        <div v-for="(item,index) in wuliaoList" :key="index">
@@ -46,6 +46,7 @@
           :selected="item.selected"
           :index="index"
           @changeSel="select"
+          stepperName="发料数量"
         />
       </div>
        <div class="add" @click="add">

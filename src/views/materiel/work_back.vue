@@ -54,6 +54,7 @@
           :selected="item.selected"
           :index="index"
           @changeSel="select"
+          stepperName="退料数量"
         />
       </div>
     </div>

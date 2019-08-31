@@ -30,6 +30,7 @@
           :selected="item.selected"
           :index="index"
           @changeSel="select"
+          stepperName="物料数量"
         />
       </div>
       <div class="zw"></div>
