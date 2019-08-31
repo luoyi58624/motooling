@@ -49,6 +49,7 @@
             :selected="item.selected"
             :index="index"
             @changeSel="select"
+            stepperName="发料数量"
           />
         </div>
       </div>
