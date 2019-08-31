@@ -89,6 +89,7 @@ export default {
   created () {
     this.billNo = this.$route.query.no || 'AP19070003'
     this.getList()
+    document.getElementsByTagName('title')[0].innerText = this.billNo
   },
   computed: {
     selecteAll () {
