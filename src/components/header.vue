@@ -3,20 +3,29 @@
   <div class="header">
     <div class="bg" v-show="isShowList" @click="hideList"></div>
     <div class="header-wrapper">
-      <div class="left" @click="back"><span class="iconfont icon-fanhui"></span></div>
-      <div class="center" @click="showList">{{title}}
+      <div class="left" @click="back">
+        <span class="iconfont icon-fanhui"></span>
+      </div>
+      <div class="center" @click="showList">
+        {{realTitle||title}}
         <span v-show="list.length>0" class="iconfont icon-xiangxia"></span>
       </div>
       <div class="right" v-show="hasRight">
-         <router-link :to="settingUrl"><span class="iconfont icon-gengduo"></span></router-link>
+        <router-link :to="settingUrl">
+          <span class="iconfont icon-gengduo"></span>
+        </router-link>
       </div>
     </div>
-      <slide-up-down :active="isShowList" :duration="300" class="list" >
-        <div v-for="(item,index) in list" :key="item.pgId" @click="select(item.pgId,index,item.workShopList)" :class="{active:index==selIdx}">
-          <div>{{item.pgName}}</div>
-        </div>
-      </slide-up-down>
-
+    <slide-up-down :active="isShowList" :duration="300" class="list">
+      <div
+        v-for="(item,index) in list"
+        :key="item.pgId"
+        @click="select(item.pgId,index,item.workShopList)"
+        :class="{active:index==selIdx&&list.length>1}"
+      >
+        <div>{{item.pgName}}</div>
+      </div>
+    </slide-up-down>
   </div>
 </template>
 
@@ -64,8 +73,15 @@ export default {
   components: {
     SlideUpDown
   },
-
-  computed: {},
+  computed: {
+    realTitle () {
+      if (this.list.length > 0 && this.list[this.selIdx]['pgName']) {
+        return this.list[this.selIdx]['pgName'] || this.title
+      } else {
+        return this.title
+      }
+    }
+  },
 
   methods: {
     showList () {
@@ -80,7 +96,10 @@ export default {
       if (this.pgId === 0) {
         var newArray = []
         for (let i = 0; i < workShopList.length; i++) {
-          newArray.push({ value: workShopList[i].id, text: workShopList[i].workshopName })
+          newArray.push({
+            value: workShopList[i].id,
+            text: workShopList[i].workshopName
+          })
         }
         this.$emit('workshop', newArray)
       } else {
@@ -114,16 +133,21 @@ export default {
 
     position: relative;
     height: 40px;
-    line-height:40px;
+    line-height: 40px;
     align-items: center;
-    >.left{
-      float:left;
+    > .left {
+      float: left;
     }
-    >.right{
-      float:right;
+    > .right {
+      float: right;
     }
-    >.center{
-      position:absolute;left:50%;transform: translate(-50%,0);height:40px;top:0;line-height:40px;
+    > .center {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 0);
+      height: 40px;
+      top: 0;
+      line-height: 40px;
     }
   }
   > .list {
@@ -152,7 +176,7 @@ export default {
     z-index: 2;
   }
 }
-.active{
-  color:#4e92ff
+.active {
+  color: #4e92ff;
 }
 </style>
