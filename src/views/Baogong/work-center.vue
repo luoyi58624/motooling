@@ -34,14 +34,16 @@
               <div v-for="ie in item" :key="ie.id" class="shebei">
                 <div class="top">
                   <div class="select">
-                    <img src="../xuanze.png" @click="handleSelectShebei(ie.oldIdx)" alt>
+                    <img src="../xuanze.png" @click.stop="handleSelectShebei(ie.oldIdx)" alt>
 
                     <span v-show="ie.showOption" style class="iconfont icon-xiangshang-"></span>
                     <div v-show="ie.showOption">
-                       <div @click="spotcheck(ie.deviceId)">点检</div>
-                      <div @click="wangong(2,ie.deviceId,1,ie.pgId)">完成</div>
-                      <div @click="jiaojie(1,ie.deviceId,1,ie.pgId)">交接</div>
-                      <div @click="ybwg(ie.deviceId,ie.pgId)">预报</div>
+                       <div @click="spotcheck(ie.deviceId)" v-show="ie.deviceStatus==0">点检</div>
+                       <div  v-show="ie.deviceStatus==0">维修</div>
+                       <div  v-show="ie.deviceStatus==0">保养</div>
+                      <div @click="wangong(2,ie.deviceId,1,ie.pgId)" v-show="ie.deviceStatus==1">完成</div>
+                      <div @click="jiaojie(1,ie.deviceId,1,ie.pgId)" v-show="ie.deviceStatus==1">交接</div>
+                      <div @click="ybwg(ie.deviceId,ie.pgId)" v-show="ie.deviceStatus==1">预报</div>
                     </div>
                   </div>
                   <div>头像</div>
@@ -263,7 +265,7 @@ export default {
     const that = this
     getPmPgList({ deviceId })
       .then(res => {
-        console.log(res.list)
+        // console.log(res.list)
         that.list = res.list
         that.pgId = res.list[0].pgId
         that.select()
@@ -335,7 +337,14 @@ export default {
       return newArr
     }
   },
-  mounted () {},
+  mounted () {
+    document.onclick = function () {
+      // console.log(vm.shebeiList)
+      for (let i = 0; i < vm.shebeiList.length; i++) {
+        vm.shebeiList[i].showOption = false
+      }
+    }
+  },
   methods: {
     spotcheck (deviceId) {
       this.$router.push({
@@ -431,7 +440,7 @@ export default {
         selectedVal[3] +
         ':' +
         selectedVal[4]
-      console.log(startTime)
+      // console.log(startTime)
       const dateTimePicker = this.$createDatePicker({
         title: '选择预计完工时间',
         min: date,
@@ -459,12 +468,14 @@ export default {
         predictEndTime: endTime
       })
         .then(res => {
-          console.log(res)
+          // console.log(res)
           this.showToast('预报加工时间成功')
         })
         .catch(err => {
-          console.log(err)
-          this.showToast('预报加工时间失败')
+          if (err.msg) {
+            this.showToast(err.msg)
+          }
+          // this.showToast('预报加工时间失败')
         })
     },
     showToast (val) {
@@ -494,16 +505,16 @@ export default {
       pgId,
       batchProcId
     ) {
-      console.log({
-        deviceId,
-        flag,
-        memberId,
-        setStatus,
-        partQty,
-        popId,
-        pgId,
-        batchProcId
-      })
+      // console.log({
+      //   deviceId,
+      //   flag,
+      //   memberId,
+      //   setStatus,
+      //   partQty,
+      //   popId,
+      //   pgId,
+      //   batchProcId
+      // })
     },
     jiaojie (type, deviceId, flag, pgId) {
       setTask({ type, deviceId, flag, pgId })
@@ -521,7 +532,7 @@ export default {
     wangong (type, deviceId, flag, pgId) {
       setTask({ type, deviceId, flag, pgId })
         .then(res => {
-          console.log(res)
+          // console.log(res)
           this.select()
           this.showToast('操作成功')
         })
@@ -727,7 +738,7 @@ export default {
     },
     _getDeviceAndStatus () {
       const that = this
-      console.log(that.shebeiPage)
+      // console.log(that.shebeiPage)
       if (this.shebeiHasmore) {
         this.shebeiHasmore = false
         getDeviceAndStatus({
