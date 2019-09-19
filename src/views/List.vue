@@ -59,7 +59,7 @@
     <br />
     <div>
       <a
-        href="http://wechat.motooling.com/mthtml/synergy/1/1001/?weburl=http://api.unit.testing.motooling.com"
+        href="http://wechat.motooling.com/mthtml/synergy/1/2/?weburl=http://api.unit.testing.motooling.com&imurl=im.motooling.com"
       >协同</a>
     </div>
   </div>
