@@ -39,7 +39,7 @@
                     <span v-show="ie.showOption" style class="iconfont icon-xiangshang-"></span>
                     <div v-show="ie.showOption">
                        <div @click="spotcheck(ie.deviceId)" v-show="ie.deviceStatus==0">点检</div>
-                       <div  v-show="ie.deviceStatus==0">维修</div>
+                       <div @click="weixiu(ie.deviceId)" v-show="ie.deviceStatus==0">维修</div>
                        <div  v-show="ie.deviceStatus==0">保养</div>
                       <div @click="wangong(2,ie.deviceId,1,ie.pgId)" v-show="ie.deviceStatus==1">完成</div>
                       <div @click="jiaojie(1,ie.deviceId,1,ie.pgId)" v-show="ie.deviceStatus==1">交接</div>
@@ -352,6 +352,16 @@ export default {
           deviceId: deviceId
         },
         path: '/spotcheck'
+      })
+    },
+    // 维修
+    weixiu (deviceId) {
+      this.$router.push({
+        query: {
+          deviceId: deviceId,
+          forceEdit: '1'
+        },
+        path: '/device/add'
       })
     },
     workshop (list) {
