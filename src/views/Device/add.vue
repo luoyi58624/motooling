@@ -87,7 +87,7 @@
 import CuInput from '@/components/input/input'
 import CuUpload from '@/components/upload/Upload'
 import CuPicker from '@/components/picker/Picker'
-import { deviceSelectList, getDeviceInfo, addDeviceInfo } from '@/api/device/Device.js'
+import { deviceSelectList, getDeviceInfo, addDeviceInfo, whetherVersion } from '@/api/device/Device.js'
 import { getUrlQueryString } from '@/utils/utils.js'
 import { nationList } from '@/data/nations.js'
 export default {
@@ -158,7 +158,9 @@ export default {
         deviceParamImgList: []
         // deviceImgs: [],
         // deviceServiceImgs: []
-      }
+      },
+      // 是否为维护编辑
+      forceEdit: this.$router.currentRoute.query.forceEdit && this.$router.currentRoute.query.forceEdit === '1'
     }
   },
   methods: {
@@ -215,6 +217,28 @@ export default {
     deleteList (target, index) {
       target.splice(index, 1)
     },
+    getDetail () {
+      deviceSelectList()
+        .then(
+          (res) => {
+            let deviceSelectListData = res.data
+            this.deviceSelectListData = deviceSelectListData.data
+          }
+        ).catch(function (err) {
+          console.log(err)
+        })
+
+      getDeviceInfo({ id: this.submitmodel.device.id })
+        .then(
+          (res) => {
+            if (res.data.data) {
+              Object.assign(this.submitmodel, res.data.data)
+            }
+          }
+        ).catch(function (err) {
+          console.log(err)
+        })
+    },
     submit () {
       var self = this
       console.log(this.submitmodel)
@@ -240,8 +264,10 @@ export default {
   },
   created () {
     var self = this
+    console.log(this.forceEdit)
+    console.log(this.$router.currentRoute.query)
     let fullPath = this.$router.currentRoute.fullPath
-    console.log(this.$router.currentRoute)
+    console.log(fullPath)
     if (!sessionStorage.getItem('token')) {
       // localStorage.setItem('nextpage', fullPath)
       // localStorage.setItem('type', 0)
@@ -249,30 +275,19 @@ export default {
       self.$router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
     } else {
       this.submitmodel.device.id = parseInt(getUrlQueryString('deviceid'))
-      deviceSelectList()
-        .then(
-          function (res) {
-            let deviceSelectListData = res.data
-            console.log(deviceSelectListData)
-            self.deviceSelectListData = deviceSelectListData.data
-          }
-        ).catch(function (err) {
-          console.log(err)
-        })
-
-      getDeviceInfo({ id: this.submitmodel.device.id })
-        .then(
-          function (res) {
-            console.log(res.data)
-            if (res.data.data) {
-              Object.assign(self.submitmodel, res.data.data)
+      if (this.forceEdit) {
+        this.getDetail()
+      } else {
+        whetherVersion({ id: this.submitmodel.device.id })
+          .then(res => {
+            if (res.data.data.whetherVersion === true) {
+            // 如果有正式版，进入工作中心
+              self.$router.replace('/baogong/work-center?deviceid=' + this.submitmodel.device.id)
+            } else {
+              this.getDetail()
             }
-            console.log(res)
-            console.log(self.submitmodel)
-          }
-        ).catch(function (err) {
-          console.log(err)
-        })
+          })
+      }
     }
   },
   components: {

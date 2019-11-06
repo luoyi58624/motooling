@@ -50,3 +50,18 @@ export function addDeviceInfo (params) {
     data
   })
 }
+
+export function whetherVersion (params) {
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+
+  return request({
+    url: WEBURL() + '/mtH5/invitationDevice/whetherVersion',
+    method: 'post',
+    data
+  })
+}
