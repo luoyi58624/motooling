@@ -17,44 +17,82 @@
       <div class="title">设备</div>
       <div class="first-banner">
         <div class="point">
-          <div>
-            <span style="background:rgb(95,216,89)"></span> 正在加工
-          </div>
-          <div>
-            <span style="background:rgb(254,59,50)"></span> 空闲
-          </div>
-          <div>
-            <span style="background:rgb(254,151,50)"></span> 维修/保养
-          </div>
+          <div><span style="background:rgb(95,216,89)"></span> 正在加工</div>
+          <div><span style="background:rgb(254,59,50)"></span> 空闲</div>
+          <div><span style="background:rgb(254,151,50)"></span> 维修/保养</div>
         </div>
         <swiper :options="swiperOption" ref="mySwiper" class="swiper1">
           <!-- slides -->
-          <swiper-slide v-for="(item,index) in _shebeiList" :key="index">
+          <swiper-slide v-for="(item, index) in _shebeiList" :key="index">
             <div class="box">
               <div v-for="ie in item" :key="ie.id" class="shebei">
                 <div class="top">
                   <div class="select">
-                    <img src="../xuanze.png" @click.stop="handleSelectShebei(ie.oldIdx)" alt>
+                    <img
+                      src="../xuanze.png"
+                      @click.stop="handleSelectShebei(ie.oldIdx)"
+                      alt
+                    />
 
-                    <span v-show="ie.showOption" style class="iconfont icon-xiangshang-"></span>
+                    <span
+                      v-show="ie.showOption"
+                      style
+                      class="iconfont icon-xiangshang-"
+                    ></span>
                     <div v-show="ie.showOption">
-                       <div @click="spotcheck(ie.deviceId)" v-show="ie.deviceStatus==0">点检</div>
-                       <div @click="weixiu(ie.deviceId)" v-show="ie.deviceStatus==0">维修</div>
-                       <div  v-show="ie.deviceStatus==0">保养</div>
-                      <div @click="wangong(2,ie.deviceId,1,ie.pgId)" v-show="ie.deviceStatus==1">完成</div>
-                      <div @click="jiaojie(1,ie.deviceId,1,ie.pgId)" v-show="ie.deviceStatus==1">交接</div>
-                      <div @click="ybwg(ie.deviceId,ie.pgId)" v-show="ie.deviceStatus==1">预报</div>
+                      <div
+                        @click="spotcheck(ie.deviceId)"
+                        v-show="ie.deviceStatus == 0"
+                      >
+                        点检
+                      </div>
+                      <div
+                        @click="weixiu(ie.deviceId)"
+                        v-show="ie.deviceStatus == 0"
+                      >
+                        维修
+                      </div>
+                      <div v-show="ie.deviceStatus == 0">保养</div>
+                      <div
+                        @click="wangong(2, ie.deviceId, 1, ie.pgId)"
+                        v-show="ie.deviceStatus == 1"
+                      >
+                        完成
+                      </div>
+                      <div
+                        @click="jiaojie(1, ie.deviceId, 1, ie.pgId)"
+                        v-show="ie.deviceStatus == 1"
+                      >
+                        交接
+                      </div>
+                      <div
+                        @click="ybwg(ie.deviceId, ie.pgId)"
+                        v-show="ie.deviceStatus == 1"
+                      >
+                        预报
+                      </div>
                     </div>
                   </div>
                   <div>头像</div>
                 </div>
-                <div>{{ie.deviceNo}}</div>
+                <div>{{ ie.deviceNo }}</div>
                 <div
                   class="state"
-                  :class="{free:ie.deviceStatus==0,ing:ie.deviceStatus==1,repair:ie.deviceStatus=='其他'}"
-                >{{ie.deviceName }}</div>
+                  :class="{
+                    free: ie.deviceStatus == 0,
+                    ing: ie.deviceStatus == 1,
+                    repair: ie.deviceStatus == '其他'
+                  }"
+                >
+                  {{ ie.deviceName }}
+                </div>
                 <!-- <div class="right-on">未点检{{ie.deviceStatus}}</div> -->
-                <div class="right-on" v-if="ie.deviceStatus!=='0'&&ie.deviceStatus!=='1'">维修中</div>
+                <div
+                  class="right-on"
+                  v-if="ie.deviceStatus !== '0' && ie.deviceStatus !== '1'"
+                >
+                  维修中
+                </div>
               </div>
             </div>
           </swiper-slide>
@@ -66,15 +104,19 @@
         <div class="title">待加工</div>
         <swiper ref="mySwiper2" :options="swiperOption2" class="swiper2">
           <!-- slides -->
-          <swiper-slide v-for="(slide,index) in _waitList" :key="index" class="second-swipe">
+          <swiper-slide
+            v-for="(slide, index) in _waitList"
+            :key="index"
+            class="second-swipe"
+          >
             <div
-              v-for="(item,idx) in slide"
+              v-for="(item, idx) in slide"
               :key="idx"
               style
               @click="handleSelectWait(item.oldIdx)"
-              @touchstart.stop="tS($event,idx,index)"
-              @touchmove.stop="tM($event,idx,index)"
-              @touchend.stop="tE($event,idx,index)"
+              @touchstart.stop="tS($event, idx, index)"
+              @touchmove.stop="tM($event, idx, index)"
+              @touchend.stop="tE($event, idx, index)"
               ref="moveBox"
               class="moveBox"
             >
@@ -82,25 +124,30 @@
                 <div @touchstart.stop="toTop(item.popId)">置顶</div>
                 <div
                   @touchstart.stop="yubao(item.popId)"
-                  @touchmove.stop="()=>{}"
-                  @touchend.stop="()=>{}"
-                >预报</div>
+                  @touchmove.stop="() => {}"
+                  @touchend.stop="() => {}"
+                >
+                  预报
+                </div>
                 <div>详情</div>
               </div>
               <div class>
-                <img :src="item.imgUrl" class="gjimg" alt>
+                <img :src="item.imgUrl" class="gjimg" alt />
               </div>
               <div class="text">
-                <span>{{item.matNo}}</span>
-                <p>{{item.matName}}</p>
+                <span>{{ item.matNo }}</span>
+                <p>{{ item.matName }}</p>
               </div>
             </div>
             <div
               style="display:flex;align-items:center;justify-content:center;background:#fff"
               @click="getPart(1)"
-              v-if="index==_waitList.length-1"
+              v-if="index == _waitList.length - 1"
             >
-              <span style="font-size:60px;color:#dcdcdc" class="iconfont icon-jia"></span>
+              <span
+                style="font-size:60px;color:#dcdcdc"
+                class="iconfont icon-jia"
+              ></span>
             </div>
           </swiper-slide>
           <div
@@ -120,22 +167,33 @@
           style="overflow-y: visible !important;"
         >
           <!-- slides -->
-          <swiper-slide v-for="(slide,index) in _doneList" :key="index" class="second-swipe">
-            <div v-for="(item,idx) in slide" :key="idx" style="position:relative;">
+          <swiper-slide
+            v-for="(slide, index) in _doneList"
+            :key="index"
+            class="second-swipe"
+          >
+            <div
+              v-for="(item, idx) in slide"
+              :key="idx"
+              style="position:relative;"
+            >
               <div class>
-                <img :src="item.imgUrl" alt class="gjimg">
+                <img :src="item.imgUrl" alt class="gjimg" />
               </div>
               <div class="text">
-                <span>{{item.matNo}}</span>
-                <p>{{item.matName}}</p>
+                <span>{{ item.matNo }}</span>
+                <p>{{ item.matName }}</p>
               </div>
             </div>
             <div
               style="display:flex;align-items:center;justify-content:center;background:#fff"
               @click="getPart(2)"
-              v-if="index==_doneList.length-1"
+              v-if="index == _doneList.length - 1"
             >
-              <span style="font-size:60px;color:#dcdcdc" class="iconfont icon-jian"></span>
+              <span
+                style="font-size:60px;color:#dcdcdc"
+                class="iconfont icon-jian"
+              ></span>
             </div>
           </swiper-slide>
           <div
@@ -244,7 +302,7 @@ export default {
       shebeiHasmore: true, // 设备列表是否有更多
       waitHasmore: true,
       doneHasmore: true,
-      shebeiArray: []// 当前显示在页面上的设备列表
+      shebeiArray: [] // 当前显示在页面上的设备列表
     }
   },
   created () {
@@ -342,6 +400,10 @@ export default {
       // console.log(vm.shebeiList)
       for (let i = 0; i < vm.shebeiList.length; i++) {
         vm.shebeiList[i].showOption = false
+      }
+      for (let i = 0; i < vm.waitList.length; i++) {
+        console.log(i)
+        vm.waitList[i].showOption = false
       }
     }
   },
@@ -610,7 +672,8 @@ export default {
         }
       })
     },
-    tS (e, index, idx) { // 开始移动工件
+    tS (e, index, idx) {
+      // 开始移动工件
       this.shebeiArray = []
       var shebeiDom = document.getElementsByClassName('shebei')
       var myDom = Array.prototype.slice.call(
@@ -627,16 +690,16 @@ export default {
         y: element.clientY
       }
     },
-    tM (e, index, idx) { // 工件移动中
+    tM (e, index, idx) {
+      // 工件移动中
       let element = e.targetTouches[0]
       let x = element.clientX - this.source.client.x
       let y = element.clientY - this.source.client.y
-      document.getElementsByClassName('moveBox')[8 * idx + index]
-        .style = `transform: translate(${x}px, ${y}px);z-index:10;`
+      document.getElementsByClassName('moveBox')[8 * idx + index].style = `transform: translate(${x}px, ${y}px);z-index:10;`
     },
-    tE (e, index, idx) { // 松手
-      document.getElementsByClassName('moveBox')[8 * idx + index]
-        .style = `transform: none;z-index:1`
+    tE (e, index, idx) {
+      // 松手
+      document.getElementsByClassName('moveBox')[8 * idx + index].style = `transform: none;z-index:1`
       let element = e.changedTouches[0]
       let a = element.clientX
       let b = element.clientY
@@ -652,7 +715,8 @@ export default {
           a < this.shebeiArray[i].right &&
           b < this.shebeiArray[i].bottom &&
           b > this.shebeiArray[i].top
-        ) { // 若松手位置是设备所在位置
+        ) {
+          // 若松手位置是设备所在位置
           this.$createDialog({
             type: 'confirm',
             icon: '',
@@ -681,23 +745,21 @@ export default {
                   partQty: 1,
                   popId: this._waitList[idx][index].popId,
                   pgId: this._waitList[idx][index].pgId
-                }).then(res => {
-                  this.showToast('操作成功')
-                  this.select()
-                }).catch(err => {
-                  this.showToast(err.msg || '操作失败')
                 })
+                  .then(res => {
+                    this.showToast('操作成功')
+                    this.select()
+                  })
+                  .catch(err => {
+                    this.showToast(err.msg || '操作失败')
+                  })
               } else {
                 this.$createDialog({
                   type: 'prompt',
-                  title: `输入添加数量(范围1-${
-                    this._waitList[idx][index].partQty
-                  })`,
+                  title: `输入添加数量(范围1-${this._waitList[idx][index].partQty})`,
                   prompt: {
                     value: '',
-                    placeholder: `请输入1-${
-                      this._waitList[idx][index].partQty
-                    }范围内的数字`
+                    placeholder: `请输入1-${this._waitList[idx][index].partQty}范围内的数字`
                   },
                   onConfirm: (e, promptValue) => {
                     if (
