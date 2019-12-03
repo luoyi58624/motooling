@@ -73,7 +73,11 @@
                       </div>
                     </div>
                   </div>
-                  <div>头像</div>
+                  <div class="avater">
+
+                    <img v-if="ie.operatorList.lenght>0" :src="ie.operatorList[0]['avatar']" alt="">
+                    <div v-else></div>
+                  </div>
                 </div>
                 <div>{{ ie.deviceNo }}</div>
                 <div
@@ -980,7 +984,7 @@ swiper-slide {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 10px 0 0 0;
   height: 30px;
   font-size: 12px;
 }
@@ -1160,5 +1164,14 @@ swiper-slide {
   bottom: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 2;
+}
+.avater{
+  img{
+    width:30px;height:30px;border-radius: 50%;
+
+  }
+  div{
+    width:30px;height:30px;background: #eee;border-radius: 50%;
+  }
 }
 </style>
