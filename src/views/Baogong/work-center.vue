@@ -71,11 +71,23 @@
                       >
                         预报
                       </div>
+                      <div
+                        @click="handleCancel(ie.deviceId, ie.pgId)"
+                        v-show="ie.deviceStatus == 1"
+                      >
+                        取消
+                      </div>
                     </div>
                   </div>
                   <div class="avater">
-
-                    <img v-if="ie.operatorList.length>0&&ie.operatorList[0]['avatar']" :src="ie.operatorList[0]['avatar']" alt="">
+                    <img
+                      v-if="
+                        ie.operatorList.length > 0 &&
+                          ie.operatorList[0]['avatar']
+                      "
+                      :src="ie.operatorList[0]['avatar']"
+                      alt=""
+                    />
                     <div v-else></div>
                   </div>
                 </div>
@@ -406,7 +418,6 @@ export default {
         vm.shebeiList[i].showOption = false
       }
       for (let i = 0; i < vm.waitList.length; i++) {
-        console.log(i)
         vm.waitList[i].showOption = false
       }
     }
@@ -465,6 +476,40 @@ export default {
         onCancel: this.cancelHandle
       })
       dateTimePicker.show()
+    },
+    handleCancel (id, pid) {
+      this.$createDialog({
+        type: 'confirm',
+        icon: '',
+        title: '注意',
+        content: '是否将该设备下所有工件取消加工',
+        confirmBtn: {
+          text: '确定',
+          active: true,
+          disabled: false,
+          href: 'javascript:;'
+        },
+        cancelBtn: {
+          text: '取消',
+          active: false,
+          disabled: false,
+          href: 'javascript:;'
+        },
+        onConfirm: () => {
+          setStartProcessTask({
+            deviceId: id,
+            flag: 2,
+            pgId: vm.pgId
+          })
+            .then(res => {
+              this.showToast('操作成功')
+              this.select()
+            })
+            .catch(err => {
+              this.showToast(err.msg || '操作失败')
+            })
+        }
+      }).show()
     },
     selectE (date, selectedVal, selectedText) {
       endTime =
@@ -1165,13 +1210,17 @@ swiper-slide {
   background: rgba(0, 0, 0, 0.4);
   z-index: 2;
 }
-.avater{
-  img{
-    width:30px;height:30px;border-radius: 50%;
-
+.avater {
+  img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
   }
-  div{
-    width:30px;height:30px;background: #eee;border-radius: 50%;
+  div {
+    width: 30px;
+    height: 30px;
+    background: #eee;
+    border-radius: 50%;
   }
 }
 </style>
