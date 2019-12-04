@@ -75,7 +75,7 @@
                   </div>
                   <div class="avater">
 
-                    <img v-if="ie.operatorList.lenght>0" :src="ie.operatorList[0]['avatar']" alt="">
+                    <img v-if="ie.operatorList.length>0" :src="ie.operatorList[0]['avatar']" alt="">
                     <div v-else></div>
                   </div>
                 </div>
