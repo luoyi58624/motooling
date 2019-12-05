@@ -83,7 +83,7 @@
                     <img
                       v-if="
                         ie.operatorList.length > 0 &&
-                          ie.operatorList[0]['avatar']
+                          ie.operatorList[0]['avatar']&&ie.deviceStatus==1
                       "
                       :src="ie.operatorList[0]['avatar']"
                       alt=""
@@ -148,7 +148,7 @@
                 <div>详情</div>
               </div>
               <div class>
-                <img :src="item.imgUrl" class="gjimg" alt />
+                <img :src="item.imgUrl||require('@/assets/default.png')" class="gjimg" alt />
               </div>
               <div class="text">
                 <span>{{ item.matNo }}</span>
@@ -194,7 +194,7 @@
               style="position:relative;"
             >
               <div class>
-                <img :src="item.imgUrl" alt class="gjimg" />
+                <img :src="item.imgUrl||require('@/assets/default.png')" alt class="gjimg" />
               </div>
               <div class="text">
                 <span>{{ item.matNo }}</span>
@@ -482,7 +482,7 @@ export default {
         type: 'confirm',
         icon: '',
         title: '注意',
-        content: '是否将该设备下所有工件取消加工',
+        content: '是否取消加工该设备下的所有工件',
         confirmBtn: {
           text: '确定',
           active: true,
@@ -770,7 +770,7 @@ export default {
             type: 'confirm',
             icon: '',
             title: '注意',
-            content: `是否确认将此工件加入${
+            content: `是否确认使此工件加入${
               this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceName
             }`,
             confirmBtn: {
