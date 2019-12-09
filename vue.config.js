@@ -1,4 +1,4 @@
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 module.exports = {
   'publicPath': process.env.NODE_ENV === 'production' ? '/mthtml/' : '/mthtml/',
   css: {
@@ -9,20 +9,9 @@ module.exports = {
       }
     }
   },
-  configureWebpack: {
-    optimization: {
-      minimizer: [
-        new UglifyJsPlugin({
-          uglifyOptions: {
-            compress: {
-              warnings: false,
-              drop_console: true, // console
-              drop_debugger: false,
-              pure_funcs: ['console.log']// 移除console
-            }
-          }
-        })
-      ]
+  configureWebpack: (config) => {
+    if (process.env.NODE_ENV === 'production') {
+      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
     }
   },
   pluginOptions: {
