@@ -345,7 +345,7 @@ export default {
         that.select()
       })
       .catch(err => {
-        console.log(err)
+        this.showToast(err.msg)
       })
   },
   components: {
@@ -878,6 +878,8 @@ export default {
             arr[i]['oldIdx'] = i
           }
           that.shebeiList = arr
+        }).catch(err => {
+          this.showToast(err.msg || '获取设备失败')
         })
       } else {
         // console.error("meiyougengduo");
