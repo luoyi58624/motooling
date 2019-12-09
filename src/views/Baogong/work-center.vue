@@ -908,7 +908,7 @@ export default {
             that.waitList = arr
           })
           .catch(err => {
-            // console.log(3)
+            this.showToast(err.msg || '错误')
             reject(err)
           })
       } else {
