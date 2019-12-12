@@ -11,11 +11,14 @@
         <img src="../../assets/arrow.png" alt />
       </div>
     </div>
+    <div @click="sao">扫一扫</div>
   </div>
 </template>
 
 <script>
 import { getDeliveryAndReturn } from '@/api/instore/instore'
+import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
+import wx from 'weixin-js-sdk'
 export default {
   data () {
     return {
@@ -65,11 +68,43 @@ export default {
             this.showToast(err.msg)
           }
         })
+    },
+    async getwechat () {
+      console.log(333)
+
+      const { appId } = await getAppid()
+      console.log(appId)
+      // let url = location.href.split("#")[0];
+      let url = 'http://wechat.motooling.com/'
+      const { configInfo } = await getJsSDKConfigInfo({ url })
+      const config = Object.assign(
+        {},
+        { appId },
+        configInfo,
+        { jsApiList: ['scanQRCode'] }
+      )
+      return config
+    },
+    sao () {
+      wx.scanQRCode({
+        needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+        scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
+        success: function (res) {
+          var result = res.resultStr // 当needResult 为 1 时，扫码返回的结果
+          console.log(result)
+        }
+      })
     }
+  },
+  created () {
+    this.getwechat().then(config => {
+      console.log(config)
+      wx.config(config)
+    })
   }
 }
 </script>
-<style lang='less' scoped>
+<style lang="less" scoped>
 .img-wrapper {
   text-align: center;
   margin-top: 20px;
