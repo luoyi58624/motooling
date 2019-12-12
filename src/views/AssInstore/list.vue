@@ -2,7 +2,6 @@
 <template>
   <div>
     <my-header title="外协采购收货" :hasRight="true" settingUrl="/instore/setting"></my-header>
-
     <screen class="screen" />
     <div class="no">
       <div>
@@ -13,7 +12,7 @@
           :class="{active:selecteAll}"
         ></span>
       </div>
-      <div>{{}}</div>
+      <div></div>
     </div>
     <div v-if="listDone&&list.length==0" class="nocontent">暂时没有数据</div>
     <div class="list">

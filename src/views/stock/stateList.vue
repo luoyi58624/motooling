@@ -67,7 +67,7 @@ export default {
 
   methods: {
     _getInventoryStatus () {
-      getInventoryStatus({ matId: '4' }).then(res => {
+      getInventoryStatus({ checkBillId: this.$route.query.id }).then(res => {
         this.alreadyInventoryList = res.data.alreadyInventoryList
         this.waitingInventoryList = res.data.waitingInventoryList
       })

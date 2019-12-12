@@ -76,19 +76,22 @@
       <div @click="purch" v-if="type===1">提交</div>
     </div>
     <div class="zw"></div>
+    <toSynergy/>
   </div>
 </template>
 
 <script>
 import { inStoreList, purchBatchReceived } from '@/api/instore/instore'
 import myHeader from '@/components/header'
+import toSynergy from '@/components/ToSynergy'
 import stepper from '@/components/stepper'
 import screen from '@/components/screen'
 export default {
   components: {
     myHeader,
     stepper,
-    screen
+    screen,
+    toSynergy
   },
   data () {
     return {

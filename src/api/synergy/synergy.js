@@ -145,3 +145,18 @@ export function getSummaryList (params) {
     data
   })
 }
+
+export function getNotReadCount (params) {
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: params
+  }
+
+  return request({
+    url: WEBURL() + '/mtH5/synergy/getNotReadCount',
+    method: 'post',
+    data
+  })
+}

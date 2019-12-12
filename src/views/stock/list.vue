@@ -40,23 +40,25 @@
       <div class="list">
         <div class="manager" @click="toInfo(item.id)" v-for="(item,index) in list" :key="index">
           <div class="img-wrapper">
-            <img src alt class="gjimg">
+            <!-- {{item.fileList[0]?item.fileList[0].imgUrl:''}} -->
+            <img :src="item.fileList[0]?item.fileList[0].imgUrl:''" alt class="gjimg" style="width:100%;">
           </div>
           <div class="info-wrapper">
             <div class="manage-top">
               <p>盘 点 单：{{item.checkBillNo}}</p>
             </div>
             <div class="state state1">
+
               {{approveList.filter(it=>{return item.approveStep==it.id})[0]['name']}}
-              <!-- {{item.approveStep}}
-              {{approveList}}-->
+              <!-- {{item.approveStep}} -->
+
               <!-- {{it.approveStep}} -->
             </div>
             <div>物料类型: {{item.matTypeName}}</div>
             <div>库存地点: {{item.storeHouseId}}</div>
             <div>日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期: {{item.createdAt.slice(0,10)}}</div>
-            <cube-button :inline="true" style="width:100px;" @click.stop="pandian">盘点</cube-button>
-            <cube-button :inline="true" style="width:100px;" @click.stop="statelist">状态列表</cube-button>
+            <cube-button :inline="true" style="width:100px;" @click.stop="pandian(item.id,item.checkBillNo)">盘点</cube-button>
+            <cube-button :inline="true" style="width:100px;" @click.stop="statelist(item.id)">状态列表</cube-button>
           </div>
         </div>
       </div>
@@ -152,7 +154,7 @@ export default {
         { id: 'step11', name: '驳回' },
         { id: 'step20', name: '待审核' },
         { id: 'step30', name: '待批准' },
-        { id: 'step0', name: '已通过' }
+        { id: 'step00', name: '已通过' }
       ], // 审批状态列表
       selivStorelist: [], //
       selmatTypeList: [],
@@ -234,6 +236,7 @@ export default {
           }
           this.pageNum++
           this.list = [...this.list, ...res.data.ivStoreCheckBillLogList]
+          console.log(this.list[0].fileList[0].imgUrl)
           this.isLoading = false
         })
         .catch(err => {
@@ -316,15 +319,15 @@ export default {
       this.hasMore = true
       this.getList()
     },
-    pandian () {
+    pandian (id, checkBillNo) {
       this.$router.push({
-        path: '/stock/inventory',
+        path: '/stock/inventory?id=' + id + '&checkBillNo=' + checkBillNo,
         query: {}
       })
     },
-    statelist () {
+    statelist (id) {
       this.$router.push({
-        path: '/stock/statelist',
+        path: '/stock/statelist?id=' + id,
         query: {}
       })
     },
