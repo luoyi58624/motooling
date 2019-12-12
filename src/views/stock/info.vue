@@ -52,7 +52,9 @@
       <div class="list">
         <div class="manager" v-for="(item,index) in pyList" :key="index">
           <div class="img-wrapper">
-            <img src alt class="gjimg">
+
+                 <img :src="item.fileList[0]?item.fileList[0].imgUrl:''" alt class="gjimg" style="width:100%;">
+            <!-- <img :src="item.fileList?item.fileList[0].fileUrl:''" alt class="gjimg"> -->
           </div>
           <div class="info-wrapper">
             <div>库&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：</div>
@@ -72,7 +74,8 @@
       <div class="list">
         <div class="manager" v-for="(item,index) in pkList" :key="index">
           <div class="img-wrapper">
-            <img src alt class="gjimg">
+                 <img :src="item.fileList[0]?item.fileList[0].imgUrl:''" alt class="gjimg" style="width:100%;">
+            <!-- <img :src="item.fileList[0]?item.fileList[0].fileUrl:''" alt class="gjimg"> -->
           </div>
           <div class="info-wrapper">
             <div>库&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：</div>
@@ -91,6 +94,7 @@
       <div>企业圈</div>
       <div @click="changSp">提交</div>
     </div>
+    <div class="bot-wa"></div>
   <div class="bg"  v-show="showSp" @click="changSp"></div>
   <transition name="slide">
       <div class="sp" v-show="showSp">
@@ -148,10 +152,10 @@ export default {
   },
   created () {
     this.id = this.$route.query.id
-    this._queryInventoryCheck()
-    this._queryCheckProfitLoss(1)
-    this._queryCheckProfitLoss(0)
-    this._getApproveStep()
+    this._queryInventoryCheck()// 获取盘点统计
+    this._queryCheckProfitLoss(1)// 获取盘盈
+    this._queryCheckProfitLoss(0)// 获取盘库i
+    // this._getApproveStep()
   },
 
   methods: {
@@ -173,19 +177,20 @@ export default {
       // 盘点统计
       queryInventoryCheck({ id: this.id }).then(res => {
         // console.log(233)
-        // console.log(res)
-        this.inventory = res.data[0]
+        console.log(res)
+        this.inventory = res
       })
     },
     _queryCheckProfitLoss (checkProfitLoss) {
       // checkProfitLoss=1盘盈，=0盘亏
       queryCheckProfitLoss({ id: this.id, checkProfitLoss }).then(res => {
+        console.log('**')
         console.log(res)
         if (checkProfitLoss === 1) {
-          this.pyList = res.data
+          this.pyList = res
         }
         if (checkProfitLoss === 0) {
-          this.pkList = res.data
+          this.pkList = res
         }
       })
     }
@@ -376,11 +381,15 @@ export default {
     border-color: #fea14f;
   }
 }
+.bot-wa{
+  height:40px;
+}
 .bot {
   display: flex;
   position: fixed;
   bottom: 0;
   font-size: 20px;
+  background: #fff;
   left: 0;
   right: 0;
   border-top: #f3f3f3 1px solid;

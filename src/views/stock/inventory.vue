@@ -23,6 +23,10 @@
           <input type="number" v-model="info.checkRealQty">
         </div>
       </div>
+       <div>
+        <div>物料图片</div>
+        <div>{{info.fileList[0].fileUrl}}</div>
+      </div>
       <div>
         <div>备注</div>
         <div>
@@ -52,7 +56,7 @@ export default {
   },
   methods: {
     _getStoreCheckById () {
-      getStoreCheckById({ id: 2 }).then(res => {
+      getStoreCheckById({ id: this.$route.query.id, checkBillId: '二维码获取物料id' }).then(res => {
         console.log(res)
         this.info = res.data
       })
