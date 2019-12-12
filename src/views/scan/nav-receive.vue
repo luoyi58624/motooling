@@ -74,8 +74,8 @@ export default {
 
       const { appId } = await getAppid()
       console.log(appId)
-      let url = location.href.split('#')[0]
-      // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
+      // let url = location.href.split('#')[0]
+      let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
       const { configInfo } = await getJsSDKConfigInfo({ url })
       const config = Object.assign(
         {},
