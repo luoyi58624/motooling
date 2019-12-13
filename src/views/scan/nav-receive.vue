@@ -81,9 +81,9 @@ export default {
       // let url = location.href.split('#')[0]
       let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
       const { configInfo } = await getJsSDKConfigInfo({ url })
-      const config = await Object.assign({}, { appId }, configInfo, {
+      const config = Object.assign({}, { appId }, configInfo, {
         jsApiList: ['scanQRCode', 'stopRecord', 'startRecord'],
-        debug: false
+        debug: true
       })
       return config
     },
