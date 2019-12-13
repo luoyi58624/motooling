@@ -103,7 +103,7 @@ export default {
   },
   mounted () {
     this.getwechat().then(config => {
-      console.log(config)
+      alert(JSON.stringify(config))
       wx.config(config)
       wx.ready(function () {
         this.sao()
