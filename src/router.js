@@ -6,7 +6,7 @@ import { WEBURL, token } from '@/utils/utils.js'
 Vue.use(Router)
 
 var router = new Router({
-  mode: 'hash',
+  mode: 'history',
   base: '/mthtml',
   routes: [
     {
