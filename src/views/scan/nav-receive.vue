@@ -78,7 +78,7 @@ export default {
       let url = location.href.split('#')[0]
       // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
       const { configInfo } = await getJsSDKConfigInfo({ url })
-      const config = Object.assign({}, { appId }, configInfo, {
+      const config = await Object.assign({}, { appId }, configInfo, {
         jsApiList: ['scanQRCode'],
         debug: true
       })
@@ -105,6 +105,12 @@ export default {
     this.getwechat().then(config => {
       wx.config(config)
       wx.ready(function () {
+        wx.checkJsApi({
+          jsApiList: ['scanQRCode'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+          success: function (res) {
+            alert(JSON.stringfy(res))
+          }
+        })
       })
     })
   }
