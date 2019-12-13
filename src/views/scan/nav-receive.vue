@@ -104,6 +104,7 @@ export default {
   mounted () {
     this.getwechat().then(config => {
       wx.config(config)
+      alert(config.url)
       wx.ready(function () {
         wx.checkJsApi({
           jsApiList: ['scanQRCode'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
@@ -113,6 +114,9 @@ export default {
         })
       })
     })
+  },
+  created () {
+
   }
 }
 </script>
