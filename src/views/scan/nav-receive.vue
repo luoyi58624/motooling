@@ -100,6 +100,12 @@ export default {
     this.getwechat().then(config => {
       console.log(config)
       wx.config(config)
+      wx.ready(function () {
+        alert('微信js-sdk配置成功')
+      })
+      wx.error(function () {
+        alert('微信js-sdk配置失败000')
+      })
     })
   }
 }
