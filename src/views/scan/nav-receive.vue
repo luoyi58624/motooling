@@ -78,7 +78,8 @@ export default {
       }
       const { configInfo } = await getJsSDKConfigInfo({ url })
       const config = Object.assign({}, { appId }, configInfo, {
-        jsApiList: ['scanQRCode']
+        jsApiList: ['scanQRCode'],
+        debug: true
       })
       return config
     },
