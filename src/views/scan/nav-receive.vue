@@ -27,10 +27,11 @@ export default {
   },
   methods: {
     save (value) {
-      if (!this.value) {
+      if (!value) {
         this.showToast('单号为空')
         return
       }
+      this.value = value
       getDeliveryAndReturn({ billNo: value, type: 1 })
         .then(res => {
           console.log(res)
@@ -42,21 +43,21 @@ export default {
             this.$router.push({
               path: '/instore/list',
               query: {
-                no: this.value
+                no: value
               }
             })
           } else if (res.goodsType === '外协采购') {
             this.$router.push({
               path: '/assinstore/list',
               query: {
-                no: this.value
+                no: value
               }
             })
           } else if (res.goodsType === '生产') {
             this.$router.push({
               path: '/receive',
               query: {
-                no: this.value
+                no: value
               }
             })
           } else {
