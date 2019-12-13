@@ -99,7 +99,7 @@ export default {
       })
     }
   },
-  created () {
+  mounted () {
     this.getwechat().then(config => {
       console.log(config)
       wx.config(config)
