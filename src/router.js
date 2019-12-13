@@ -428,4 +428,12 @@ router.beforeEach((to, from, next) => {
   // setTimeout(()=>{next()},2000)
   next()
 })
+router.afterEach((to, from, next) => {
+  // 判断是否为着陆页
+
+  if (navigator.userAgent.toLowerCase().indexOf('iphone') !== -1 && !sessionStorage.getItem('landingUrl')) {
+    sessionStorage.setItem('landingUrl', location.href)
+  }
+})
+
 export default router

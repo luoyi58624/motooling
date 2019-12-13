@@ -70,19 +70,16 @@ export default {
         })
     },
     async getwechat () {
-      console.log(333)
-
       const { appId } = await getAppid()
       console.log(appId)
-      let url = location.href.split('#')[0]
-      // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
+      let url = location.href
+      if (navigator.userAgent.toLowerCase().indexOf('iphone') !== -1) {
+        url = sessionStorage.landingUrl
+      }
       const { configInfo } = await getJsSDKConfigInfo({ url })
-      const config = Object.assign(
-        {},
-        { appId },
-        configInfo,
-        { jsApiList: ['scanQRCode'] }
-      )
+      const config = Object.assign({}, { appId }, configInfo, {
+        jsApiList: ['scanQRCode']
+      })
       return config
     },
     sao () {
