@@ -100,8 +100,8 @@ export default {
     this.getwechat().then(config => {
       console.log(config)
       wx.config(config)
-      wx.ready(function (res) {
-        alert(JSON.stringify(res))
+      wx.ready(function () {
+        this.sao()
       })
     })
   }
