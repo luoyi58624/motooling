@@ -72,10 +72,7 @@ export default {
     async getwechat () {
       const { appId } = await getAppid()
       console.log(appId)
-      let url = location.href
-      if (navigator.userAgent.toLowerCase().indexOf('iphone') !== -1) {
-        url = sessionStorage.landingUrl
-      }
+      let url = location.href.split('#')[0]
       const { configInfo } = await getJsSDKConfigInfo({ url })
       const config = Object.assign({}, { appId }, configInfo, {
         jsApiList: ['scanQRCode'],
