@@ -6,12 +6,14 @@
     </div>
 
     <div class="input-wrapper">
+      <div @click="sao()" style="margin-left:10px;">
+          <img src="../../assets/sao.png" alt />
+      </div>
       <input type="text" placeholder="请输入单号" v-model="value" />
       <div @click="save(value)">
         <img src="../../assets/arrow.png" alt />
       </div>
     </div>
-    <div @click="sao">扫一扫</div>
   </div>
 </template>
 
@@ -124,6 +126,7 @@ export default {
   display: flex;
   background: #e7ebf2;
   height: 40px;
+  align-items: center;
   line-height: 40px;
   font-size: 12px;
   border-radius: 20px;
@@ -132,7 +135,7 @@ export default {
   > input {
     flex: 1;
     background: #e7ebf2;
-    padding-left: 20px;
+    padding-left: 5px;
     line-height: 40px;
   }
   > div {
