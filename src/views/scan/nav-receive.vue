@@ -7,7 +7,7 @@
 
     <div class="input-wrapper">
       <input type="text" placeholder="请输入单号" v-model="value" />
-      <div @click="save">
+      <div @click="save(value)">
         <img src="../../assets/arrow.png" alt />
       </div>
     </div>
@@ -26,12 +26,12 @@ export default {
     }
   },
   methods: {
-    save () {
+    save (value) {
       if (!this.value) {
-        this.showToast('单号不能为空')
+        this.showToast('单号为空')
         return
       }
-      getDeliveryAndReturn({ billNo: this.value, type: 1 })
+      getDeliveryAndReturn({ billNo: value, type: 1 })
         .then(res => {
           console.log(res)
           if (!res) {
@@ -89,6 +89,7 @@ export default {
           alert(JSON.stringify(res))
           var result = res.resultStr // 当needResult 为 1 时，扫码返回的结果
           console.log(result)
+          this.save(result)
         },
         fail: function (res) {
           alert(JSON.stringify(res))
