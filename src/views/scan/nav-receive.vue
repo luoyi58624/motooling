@@ -6,7 +6,7 @@
     </div>
 
     <div class="input-wrapper">
-      <div @click="sao()" style="margin-left:10px;">
+      <div @click="sao" style="margin-left:10px;">
           <img src="../../assets/sao.png" alt />
       </div>
       <input type="text" placeholder="请输入单号" v-model="value" />
@@ -98,7 +98,7 @@ export default {
           fail: function (res) {
           }
         })
-      }, 100)
+      }, 1000)
     }
   },
   mounted () {
