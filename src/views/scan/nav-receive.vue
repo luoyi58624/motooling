@@ -13,7 +13,11 @@
       <div @click="save(value)">
         <img src="../../assets/arrow.png" alt />
       </div>
+
     </div>
+    <div @click="start">开始录音</div>
+    <div @click="stop">停止录音</div>
+
   </div>
 </template>
 
@@ -79,7 +83,7 @@ export default {
       // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
       const { configInfo } = await getJsSDKConfigInfo({ url })
       const config = await Object.assign({}, { appId }, configInfo, {
-        jsApiList: ['scanQRCode'],
+        jsApiList: ['scanQRCode', 'stopRecord', 'startRecord'],
         debug: true
       })
       return config
@@ -99,6 +103,17 @@ export default {
           }
         })
       }, 1000)
+    },
+    start () {
+      wx.startRecord()
+    },
+    stop () {
+      wx.stopRecord({
+        success: function (res) {
+          var localId = res.localId
+          alert(localId)
+        }
+      })
     }
   },
   mounted () {
