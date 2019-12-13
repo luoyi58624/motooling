@@ -90,19 +90,17 @@ export default {
     },
     sao () {
       const vm = this
-      setTimeout(function () {
-        wx.scanQRCode({
-          needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-          scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
-          success: function (res) {
-            var result = res.resultStr // 当needResult 为 1 时，扫码返回的结果
-            console.log(result)
-            vm.save(result)
-          },
-          fail: function (res) {
-          }
-        })
-      }, 1000)
+      wx.scanQRCode({
+        needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+        scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
+        success: function (res) {
+          var result = res.resultStr // 当needResult 为 1 时，扫码返回的结果
+          console.log(result)
+          vm.save(result)
+        },
+        fail: function (res) {
+        }
+      })
     },
     start () {
       wx.startRecord()
@@ -116,22 +114,10 @@ export default {
       })
     }
   },
-  mounted () {
+  created () {
     this.getwechat().then(config => {
       wx.config(config)
-      alert(config.url)
-      wx.ready(function () {
-        wx.checkJsApi({
-          jsApiList: ['scanQRCode'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
-          success: function (res) {
-            alert(JSON.stringfy(res))
-          }
-        })
-      })
     })
-  },
-  created () {
-
   }
 }
 </script>
