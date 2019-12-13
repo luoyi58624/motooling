@@ -108,7 +108,6 @@ export default {
       alert(JSON.stringify(config))
       wx.config(config)
       wx.ready(function () {
-        this.sao()
       })
     })
   }
