@@ -73,7 +73,6 @@ export default {
       const { appId } = await getAppid()
       console.log(appId)
       let url = location.href.split('#')[0]
-      // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
       const { configInfo } = await getJsSDKConfigInfo({ url })
       const config = Object.assign({}, { appId }, configInfo, {
         jsApiList: ['scanQRCode'],
@@ -81,7 +80,15 @@ export default {
       })
       return config
     },
-    sao () {
+    async sao () {
+      const config = await this.getwechat()
+      await wx.config(config)
+      wx.ready(function () {
+        alert('微信js-sdk配置成功')
+      })
+      wx.error(function () {
+        alert('微信js-sdk配置失败000')
+      })
       wx.scanQRCode({
         needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
         scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
@@ -96,18 +103,7 @@ export default {
       })
     }
   },
-  created () {
-    this.getwechat().then(config => {
-      console.log(config)
-      wx.config(config)
-      wx.ready(function () {
-        alert('微信js-sdk配置成功')
-      })
-      wx.error(function () {
-        alert('微信js-sdk配置失败000')
-      })
-    })
-  }
+  created () {}
 }
 </script>
 <style lang="less" scoped>
