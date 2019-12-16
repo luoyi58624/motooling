@@ -59,7 +59,7 @@ async function getwechat () {
   // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
   const { configInfo } = await getJsSDKConfigInfo({ url })
   const config = await Object.assign({}, { appId }, configInfo, {
-    jsApiList: ['scanQRCode', 'startRecord', 'stopRecord', 'onVoiceRecordEnd'],
+    jsApiList: ['scanQRCode', 'startRecord', 'stopRecord', 'onVoiceRecordEnd', 'uploadVoice'],
     debug: false
   })
   return config

@@ -351,19 +351,22 @@ export default {
         wx.stopRecord({
           success: function (res) {
             var localId = res.serverId
-            alert('hahahah   ' + JSON.stringify(res))
-            wx.playVoice({
-              localId: res.localId // 需要播放的音频的本地ID，由stopRecord接口获得
-            })
             // alert(localId)
             if (duration > 1000) {
-              self.wxupload(localId).then(res => {
-                alert(JSON.stringify(res))
-                self.sendMessage(2, {
-                  contentType: 3,
-                  content: res.url,
-                  duration: parseInt(duration / 1000)
-                })
+              wx.uploadVoice({
+                localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+                isShowProgressTips: 0, // 默认为1，显示进度提示
+                success: function (res) {
+                  var serverId = res.serverId // 返回音频的服务器端ID
+                  self.wxupload(serverId).then(res => {
+                    alert(JSON.stringify(res))
+                    self.sendMessage(2, {
+                      contentType: 3,
+                      content: res.url,
+                      duration: parseInt(duration / 1000)
+                    })
+                  })
+                }
               })
             } else {
               self
