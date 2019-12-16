@@ -423,7 +423,15 @@ router.beforeEach((to, from, next) => {
     return
   }
   // setTimeout(()=>{next()},2000)
-  next()
+
+  var u = navigator.userAgent
+  var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) // ios终端
+  if (isiOS && to.path !== location.pathname) {
+    // 此处不可使用location.replace
+    location.assign(to.fullPath)
+  } else {
+    next()
+  }
 })
 
 export default router
