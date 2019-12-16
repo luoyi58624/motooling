@@ -350,7 +350,7 @@ export default {
         var duration = new Date().getTime() - this.startTimestamp // 计算时间差
         wx.stopRecord({
           success: function (res) {
-            var localId = res.localId
+            var localId = res.serverId
             alert('hahahah   ' + JSON.stringify(res))
             wx.playVoice({
               localId: res.localId // 需要播放的音频的本地ID，由stopRecord接口获得
