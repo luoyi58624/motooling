@@ -177,6 +177,7 @@ import {
 } from '@/api/synergy/synergy.js'
 import { imgUpload, fileUpload } from '@/api/upload/upload.js'
 import { getUser } from '@/api/Person/User.js'
+import wx from 'weixin-js-sdk'
 // import { BetterScroll } from 'cube-ui'
 import scroll from '@/components/BScroll.vue'
 import shortid from 'shortid'
@@ -306,7 +307,6 @@ export default {
       var ua = navigator.userAgent.toLowerCase() // 判断是否在微信环境中
       var isWinxin = ua.indexOf('micromessenger') !== -1
       if (isWinxin) {
-        alert('123')
         // 在微信浏览器
         wx.startRecord()
       } else {
