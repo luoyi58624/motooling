@@ -351,7 +351,10 @@ export default {
         wx.stopRecord({
           success: function (res) {
             var localId = res.localId
-            alert('hahahah   ' + localId)
+            alert('hahahah   ' + JSON.stringify(res))
+            wx.playVoice({
+              localId: res.localId // 需要播放的音频的本地ID，由stopRecord接口获得
+            })
             // alert(localId)
             if (duration > 1000) {
               self.wxupload(localId).then(res => {
