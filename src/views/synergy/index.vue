@@ -351,7 +351,7 @@ export default {
         wx.stopRecord({
           success: function (res) {
             var localId = res.localId
-            console.log('hahahah' + localId)
+            alert('hahahah   ' + localId)
             // alert(localId)
             if (duration > 1000) {
               self.wxupload(localId).then(res => {
