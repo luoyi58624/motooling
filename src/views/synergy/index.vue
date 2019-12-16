@@ -351,6 +351,7 @@ export default {
         wx.stopRecord({
           success: function (res) {
             var localId = res.localId
+            console.log('hahahah' + localId)
             // alert(localId)
             if (duration > 1000) {
               self.wxupload(localId).then(res => {
@@ -787,6 +788,7 @@ export default {
     })
     wx.onVoiceRecordEnd({
       complete: function (res) {
+        self.hideLoading()
         var localId = res.localId
         self.wxupload(localId).then(res => {
           alert(JSON.stringify(res))
