@@ -221,7 +221,8 @@ export default {
       moreBtnStatus: false,
       /* eslint-disable no-undef */
       rec: Recorder({ type: 'mp3' }),
-      currentAudioSrc: ''
+      currentAudioSrc: '',
+      startTimestamp: 0 // 开始录音的时间戳
     }
   },
   computed: {
@@ -310,6 +311,8 @@ export default {
       if (isWinxin) {
         // 在微信浏览器
         wx.startRecord()
+        this.startTimestamp = new Date().getTime()
+        self.showLoading('请说话...')
       } else {
         // 不在微信浏览器
         this.rec.open(
@@ -332,7 +335,8 @@ export default {
         )
       }
     },
-    async wxupload (mediaId) { // 上传微信录音文件
+    async wxupload (mediaId) {
+      // 上传微信录音文件
       const { fileUrl } = getUploadWechatFile({ mediaId })
       return fileUrl
     },
@@ -343,12 +347,28 @@ export default {
       var isWinxin = ua.indexOf('micromessenger') !== -1
       if (isWinxin) {
         // 在微信浏览器
+        var duration = new Date().getTime() - this.startTimestamp // 计算时间差
         wx.stopRecord({
           success: function (res) {
             var localId = res.localId
             // alert(localId)
             self.wxupload(localId).then(res => {
-              alert(res)
+              alert(JSON.stringify(res))
+              if (duration > 1000) {
+                self.sendMessage(2, {
+                  contentType: 3,
+                  content: res.url,
+                  duration: parseInt(duration / 1000)
+                })
+              } else {
+                self
+                  .$createToast({
+                    time: 2000,
+                    txt: '说活时间太短',
+                    type: 'warn'
+                  })
+                  .show()
+              }
             })
           }
         })
@@ -755,6 +775,7 @@ export default {
     }
   },
   created () {
+    var self = this
     this.relationId = this.$route.params.id
     this.relationType = this.$route.params.typeid
     this.imurl = localStorage.imurl
@@ -763,6 +784,19 @@ export default {
     this.getUserInfo()
     this.getwechat().then(config => {
       wx.config(config)
+    })
+    wx.onVoiceRecordEnd({
+      complete: function (res) {
+        var localId = res.localId
+        self.wxupload(localId).then(res => {
+          alert(JSON.stringify(res))
+          self.sendMessage(2, {
+            contentType: 3,
+            content: res.url,
+            duration: 60
+          })
+        })
+      }
     })
   },
   watch: {
