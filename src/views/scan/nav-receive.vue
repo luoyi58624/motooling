@@ -18,7 +18,7 @@
 
 <script>
 import { getDeliveryAndReturn } from '@/api/instore/instore'
-import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
+// import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
 import wx from 'weixin-js-sdk'
 export default {
   data () {
@@ -71,18 +71,18 @@ export default {
           }
         })
     },
-    async getwechat () {
-      const { appId } = await getAppid()
-      console.log(appId)
-      let url = location.href.split('#')[0]
-      // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
-      const { configInfo } = await getJsSDKConfigInfo({ url })
-      const config = await Object.assign({}, { appId }, configInfo, {
-        jsApiList: ['scanQRCode'],
-        debug: false
-      })
-      return config
-    },
+    // async getwechat () {
+    //   const { appId } = await getAppid()
+    //   console.log(appId)
+    //   let url = location.href.split('#')[0]
+    //   // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
+    //   const { configInfo } = await getJsSDKConfigInfo({ url })
+    //   const config = await Object.assign({}, { appId }, configInfo, {
+    //     jsApiList: ['scanQRCode'],
+    //     debug: false
+    //   })
+    //   return config
+    // },
     sao () {
       const vm = this
       setTimeout(function () {
