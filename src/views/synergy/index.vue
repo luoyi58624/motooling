@@ -346,8 +346,8 @@ export default {
         wx.stopRecord({
           success: function (res) {
             var localId = res.localId
-            alert(localId)
-            this.wxupload(localId).then(res => {
+            // alert(localId)
+            self.wxupload(localId).then(res => {
               alert(res)
             })
           }
