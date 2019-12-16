@@ -60,7 +60,7 @@ async function getwechat () {
   const { configInfo } = await getJsSDKConfigInfo({ url })
   const config = await Object.assign({}, { appId }, configInfo, {
     jsApiList: ['scanQRCode', 'startRecord', 'stopRecord', 'onVoiceRecordEnd', 'uploadVoice'],
-    debug: false
+    debug: true
   })
   return config
 }
