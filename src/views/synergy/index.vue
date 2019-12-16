@@ -347,7 +347,7 @@ export default {
           success: function (res) {
             var localId = res.localId
             alert(localId)
-            wxupload(localId).then(res => {
+            this.wxupload(localId).then(res => {
               alert(res)
             })
           }
