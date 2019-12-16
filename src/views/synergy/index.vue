@@ -3,17 +3,20 @@
     <div class="member-list-wrap" v-if="isEnable">
       <div class="member-list">
         <template v-for="item in synergyMemberList">
-          <img :src="item.avatar?item.avatar:require('@/assets/person.png')" :key="item.id">
+          <img
+            :src="item.avatar ? item.avatar : require('@/assets/person.png')"
+            :key="item.id"
+          />
         </template>
       </div>
-      <div @click="addUser('changeSy nergyMemberList','synergyMemberList')">
+      <div @click="addUser('changeSy nergyMemberList', 'synergyMemberList')">
         <img src="../../assets/icon-add.png" />
       </div>
     </div>
     <scroll
       :data="watchData"
       class="talk-contents"
-      :class="{'active':moreBtnStatus}"
+      :class="{ active: moreBtnStatus }"
       ref="scroll"
       :pulldown="true"
       @pulldown="pulldown"
@@ -22,42 +25,61 @@
       <div class="scroll-content">
         <div
           class="talk-space"
-          :class="uid != item.data.senderId?'user-talk':'self-talk'"
+          :class="uid != item.data.senderId ? 'user-talk' : 'self-talk'"
           v-for="item in recordList"
           :key="item.id"
         >
-          <div class="talk-user-avatar" :style="'background-image: url('+item.data.avatar+')'"></div>
+          <div
+            class="talk-user-avatar"
+            :style="'background-image: url(' + item.data.avatar + ')'"
+          ></div>
           <div
             class="talk-info"
-            v-if="item.data.contentType===1||item.data.contentType===2||item.data.contentType===3||item.data.contentType===4"
+            v-if="
+              item.data.contentType === 1 ||
+                item.data.contentType === 2 ||
+                item.data.contentType === 3 ||
+                item.data.contentType === 4
+            "
           >
-            <div class="talk-user-name" v-if="uid != item.data.senderId">{{ item.data.username }}</div>
+            <div class="talk-user-name" v-if="uid != item.data.senderId">
+              {{ item.data.username }}
+            </div>
             <div
               class="talk-content talk-word-content"
-              v-if="item.data.contentType===1"
-            >{{ item.data.content }}</div>
+              v-if="item.data.contentType === 1"
+            >
+              {{ item.data.content }}
+            </div>
             <div
               class="talk-content"
-              v-if="item.data.contentType===2"
-              @click="showImagePreview(fileAddressFormatFunc(item.data.content))"
+              v-if="item.data.contentType === 2"
+              @click="
+                showImagePreview(fileAddressFormatFunc(item.data.content))
+              "
             >
               <img :src="fileAddressFormatFunc(item.data.smallImg)" />
             </div>
             <div
               class="talk-content"
-              v-if="item.data.contentType===3"
+              v-if="item.data.contentType === 3"
               @click="playAudio(fileAddressFormatFunc(item.data.content))"
             >
               <!-- <audio :src="item.data.content" controls></audio> -->
               <div class="talk-audio-content">{{ item.data.duration }}"</div>
             </div>
-            <div class="talk-content" v-if="item.data.contentType===4">
-              <video :src="fileAddressFormatFunc(item.data.content)" controls="controls"></video>
+            <div class="talk-content" v-if="item.data.contentType === 4">
+              <video
+                :src="fileAddressFormatFunc(item.data.content)"
+                controls="controls"
+              ></video>
             </div>
             <div
               class="talk-content talk-word-content"
-              v-if="item.data.contentType===5"
-            >{{ item.data.content }}</div>
+              v-if="item.data.contentType === 5"
+            >
+              {{ item.data.content }}
+            </div>
           </div>
         </div>
       </div>
@@ -66,13 +88,20 @@
 
     <div class="footer" ref="footer" v-if="isEnable">
       <form class="talker" @submit="submitWord">
-        <div class="talker-icon-btn" @click="isVoice=!isVoice">
+        <div class="talker-icon-btn" @click="isVoice = !isVoice">
           <div class="talker-icon-btn">
             <div class="icon icon-voice-right"></div>
           </div>
         </div>
         <div class="talker-input-wrapper" v-if="!isVoice">
-          <input class="talker-input" type="text" placeholder="请输入" v-model="content" @focus="focus" @blur="blur" />
+          <input
+            class="talker-input"
+            type="text"
+            placeholder="请输入"
+            v-model="content"
+            @focus="focus"
+            @blur="blur"
+          />
         </div>
         <div class="talker-input-wrapper" v-if="isVoice">
           <button
@@ -80,49 +109,62 @@
             class="rec-btn"
             @touchstart="startRecorder"
             @touchend="stopRecorder"
-          >按住说话</button>
+          >
+            按住说话
+          </button>
         </div>
         <div class="input-toggle-button talker-icon-btn">
           <div class="icon icon-add" @click="showMoreBtn"></div>
         </div>
         <div class="talker-action">
-          <button type="submit" class="talker-send" @click="submitWord">发送</button>
+          <button type="submit" class="talker-send" @click="submitWord">
+            发送
+          </button>
         </div>
       </form>
       <transition name="slide-fade">
-      <div class="talker-toolbar" v-show="moreBtnStatus">
-        <label class="list-item" for="uploadImageField">
-          <div class="item-icon">
-            <div class="icon icon-camera"></div>
-          </div>
-          <div class="center item-text">图片</div>
-        </label>
-        <input type="file" id="uploadImageField" multiple hidden @change="uploadImage" />
-        <div class="list-item">
-          <div class="item-icon">
-            <div class="icon icon-album"></div>
-          </div>
-          <div class="center item-text">相册</div>
-        </div>
-        <div class="list-item">
-          <router-link :to="'/synergy/summary/new/'+this.synergyGroup.id+'/'+newestId">
+        <div class="talker-toolbar" v-show="moreBtnStatus">
+          <label class="list-item" for="uploadImageField">
             <div class="item-icon">
-              <div class="icon icon-record"></div>
+              <div class="icon icon-camera"></div>
             </div>
-            <div class="center item-text">纪要</div>
-          </router-link>
-        </div>
-        <div class="list-item">
-          <router-link to="/synergy/summary/list">
+            <div class="center item-text">图片</div>
+          </label>
+          <input
+            type="file"
+            id="uploadImageField"
+            multiple
+            hidden
+            @change="uploadImage"
+          />
+          <div class="list-item">
             <div class="item-icon">
-              <div class="icon icon-record"></div>
+              <div class="icon icon-album"></div>
             </div>
-            <div class="center item-text">记录</div>
-          </router-link>
+            <div class="center item-text">相册</div>
+          </div>
+          <div class="list-item">
+            <router-link
+              :to="
+                '/synergy/summary/new/' + this.synergyGroup.id + '/' + newestId
+              "
+            >
+              <div class="item-icon">
+                <div class="icon icon-record"></div>
+              </div>
+              <div class="center item-text">纪要</div>
+            </router-link>
+          </div>
+          <div class="list-item">
+            <router-link to="/synergy/summary/list">
+              <div class="item-icon">
+                <div class="icon icon-record"></div>
+              </div>
+              <div class="center item-text">记录</div>
+            </router-link>
+          </div>
         </div>
-      </div>
       </transition>
-
     </div>
   </div>
 </template>
@@ -228,7 +270,8 @@ export default {
     this.socket.close()
   },
   methods: {
-    focus () { // 输入框聚焦时事件
+    focus () {
+      // 输入框聚焦时事件
       this.moreBtnStatus = false
       setTimeout(() => {
         console.log(123)
@@ -236,7 +279,8 @@ export default {
         this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
       }, 300)
     },
-    blur () { // 输入框失去焦点
+    blur () {
+      // 输入框失去焦点
       setTimeout(() => {
         this.$refs.scroll.refresh()
         this.$refs.scroll.scrollTo(0, this.$refs.scroll.scroll.maxScrollY)
@@ -259,65 +303,86 @@ export default {
     },
     startRecorder () {
       var self = this
-      this.rec.open(
-        function () {
-          // 打开麦克风授权获得相关资源
-          self.rec.start() // 开始录音
-          self.showLoading('请说话...')
-        },
-        function (msg, isUserNotAllow) {
-          // 用户拒绝未授权或不支持
-          self
-            .$createToast({
-              time: 2000,
-              txt: (isUserNotAllow ? 'UserNotAllow，' : '') + '无法录音:' + msg,
-              type: 'warn'
-            })
-            .show()
-        }
-      )
-    },
-    stopRecorder () {
-      var self = this
-      this.hideLoading()
-      this.rec.stop(
-        function (blob, duration) {
-          // 到达指定条件停止录音
-          console.log(URL.createObjectURL(blob), '时长:' + duration + 'ms')
-          self.rec.close() // 释放录音资源
-          // 已经拿到blob文件对象想干嘛就干嘛：立即播放、上传
-          if (duration > 1000) {
-            fileUpload(blob, 'rec.mp3')
-              .then(res => {
-                console.log(res)
-                self.sendMessage(2, {
-                  contentType: 3,
-                  content: res.url,
-                  duration: parseInt(duration / 1000)
-                })
-              })
-              .catch(err => {
-                console.log(err)
-              })
-          } else {
+      var ua = navigator.userAgent.toLowerCase() // 判断是否在微信环境中
+      var isWinxin = ua.indexOf('micromessenger') !== -1
+      if (isWinxin) {
+        // 在微信浏览器
+        wx.startRecord()
+      } else {
+        // 不在微信浏览器
+        this.rec.open(
+          function () {
+            // 打开麦克风授权获得相关资源
+            self.rec.start() // 开始录音
+            self.showLoading('请说话...')
+          },
+          function (msg, isUserNotAllow) {
+            // 用户拒绝未授权或不支持
             self
               .$createToast({
                 time: 2000,
-                txt: '说活时间太短',
+                txt:
+                  (isUserNotAllow ? 'UserNotAllow，' : '') + '无法录音:' + msg,
                 type: 'warn'
               })
               .show()
           }
-        },
-        function (msg) {
-          this.$createDialog({
-            type: 'alert',
-            title: '录音失败',
-            content: msg,
-            icon: 'cubeic-alert'
-          }).show()
-        }
-      )
+        )
+      }
+    },
+    stopRecorder () {
+      var self = this
+      this.hideLoading()
+      var ua = navigator.userAgent.toLowerCase() // 判断是否在微信环境中
+      var isWinxin = ua.indexOf('micromessenger') !== -1
+      if (isWinxin) {
+        // 在微信浏览器
+        wx.stopRecord({
+          success: function (res) {
+            var localId = res.localId
+            alert(localId)
+          }
+        })
+      } else {
+        this.rec.stop(
+          function (blob, duration) {
+            // 到达指定条件停止录音
+            console.log(URL.createObjectURL(blob), '时长:' + duration + 'ms')
+            self.rec.close() // 释放录音资源
+            // 已经拿到blob文件对象想干嘛就干嘛：立即播放、上传
+            if (duration > 1000) {
+              fileUpload(blob, 'rec.mp3')
+                .then(res => {
+                  console.log(res)
+                  self.sendMessage(2, {
+                    contentType: 3,
+                    content: res.url,
+                    duration: parseInt(duration / 1000)
+                  })
+                })
+                .catch(err => {
+                  console.log(err)
+                })
+            } else {
+              self
+                .$createToast({
+                  time: 2000,
+                  txt: '说活时间太短',
+                  type: 'warn'
+                })
+                .show()
+            }
+          },
+          function (msg) {
+            this.$createDialog({
+              type: 'alert',
+              title: '录音失败',
+              content: msg,
+              icon: 'cubeic-alert'
+            }).show()
+          }
+        )
+      }
     },
     uploadRecorder () {
       fileUpload()
@@ -512,8 +577,10 @@ export default {
           (this.socket && this.socket.readyState === 3))
       ) {
         this.socket = new WebSocket(
-          'ws://' + this.imurl + '/mtwebsocket/' +
-          // 'ws://192.168.2.180:8070/mtwebsocket/' +
+          'ws://' +
+            this.imurl +
+            '/mtwebsocket/' +
+            // 'ws://192.168.2.180:8070/mtwebsocket/' +
             this.companyId +
             '/' +
             this.synergyGroup.id +
@@ -581,10 +648,10 @@ export default {
         message = {
           requestType: 'ping',
           serialNumber: null,
-          data: {
-          }
+          data: {}
         }
-      } else if (type === 2) { // 发送消息
+      } else if (type === 2) {
+        // 发送消息
         message.data.contentType = contentType
         // 内容
         if (content) {
@@ -598,10 +665,10 @@ export default {
         if (duration) {
           message.data.duration = duration
         }
-      } else if (type === 3) { // 响应消息
+      } else if (type === 3) {
+        // 响应消息
         message = data
       } else {
-
       }
       if (this.socket.readyState === 1) {
         console.log(message)
@@ -685,6 +752,9 @@ export default {
     console.log(this.relationId)
     this.init()
     this.getUserInfo()
+    this.getwechat().then(config => {
+      wx.config(config)
+    })
   },
   watch: {
     moreBtnStatus () {
@@ -697,7 +767,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.scroll-content{
+.scroll-content {
   min-height: 101%;
 }
 input {
@@ -710,7 +780,10 @@ input {
 .member-list-wrap {
   padding: 8px 30px; /* no*/
   display: flex;
-  position:fixed;top:0;left:0;right:0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   justify-content: center;
   font-size: 0;
   background: #fff;
@@ -739,8 +812,8 @@ input {
   right: 0;
   background: #eaeaea;
 }
-.talk-contents.active{
-  bottom:157px;/* no*/
+.talk-contents.active {
+  bottom: 157px; /* no*/
 }
 .talk-contents .talk-space {
   display: flex;
@@ -877,7 +950,7 @@ input {
   text-align: right;
 }
 .talker-toolbar {
-  padding: 10px 0;/* no */
+  padding: 10px 0; /* no */
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -885,15 +958,15 @@ input {
 .talker-toolbar .list-item {
   /* height: 90px; */
   box-sizing: border-box;
-  width: 93.75px;/* no */
-  height: 93.75px;/* no */
-  padding: 10px;/* no */
+  width: 93.75px; /* no */
+  height: 93.75px; /* no */
+  padding: 10px; /* no */
 }
 .talker-toolbar .item-icon {
   display: flex;
-  height: 53.75px;/* no */
-  padding: 10px;/* no */
-  border-radius: 6px;/* no */
+  height: 53.75px; /* no */
+  padding: 10px; /* no */
+  border-radius: 6px; /* no */
   background-color: #e6e6e6;
 }
 .talker-toolbar .item-text {
@@ -920,10 +993,10 @@ input {
   background-repeat: no-repeat;
 }
 .slide-fade-enter-active {
-  transition: all 0.3s ;
+  transition: all 0.3s;
 }
 .slide-fade-leave-active {
-  transition: all 0.3s ;
+  transition: all 0.3s;
 }
 .slide-fade-enter, .slide-fade-leave-to
 /* .slide-fade-leave-active for below version 2.1.8 */ {

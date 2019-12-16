@@ -6,6 +6,7 @@ import store from './store'
 import 'amfe-flexible'
 import { Stepper } from 'vant'
 import 'vant/lib/index.css'
+import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
 Vue.use(Stepper)
 
 Vue.config.productionTip = false
@@ -51,6 +52,19 @@ function hideLoading () {
     toast.hide()
   };
 }
+async function getwechat () {
+  const { appId } = await getAppid()
+  console.log(appId)
+  let url = location.href.split('#')[0]
+  // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
+  const { configInfo } = await getJsSDKConfigInfo({ url })
+  const config = await Object.assign({}, { appId }, configInfo, {
+    jsApiList: ['scanQRCode', 'startRecord', 'stopRecord', 'onVoiceRecordEnd'],
+    debug: false
+  })
+  return config
+}
+Vue.prototype.getwechat = getwechat
 Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading
 Vue.prototype.hideLoading = hideLoading
