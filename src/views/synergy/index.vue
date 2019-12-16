@@ -175,6 +175,7 @@ import {
   synergyRecordPage,
   synergyAddMember
 } from '@/api/synergy/synergy.js'
+import { getUploadWechatFile } from '@/api/wechat.js'
 import { imgUpload, fileUpload } from '@/api/upload/upload.js'
 import { getUser } from '@/api/Person/User.js'
 import wx from 'weixin-js-sdk'
@@ -331,6 +332,10 @@ export default {
         )
       }
     },
+    async wxupload (mediaId) { // 上传微信录音文件
+      const { fileUrl } = getUploadWechatFile({ mediaId })
+      return fileUrl
+    },
     stopRecorder () {
       var self = this
       this.hideLoading()
@@ -342,6 +347,9 @@ export default {
           success: function (res) {
             var localId = res.localId
             alert(localId)
+            wxupload(localId).then(res => {
+              alert(res)
+            })
           }
         })
       } else {

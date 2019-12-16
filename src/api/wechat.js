@@ -30,3 +30,16 @@ export function getAppid (obj) {
     data
   })
 }
+export function getUploadWechatFile (obj) {
+  const data = {
+    token: token(),
+    md5: md5String,
+    timestamp: timestamp,
+    data: obj
+  }
+  return newRequest({
+    url: BASEURL() + '/mtH5/wechat/getUploadWechatFile',
+    method: 'post',
+    data
+  })
+}
