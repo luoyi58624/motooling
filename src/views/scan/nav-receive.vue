@@ -74,9 +74,8 @@ export default {
       console.log(appId)
       let url = location.href.split('#')[0]
       const { configInfo } = await getJsSDKConfigInfo({ url })
-      const config = Object.assign({}, { appId }, configInfo, {
-        jsApiList: ['scanQRCode'],
-        debug: true
+      const config = Object.assign({}, { debug: true }, { appId }, configInfo, {
+        jsApiList: ['scanQRCode']
       })
       return config
     },
