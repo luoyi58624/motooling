@@ -306,6 +306,7 @@ export default {
       var ua = navigator.userAgent.toLowerCase() // 判断是否在微信环境中
       var isWinxin = ua.indexOf('micromessenger') !== -1
       if (isWinxin) {
+        alert('123')
         // 在微信浏览器
         wx.startRecord()
       } else {
