@@ -352,24 +352,24 @@ export default {
           success: function (res) {
             var localId = res.localId
             // alert(localId)
-            self.wxupload(localId).then(res => {
-              alert(JSON.stringify(res))
-              if (duration > 1000) {
+            if (duration > 1000) {
+              self.wxupload(localId).then(res => {
+                alert(JSON.stringify(res))
                 self.sendMessage(2, {
                   contentType: 3,
                   content: res.url,
                   duration: parseInt(duration / 1000)
                 })
-              } else {
-                self
-                  .$createToast({
-                    time: 2000,
-                    txt: '说活时间太短',
-                    type: 'warn'
-                  })
-                  .show()
-              }
-            })
+              })
+            } else {
+              self
+                .$createToast({
+                  time: 2000,
+                  txt: '说活时间太短',
+                  type: 'warn'
+                })
+                .show()
+            }
           }
         })
       } else {
