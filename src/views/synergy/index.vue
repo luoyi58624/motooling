@@ -350,12 +350,12 @@ export default {
         var duration = new Date().getTime() - this.startTimestamp // 计算时间差
         wx.stopRecord({
           success: function (res) {
-            var localId = res.serverId
+            var localId = res.localId
             // alert(localId)
             // if (duration > 1000) {
             wx.uploadVoice({
               localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
-              isShowProgressTips: 0, // 默认为1，显示进度提示
+              isShowProgressTips: 1, // 默认为1，显示进度提示
               success: function (res) {
                 var serverId = res.serverId // 返回音频的服务器端ID
                 self.wxupload(serverId).then(res => {
