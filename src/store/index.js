@@ -21,7 +21,7 @@ export default new Vuex.Store({
     synergyMemberList: [],
     // 对部门发料
     wuliaoList: [],
-    wechatSignUrl: '' // 调用微信jssdk接口所需要的url地址
+    wxSignUrl: '' // 调用微信jssdk接口所需要的url地址
   },
   mutations: {
     changeReciveList (state, newArr) {
