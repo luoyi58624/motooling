@@ -5,10 +5,13 @@
         <img src="../../assets/title.png" alt="">
     </div>
 
-    <div class="input-wrapper">
+     <div class="input-wrapper">
+      <div @click="sao" style="margin-left:10px;">
+        <img src="../../assets/sao.png" alt />
+      </div>
       <input type="text" placeholder="请输入单号" v-model="value" />
-      <div @click="save">
-           <img src="../../assets/arrow.png" alt="">
+      <div @click="save(value)">
+        <img src="../../assets/arrow.png" alt />
       </div>
     </div>
   </div>
@@ -22,11 +25,12 @@ export default {
     }
   },
   methods: {
-    save () {
-      if (!this.value) {
+    save (value) {
+      if (value) {
         this.showToast('单号不能为空')
         return
       }
+      this.value = value
       this.$router.push({
         path: '/delivery',
         query: {
