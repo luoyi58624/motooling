@@ -359,7 +359,7 @@ export default {
               success: function (res) {
                 var serverId = res.serverId // 返回音频的服务器端ID
                 self.wxupload(serverId).then(res => {
-                  alert(JSON.stringify(res))
+                  // alert(JSON.stringify(res))
                   self.sendMessage(2, {
                     contentType: 3,
                     content: res.url,
@@ -797,7 +797,7 @@ export default {
         self.hideLoading()
         var localId = res.localId
         self.wxupload(localId).then(res => {
-          alert(JSON.stringify(res))
+          // alert(JSON.stringify(res))
           self.sendMessage(2, {
             contentType: 3,
             content: res.url,
