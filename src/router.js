@@ -435,6 +435,7 @@ router.beforeEach((to, from, next) => {
     return
   }
   store.commit('setWechatSignUrl', getWechatSignUrl(to))
+  alert(store.getter.getWechatSignUrl)
   next()
 })
 
