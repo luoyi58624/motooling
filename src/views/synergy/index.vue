@@ -9,7 +9,7 @@
           />
         </template>
       </div>
-      <div @click="addUser('changeSy nergyMemberList', 'synergyMemberList')">
+      <div @click="addUser('changeSynergyMemberList', 'synergyMemberList')">
         <img src="../../assets/icon-add.png" />
       </div>
     </div>
