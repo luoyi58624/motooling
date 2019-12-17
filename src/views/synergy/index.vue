@@ -337,8 +337,8 @@ export default {
     },
     async wxupload (mediaId) {
       // 上传微信录音文件
-      const { fileUrl } = getUploadWechatFile({ mediaId })
-      return fileUrl
+      const res = getUploadWechatFile({ mediaId })
+      return res
     },
     stopRecorder () {
       var self = this
