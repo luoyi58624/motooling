@@ -434,7 +434,10 @@ router.beforeEach((to, from, next) => {
     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
     return
   }
+  console.log('(**********' + isiOS() + '***', store.getters.getWechatSignUrl)
   store.commit('setWechatSignUrl', getWechatSignUrl(to))
+  console.log('(**********' + isiOS() + '***', store.getters.getWechatSignUrl)
+
   alert(store.getters['getWechatSignUrl'])
   next()
 })
