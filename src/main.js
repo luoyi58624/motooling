@@ -55,8 +55,9 @@ function hideLoading () {
 async function getwechat () {
   const { appId } = await getAppid()
   console.log(appId)
-  let url = location.href.split('#')[0]
+  // let url = location.href.split('#')[0]
   // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
+  const url = store.getters['getWechatSignUrl']
   const { configInfo } = await getJsSDKConfigInfo({ url })
   const config = await Object.assign({}, { appId }, configInfo, {
     jsApiList: ['scanQRCode', 'startRecord', 'stopRecord', 'onVoiceRecordEnd', 'uploadVoice'],
@@ -69,6 +70,10 @@ Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading
 Vue.prototype.hideLoading = hideLoading
 Vue.prototype.showDialog = showDialog
+Vue.prototype.isiOS = function () {
+  const u = navigator.userAgent
+  return u.indexOf('iPhone') > -1 || u.indexOf('Mac OS') > -1
+}
 new Vue({
   router,
   store,
