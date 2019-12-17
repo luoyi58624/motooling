@@ -16,7 +16,8 @@ export default new Vuex.Store({
     // 协同成员
     synergyMemberList: [],
     // 对部门发料
-    wuliaoList: []
+    wuliaoList: [],
+    wechatSignUrl: '' // 调用微信jssdk接口所需要的url地址
   },
   mutations: {
     changeReciveList (state, newArr) {
@@ -42,6 +43,18 @@ export default new Vuex.Store({
     },
     changeWuliaoList (state, newArr) {
       state.wuliaoList = newArr
+    },
+    setWechatSignUrl (state, wxSignUrl) {
+      // 关键点
+      // IOS仅记录第一次进入页面时的URL
+      // IOS微信切换路由实际URL不变，只能使用第一进入页面的URL进行签名
+      if (this.isIos() && state.wxSignUrl !== '') {
+        return
+      }
+      state.wxSignUrl = wxSignUrl
     }
+  },
+  getters: {
+    getWechatSignUrl: state => state.wxSignUrl
   }
 })

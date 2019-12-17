@@ -2,9 +2,17 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import { WEBURL, token } from '@/utils/utils.js'
+import store from '@/store'
 
 Vue.use(Router)
-
+function getWechatSignUrl (to) {
+  if (this.isIos()) {
+    return window.location.href
+  } else {
+    // 此处$appHost需要自行处理
+    return location.href
+  }
+}
 var router = new Router({
   mode: 'history',
   base: '/mthtml',
@@ -422,16 +430,8 @@ router.beforeEach((to, from, next) => {
     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
     return
   }
-  // setTimeout(()=>{next()},2000)
-
-  var u = navigator.userAgent
-  var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) // ios终端
-  if (isiOS && to.path !== location.pathname) {
-    // 此处不可使用location.replace
-    location.assign(to.fullPath)
-  } else {
-    next()
-  }
+  store.commit('setWechatSignUrl', getWechatSignUrl(to))
+  next()
 })
 
 export default router
