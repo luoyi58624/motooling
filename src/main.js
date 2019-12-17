@@ -70,10 +70,6 @@ Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading
 Vue.prototype.hideLoading = hideLoading
 Vue.prototype.showDialog = showDialog
-Vue.prototype.isiOS = function () {
-  const u = navigator.userAgent
-  return u.indexOf('iPhone') > -1 || u.indexOf('Mac OS') > -1
-}
 new Vue({
   router,
   store,

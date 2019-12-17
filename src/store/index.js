@@ -4,6 +4,10 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 // const debug = process.env.NODE_ENV !== 'production'
+const isiOS = function () {
+  const u = navigator.userAgent
+  return u.indexOf('iPhone') > -1 || u.indexOf('Mac OS') > -1
+}
 
 export default new Vuex.Store({
   state: {
@@ -48,7 +52,7 @@ export default new Vuex.Store({
       // 关键点
       // IOS仅记录第一次进入页面时的URL
       // IOS微信切换路由实际URL不变，只能使用第一进入页面的URL进行签名
-      if (this.isIos() && state.wxSignUrl !== '') {
+      if (isiOS() && state.wxSignUrl !== '') {
         return
       }
       state.wxSignUrl = wxSignUrl
