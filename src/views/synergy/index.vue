@@ -607,14 +607,14 @@ export default {
       }
     },
     im () {
+      let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
       if (
         this.isClose === false &&
         (Object.keys(this.socket).length === 0 ||
           (this.socket && this.socket.readyState === 3))
       ) {
         this.socket = new WebSocket(
-          'ws://' +
-            this.imurl +
+          prefix + this.imurl +
             '/mtwebsocket/' +
             // 'ws://192.168.2.180:8070/mtwebsocket/' +
             this.companyId +
