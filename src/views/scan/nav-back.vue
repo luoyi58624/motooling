@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     save (value) {
-      if (value) {
+      if (!value) {
         this.showToast('单号不能为空')
         return
       }
