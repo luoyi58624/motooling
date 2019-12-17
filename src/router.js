@@ -3,10 +3,14 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import { WEBURL, token } from '@/utils/utils.js'
 import store from '@/store'
+const isiOS = function () {
+  const u = navigator.userAgent
+  return u.indexOf('iPhone') > -1 || u.indexOf('Mac OS') > -1
+}
 
 Vue.use(Router)
 function getWechatSignUrl (to) {
-  if (this.isIos()) {
+  if (isiOS()) {
     return window.location.href
   } else {
     // 此处$appHost需要自行处理
