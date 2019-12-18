@@ -47,7 +47,7 @@
     <br />
     <div>
       <router-link
-        href="/mthtml/scan/nav-receive?weburl=http://api.unit.testing.motooling.com"
+        to="/mthtml/scan/nav-receive?weburl=http://api.unit.testing.motooling.com"
       >收货</router-link>
     </div>
     <br />
