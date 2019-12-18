@@ -84,18 +84,18 @@ export default {
         fail: function (res) {}
       })
     }
-  },
-  mounted () {
-    this.getwechat().then(config => {
-      wx.config(config)
-      wx.ready(function () {})
-      /* 处理失败验证 */
-      wx.error(function (res) {
-        // config 信息验证失败会执行error函数,如签名过期导致验证失败,具体错误信息可以打开config的debug模式查看,也可以在返回的res参数中查看,对于SPA可以在这里更新签名
-        alert('配置验证失败: ' + res.errMsg)
-      })
-    })
   }
+  // mounted () {
+  //   this.getwechat().then(config => {
+  //     wx.config(config)
+  //     wx.ready(function () {})
+  //     /* 处理失败验证 */
+  //     wx.error(function (res) {
+  //       // config 信息验证失败会执行error函数,如签名过期导致验证失败,具体错误信息可以打开config的debug模式查看,也可以在返回的res参数中查看,对于SPA可以在这里更新签名
+  //       alert('配置验证失败: ' + res.errMsg)
+  //     })
+  //   })
+  // }
 }
 </script>
 <style lang="less" scoped>
