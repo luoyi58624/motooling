@@ -8,10 +8,6 @@ import { Stepper } from 'vant'
 import 'vant/lib/index.css'
 import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
 Vue.use(Stepper)
-if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
-  window.entryUrl = location.href.split('#')[0]
-}
-
 Vue.config.productionTip = false
 var toast
 function showToast (val) {
