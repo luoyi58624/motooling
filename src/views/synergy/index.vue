@@ -789,9 +789,9 @@ export default {
     console.log(this.relationId)
     this.init()
     this.getUserInfo()
-    this.getwechat().then(config => {
-      wx.config(config)
-    })
+    // this.getwechat().then(config => {
+    //   wx.config(config)
+    // })
     wx.onVoiceRecordEnd({
       complete: function (res) {
         self.hideLoading()

@@ -7,6 +7,7 @@ import 'amfe-flexible'
 import { Stepper } from 'vant'
 import 'vant/lib/index.css'
 import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
+import wx from 'weixin-js-sdk'
 Vue.use(Stepper)
 Vue.config.productionTip = false
 var toast
@@ -65,6 +66,9 @@ async function getwechat () {
   })
   return config
 }
+getwechat().then(config => {
+  wx.config(config)
+})
 Vue.prototype.getwechat = getwechat
 Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading
