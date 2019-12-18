@@ -46,9 +46,9 @@
     </div>
     <br />
     <div>
-      <a
-        href="http://wechat.motooling.com/mthtml/scan/nav-receive?weburl=http://api.unit.testing.motooling.com"
-      >收货</a>
+      <router-link
+        href="/mthtml/scan/nav-receive?weburl=http://api.unit.testing.motooling.com"
+      >收货</router-link>
     </div>
     <br />
     <div>
@@ -58,9 +58,9 @@
     </div>
     <br />
     <div>
-      <a
-        href="http://wechat.motooling.com/mthtml/synergy/1/2/?weburl=http://api.unit.testing.motooling.com&imurl=im.motooling.com"
-      >协同</a>
+      <router-link
+        to="/mthtml/synergy/1/2/?weburl=http://api.unit.testing.motooling.com&imurl=im.motooling.com"
+      >协同</router-link>
     </div>
   </div>
 </template>
