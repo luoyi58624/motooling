@@ -790,6 +790,7 @@ export default {
     this.getUserInfo()
     wx.onVoiceRecordEnd({
       complete: function (res) {
+        self.hideLoading()
         var localId = res.localId
         wx.uploadVoice({
           localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得

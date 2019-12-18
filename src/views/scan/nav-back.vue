@@ -42,14 +42,14 @@ export default {
           }
           if (res.goodsType === '采购') {
             this.$router.push({
-              path: '/instore/list',
+              path: '/instore/back',
               query: {
                 no: this.value
               }
             })
           } else if (res.goodsType === '外协采购') {
             this.$router.push({
-              path: '/assinstore/list',
+              path: '/assinstore/back',
               query: {
                 no: this.value
               }
