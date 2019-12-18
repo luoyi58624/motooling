@@ -47,7 +47,7 @@
     <br />
     <div>
       <router-link
-        to="/mthtml/scan/nav-receive?weburl=http://api.unit.testing.motooling.com"
+        to="/scan/nav-receive?weburl=http://api.unit.testing.motooling.com"
       >收货</router-link>
     </div>
     <br />
@@ -59,7 +59,7 @@
     <br />
     <div>
       <router-link
-        to="/mthtml/synergy/1/2/?weburl=http://api.unit.testing.motooling.com&imurl=im.motooling.com"
+        to="/synergy/1/2/?weburl=http://api.unit.testing.motooling.com&imurl=im.motooling.com"
       >协同</router-link>
     </div>
   </div>
