@@ -76,7 +76,7 @@
       <div @click="purch" v-if="type===1">提交</div>
     </div>
     <div class="zw"></div>
-    <toSynergy/>
+    <toSynergy relationType="1" :relationId="billId"/>
   </div>
 </template>
 
@@ -176,6 +176,7 @@ export default {
             array[i].selected = false
           }
           this.list = array
+          this.billId = res.billId
           this.listDone = true
         })
         .catch(err => {
