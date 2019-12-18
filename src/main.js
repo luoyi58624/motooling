@@ -55,14 +55,11 @@ function hideLoading () {
 async function getwechat () {
   const { appId } = await getAppid()
   console.log(appId)
-  // let url = location.href.split('#')[0]
-  // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
-  // const url = store.getters['getWechatSignUrl']
   let url = /(Android)/i.test(navigator.userAgent) ? location.href.split('#')[0] : window.entryUrl
   const { configInfo } = await getJsSDKConfigInfo({ url })
   const config = await Object.assign({}, { appId }, configInfo, {
     jsApiList: ['scanQRCode', 'startRecord', 'stopRecord', 'onVoiceRecordEnd', 'uploadVoice'],
-    debug: true
+    debug: false
   })
   return config
 }
