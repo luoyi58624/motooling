@@ -22,13 +22,14 @@ export default {
       default: '1'
     },
     relationId: {
-      type: String
+      type: String,
+      default: '0'
     }
   },
   mounted () {
     this.imurl = this.$route.query.imurl
     this.weburl = this.$route.query.weburl
-    this.getMessage()
+    // this.getMessage()
   },
   methods: {
     tosynergy () {
@@ -42,6 +43,12 @@ export default {
         this.message = res.notReadCount
       })
     }
+  },
+  watch: {
+    relationId () {
+      this.getMessage()
+    }
+
   }
 }
 </script>

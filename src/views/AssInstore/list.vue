@@ -53,6 +53,7 @@
         <div class="nav" :class="{active:type===3}" @click="changeType(3)">特采</div>
       </div>
     </div>
+     <toSynergy relationType="1" :relationId="billId+''"/>
     <div class="bot">
       <div @click="purch" v-if="type===1">提交</div>
     </div>
@@ -68,11 +69,13 @@ import {
 import myHeader from '@/components/header'
 import stepper from '@/components/stepper'
 import screen from '@/components/screen'
+import toSynergy from '@/components/ToSynergy'
 export default {
   components: {
     myHeader,
     stepper,
-    screen
+    screen,
+    toSynergy
   },
   data () {
     return {
@@ -82,7 +85,8 @@ export default {
       // billNo: 'MP19070004',
       billNo: '',
       listDone: false,
-      type: 1
+      type: 1,
+      billId: ''
     }
   },
   created () {
@@ -154,6 +158,7 @@ export default {
           for (let i = 0; i < array.length; i++) {
             array[i].selected = false
           }
+          this.billId = res.billId
           this.list = array
           this.listDone = true
         })

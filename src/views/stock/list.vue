@@ -38,7 +38,7 @@
     >
       <div v-if="list.length==0&&hasMore==false" class="nocontent">暂时没有数据</div>
       <div class="list">
-        <div class="manager" @click="toInfo(item.id)" v-for="(item,index) in list" :key="index">
+          <div class="manager" @click="item.approveStep=='step10'?statelist(item.id):toInfo(item.id)" v-for="(item,index) in list" :key="index">
           <div class="img-wrapper">
             <!-- {{item.fileList[0]?item.fileList[0].imgUrl:''}} -->
             <img :src="item.fileList[0]?item.fileList[0].imgUrl:''" alt class="gjimg" style="width:100%;">
@@ -49,7 +49,7 @@
             </div>
             <div class="state state1">
 
-              {{approveList.filter(it=>{return item.approveStep==it.id})[0]['name']}}
+              {{approveList.filter(it=>{return item.approveStep==it.id})[0]?approveList.filter(it=>{return item.approveStep==it.id})[0].name:''}}
               <!-- {{item.approveStep}} -->
 
               <!-- {{it.approveStep}} -->
@@ -99,13 +99,13 @@
         <div class="box">
           <div class="title">状态</div>
           <div class="wrp">
-            <div
+            <!-- <div
               class="bn"
               v-for="item in approveList"
               :key="item.id"
               @click="selState(item.id)"
               :class="{sel:selapproveList.includes(item.id)}"
-            >{{item.name}}</div>
+            >{{item.name}}</div> -->
           </div>
         </div>
         <div class="box">
