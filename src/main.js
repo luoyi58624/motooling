@@ -8,6 +8,9 @@ import { Stepper } from 'vant'
 import 'vant/lib/index.css'
 import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
 Vue.use(Stepper)
+if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
+  window.entryUrl = location.href.split('#')[0]
+}
 
 Vue.config.productionTip = false
 var toast
@@ -57,7 +60,8 @@ async function getwechat () {
   console.log(appId)
   // let url = location.href.split('#')[0]
   // let url = 'http://wechat.motooling.com/mthtml/scan/nav-receive'
-  const url = store.getters['getWechatSignUrl']
+  // const url = store.getters['getWechatSignUrl']
+  let url = /(Android)/i.test(navigator.userAgent) ? location.href.split('#')[0] : window.entryUrl
   const { configInfo } = await getJsSDKConfigInfo({ url })
   const config = await Object.assign({}, { appId }, configInfo, {
     jsApiList: ['scanQRCode', 'startRecord', 'stopRecord', 'onVoiceRecordEnd', 'uploadVoice'],
