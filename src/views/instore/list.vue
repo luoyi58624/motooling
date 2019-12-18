@@ -76,7 +76,7 @@
       <div @click="purch" v-if="type===1">提交</div>
     </div>
     <div class="zw"></div>
-    <toSynergy relationType="1" :relationId="billId"/>
+    <toSynergy relationType="1" :relationId="billId+''"/>
   </div>
 </template>
 
@@ -101,7 +101,8 @@ export default {
       // billNo: 'MP19070004',
       billNo: '',
       listDone: false,
-      type: 1
+      type: 1,
+      billId: ''
     }
   },
   created () {

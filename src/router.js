@@ -241,7 +241,10 @@ var router = new Router({
     {
       path: '/stock/list',
       name: 'stock-list',
-      component: () => import('./views/stock/list')
+      component: () => import('./views/stock/list'),
+      meta: {
+        title: '库存盘点'
+      }
     },
     {
       path: '/stock/info',
@@ -373,7 +376,7 @@ var router = new Router({
       name: 'scan-nav',
       component: () => import('./views/scan/nav-send'),
       meta: {
-        title: '发料'
+        title: '发货'
       }
     },
     {
