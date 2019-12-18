@@ -351,32 +351,31 @@ export default {
         wx.stopRecord({
           success: function (res) {
             var localId = res.localId
-            // alert(localId)
-            // if (duration > 1000) {
-            wx.uploadVoice({
-              localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
-              isShowProgressTips: 1, // 默认为1，显示进度提示
-              success: function (res) {
-                var serverId = res.serverId // 返回音频的服务器端ID
-                self.wxupload(serverId).then(res => {
+            if (duration > 1000) {
+              wx.uploadVoice({
+                localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+                isShowProgressTips: 1, // 默认为1，显示进度提示
+                success: function (res) {
+                  var serverId = res.serverId // 返回音频的服务器端ID
+                  self.wxupload(serverId).then(res => {
                   // alert('我是获取的res：' + JSON.stringify(res))
-                  self.sendMessage(2, {
-                    contentType: 3,
-                    content: res.fileUrl,
-                    duration: parseInt(duration / 1000)
+                    self.sendMessage(2, {
+                      contentType: 3,
+                      content: res.fileUrl,
+                      duration: parseInt(duration / 1000)
+                    })
                   })
+                }
+              })
+            } else {
+              self
+                .$createToast({
+                  time: 2000,
+                  txt: '说活时间太短',
+                  type: 'warn'
                 })
-              }
-            })
-            // } else {
-            //   self
-            //     .$createToast({
-            //       time: 2000,
-            //       txt: '说活时间太短',
-            //       type: 'warn'
-            //     })
-            //     .show()
-            // }
+                .show()
+            }
           }
         })
       } else {
@@ -789,20 +788,22 @@ export default {
     console.log(this.relationId)
     this.init()
     this.getUserInfo()
-    // this.getwechat().then(config => {
-    //   wx.config(config)
-    // })
     wx.onVoiceRecordEnd({
       complete: function (res) {
-        self.hideLoading()
         var localId = res.localId
-        self.wxupload(localId).then(res => {
-          // alert(JSON.stringify(res))
-          self.sendMessage(2, {
-            contentType: 3,
-            content: res.url,
-            duration: 60
-          })
+        wx.uploadVoice({
+          localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+          isShowProgressTips: 1, // 默认为1，显示进度提示
+          success: function (res) {
+            var serverId = res.serverId // 返回音频的服务器端ID
+            self.wxupload(serverId).then(res => {
+              self.sendMessage(2, {
+                contentType: 3,
+                content: res.fileUrl,
+                duration: 60
+              })
+            })
+          }
         })
       }
     })
