@@ -25,7 +25,7 @@ export default {
       type: String
     }
   },
-  created () {
+  mounted () {
     this.imurl = this.$route.query.imurl
     this.weburl = this.$route.query.weburl
     this.getMessage()
