@@ -2,21 +2,13 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import { WEBURL, token } from '@/utils/utils.js'
-import store from '@/store'
-const isiOS = function () {
-  const u = navigator.userAgent
-  return u.indexOf('iPhone') > -1 || u.indexOf('Mac OS') > -1
-}
+// import store from '@/store'
+// const isiOS = function () {
+//   const u = navigator.userAgent
+//   return u.indexOf('iPhone') > -1 || u.indexOf('Mac OS') > -1
+// }
 
 Vue.use(Router)
-function getWechatSignUrl (to) {
-  if (isiOS()) {
-    return window.location.href
-  } else {
-    // 此处$appHost需要自行处理
-    return location.href
-  }
-}
 var router = new Router({
   mode: 'history',
   base: '/mthtml',
@@ -434,11 +426,9 @@ router.beforeEach((to, from, next) => {
     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
     return
   }
-  console.log('(**********' + isiOS() + '***', store.getters.getWechatSignUrl)
-  store.commit('setWechatSignUrl', getWechatSignUrl(to))
-  console.log('(**********' + isiOS() + '***', store.getters.getWechatSignUrl)
-
-  alert(store.getters['getWechatSignUrl'])
+  if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
+    window.entryUrl = location.href.split('#')[0]
+  }
   next()
 })
 
