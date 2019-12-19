@@ -795,6 +795,7 @@ export default {
     wx.ready(() => {
       wx.onVoiceRecordEnd({
         complete: function (res) {
+          console.log('满60秒了，可以停止录音')
           self.hideLoading()
           var localId = res.localId
           wx.uploadVoice({
