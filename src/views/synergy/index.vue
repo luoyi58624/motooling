@@ -792,27 +792,29 @@ export default {
     console.log(this.relationId)
     this.init()
     this.getUserInfo()
-    wx.onVoiceRecordEnd({
-      complete: function (res) {
-        self.hideLoading()
-        var localId = res.localId
-        wx.uploadVoice({
-          localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
-          isShowProgressTips: 1, // 默认为1，显示进度提示
-          success: function (res) {
-            var serverId = res.serverId // 返回音频的服务器端ID
-            self.wxupload(serverId).then(res => {
-              self.sendMessage(2, {
-                contentType: 3,
-                content: res.fileUrl,
-                duration: 60
+    wx.ready(() => {
+      wx.onVoiceRecordEnd({
+        complete: function (res) {
+          self.hideLoading()
+          var localId = res.localId
+          wx.uploadVoice({
+            localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+            isShowProgressTips: 1, // 默认为1，显示进度提示
+            success: function (res) {
+              var serverId = res.serverId // 返回音频的服务器端ID
+              self.wxupload(serverId).then(res => {
+                self.sendMessage(2, {
+                  contentType: 3,
+                  content: res.fileUrl,
+                  duration: 60
+                })
+              }).catch(err => {
+                self.showToast(err.msg || '出现了一些错误')
               })
-            }).catch(err => {
-              self.showToast(err.msg || '出现了一些错误')
-            })
-          }
-        })
-      }
+            }
+          })
+        }
+      })
     })
   },
   watch: {
