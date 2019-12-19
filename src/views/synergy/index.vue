@@ -366,6 +366,9 @@ export default {
                       duration: parseInt(duration / 1000)
                     })
                   })
+                },
+                fail: function (res) {
+                  selft.showToast('上传语音出错')
                 }
               })
             } else {
