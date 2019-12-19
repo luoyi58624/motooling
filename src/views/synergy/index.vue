@@ -112,7 +112,7 @@
           >
             按住说话
           </button>
-          <button @click="stopRecorder">停止</button>
+          <!-- <button type="button" @click="stopRecorder">停止</button> -->
         </div>
         <div class="input-toggle-button talker-icon-btn">
           <div class="icon icon-add" @click="showMoreBtn"></div>
@@ -804,6 +804,8 @@ export default {
                 content: res.fileUrl,
                 duration: 60
               })
+            }).catch(err => {
+              self.showToast(err.msg || '出现了一些错误')
             })
           }
         })
