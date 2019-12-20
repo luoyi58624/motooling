@@ -112,7 +112,7 @@
           >
             按住说话
           </button>
-          <button type="button" @click="stopRecorder">停止</button>
+          <!-- <button type="button" @click="stopRecorder">停止</button> -->
         </div>
         <div class="input-toggle-button talker-icon-btn">
           <div class="icon icon-add" @click="showMoreBtn"></div>
