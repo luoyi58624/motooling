@@ -10,6 +10,7 @@
 
 <script>
 import { getNotReadCount } from '@/api/synergy/synergy'
+import { WEBURL } from '@/utils/utils.js'
 export default {
   data () {
     return {
@@ -27,8 +28,8 @@ export default {
     }
   },
   mounted () {
-    this.imurl = this.$route.query.imurl
-    this.weburl = this.$route.query.weburl
+    this.imurl = this.$route.query.imurl || ''
+    this.weburl = this.$route.query.weburl || WEBURL
     // this.getMessage()
   },
   methods: {
