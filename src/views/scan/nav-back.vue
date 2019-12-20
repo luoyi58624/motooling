@@ -44,21 +44,24 @@ export default {
             this.$router.push({
               path: '/instore/back',
               query: {
-                no: this.value
+                no: this.value,
+                imurl: this.$route.query.imurl
               }
             })
           } else if (res.goodsType === '外协采购') {
             this.$router.push({
               path: '/assinstore/back',
               query: {
-                no: this.value
+                no: this.value,
+                imurl: this.$route.query.imurl
               }
             })
           } else if (res.goodsType === '生产') {
             this.$router.push({
               path: '/receive',
               query: {
-                no: this.value
+                no: this.value,
+                imurl: this.$route.query.imurl
               }
             })
           } else {
