@@ -29,7 +29,7 @@ export default {
   },
   mounted () {
     this.imurl = this.$route.query.imurl || ''
-    this.weburl = this.$route.query.weburl || WEBURL
+    this.weburl = this.$route.query.weburl || WEBURL()
     // this.getMessage()
   },
   methods: {
