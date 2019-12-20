@@ -338,8 +338,12 @@ export default {
     },
     async wxupload (mediaId) {
       // 上传微信录音文件
-      const res = getUploadWechatFile({ mediaId })
-      return res
+      try {
+        const res = getUploadWechatFile({ mediaId })
+        return res
+      } catch (err) {
+        throw err
+      }
     },
     stopRecorder () {
       var self = this
@@ -365,6 +369,8 @@ export default {
                       content: res.fileUrl,
                       duration: parseInt(duration / 1000)
                     })
+                  }).catch(err => {
+                    self.showToast(err.msg)
                   })
                 },
                 fail: function (res) {
