@@ -34,7 +34,10 @@ export const BASEURL = () => localStorage.getItem('WEBURL') || ''
 
 export const fileServerUrl = () => localStorage.getItem('fileServerUrl') || ''
 
-export const token = () => sessionStorage.getItem('token') || ''
+export const token = () => {
+  console.log(sessionStorage.getItem('token'))
+  return sessionStorage.getItem('token') || ''
+}
 
 export const username = () => localStorage.getItem('username') || ''
 
