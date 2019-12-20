@@ -3,12 +3,12 @@ import md5 from 'md5'
 const WEBURL = localStorage.getItem('WEBURL') || ''
 const token = sessionStorage.getItem('token') || ''
 const timestamp = '1547621396'
-const md5String = md5(token + timestamp + 'Motooling')
+const getMd5String = () => md5(token() + timestamp + 'Motooling')
 // 外协收货列表
 export function assInStoreList (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -22,7 +22,7 @@ export function assInStoreList (params = {}) {
 export function assInStoreInfo (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -36,7 +36,7 @@ export function assInStoreInfo (params = {}) {
 export function setUpInfo (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -50,7 +50,7 @@ export function setUpInfo (params = {}) {
 export function setUpUpdate (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -64,7 +64,7 @@ export function setUpUpdate (params = {}) {
 export function assPurchUpdate (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -78,7 +78,7 @@ export function assPurchUpdate (params = {}) {
 export function assPurchSpecial (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -92,7 +92,7 @@ export function assPurchSpecial (params = {}) {
 export function assPurchQuality (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -106,7 +106,7 @@ export function assPurchQuality (params = {}) {
 export function assPurchBatchReceived (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -121,7 +121,7 @@ export function assPurchBatchReceived (params = {}) {
 export function getStoreRoom (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -136,7 +136,7 @@ export function getStoreRoom (params = {}) {
 export function getStoreHouse (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -150,7 +150,7 @@ export function getStoreHouse (params = {}) {
 export function getNotifyType (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -163,7 +163,7 @@ export function getNotifyType (params = {}) {
 export function getOutsourcingeOutStore (params = {}) { // 外协采购退货详情
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -176,7 +176,7 @@ export function getOutsourcingeOutStore (params = {}) { // 外协采购退货详
 export function assPurchIsBack (params = {}) { // 外协采购退货
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -190,7 +190,7 @@ export function assPurchIsBack (params = {}) { // 外协采购退货
 export function getSupNameAndVoucher (params = {}) { // 外协采购退货
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }

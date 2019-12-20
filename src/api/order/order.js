@@ -3,14 +3,14 @@ import md5 from 'md5'
 const WEBURL = localStorage.getItem('WEBURL') || ''
 const token = sessionStorage.getItem('token') || ''
 const timestamp = '1547621396'
-const md5String = md5(token + timestamp + 'Motooling')
+const getMd5String = () => md5(token() + timestamp + 'Motooling')
 
-// console.log(md5String)
+// console.log(getMd5String())
 
 export function getpmPoInStore (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -24,7 +24,7 @@ export function getpmPoInStore (params = {}) {
 export function inStoreSave (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -37,7 +37,7 @@ export function inStoreSave (params = {}) {
 export function getpmPoOutStoreById (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -51,7 +51,7 @@ export function getpmPoOutStoreById (params = {}) {
 export function outStoreSave (params = {}) {
   const data = {
     token: token,
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }

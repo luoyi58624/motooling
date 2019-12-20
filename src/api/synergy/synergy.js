@@ -2,12 +2,12 @@ import request from '@/utils/newRequest'
 import md5 from 'md5'
 import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
-const md5String = md5(token() + timestamp + 'Motooling')
+const getMd5String = () => md5(token() + timestamp + 'Motooling')
 
 export function getOpenSynergy (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -23,7 +23,7 @@ export function getOpenSynergy (params) {
 export function synergyRecordPage (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -38,7 +38,7 @@ export function synergyRecordPage (params) {
 export function synergyAddMember (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -54,7 +54,7 @@ export function synergyAddMember (params) {
 export function synergyGroupMember (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -70,7 +70,7 @@ export function synergyGroupMember (params) {
 export function synergySetUpRead (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -86,7 +86,7 @@ export function synergySetUpRead (params) {
 export function generateSummaryInfo (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -102,7 +102,7 @@ export function generateSummaryInfo (params) {
 export function generateSummary (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -118,7 +118,7 @@ export function generateSummary (params) {
 export function getSummaryInfo (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -134,7 +134,7 @@ export function getSummaryInfo (params) {
 export function getSummaryList (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -149,7 +149,7 @@ export function getSummaryList (params) {
 export function getNotReadCount (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }

@@ -2,14 +2,14 @@ import request from '@/utils/request'
 import md5 from 'md5'
 import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
-const md5String = md5(token() + timestamp + 'Motooling')
+const getMd5String = () => md5(token() + timestamp + 'Motooling')
 
-console.log(md5String)
+console.log(getMd5String())
 
 export function deviceSelectList (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -24,7 +24,7 @@ export function deviceSelectList (params) {
 export function getDeviceInfo (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -39,7 +39,7 @@ export function getDeviceInfo (params) {
 export function addDeviceInfo (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -54,7 +54,7 @@ export function addDeviceInfo (params) {
 export function whetherVersion (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }

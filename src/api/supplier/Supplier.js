@@ -2,12 +2,12 @@ import request from '@/utils/request'
 import md5 from 'md5'
 import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
-const md5String = md5(token() + timestamp + 'Motooling')
+const getMd5String = () => md5(token() + timestamp + 'Motooling')
 
 export function getSupplierInfo (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -22,7 +22,7 @@ export function getSupplierInfo (params) {
 export function addSupplierInfo (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
@@ -37,7 +37,7 @@ export function addSupplierInfo (params) {
 export function supplierSelectList (params) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: params
   }
