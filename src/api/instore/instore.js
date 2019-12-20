@@ -1,7 +1,6 @@
-import request from '@/utils/newRequest'
+import request from '@/utils/request'
 import md5 from 'md5'
-const WEBURL = localStorage.getItem('WEBURL') || ''
-const token = sessionStorage.getItem('token') || ''
+import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
 const getMd5String = () => md5(token() + timestamp + 'Motooling')
 
