@@ -2,13 +2,13 @@ import request from '@/utils/request'
 import md5 from 'md5'
 import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
-const getMd5String = () => md5(token() + timestamp + 'Motooling')
+const getMd5String = () => md5(token()() + timestamp + 'Motooling')
 
 // console.log(getMd5String())
 
 export function inStoreList (params = {}) {
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -21,7 +21,7 @@ export function inStoreList (params = {}) {
 }
 export function setUpInfo (params = {}) {
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -35,7 +35,7 @@ export function setUpInfo (params = {}) {
 
 export function setUpUpdate (params = {}) {
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -48,7 +48,7 @@ export function setUpUpdate (params = {}) {
 }
 export function inStoreInfo (params = {}) {
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -62,7 +62,7 @@ export function inStoreInfo (params = {}) {
 
 export function purchUpdate (params = {}) { // 收货信息修改
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -75,7 +75,7 @@ export function purchUpdate (params = {}) { // 收货信息修改
 }
 export function purchSpecial (params = {}) { // 特采
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -88,7 +88,7 @@ export function purchSpecial (params = {}) { // 特采
 }
 export function purchQuality (params = {}) { // 质检
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -101,7 +101,7 @@ export function purchQuality (params = {}) { // 质检
 }
 export function purchBatchReceived (params = {}) { // 采购单收货
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -115,7 +115,7 @@ export function purchBatchReceived (params = {}) { // 采购单收货
 
 export function getStoreHouse (params = {}) { // 仓库
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -129,7 +129,7 @@ export function getStoreHouse (params = {}) { // 仓库
 }
 export function getStoreRoom (params = {}) { // 库位
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -142,7 +142,7 @@ export function getStoreRoom (params = {}) { // 库位
 }
 export function h5FileUpload (params = {}) { // 库位
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -155,7 +155,7 @@ export function h5FileUpload (params = {}) { // 库位
 }
 export function depUserList (params = {}) { // 库位
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -169,7 +169,7 @@ export function depUserList (params = {}) { // 库位
 
 export function getNotifyType (params = {}) { // 库位
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -183,7 +183,7 @@ export function getNotifyType (params = {}) { // 库位
 
 export function purchaseOutStoreSave (params = {}) { // 采购退货
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -197,7 +197,7 @@ export function purchaseOutStoreSave (params = {}) { // 采购退货
 
 export function getPurchaseOutStore (params = {}) { // 采购退货详情
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -211,7 +211,7 @@ export function getPurchaseOutStore (params = {}) { // 采购退货详情
 
 export function getPurchaseOutVoucher (params = {}) { // 采购退货供应商及凭证号
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
@@ -225,7 +225,7 @@ export function getPurchaseOutVoucher (params = {}) { // 采购退货供应商�
 
 export function getDeliveryAndReturn (params = {}) { // 获取收退货接口
   const data = {
-    token: token,
+    token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
     data: params
