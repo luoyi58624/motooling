@@ -34,7 +34,7 @@ export function getUploadWechatFile (obj) {
   console.log('时间戳token：' + timestamp + token())
   const data = {
     token: token(),
-    md5: md5String,
+    md5: md5(token() + timestamp + 'Motooling'),
     timestamp: timestamp,
     data: obj
   }
