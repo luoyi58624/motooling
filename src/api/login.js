@@ -2,12 +2,12 @@ import request from '@/utils/request'
 import { BASEURL, token } from '@/utils/utils.js'
 import md5 from 'md5'
 const timestamp = '1547621396'
-const md5String = md5(token() + timestamp + 'Motooling')
+const getMd5String = () => md5(token() + timestamp + 'Motooling')
 
 export function getPhoneCode (mobile, type = 1) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: {
       mobile: mobile,
@@ -24,7 +24,7 @@ export function getPhoneCode (mobile, type = 1) {
 export function postWxCode (param) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: param
   }
@@ -38,7 +38,7 @@ export function postWxCode (param) {
 export function wxBindPhone (param) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: param
   }
