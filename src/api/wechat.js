@@ -2,12 +2,12 @@ import newRequest from '@/utils/newRequest'
 import { BASEURL, token } from '@/utils/utils.js'
 import md5 from 'md5'
 const timestamp = '1547621396'
-const md5String = md5(token() + timestamp + 'Motooling')
+const getMd5String = () => md5(token() + timestamp + 'Motooling')
 
 export function getJsSDKConfigInfo (obj) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: obj
   }
@@ -20,7 +20,7 @@ export function getJsSDKConfigInfo (obj) {
 export function getAppid (obj) {
   const data = {
     token: token(),
-    md5: md5String,
+    md5: getMd5String(),
     timestamp: timestamp,
     data: obj
   }
@@ -34,7 +34,7 @@ export function getUploadWechatFile (obj) {
   console.log('时间戳token：' + timestamp + token())
   const data = {
     token: token(),
-    md5: md5(token() + timestamp + 'Motooling'),
+    md5: getMd5String(),
     timestamp: timestamp,
     data: obj
   }
