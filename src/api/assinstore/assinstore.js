@@ -12,7 +12,7 @@ export function assInStoreList (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/assInStoreList',
+    url: WEBURL() + '/mtH5/ivStore/assInStoreList',
     method: 'post',
     data
   })
@@ -26,7 +26,7 @@ export function assInStoreInfo (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/assInStoreInfo',
+    url: WEBURL() + '/mtH5/ivStore/assInStoreInfo',
     method: 'post',
     data
   })
@@ -40,7 +40,7 @@ export function setUpInfo (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/setUpInfo',
+    url: WEBURL() + '/mtH5/ivStore/setUpInfo',
     method: 'post',
     data
   })
@@ -54,7 +54,7 @@ export function setUpUpdate (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/setUpUpdate',
+    url: WEBURL() + '/mtH5/ivStore/setUpUpdate',
     method: 'post',
     data
   })
@@ -68,7 +68,7 @@ export function assPurchUpdate (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/assPurchUpdate',
+    url: WEBURL() + '/mtH5/ivStore/assPurchUpdate',
     method: 'post',
     data
   })
@@ -82,7 +82,7 @@ export function assPurchSpecial (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/assPurchSpecial',
+    url: WEBURL() + '/mtH5/ivStore/assPurchSpecial',
     method: 'post',
     data
   })
@@ -96,7 +96,7 @@ export function assPurchQuality (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/assPurchQuality',
+    url: WEBURL() + '/mtH5/ivStore/assPurchQuality',
     method: 'post',
     data
   })
@@ -110,7 +110,7 @@ export function assPurchBatchReceived (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/assPurchBatchReceived',
+    url: WEBURL() + '/mtH5/ivStore/assPurchBatchReceived',
     method: 'post',
     data
   })
@@ -125,7 +125,7 @@ export function getStoreRoom (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/getStoreRoom',
+    url: WEBURL() + '/mtH5/ivStore/getStoreRoom',
     method: 'post',
     data
   })
@@ -140,7 +140,7 @@ export function getStoreHouse (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/getStoreHouse',
+    url: WEBURL() + '/mtH5/ivStore/getStoreHouse',
     method: 'post',
     data
   })
@@ -154,7 +154,7 @@ export function getNotifyType (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/getNotifyType',
+    url: WEBURL() + '/mtH5/ivStore/getNotifyType',
     method: 'post',
     data
   })
@@ -167,7 +167,7 @@ export function getOutsourcingeOutStore (params = {}) { // 外协采购退货详
     data: params
   }
   return request({
-    url: WEBURL + '/mth5/poStore/getOutsourcingeOutStore',
+    url: WEBURL() + '/mth5/poStore/getOutsourcingeOutStore',
     method: 'post',
     data
   })
@@ -180,7 +180,7 @@ export function assPurchIsBack (params = {}) { // 外协采购退货
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/assPurchIsBack',
+    url: WEBURL() + '/mtH5/ivStore/assPurchIsBack',
     method: 'post',
     data
   })
@@ -194,7 +194,7 @@ export function getSupNameAndVoucher (params = {}) { // 外协采购退货
     data: params
   }
   return request({
-    url: WEBURL + '/mth5/poStore/getSupNameAndVoucher',
+    url: WEBURL() + '/mth5/poStore/getSupNameAndVoucher',
     method: 'post',
     data
   })

@@ -14,7 +14,7 @@ export function getpmPoInStore (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/getpmPoInStoreById',
+    url: WEBURL() + '/mtH5/ivStore/getpmPoInStoreById',
     method: 'post',
     data
   })
@@ -28,7 +28,7 @@ export function inStoreSave (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/inStoreSave',
+    url: WEBURL() + '/mtH5/ivStore/inStoreSave',
     method: 'post',
     data
   })
@@ -41,7 +41,7 @@ export function getpmPoOutStoreById (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/getpmPoOutStoreById',
+    url: WEBURL() + '/mtH5/ivStore/getpmPoOutStoreById',
     method: 'post',
     data
   })
@@ -55,7 +55,7 @@ export function outStoreSave (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL + '/mtH5/ivStore/outStoreSave',
+    url: WEBURL() + '/mtH5/ivStore/outStoreSave',
     method: 'post',
     data
   })
