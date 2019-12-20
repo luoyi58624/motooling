@@ -35,7 +35,7 @@ export const BASEURL = () => localStorage.getItem('WEBURL') || ''
 export const fileServerUrl = () => localStorage.getItem('fileServerUrl') || ''
 
 export const token = () => {
-  console.log(sessionStorage.getItem('token'))
+  console.log('陈盼测试' + sessionStorage.getItem('token'))
   return sessionStorage.getItem('token') || ''
 }
 
