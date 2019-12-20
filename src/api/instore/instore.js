@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import md5 from 'md5'
 import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
-const getMd5String = () => md5(token()() + timestamp + 'Motooling')
+const getMd5String = () => md5(token() + timestamp + 'Motooling')
 
 // console.log(getMd5String())
 
