@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/newRequest'
 import md5 from 'md5'
 import { WEBURL, token } from '@/utils/utils.js'
 const timestamp = '1547621396'
