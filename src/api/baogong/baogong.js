@@ -79,7 +79,7 @@ export function allocateProcessTask (params = {}) { // 组长分配待加工任�
     data: params
   }
   return request({
-    url: WEBURL() + '/mtH5/pm/worktime/allocateProcessTask',
+    url: WEBURL() + '/mtH5/worktime/allocateProcessTask',
     method: 'post',
     data
   })
