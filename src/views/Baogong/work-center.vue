@@ -25,7 +25,13 @@
           <!-- slides -->
           <swiper-slide v-for="(item, index) in _shebeiList" :key="index">
             <div class="box">
-              <div v-for="ie in item" :key="ie.id" class="shebei">
+              <div
+                v-for="ie in item"
+                :key="ie.id"
+                class="shebei"
+                @click.stop="scale(ie.oldIdx)"
+                :class="{ big: ie.big }"
+              >
                 <div class="top">
                   <div class="select">
                     <img
@@ -83,7 +89,8 @@
                     <img
                       v-if="
                         ie.operatorList.length > 0 &&
-                          ie.operatorList[0]['avatar']&&ie.deviceStatus==1
+                          ie.operatorList[0]['avatar'] &&
+                          ie.deviceStatus == 1
                       "
                       :src="ie.operatorList[0]['avatar']"
                       alt=""
@@ -148,7 +155,11 @@
                 <div>详情</div>
               </div>
               <div class>
-                <img :src="item.imgUrl||require('@/assets/default.png')" class="gjimg" alt />
+                <img
+                  :src="item.imgUrl || require('@/assets/default.png')"
+                  class="gjimg"
+                  alt
+                />
               </div>
               <div class="text">
                 <span>{{ item.matNo }}</span>
@@ -194,7 +205,11 @@
               style="position:relative;"
             >
               <div class>
-                <img :src="item.imgUrl||require('@/assets/default.png')" alt class="gjimg" />
+                <img
+                  :src="item.imgUrl || require('@/assets/default.png')"
+                  alt
+                  class="gjimg"
+                />
               </div>
               <div class="text">
                 <span>{{ item.matNo }}</span>
@@ -226,6 +241,7 @@
       <div class="bar"></div>
     </cube-scroll>
     <cube-popup type="my-popup" ref="myPopup">操作成功</cube-popup>
+    <toSynergy v-if="bigMode" />
   </div>
 </template>
 
@@ -233,6 +249,7 @@
 import 'swiper/dist/css/swiper.css'
 import myHeader from '@/components/header'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
+import toSynergy from '@/components/ToSynergy'
 import {
   getPmPgList,
   getDeviceAndStatus,
@@ -241,7 +258,9 @@ import {
   setWaitProcessTaskTop,
   setTask,
   setTaskPrediction,
-  setProcessTaskPrediction
+  setProcessTaskPrediction,
+  isPgLeader,
+  allocateProcessTask
 } from '@/api/baogong/baogong'
 import { setTimeout } from 'timers'
 import { reject } from 'q'
@@ -318,7 +337,10 @@ export default {
       shebeiHasmore: true, // 设备列表是否有更多
       waitHasmore: true,
       doneHasmore: true,
-      shebeiArray: [] // 当前显示在页面上的设备列表
+      shebeiArray: [], // 当前显示在页面上的设备列表
+      storeWaitList: null,
+      isLeader: 0,
+      opr: 'jiagong'
     }
   },
   created () {
@@ -351,7 +373,8 @@ export default {
   components: {
     swiper,
     swiperSlide,
-    myHeader
+    myHeader,
+    toSynergy
   },
   computed: {
     allArr () {
@@ -409,6 +432,12 @@ export default {
       }
       // console.log(newArr);
       return newArr
+    },
+    // eslint-disable-next-line vue/return-in-computed-property
+    bigMode () {
+      return this.shebeiList.some(item => {
+        return item.big
+      })
     }
   },
   mounted () {
@@ -419,6 +448,13 @@ export default {
       }
       for (let i = 0; i < vm.waitList.length; i++) {
         vm.waitList[i].showOption = false
+      }
+      for (let i = 0; i < vm.shebeiList.length; i++) {
+        vm.$set(vm.shebeiList[i], 'big', false)
+      }
+      if (vm.storeWaitList !== null) {
+        vm.waitList = vm.storeWaitList
+        vm.storeWaitList = null
       }
     }
   },
@@ -677,6 +713,22 @@ export default {
       // this.shebeiList[index].showOption = !this.shebeiList[index].showOption;
       // this.shebeiList[index].showOption = false;
     },
+    scale (index) {
+      for (let i = 0; i < this.shebeiList.length; i++) {
+        // this.shebeiList[index].showOption = false;
+        // this.$set( this.shebeiList[index],'showOption',false)
+        if (i === index) {
+          this.$set(this.shebeiList[i], 'big', true)
+          if (!this.storeWaitList || this.storeWaitList.length === 0) {
+            this.storeWaitList = this.waitList
+          }
+          this.waitList = this.shebeiList[i].waitProcessList || []
+          // this.shebeiList[i].big = true
+        } else {
+          this.$set(this.shebeiList[i], 'big', false)
+        }
+      }
+    },
     handleSelectWait (index) {
       for (let i = 0; i < this.waitList.length; i++) {
         if (i === index) {
@@ -766,13 +818,42 @@ export default {
           b > this.shebeiArray[i].top
         ) {
           // 若松手位置是设备所在位置
+          console.log('&^%$:', this.isLeader)
+          if (this.isLeader) {
+            this.$createDialog({
+              type: 'confirm',
+              icon: '',
+              title: '注意',
+              content: `请选择分配任务或加工任务`,
+              confirmBtn: {
+                text: '加工',
+                active: true,
+                disabled: false,
+                href: 'javascript:;'
+              },
+              cancelBtn: {
+                text: '分配',
+                active: false,
+                disabled: false,
+                href: 'javascript:;'
+              },
+              onCancel: () => {
+                // 分配函数
+                // const res = await allocateProcessTask()
+                this.opr = 'fenpei'
+              },
+              onConfirm: () => {
+                this.opr = 'jiagong'
+              }
+            })
+          }
           this.$createDialog({
             type: 'confirm',
             icon: '',
             title: '注意',
-            content: `是否确认使此工件加入${
-              this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceName
-            }`,
+            content: `是否确认${
+              this.opr === 'fenpei' ? '分配工件至' : '使此工件加入'
+            }${this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceName}`,
             confirmBtn: {
               text: '确定',
               active: true,
@@ -786,14 +867,12 @@ export default {
               href: 'javascript:;'
             },
             onConfirm: () => {
-              if (this._waitList[idx][index].partQty === 1) {
-                setStartProcessTask({
+              if (this.opr === 'fenpei') {
+                allocateProcessTask({
                   deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
                     .deviceId,
-                  flag: 1,
-                  partQty: 1,
-                  popId: this._waitList[idx][index].popId,
-                  pgId: this._waitList[idx][index].pgId
+                  flag: '1',
+                  popId: this._waitList[idx][index].popId
                 })
                   .then(res => {
                     this.showToast('操作成功')
@@ -803,42 +882,62 @@ export default {
                     this.showToast(err.msg || '操作失败')
                   })
               } else {
-                this.$createDialog({
-                  type: 'prompt',
-                  title: `输入添加数量(范围1-${this._waitList[idx][index].partQty})`,
-                  prompt: {
-                    value: '',
-                    placeholder: `请输入1-${this._waitList[idx][index].partQty}范围内的数字`
-                  },
-                  onConfirm: (e, promptValue) => {
-                    if (
-                      typeof parseInt(promptValue) === 'number' &&
-                      parseInt(promptValue) >= 0 &&
-                      parseInt(promptValue) <=
-                        this._waitList[idx][index].partQty * 1
-                    ) {
-                      setStartProcessTask({
-                        deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
-                          .deviceId,
-                        flag: 1,
-                        partQty: promptValue,
-                        popId: this._waitList[idx][index].popId,
-                        pgId: this._waitList[idx][index].pgId
-                      })
-                        .then(res => {
-                          this.showToast('操作成功')
-                          this.select()
-                        })
-                        .catch(err => {
-                          if (err.msg) {
-                            this.showToast(err.msg)
-                          }
-                        })
-                    } else {
-                      this.showToast('输入有误，请重新输入')
+                if (this._waitList[idx][index].partQty === 1) {
+                  setStartProcessTask({
+                    deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
+                      .deviceId,
+                    flag: 1,
+                    partQty: 1,
+                    popId: this._waitList[idx][index].popId,
+                    pgId: this._waitList[idx][index].pgId
+                  })
+                    .then(res => {
+                      this.showToast('操作成功')
+                      this.select()
+                    })
+                    .catch(err => {
+                      this.showToast(err.msg || '操作失败')
+                    })
+                } else {
+                  this.$createDialog({
+                    type: 'prompt',
+                    title: `输入添加数量(范围1-${this._waitList[idx][index].partQty})`,
+                    prompt: {
+                      value: '',
+                      placeholder: `请输入1-${this._waitList[idx][index].partQty}范围内的数字`
+                    },
+                    onConfirm: (e, promptValue) => {
+                      if (
+                        typeof parseInt(promptValue) === 'number' &&
+                        parseInt(promptValue) >= 0 &&
+                        parseInt(promptValue) <=
+                          this._waitList[idx][index].partQty * 1
+                      ) {
+                        if (this.opr === 'fenpei') {
+                        } else {
+                          setStartProcessTask({
+                            deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceId,
+                            flag: 1,
+                            partQty: promptValue,
+                            popId: this._waitList[idx][index].popId,
+                            pgId: this._waitList[idx][index].pgId
+                          })
+                            .then(res => {
+                              this.showToast('操作成功')
+                              this.select()
+                            })
+                            .catch(err => {
+                              if (err.msg) {
+                                this.showToast(err.msg)
+                              }
+                            })
+                        }
+                      } else {
+                        this.showToast('输入有误，请重新输入')
+                      }
                     }
-                  }
-                }).show()
+                  }).show()
+                }
               }
             },
             onCancel: () => {}
@@ -866,21 +965,23 @@ export default {
           pageNum: that.shebeiPage,
           pageSize: that.shebeiPageSize,
           pgId: that.pgId
-        }).then(res => {
-          if (res.list.length === that.shebeiPageSize) {
-            that.shebeiHasmore = true
-            that.shebeiPage++
-          }
-
-          var arr = [...that.shebeiList, ...res.list]
-          for (let i = 0; i < arr.length; i++) {
-            arr[i]['showOption'] = false
-            arr[i]['oldIdx'] = i
-          }
-          that.shebeiList = arr
-        }).catch(err => {
-          this.showToast(err.msg || '获取设备失败')
         })
+          .then(res => {
+            if (res.list.length === that.shebeiPageSize) {
+              that.shebeiHasmore = true
+              that.shebeiPage++
+            }
+
+            var arr = [...that.shebeiList, ...res.list]
+            for (let i = 0; i < arr.length; i++) {
+              arr[i]['showOption'] = false
+              arr[i]['oldIdx'] = i
+            }
+            that.shebeiList = arr
+          })
+          .catch(err => {
+            this.showToast(err.msg || '获取设备失败')
+          })
       } else {
         // console.error("meiyougengduo");
       }
@@ -961,6 +1062,12 @@ export default {
       setTimeout(() => {
         this.$refs.scroll.refresh()
       }, 300)
+    },
+    pgId (old, newvalue) {
+      isPgLeader({ pgId: newvalue }).then(res => {
+        console.log('#####', res)
+        this.isLeader = res.returnInfo.isLeader
+      })
     }
   }
 }
@@ -1026,6 +1133,12 @@ swiper-slide {
   border-radius: 4px;
   position: relative;
   overflow: hidden;
+  transition: all 0.1s;
+}
+.box > div.big {
+  // background: #000;
+  transform: scale(1.1);
+  box-shadow: 5px 5px 5px #d3d3d3;
 }
 .top {
   display: flex;
@@ -1224,5 +1337,8 @@ swiper-slide {
     background: #eee;
     border-radius: 50%;
   }
+}
+.big {
+  background: #000;
 }
 </style>
