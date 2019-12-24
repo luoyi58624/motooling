@@ -115,13 +115,18 @@ export default {
         scanType: ['qrCode', 'barCode'], // 可以指定扫二维码还是一维码，默认二者都有
         success: function (res) {
           const data = res['resultStr'].split(':').map(item => {
-            const it = item.split('-')
+            const it = item.split('_')
             var may = it ? it[0] : ''
             var obj = {}
             obj[may] = it[1]
             return obj
           })
+          var re = Object.assign({}, data[0], data[1])
           alert(JSON.stringify(data))
+          this.$router.push({
+            path: '/stock',
+            query: re
+          })
         },
         fail: function (res) {}
       })
