@@ -314,3 +314,16 @@ export function saveAssOrderInfo (params = {}) {
     data
   })
 }
+export function isPgLeader (params = {}) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL() + '/mtH5/worktime/isPgLeader',
+    method: 'post',
+    data
+  })
+}
