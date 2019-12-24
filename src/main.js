@@ -66,11 +66,40 @@ async function getwechat () {
 getwechat().then(config => {
   wx.config(config)
 })
+
 Vue.prototype.getwechat = getwechat
 Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading
 Vue.prototype.hideLoading = hideLoading
 Vue.prototype.showDialog = showDialog
+
+wx.ready(function () {
+  wx.onMenuShareAppMessage({
+    title: document.title, // 分享标题
+    desc: 'This is a test!', // 分享描述
+    link: location.href, // 分享链接
+    imgUrl: 'http://wechat.motooling.com/mthtml/img/logo.36bf0d3c.png', // 分享图标
+    type: '', // 分享类型,music、video或link，不填默认为link
+    dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+    success: function () {
+      // 用户确认分享后执行的回调函数
+    },
+    cancel: function () {
+      // 用户取消分享后执行的回调函数
+    }
+  })
+  wx.onMenuShareTimeline({
+    title: document.title, // 分享标题
+    link: location.href, // 分享链接
+    imgUrl: 'http://wechat.motooling.com/mthtml/img/logo.36bf0d3c.png', // 分享图标图标
+    success: function () {
+      // 用户确认分享后执行的回调函数
+    },
+    cancel: function () {
+      // 用户取消分享后执行的回调函数
+    }
+  })
+})
 new Vue({
   router,
   store,
