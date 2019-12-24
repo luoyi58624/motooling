@@ -820,6 +820,8 @@ export default {
           // 若松手位置是设备所在位置
           console.log('&^%$:', this.isLeader)
           if (this.isLeader) {
+            console.log('我进来了')
+            console.log(this)
             this.$createDialog({
               type: 'confirm',
               icon: '',
@@ -841,110 +843,115 @@ export default {
                 // 分配函数
                 // const res = await allocateProcessTask()
                 this.opr = 'fenpei'
+                this.showMymodel(i, idx, index)
               },
               onConfirm: () => {
                 this.opr = 'jiagong'
+                this.showMymodel(i, idx, index)
               }
-            })
+            }).show()
           }
-          this.$createDialog({
-            type: 'confirm',
-            icon: '',
-            title: '注意',
-            content: `是否确认${
-              this.opr === 'fenpei' ? '分配工件至' : '使此工件加入'
-            }${this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceName}`,
-            confirmBtn: {
-              text: '确定',
-              active: true,
-              disabled: false,
-              href: 'javascript:;'
-            },
-            cancelBtn: {
-              text: '取消',
-              active: false,
-              disabled: false,
-              href: 'javascript:;'
-            },
-            onConfirm: () => {
-              if (this.opr === 'fenpei') {
-                allocateProcessTask({
-                  deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
-                    .deviceId,
-                  flag: '1',
-                  popId: this._waitList[idx][index].popId
-                })
-                  .then(res => {
-                    this.showToast('操作成功')
-                    this.select()
-                  })
-                  .catch(err => {
-                    this.showToast(err.msg || '操作失败')
-                  })
-              } else {
-                if (this._waitList[idx][index].partQty === 1) {
-                  setStartProcessTask({
-                    deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
-                      .deviceId,
-                    flag: 1,
-                    partQty: 1,
-                    popId: this._waitList[idx][index].popId,
-                    pgId: this._waitList[idx][index].pgId
-                  })
-                    .then(res => {
-                      this.showToast('操作成功')
-                      this.select()
-                    })
-                    .catch(err => {
-                      this.showToast(err.msg || '操作失败')
-                    })
-                } else {
-                  this.$createDialog({
-                    type: 'prompt',
-                    title: `输入添加数量(范围1-${this._waitList[idx][index].partQty})`,
-                    prompt: {
-                      value: '',
-                      placeholder: `请输入1-${this._waitList[idx][index].partQty}范围内的数字`
-                    },
-                    onConfirm: (e, promptValue) => {
-                      if (
-                        typeof parseInt(promptValue) === 'number' &&
-                        parseInt(promptValue) >= 0 &&
-                        parseInt(promptValue) <=
-                          this._waitList[idx][index].partQty * 1
-                      ) {
-                        if (this.opr === 'fenpei') {
-                        } else {
-                          setStartProcessTask({
-                            deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceId,
-                            flag: 1,
-                            partQty: promptValue,
-                            popId: this._waitList[idx][index].popId,
-                            pgId: this._waitList[idx][index].pgId
-                          })
-                            .then(res => {
-                              this.showToast('操作成功')
-                              this.select()
-                            })
-                            .catch(err => {
-                              if (err.msg) {
-                                this.showToast(err.msg)
-                              }
-                            })
-                        }
-                      } else {
-                        this.showToast('输入有误，请重新输入')
-                      }
-                    }
-                  }).show()
-                }
-              }
-            },
-            onCancel: () => {}
-          }).show()
         } else {
         }
       }
+    },
+    showMymodel (i, idx, index) {
+      console.log(i, idx, index)
+      this.$createDialog({
+        type: 'confirm',
+        icon: '',
+        title: '注意',
+        content: `是否确认${
+          this.opr === 'fenpei' ? '分配工件至' : '使此工件加入'
+        }${this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceName}`,
+        confirmBtn: {
+          text: '确定',
+          active: true,
+          disabled: false,
+          href: 'javascript:;'
+        },
+        cancelBtn: {
+          text: '取消',
+          active: false,
+          disabled: false,
+          href: 'javascript:;'
+        },
+        onConfirm: () => {
+          if (this.opr === 'fenpei') {
+            allocateProcessTask({
+              deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
+                .deviceId,
+              flag: '1',
+              popId: this._waitList[idx][index].popId
+            })
+              .then(res => {
+                this.showToast('操作成功')
+                this.select()
+              })
+              .catch(err => {
+                this.showToast(err.msg || '操作失败')
+              })
+          } else {
+            if (this._waitList[idx][index].partQty === 1) {
+              setStartProcessTask({
+                deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
+                  .deviceId,
+                flag: 1,
+                partQty: 1,
+                popId: this._waitList[idx][index].popId,
+                pgId: this._waitList[idx][index].pgId
+              })
+                .then(res => {
+                  this.showToast('操作成功')
+                  this.select()
+                })
+                .catch(err => {
+                  this.showToast(err.msg || '操作失败')
+                })
+            } else {
+              this.$createDialog({
+                type: 'prompt',
+                title: `输入添加数量(范围1-${this._waitList[idx][index].partQty})`,
+                prompt: {
+                  value: '',
+                  placeholder: `请输入1-${this._waitList[idx][index].partQty}范围内的数字`
+                },
+                onConfirm: (e, promptValue) => {
+                  if (
+                    typeof parseInt(promptValue) === 'number' &&
+                        parseInt(promptValue) >= 0 &&
+                        parseInt(promptValue) <=
+                          this._waitList[idx][index].partQty * 1
+                  ) {
+                    if (this.opr === 'fenpei') {
+                    } else {
+                      setStartProcessTask({
+                        deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceId,
+                        flag: 1,
+                        partQty: promptValue,
+                        popId: this._waitList[idx][index].popId,
+                        pgId: this._waitList[idx][index].pgId
+                      })
+                        .then(res => {
+                          this.showToast('操作成功')
+                          this.select()
+                        })
+                        .catch(err => {
+                          if (err.msg) {
+                            this.showToast(err.msg)
+                          }
+                        })
+                    }
+                  } else {
+                    this.showToast('输入有误，请重新输入')
+                  }
+                }
+              }).show()
+            }
+          }
+        },
+        onCancel: () => {}
+      }).show()
     },
     createModal (id) {
       let modal = document.getElementById(id)
@@ -1064,7 +1071,7 @@ export default {
       }, 300)
     },
     pgId (old, newvalue) {
-      isPgLeader({ pgId: newvalue }).then(res => {
+      isPgLeader({ pgId: old }).then(res => {
         console.log('#####', res)
         this.isLeader = res.returnInfo.isLeader
       })
