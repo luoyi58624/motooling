@@ -25,7 +25,7 @@
       </div>
        <div>
         <div>物料图片</div>
-        <div>{{info.fileList[0].fileUrl}}</div>
+        <div>{{info.fileList?info.fileList[0].fileUrl:''}}</div>
       </div>
       <div>
         <div>备注</div>
