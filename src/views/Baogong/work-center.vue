@@ -375,12 +375,14 @@ export default {
         .catch(err => {
           this.showToast(err.msg)
         })
-    } else {
+    } else if (pgId) {
       this.pgId = pgId
       this.list = [{
         pgName: pgName,
         pgId: pgId
       }]
+      this.select()
+    } else {
       this.select()
     }
   },
