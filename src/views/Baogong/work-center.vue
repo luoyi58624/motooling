@@ -367,7 +367,9 @@ export default {
         .then(res => {
           // console.log(res.list)
           that.list = res.list
-          that.pgId = res.list[0].pgId
+          if (!that.pgId) {
+            that.pgId = res.list[0].pgId
+          }
           that.select()
         })
         .catch(err => {
