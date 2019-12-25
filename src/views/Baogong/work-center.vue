@@ -345,30 +345,41 @@ export default {
   },
   created () {
     vm = this
-    const token = this.$route.query.token
-    const uid = this.$route.query.uid
+    // const token = this.$route.query.token
+    // const uid = this.$route.query.uid
     const deviceId = this.$route.query.deviceid
-    const WEBURL = this.$route.query.weburl
-    if (token) {
-      sessionStorage.setItem('token', token)
+    // const WEBURL = this.$route.query.weburl
+    const pgId = this.$route.query.pgid
+    const pgName = this.$route.query.pgname
+    // if (token) {
+    //   sessionStorage.setItem('token', token)
+    // }
+    // if (uid) {
+    //   localStorage.setItem('uid', uid)
+    // }
+    // if (WEBURL) {
+    //   localStorage.setItem('WEBURL', WEBURL)
+    // }
+    if (this.deviceId) {
+      const that = this
+      getPmPgList({ deviceId })
+        .then(res => {
+          // console.log(res.list)
+          that.list = res.list
+          that.pgId = res.list[0].pgId
+          that.select()
+        })
+        .catch(err => {
+          this.showToast(err.msg)
+        })
+    } else {
+      this.pgId = pgId
+      this.list = [{
+        pgName: pgName,
+        pgId: pgId
+      }]
+      this.select()
     }
-    if (uid) {
-      localStorage.setItem('uid', uid)
-    }
-    if (WEBURL) {
-      localStorage.setItem('WEBURL', WEBURL)
-    }
-    const that = this
-    getPmPgList({ deviceId })
-      .then(res => {
-        // console.log(res.list)
-        that.list = res.list
-        that.pgId = res.list[0].pgId
-        that.select()
-      })
-      .catch(err => {
-        this.showToast(err.msg)
-      })
   },
   components: {
     swiper,
@@ -879,8 +890,7 @@ export default {
         onConfirm: () => {
           if (this.opr === 'fenpei') {
             allocateProcessTask({
-              deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
-                .deviceId,
+              deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceId,
               flag: '1',
               popId: this._waitList[idx][index].popId
             })
@@ -919,14 +929,15 @@ export default {
                 onConfirm: (e, promptValue) => {
                   if (
                     typeof parseInt(promptValue) === 'number' &&
-                        parseInt(promptValue) >= 0 &&
-                        parseInt(promptValue) <=
-                          this._waitList[idx][index].partQty * 1
+                    parseInt(promptValue) >= 0 &&
+                    parseInt(promptValue) <=
+                      this._waitList[idx][index].partQty * 1
                   ) {
                     if (this.opr === 'fenpei') {
                     } else {
                       setStartProcessTask({
-                        deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceId,
+                        deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
+                          .deviceId,
                         flag: 1,
                         partQty: promptValue,
                         popId: this._waitList[idx][index].popId,

@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     _getStoreCheckById () {
-      getStoreCheckById({ id: this.$route.query.id, checkBillId: '二维码获取物料id' }).then(res => {
+      getStoreCheckById({ id: this.$route.query.matId, checkBillId: this.$route.query.checkBillId }).then(res => {
         console.log(res)
         this.info = res.data
       })
