@@ -347,7 +347,7 @@ export default {
     vm = this
     // const token = this.$route.query.token
     // const uid = this.$route.query.uid
-    const deviceId = this.$route.query.deviceid
+    const deviceId = this.$route.query.deviceId
     // const WEBURL = this.$route.query.weburl
     const pgId = this.$route.query.pgid
     const pgName = this.$route.query.pgname
@@ -360,7 +360,8 @@ export default {
     // if (WEBURL) {
     //   localStorage.setItem('WEBURL', WEBURL)
     // }
-    if (this.deviceId) {
+    if (deviceId) {
+      console.log('进来了')
       const that = this
       getPmPgList({ deviceId })
         .then(res => {
