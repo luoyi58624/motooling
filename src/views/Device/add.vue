@@ -282,7 +282,7 @@ export default {
           .then(res => {
             if (res.data.data.whetherVersion === true) {
             // 如果有正式版，进入工作中心
-              self.$router.replace('/baogong/work-center?deviceid=' + this.submitmodel.device.id)
+              self.$router.replace('/baogong/work-center?deviceId=' + this.submitmodel.device.id)
             } else {
               this.getDetail()
             }
