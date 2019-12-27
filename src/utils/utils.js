@@ -36,7 +36,6 @@ export const fileServerUrl = () => localStorage.getItem('fileServerUrl') || ''
 
 export const token = () => {
   const token = sessionStorage.getItem('token')
-  console.log('陈盼测试' + token)
   return token || ''
 }
 

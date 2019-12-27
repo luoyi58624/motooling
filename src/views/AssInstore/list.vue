@@ -1,61 +1,90 @@
 <!--  -->
 <template>
   <div>
-    <my-header title="外协采购收货" :hasRight="true" settingUrl="/instore/setting"></my-header>
+    <my-header
+      title="外协采购收货"
+      :hasRight="true"
+      settingUrl="/instore/setting"
+    ></my-header>
     <screen class="screen" />
     <div class="no">
       <div>
         <span
           @click.stop="selectAll"
-          v-show="type===1"
+          v-show="type === 1"
           class="iconfont icon-iconfontxuanzhong4"
-          :class="{active:selecteAll}"
+          :class="{ active: selecteAll }"
         ></span>
       </div>
       <div></div>
     </div>
-    <div v-if="listDone&&list.length==0" class="nocontent">暂时没有数据</div>
+    <div v-if="listDone && list.length == 0" class="nocontent">
+      暂时没有数据
+    </div>
     <div class="list">
-      <div class="boxer" v-for="(item,index) in list" :key="index" @click="toInfo(item.purchSubId)">
-        <div class="iqc" v-show="type==2||type==3">IQC</div>
-        <div class="right-wrapper" @click.stop="select(index)" v-show="type===1">
-          <span class="iconfont icon-iconfontxuanzhong4" :class="{active:item.selected}"></span>
+      <div
+        class="boxer"
+        v-for="(item, index) in list"
+        :key="index"
+        @click="toInfo(item.purchSubId)"
+      >
+        <div class="iqc" v-show="type == 2 || type == 3">IQC</div>
+        <div
+          class="right-wrapper"
+          @click.stop="select(index)"
+          v-show="type === 1"
+        >
+          <span
+            class="iconfont icon-iconfontxuanzhong4"
+            :class="{ active: item.selected }"
+          ></span>
         </div>
-        <div class="right-wrapper" v-if="item.preOrderFlag===1">
+        <div class="right-wrapper" v-if="item.preOrderFlag === 1">
           <span class="iconfont icon-iconset0141"></span>
         </div>
         <div class="img-wrapper">
-          <img :src="item.img||require('@/assets/default.png')" alt />
+          <img :src="item.img || require('@/assets/default.png')" alt />
         </div>
         <div class="center-wrapper">
           <div class="title">名称:</div>
-          <div>物料编码：{{item.matNo}}</div>
-          <div>物料描述：{{item.matDesc}}</div>
-          <div>外协类型{{item.assTypeName}}</div>
-          <div>订单数量：{{item.totalQuantity}}</div>
-          <div>已收：{{item.receivedQty}}</div>
-          <div v-show="type===1">
+          <div>物料编码：{{ item.matNo }}</div>
+          <div>物料描述：{{ item.matDesc }}</div>
+          <div>外协类型{{ item.assTypeName }}</div>
+          <div>订单数量：{{ item.totalQuantity }}</div>
+          <div>已收：{{ item.receivedQty }}</div>
+          <div v-show="type === 1">
             收货数量:
-            <stepper v-model="item.quantity" :max="item.totalQuantity-item.receivedQty" />
+            <stepper
+              v-model="item.quantity"
+              :max="item.totalQuantity - item.receivedQty"
+            />
           </div>
         </div>
         <div class="litter-wrapper">
-          <div v-show="type==2||type==3">不合格：{{item.noQualifiedQty||0}}</div>
-          <div v-show="type==3">特采：{{item.specialQty||0}}</div>
-          <div v-show="type==3">退货：{{item.returnQty||0}}</div>
+          <div v-show="type == 2 || type == 3">
+            不合格：{{ item.noQualifiedQty || 0 }}
+          </div>
+          <div v-show="type == 3">特采：{{ item.specialQty || 0 }}</div>
+          <div v-show="type == 3">退货：{{ item.returnQty || 0 }}</div>
         </div>
       </div>
     </div>
     <div class="footer">
       <div>
-        <div class="nav" :class="{active:type===1}" @click="changeType(1)">收货</div>
-        <div class="nav" :class="{active:type===2}" @click="changeType(2)">检验</div>
-        <div class="nav" :class="{active:type===3}" @click="changeType(3)">特采</div>
+        <div class="nav" :class="{ active: type === 1 }" @click="changeType(1)">
+          收货
+        </div>
+        <div class="nav" :class="{ active: type === 2 }" @click="changeType(2)">
+          检验
+        </div>
+        <div class="nav" :class="{ active: type === 3 }" @click="changeType(3)">
+          特采
+        </div>
       </div>
     </div>
-     <toSynergy relationType="1" :relationId="billId+''"/>
+    <toSynergy relationType="1" :relationId="billId + ''" />
     <div class="bot">
-      <div @click="purch" v-if="type===1">提交</div>
+      <div @click="purch" v-if="type === 1">提交</div>
     </div>
     <div class="zw"></div>
   </div>
@@ -218,7 +247,7 @@ export default {
   }
 }
 </script>
-<style lang='less' scoped>
+<style lang="less" scoped>
 .screen {
   position: fixed;
   top: 40px;
@@ -323,13 +352,18 @@ export default {
     }
     > .img-wrapper {
       width: 110px;
+      padding: 30px 10px 0 10px;
       > img {
         width: 100px;
       }
     }
     > .center-wrapper {
+      overflow: hidden; /*也可以用 width:0 代替*/
       flex: 1;
       > div {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         width: 100%;
         display: flex;
         text-overflow: ellipsis;

@@ -89,6 +89,7 @@ export default {
   display: flex;
   .left-wrapper {
     width: 100px;
+    padding-right:20px;
     > img {
       width: 100%;
     }
