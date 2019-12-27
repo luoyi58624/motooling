@@ -62,10 +62,6 @@ export default {
         {
           text: '按物料编码排序',
           value: 1
-        },
-        {
-          text: '按hahahh编码排序',
-          value: 2
         }
       ]
     }

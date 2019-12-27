@@ -25,7 +25,7 @@
           <span class="iconfont icon-iconset0141"></span>
         </div>
         <div class="img-wrapper">
-          <img src alt />
+          <img :src="item.img||require('@/assets/default.png')" alt />
         </div>
         <div class="center-wrapper">
           <div class="title">名称:</div>
