@@ -332,14 +332,19 @@ export default {
      position: absolute;right:10px;top:10px;border:1px solid red;color:red;padding:2px 10px;font-size:12px;border-radius: 4px;
     }
     > .img-wrapper {
+      padding-top:30px;
       width: 110px;
       > img {
         width: 100px;
       }
     }
-    > .center-wrapper {
+      > .center-wrapper {
+      overflow: hidden; /*也可以用 width:0 代替*/
       flex: 1;
       > div {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         width: 100%;
         display: flex;
         text-overflow: ellipsis;
