@@ -85,8 +85,8 @@ export default {
       noList: [], // 工装号列表
       moldNo: '', // 选中的工装号
       wuliaoList: [],
-      transDate: '', // 凭证日期
-      chalkupDate: '', // 记账日期
+      transDate: getRaday(), // 凭证日期
+      chalkupDate: getRaday(), // 记账日期
       bomTypeList: [
         // bom类型列表
         {
@@ -335,6 +335,20 @@ export default {
         })
     }
   }
+}
+function getRaday () {
+  var date = new Date()
+  var year = date.getFullYear()
+  var month = date.getMonth() + 1
+  var day = date.getDate()
+  if (month < 10) {
+    month = '0' + month
+  }
+  if (day < 10) {
+    day = '0' + day
+  }
+  var nowData = year + '-' + month + '-' + day
+  return nowData
 }
 </script>
 <style lang='less' scoped>

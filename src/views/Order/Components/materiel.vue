@@ -2,7 +2,7 @@
 <template>
   <div class="wuliao">
     <div class="left-wrapper">
-      <img src alt />
+      <img :src="img||require('@/assets/default.png')" alt />
     </div>
     <div class="right-wrapper">
       <div class="right-top">
