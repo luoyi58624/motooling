@@ -41,6 +41,7 @@ export default {
             self.$router.replace('/')
           } else if (resObj.data.statusCode === 1) {
             sessionStorage.setItem('token', resObj.data.user.token)
+            sessionStorage.setItem('user', JSON.stringify(resObj.data.user))
             // localStorage.setItem("WEBURL", resObj.data.weburl);
             localStorage.setItem('uid', resObj.data.user.uid)
             localStorage.setItem('avatar', resObj.data.user.avatar)
