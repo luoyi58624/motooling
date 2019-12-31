@@ -349,8 +349,8 @@ export default {
     // const uid = this.$route.query.uid
     const deviceId = this.$route.query.deviceId
     // const WEBURL = this.$route.query.weburl
-    const pgId = this.$route.query.pgid
-    const pgName = this.$route.query.pgname
+    const pgId = this.$route.query.pgId
+    const pgName = this.$route.query.pgName
     // if (token) {
     //   sessionStorage.setItem('token', token)
     // }
