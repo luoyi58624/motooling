@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div class="wuliao">
+  <div class="wuliao" v-if="info.list[4].title==='库存数量'?info.list[4].content>0:true">
     <div class="left-wrapper">
       <img :src="img||require('@/assets/default.png')" alt />
     </div>
