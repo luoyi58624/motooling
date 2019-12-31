@@ -102,6 +102,11 @@ var router = new Router({
       component: () => import('./views/Baogong/work-center.vue')
     },
     {
+      path: '/baogong/artificial',
+      name: 'artificial',
+      component: () => import('./views/Baogong/artificial.vue')
+    },
+    {
       path: '/baogong/manage',
       name: 'manage',
       component: () => import('./views/Baogong/manage.vue')
