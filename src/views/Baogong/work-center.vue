@@ -990,6 +990,16 @@ export default {
           pgId: that.pgId
         })
           .then(res => {
+            if (res.type === '1') {
+              console.log('去人工')
+              this.$router.replace({
+                path: '/baogong/artificial',
+                query: {
+                  pgId: that.pgId
+                }
+              })
+              return
+            }
             if (res.list.length === that.shebeiPageSize) {
               that.shebeiHasmore = true
               that.shebeiPage++

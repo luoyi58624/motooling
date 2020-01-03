@@ -17,9 +17,9 @@
       <div class="title">设备</div>
       <div class="first-banner">
         <div class="point">
-          <div><span style="background:rgb(95,216,89)"></span> 正在加工</div>
+          <div><span style="background:rgb(95,216,89)"></span> 加工中</div>
           <div><span style="background:rgb(254,59,50)"></span> 空闲</div>
-          <div><span style="background:rgb(254,151,50)"></span> 维修/保养</div>
+          <div><span style="background:rgb(254,151,50)"></span> 其他</div>
         </div>
         <swiper :options="swiperOption" ref="mySwiper" class="swiper1">
           <!-- slides -->
@@ -41,24 +41,11 @@
                     />
 
                     <span
-                      v-show="ie.showOption"
+                      v-show="ie.showOption&&ie.deviceStatus == 1"
                       style
                       class="iconfont icon-xiangshang-"
                     ></span>
-                    <div v-show="ie.showOption">
-                      <div
-                        @click="spotcheck(ie.deviceId)"
-                        v-show="ie.deviceStatus == 0"
-                      >
-                        点检
-                      </div>
-                      <div
-                        @click="weixiu(ie.deviceId)"
-                        v-show="ie.deviceStatus == 0"
-                      >
-                        维修
-                      </div>
-                      <div v-show="ie.deviceStatus == 0">保养</div>
+                    <div v-show="ie.showOption&&ie.deviceStatus == 1">
                       <div
                         @click="wangong(2, ie.deviceId, 1, ie.pgId)"
                         v-show="ie.deviceStatus == 1"
@@ -66,16 +53,22 @@
                         完成
                       </div>
                       <div
+                        @click="join(ie.memberId)"
+                        v-show="ie.deviceStatus == 1"
+                      >
+                        加入
+                      </div>
+                      <div
+                        @click="ybwg(ie.deviceId, ie.pgId)"
+                       v-show="ie.deviceStatus == 1"
+                      >
+                        预报
+                      </div>
+                       <div
                         @click="jiaojie(1, ie.deviceId, 1, ie.pgId)"
                         v-show="ie.deviceStatus == 1"
                       >
                         交接
-                      </div>
-                      <div
-                        @click="ybwg(ie.deviceId, ie.pgId)"
-                        v-show="ie.deviceStatus == 1"
-                      >
-                        预报
                       </div>
                       <div
                         @click="handleCancel(ie.deviceId, ie.pgId)"
@@ -87,35 +80,31 @@
                   </div>
                   <div class="avater">
                     <img
-                      v-if="
-                        ie.operatorList.length > 0 &&
-                          ie.operatorList[0]['avatar'] &&
-                          ie.deviceStatus == 1
-                      "
-                      :src="ie.operatorList[0]['avatar']"
+                      v-if="ie.avatar"
+                      :src="ie.avatar"
                       alt=""
                     />
                     <div v-else></div>
                   </div>
                 </div>
-                <div>{{ ie.deviceNo }}</div>
+                <div>{{ ie.memberName }}</div>
                 <div
                   class="state"
                   :class="{
-                    free: ie.deviceStatus == 0,
-                    ing: ie.deviceStatus == 1,
-                    repair: ie.deviceStatus == '其他'
+                    free: ie.memberStatus == 0,
+                    ing: ie.memberStatus == 1,
+                    repair: ie.memberStatus == '其他'
                   }"
                 >
                   {{ ie.deviceName }}
                 </div>
                 <!-- <div class="right-on">未点检{{ie.deviceStatus}}</div> -->
-                <div
+                <!-- <div
                   class="right-on"
                   v-if="ie.deviceStatus !== '0' && ie.deviceStatus !== '1'"
                 >
                   维修中
-                </div>
+                </div> -->
               </div>
             </div>
           </swiper-slide>
@@ -241,7 +230,7 @@
       <div class="bar"></div>
     </cube-scroll>
     <cube-popup type="my-popup" ref="myPopup">操作成功</cube-popup>
-    <toSynergy v-if="bigMode" />
+    <!-- <toSynergy v-if="bigMode" /> -->
   </div>
 </template>
 
@@ -249,7 +238,7 @@
 import 'swiper/dist/css/swiper.css'
 import myHeader from '@/components/header'
 import { swiper, swiperSlide } from 'vue-awesome-swiper'
-import toSynergy from '@/components/ToSynergy'
+// import toSynergy from '@/components/ToSynergy'
 import {
   getPmPgList,
   getDeviceAndStatus,
@@ -260,7 +249,8 @@ import {
   setTaskPrediction,
   setProcessTaskPrediction,
   isPgLeader,
-  allocateProcessTask
+  allocateProcessTask,
+  joinProcessingGroup
 } from '@/api/baogong/baogong'
 import { setTimeout } from 'timers'
 import { reject } from 'q'
@@ -389,8 +379,8 @@ export default {
   components: {
     swiper,
     swiperSlide,
-    myHeader,
-    toSynergy
+    myHeader
+    // toSynergy
   },
   computed: {
     allArr () {
@@ -475,6 +465,16 @@ export default {
     }
   },
   methods: {
+    join (memberId) {
+      joinProcessingGroup({
+        memberId,
+        pgId: this.pgId
+      }).then(res => {
+        console.log('%%%', res)
+      }).catch(err => {
+        this.showToast(err.msg || '')
+      })
+    },
     spotcheck (deviceId) {
       this.$router.push({
         query: {
@@ -895,7 +895,7 @@ export default {
         onConfirm: () => {
           if (this.opr === 'fenpei') {
             allocateProcessTask({
-              deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceId,
+              memberId: this.shebeiList[this.shebeiCurrentIdx * 6 + i].memberId,
               flag: '1',
               popId: this._waitList[idx][index].popId
             })
@@ -909,8 +909,8 @@ export default {
           } else {
             if (this._waitList[idx][index].partQty === 1) {
               setStartProcessTask({
-                deviceId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
-                  .deviceId,
+                memberId: this.shebeiList[this.shebeiCurrentIdx * 6 + i]
+                  .memberId,
                 flag: 1,
                 partQty: 1,
                 popId: this._waitList[idx][index].popId,
@@ -990,12 +990,14 @@ export default {
           pgId: that.pgId
         })
           .then(res => {
-            if (res.list.length === that.shebeiPageSize) {
+            console.log('$$$$$')
+            console.log(res.memberList)
+            if (res.memberList.length === that.shebeiPageSize) {
               that.shebeiHasmore = true
               that.shebeiPage++
             }
 
-            var arr = [...that.shebeiList, ...res.list]
+            var arr = [...that.shebeiList, ...res.memberList]
             for (let i = 0; i < arr.length; i++) {
               arr[i]['showOption'] = false
               arr[i]['oldIdx'] = i
@@ -1003,7 +1005,7 @@ export default {
             that.shebeiList = arr
           })
           .catch(err => {
-            this.showToast(err.msg || '获取设备失败')
+            this.showToast(err.msg || '获取人员失败')
           })
       } else {
         // console.error("meiyougengduo");

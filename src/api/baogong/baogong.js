@@ -327,3 +327,17 @@ export function isPgLeader (params = {}) {
     data
   })
 }
+
+export function joinProcessingGroup (params = {}) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL() + '/mtH5/worktime/joinProcessingGroup',
+    method: 'post',
+    data
+  })
+}
