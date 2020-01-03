@@ -186,7 +186,7 @@
       </div>
       <div class="bar"></div>
       <div class="second-banner">
-        <div class="title">已完工</div>
+        <div class="title">已完工（待转出）</div>
         <swiper
           ref="mySwiper3"
           :options="swiperOption3"
@@ -995,7 +995,8 @@ export default {
               this.$router.replace({
                 path: '/baogong/artificial',
                 query: {
-                  pgId: that.pgId
+                  pgId: that.pgId,
+                  pgName: that.$route.query.pgName
                 }
               })
               return

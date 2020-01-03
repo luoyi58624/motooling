@@ -96,7 +96,7 @@
                     repair: ie.memberStatus == '其他'
                   }"
                 >
-                  {{ ie.deviceName }}
+                  {{ ie.processList[0]?ie.processList[0].matNo:''}}
                 </div>
                 <!-- <div class="right-on">未点检{{ie.deviceStatus}}</div> -->
                 <!-- <div
@@ -175,7 +175,7 @@
       </div>
       <div class="bar"></div>
       <div class="second-banner">
-        <div class="title">已完工</div>
+        <div class="title">已完工（待转出）</div>
         <swiper
           ref="mySwiper3"
           :options="swiperOption3"
