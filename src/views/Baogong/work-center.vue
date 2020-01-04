@@ -107,8 +107,14 @@
                     repair: ie.deviceStatus == '其他'
                   }"
                 >
-                  {{ ie.deviceName }}
+                  {{ ie.processList.length>0?ie.processList[0].matNo:''}}
+
                 </div>
+                <div class="shebei-wait">
+                  {{ ie.waitProcessList.length>0?ie.waitProcessList[0].matNo:''}}
+
+                </div>
+
                 <!-- <div class="right-on">未点检{{ie.deviceStatus}}</div> -->
                 <div
                   class="right-on"
@@ -116,7 +122,9 @@
                 >
                   维修中
                 </div>
+
               </div>
+
             </div>
           </swiper-slide>
           <div class="swiper-pagination" slot="pagination"></div>
@@ -1157,7 +1165,7 @@ swiper-slide {
 }
 .box > div {
   width: 30%;
-  height: 120px;
+  height: 150px;
   background: #dcdcdc;
   float: left;
   flex-direction: column;
@@ -1166,7 +1174,7 @@ swiper-slide {
   margin: 1.6%;
   border-radius: 4px;
   position: relative;
-  overflow: hidden;
+  // overflow: hidden;
   transition: all 0.1s;
 }
 .box > div.big {
@@ -1232,17 +1240,21 @@ swiper-slide {
   flex-wrap: wrap;
   padding: 0;
   display: flex;
-  width: 100px;
+  width: 200px;
   font-size: 12px;
   z-index: 3;
   border-radius: 4px;
   left: -14px;
   padding: 0 4px 5px 4px;
 }
+.box>div:nth-child(3n) .select> div{
+  left:auto;
+  right:-14px;
+}
 .select > div > div {
   border-right: 1px solid #666;
   margin-top: 5px;
-  width: 30%;
+  width: 30%;line-height:20px;
 }
 .select > div > div:nth-child(3n) {
   border-right: none;
@@ -1259,8 +1271,17 @@ swiper-slide {
   position: absolute;
   bottom: 0;
   left: 0;
-  bottom: 0;
+  bottom: 30px;
   right: 0;
+  border-radius:0 0 4px 4px;
+}
+.shebei-wait{
+  height:30px;width:100%;position: absolute;
+  background: #fff;bottom:0;
+  text-align:center;
+  line-height:30px;
+  font-size:12px;
+  color:#999;
 }
 .second-swipe {
   width: 100%;
@@ -1373,6 +1394,6 @@ swiper-slide {
   }
 }
 .big {
-  background: #000;
+  background: #000;z-index:10;
 }
 </style>
