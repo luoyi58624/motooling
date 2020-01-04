@@ -399,6 +399,22 @@ var router = new Router({
       meta: {
         title: '收货'
       }
+    },
+    {
+      path: '/invate',
+      name: 'invate',
+      component: () => import('./views/invate/index'),
+      meta: {
+        title: '邀请'
+      }
+    },
+    {
+      path: '/invate/follow',
+      name: 'invate/follow',
+      component: () => import('./views/invate/follow'),
+      meta: {
+        title: '关注公众号'
+      }
     }
   ]
 })

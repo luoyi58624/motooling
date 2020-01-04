@@ -47,6 +47,7 @@ export default {
             localStorage.setItem('avatar', resObj.data.user.avatar)
             localStorage.setItem('username', resObj.data.user.username)
             localStorage.setItem('fileServerUrl', resObj.data.fileServerUrl)
+            localStorage.setItem('mobile', resObj.data.user.mobile)
             let nexturl
             if (state) {
               nexturl = decodeURIComponent(state)
