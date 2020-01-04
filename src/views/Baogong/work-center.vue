@@ -728,9 +728,11 @@ export default {
       for (let i = 0; i < this.shebeiList.length; i++) {
         // this.shebeiList[index].showOption = false;
         // this.$set( this.shebeiList[index],'showOption',false)
+
         if (i === index) {
           this.shebeiList[i].showOption = !this.shebeiList[index].showOption
         } else {
+          this.$set(this.shebeiList[i], 'big', false)
           this.shebeiList[i].showOption = false
         }
       }
@@ -739,7 +741,7 @@ export default {
     },
     scale (index) {
       for (let i = 0; i < this.shebeiList.length; i++) {
-        // this.shebeiList[index].showOption = false;
+        this.shebeiList[i].showOption = false
         // this.$set( this.shebeiList[index],'showOption',false)
         if (i === index) {
           this.$set(this.shebeiList[i], 'big', true)
