@@ -96,7 +96,11 @@
                     repair: ie.memberStatus == '其他'
                   }"
                 >
-                  {{ ie.processList[0]?ie.processList[0].matNo:''}}
+                  {{ ie.processList.length>0?ie.processList[0].matNo:''}}
+                </div>
+                  <div class="shebei-wait">
+                  {{ ie.waitProcessList.length>0?ie.waitProcessList[0].matNo:''}}
+
                 </div>
                 <!-- <div class="right-on">未点检{{ie.deviceStatus}}</div> -->
                 <!-- <div
@@ -1148,7 +1152,7 @@ swiper-slide {
 }
 .box > div {
   width: 30%;
-  height: 120px;
+  height: 150px;
   background: #dcdcdc;
   float: left;
   flex-direction: column;
@@ -1250,8 +1254,17 @@ swiper-slide {
   position: absolute;
   bottom: 0;
   left: 0;
-  bottom: 0;
+  bottom: 30px;
   right: 0;
+  border-radius:0 0 4px 4px;
+}
+.shebei-wait{
+  height:30px;width:100%;position: absolute;
+  background: #fff;bottom:0;
+  text-align:center;
+  line-height:30px;
+  font-size:12px;
+  color:#999;
 }
 .second-swipe {
   width: 100%;
@@ -1365,5 +1378,9 @@ swiper-slide {
 }
 .big {
   background: #000;
+}
+.box>div:nth-child(3n) .select> div{
+  left:auto;
+  right:-14px;
 }
 </style>
