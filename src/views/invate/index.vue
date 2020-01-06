@@ -16,7 +16,7 @@ export default {
   methods: {
     accept () {
       bindPerson({
-        type: 2,
+        type: this.$route.query.type,
         bindId: this.$route.query.bindId,
         mobile: localStorage.getItem('mobile')
       })
