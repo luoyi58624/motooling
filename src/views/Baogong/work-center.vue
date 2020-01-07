@@ -876,10 +876,10 @@ export default {
                 this.showMymodel(i, idx, index)
               }
             }).show()
+          } else {
+            this.opr = 'jiagong'
+            this.showMymodel(i, idx, index)
           }
-        } else {
-          this.opr = 'jiagong'
-          this.showMymodel(i, idx, index)
         }
       }
     },
