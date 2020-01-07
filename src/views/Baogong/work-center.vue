@@ -48,38 +48,38 @@
                     <div v-show="ie.showOption">
                       <div
                         @click="spotcheck(ie.deviceId)"
-                        v-show="ie.deviceStatus == 0"
+                        v-if="ie.deviceStatus == 0"
                       >
                         点检
                       </div>
                       <div
                         @click="weixiu(ie.deviceId)"
-                        v-show="ie.deviceStatus == 0"
+                        v-if="ie.deviceStatus == 0"
                       >
                         维修
                       </div>
-                      <div v-show="ie.deviceStatus == 0">保养</div>
+                      <div v-if="ie.deviceStatus == 0">保养</div>
                       <div
                         @click="wangong(2, ie.deviceId, 1, ie.pgId)"
-                        v-show="ie.deviceStatus == 1"
+                        v-if="ie.deviceStatus == 1"
                       >
                         完成
                       </div>
                       <div
                         @click="jiaojie(1, ie.deviceId, 1, ie.pgId)"
-                        v-show="ie.deviceStatus == 1"
+                        v-if="ie.deviceStatus == 1"
                       >
                         交接
                       </div>
                       <div
                         @click="ybwg(ie.deviceId, ie.pgId)"
-                        v-show="ie.deviceStatus == 1"
+                        v-if="ie.deviceStatus == 1"
                       >
                         预报
                       </div>
                       <div
                         @click="handleCancel(ie.deviceId, ie.pgId)"
-                        v-show="ie.deviceStatus == 1"
+                        v-if="ie.deviceStatus == 1"
                       >
                         取消
                       </div>
@@ -878,6 +878,8 @@ export default {
             }).show()
           }
         } else {
+          this.opr = 'jiagong'
+          this.showMymodel(i, idx, index)
         }
       }
     },
@@ -1232,7 +1234,6 @@ swiper-slide {
   position: absolute;
   bottom: 0;
   transform: translateY(100%);
-
   background: rgb(255, 249, 173);
   color: #333;
   text-align: center;
@@ -1242,7 +1243,7 @@ swiper-slide {
   flex-wrap: wrap;
   padding: 0;
   display: flex;
-  width: 200px;
+  width: 230px;
   font-size: 12px;
   z-index: 3;
   border-radius: 4px;
@@ -1254,11 +1255,17 @@ swiper-slide {
   right:-14px;
 }
 .select > div > div {
+  flex:1;
   border-right: 1px solid #666;
   margin-top: 5px;
-  width: 30%;line-height:20px;
+  // width: 25%;
+  line-height:20px;
+  box-sizing: border-box
 }
-.select > div > div:nth-child(3n) {
+// .select > div > div:nth-child(4n) {
+//   border-right: none;
+// }
+.select > div > div:last-child {
   border-right: none;
 }
 

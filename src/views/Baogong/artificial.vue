@@ -873,6 +873,8 @@ export default {
             }).show()
           }
         } else {
+          this.opr = 'jiagong'
+          this.showMymodel(i, idx, index)
         }
       }
     },
@@ -1214,11 +1216,11 @@ swiper-slide {
 .select {
   position: relative;
 }
+
 .select > div {
   position: absolute;
   bottom: 0;
   transform: translateY(100%);
-
   background: rgb(255, 249, 173);
   color: #333;
   text-align: center;
@@ -1228,20 +1230,24 @@ swiper-slide {
   flex-wrap: wrap;
   padding: 0;
   display: flex;
-  width: 100px;
+  width: 230px;
   font-size: 12px;
   z-index: 3;
   border-radius: 4px;
   left: -14px;
   padding: 0 4px 5px 4px;
 }
+.box>div:nth-child(3n) .select> div{
+  left:auto;
+  right:-14px;
+}
 .select > div > div {
+  flex:1;
   border-right: 1px solid #666;
   margin-top: 5px;
-  width: 30%;
-}
-.select > div > div:nth-child(3n) {
-  border-right: none;
+  // width: 25%;
+  line-height:20px;
+  box-sizing: border-box
 }
 
 .state {
