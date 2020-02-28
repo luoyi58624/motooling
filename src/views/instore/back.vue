@@ -213,7 +213,7 @@ export default {
                 { title: '外协类型', content: item.assTypeName },
                 { title: '可退数量', content: item.quantity1 }
               ],
-              max: 1,
+              max: item.quantity1 || 0,
               value: Math.min(item.quantity1, 1),
               selected: true,
               matId: item.matId,
