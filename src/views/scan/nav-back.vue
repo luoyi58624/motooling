@@ -58,7 +58,7 @@ export default {
             })
           } else if (res.goodsType === '生产') {
             this.$router.push({
-              path: '/receive',
+              path: '/delivery',
               query: {
                 no: this.value,
                 imurl: this.$route.query.imurl
