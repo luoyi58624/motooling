@@ -299,7 +299,7 @@ var router = new Router({
       name: 'delivery',
       component: () => import('./views/Order/delivery'),
       meta: {
-        title: '订单收货'
+        title: '订单退货'
       }
     },
     {
