@@ -155,6 +155,28 @@ var router = new Router({
       component: () => import('./views/AssInstore/testing')
     },
     {
+      path: '/assinstore/setting',
+      name: 'assinstore-setting',
+      component: () => import('./views/assinstore/setting'),
+      meta: {
+        keepAlive: true // 需要被缓存
+      },
+      children: [
+        {
+          path: 'pick',
+          name: 'instore-pick',
+          component: () => import('./views/instore/pick'),
+          meta: { keepAlive: true }
+        },
+        {
+          path: 'select',
+          name: 'instore-select',
+          component: () => import('./views/instore/select'),
+          meta: { keepAlive: true }
+        }
+      ]
+    },
+    {
       path: '/assinstore/use',
       name: 'assinstore-use',
       component: () => import('./views/AssInstore/use')
