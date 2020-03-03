@@ -211,7 +211,7 @@ export default {
       getOutsourcingeOutStore({ billNo: this.billNo })
         .then(res => {
           console.log(res)
-          this.wuliaoList = res.map(item => {
+          this.wuliaoList = res.list.map(item => {
             console.log(item)
             return {
               list: [
