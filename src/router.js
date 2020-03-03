@@ -159,7 +159,7 @@ var router = new Router({
       name: 'assinstore-setting',
       component: () => import('./views/assinstore/setting'),
       meta: {
-        keepAlive: true // 需要被缓存
+        keepAlive: true
       },
       children: [
         {
