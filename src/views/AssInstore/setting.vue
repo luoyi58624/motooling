@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import { setUpInfo, setUpUpdate, getNotifyType } from '@/api/instore/instore'
+import { setUpInfo, setUpUpdate, getNotifyType } from '@/api/assinstore/assinstore'
 import myHeader from '@/components/header'
 export default {
   components: {
