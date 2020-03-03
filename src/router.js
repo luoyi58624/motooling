@@ -157,7 +157,7 @@ var router = new Router({
     {
       path: '/assinstore/setting',
       name: 'assinstore-setting',
-      component: () => import('./views/assinstore/setting'),
+      component: () => import('./views/Assinstore/setting'),
       meta: {
         keepAlive: true
       },
