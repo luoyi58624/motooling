@@ -159,7 +159,8 @@ var router = new Router({
       name: 'assinstore-setting',
       component: () => import('./views/Assinstore/setting'),
       meta: {
-        keepAlive: true
+        keepAlive: true,
+        title: '外协采购收货设置'
       },
       children: [
         {
