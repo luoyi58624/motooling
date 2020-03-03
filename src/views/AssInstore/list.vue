@@ -4,7 +4,7 @@
     <my-header
       title="外协采购收货"
       :hasRight="true"
-      settingUrl="/instore/setting"
+      settingUrl="/assinstore/setting"
     ></my-header>
     <screen class="screen" />
     <div class="no">
