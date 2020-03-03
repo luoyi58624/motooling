@@ -40,7 +40,7 @@ export function setUpInfo (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL() + '/mtH5/ivStore/setUpInfo',
+    url: WEBURL() + '/mtH5/ivStore/assSetUpInfo',
     method: 'post',
     data
   })
@@ -54,7 +54,7 @@ export function setUpUpdate (params = {}) {
     data: params
   }
   return request({
-    url: WEBURL() + '/mtH5/ivStore/setUpUpdate',
+    url: WEBURL() + '/mtH5/ivStore/assSetUpUpdate',
     method: 'post',
     data
   })
