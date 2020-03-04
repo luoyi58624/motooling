@@ -138,7 +138,7 @@ export default {
         })
     },
     save () {
-      if (!this.voucherId) {
+      if (!this._voucherId) {
         this.showToast('请选择收货凭证号')
         return
       }
@@ -149,7 +149,7 @@ export default {
         matId: this.info.matId,
         toBeReceivedQty: this.wuliao.value,
         remark: this.remark,
-        voucherId: this.voucherId
+        voucherId: this._voucherId
       })
         .then(res => {
           this.hideLoading()
