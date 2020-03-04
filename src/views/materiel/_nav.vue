@@ -2,7 +2,7 @@
 <template>
   <div class="wrapper">
     <div class="tab">
-      <div class="title">请选择发料类型</div>
+      <div class="title">请选择退料类型</div>
       <div class="con">
         <div @click="work">对工装退料</div>
         <div @click="bumen">对部门退料</div>
