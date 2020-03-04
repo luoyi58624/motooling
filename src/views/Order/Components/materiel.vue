@@ -57,6 +57,10 @@ export default {
     stepperName: {
       type: String,
       default: '收货数量'
+    },
+    img: {
+      type: String,
+      default: ''
     }
   },
   computed: {
