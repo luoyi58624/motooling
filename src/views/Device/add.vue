@@ -1,10 +1,10 @@
 <template>
   <div>
-    <cu-input label="id" v-model="submitmodel.device.id" placeholder="输入" v-if="false">
+    <cu-input label="id"  v-model="submitmodel.device.id" placeholder="输入" v-if="false">
     </cu-input>
-    <cu-input label="设备编号" v-model="submitmodel.device.deviceNo" placeholder="输入" >
+    <cu-input label="设备编号" :required="true" v-model="submitmodel.device.deviceNo" placeholder="输入" >
     </cu-input>
-    <cu-input label="设备描述" v-model="submitmodel.device.deviceName" placeholder="输入" >
+    <cu-input label="设备描述" :required="true" v-model="submitmodel.device.deviceName" placeholder="输入" >
     </cu-input>
     <cu-input label="设备尺寸(长)" v-model="submitmodel.device.deviceLength" placeholder="输入" >
     </cu-input>
@@ -12,7 +12,7 @@
     </cu-input>
     <cu-input label="设备品牌" v-model="submitmodel.device.deviceBrand" placeholder="输入" >
     </cu-input>
-    <cu-input label="设备型号" v-model="submitmodel.device.deviceModel" placeholder="输入" >
+    <cu-input label="设备型号" :required="true" v-model="submitmodel.device.deviceModel" placeholder="输入" >
     </cu-input>
     <cu-picker :pickerData="deviceSelectListData.deviceList" @select="deviceSelect" @cancel="deviceCancel" :alias="deviceAlias"
     :initialSelect="{val:submitmodel.device.type,Text:submitmodel.device.typeName}"

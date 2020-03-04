@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <div class="title">退货信息</div>
+    <div class="title">退货信息123</div>
     <div class="content">
       <div class="table">
         <div>
@@ -28,7 +28,7 @@
           <div>收货凭证号</div>
           <div>
             <!-- <input type="text" placeholder="请填写" v-model="voucherId" /> -->
-            <div @click="showPicker">{{voucherId||'请选择'}}</div>
+            <div @click="showPicker">{{_voucherId||'请选择'}}</div>
           </div>
         </div>
         <div>
@@ -71,7 +71,9 @@ export default {
       wuliao: {},
       remark: '',
       voucherId: '',
-      voucherList: '' // 收货列表
+      voucherList: '', // 收货列表
+      selectedIndex: 0,
+      init_voucherList: []
     }
   },
   created () {
@@ -95,6 +97,8 @@ export default {
     },
     selectHandle (selectedVal, selectedIndex, selectedText) {
       console.log(selectedVal.join(', '))
+      console.log(selectedIndex)
+      this.selectedIndex = selectedIndex[0]
       this.voucherId = selectedVal.join(', ')
     },
     getInfo (no) {
@@ -102,19 +106,22 @@ export default {
         .then(res => {
           console.log(res)
           this.info = res
+          this.init_voucherList = res.voucherList
           this.voucherList = res.voucherList.map(item => {
             return { text: item.voucher_id, value: item.voucher_id }
           })
+          console.log('**&&')
           this.wuliao = {
             list: [
               { title: '物料编码', content: res.matNo },
               { title: '物料描述', content: res.matName },
               { title: '物料类型', content: res.matTypeName },
               { title: '单位', content: res.unitName },
-              { title: '可退数量', content: res.toBeReceivedQty }
+              { title: '可退数量', content: this._voucherQty || 0 }
             ],
-            max: res.toBeReceivedQty,
-            value: res.toBeReceivedQty > 0 ? 1 : 0
+            max: this._voucherQty,
+            value: this._voucherQty > 0 ? 1 : 0,
+            img: res.picPath
           }
         })
         .catch(() => {
@@ -153,6 +160,18 @@ export default {
           this.hideLoading()
           this.showToast(err.msg ? err.msg : '')
         })
+    }
+  },
+  computed: {
+    _voucherQty () {
+      console.log('计算属性')
+      const index = this.selectedIndex
+      return this.init_voucherList[index].voucherQty
+    },
+    _voucherId () {
+      const index = this.selectedIndex
+      console.log(this.init_voucherList)
+      return this.init_voucherList[index].voucher_id
     }
   }
 }
