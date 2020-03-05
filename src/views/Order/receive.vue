@@ -86,7 +86,8 @@ export default {
               { title: '待收数量', content: res.toBeReceivedQty }
             ],
             max: res.toBeReceivedQty,
-            value: 1
+            value: 1,
+            img: res.imgList.length > 0 ? res.imgList[0].imgUrl : ''
           }
         })
         .catch(err => {
