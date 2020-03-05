@@ -42,7 +42,7 @@
     <div class="title">退货物料</div>
     <div>
       <div class="list">
-        <Materiel :info="wuliao" v-model="wuliao.value" />
+        <Materiel :info="wuliao" v-model="wuliao.value" stepperName="退货数量" />
       </div>
     </div>
     <div class="title">备注</div>
