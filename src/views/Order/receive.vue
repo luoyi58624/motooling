@@ -115,7 +115,8 @@ export default {
           console.log(res)
           this.hideLoading()
           this.showToast('收货成功')
-          // this.getInfo(this.no)
+          const no = this.$route.query.no
+          this.getInfo(no)
         })
         .catch(err => {
           this.hideLoading()
