@@ -104,6 +104,7 @@ export default {
     getInfo (no) {
       getpmPoOutStoreById({ poNo: no })
         .then(res => {
+          console.log('砂夹石')
           console.log(res)
           this.info = res
           this.init_voucherList = res.voucherList
@@ -113,10 +114,10 @@ export default {
           console.log('**&&')
           this.wuliao = {
             list: [
-              { title: '物料编码', content: res.matNo },
-              { title: '物料描述', content: res.matName },
-              { title: '物料类型', content: res.matTypeName },
-              { title: '单位', content: res.unitName },
+              { title: '物料编码', content: res.matNo || '' },
+              { title: '物料描述', content: res.matName || '' },
+              { title: '物料类型', content: res.matTypeName || '' },
+              { title: '单位', content: res.unitName || '' },
               { title: '可退数量', content: this._voucherQty || 0 }
             ],
             max: this._voucherQty,
@@ -124,7 +125,8 @@ export default {
             img: res.picPath
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error(err)
           this.showDialog({
             title: '出错了',
             content: '可能单号有误，将为您返回上一页',
@@ -138,6 +140,10 @@ export default {
         })
     },
     save () {
+      if (this.wuliao.value < 1) {
+        this.showToast('数量不足')
+        return
+      };
       if (!this._voucherId) {
         this.showToast('请选择收货凭证号')
         return
@@ -154,7 +160,8 @@ export default {
         .then(res => {
           this.hideLoading()
           this.showToast('退货成功')
-          // this.getInfo()
+          const no = this.$route.query.no
+          this.getInfo(no)
         })
         .catch(err => {
           this.hideLoading()
@@ -166,12 +173,19 @@ export default {
     _voucherQty () {
       console.log('计算属性')
       const index = this.selectedIndex
+      console.log(this.init_voucherList.length + 'eee')
+      if (this.init_voucherList.length === 0) {
+        return 0
+      }
       return this.init_voucherList[index].voucherQty
     },
     _voucherId () {
       const index = this.selectedIndex
-      console.log(this.init_voucherList)
-      return this.init_voucherList[index].voucher_id
+      if (this.init_voucherList.length > 0) {
+        return this.init_voucherList[index].voucher_id
+      } else {
+        return ''
+      }
     }
   }
 }
