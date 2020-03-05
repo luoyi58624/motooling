@@ -122,7 +122,7 @@ export default {
             ],
             max: this._voucherQty,
             value: this._voucherQty > 0 ? 1 : 0,
-            img: res.picPath
+            img: res.imgList.length > 0 ? res.imgList[0].imgUrl : ''
           }
         })
         .catch((err) => {
