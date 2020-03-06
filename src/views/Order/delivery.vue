@@ -6,11 +6,11 @@
       <div class="table">
         <div>
           <div>生产订单</div>
-          <div>{{info.poNo}}</div>
+          <div>{{ info.poNo }}</div>
         </div>
         <div>
           <div>仓管员</div>
-          <div>{{username}}</div>
+          <div>{{ username }}</div>
         </div>
         <!-- <div>
           <div>退货人</div>
@@ -18,17 +18,23 @@
         </div>-->
         <div>
           <div>凭证日期</div>
-          <div>{{info.createdAt?info.createdAt.slice(0,10):""}}</div>
+          <div @click="showpzdate">
+            {{ transDate || "请选择"
+            }}
+          </div>
         </div>
         <div>
           <div>记账日期</div>
-          <div>{{info.updatedAt?info.updatedAt.slice(0,10):""}}</div>
+          <div @click="showjzdate">
+            {{ chalkupDate || "请选择"
+            }}
+          </div>
         </div>
         <div>
           <div>收货凭证号</div>
           <div>
             <!-- <input type="text" placeholder="请填写" v-model="voucherId" /> -->
-            <div @click="showPicker">{{_voucherId||'请选择'}}</div>
+            <div @click="showPicker">{{ _voucherNo || "请选择" }}</div>
           </div>
         </div>
         <div>
@@ -42,17 +48,29 @@
     <div class="title">退货物料</div>
     <div>
       <div class="list">
-        <Materiel :info="wuliao" v-model="wuliao.value" stepperName="退货数量" />
+        <Materiel
+          :info="wuliao"
+          v-model="wuliao.value"
+          stepperName="退货数量"
+        />
       </div>
     </div>
     <div class="title">备注</div>
     <div class="content">
-      <textarea name id cols="30" rows="10" border class="bz" v-model="remark"></textarea>
+      <textarea
+        name
+        id
+        cols="30"
+        rows="10"
+        border
+        class="bz"
+        v-model="remark"
+      ></textarea>
     </div>
     <div class="zw"></div>
     <div class="bot">
       <div>企业圈</div>
-      <div>数量合计：{{wuliao.value}}</div>
+      <div>数量合计：{{ wuliao.value }}</div>
       <div @click="save">退货</div>
     </div>
   </div>
@@ -67,10 +85,12 @@ import { username } from '@/utils/utils.js'
 export default {
   data () {
     return {
+      chalkupDate: '',
+      transDate: '',
       info: {},
       wuliao: {},
       remark: '',
-      voucherId: '',
+      voucherNo: '',
       voucherList: '', // 收货列表
       selectedIndex: 0,
       init_voucherList: []
@@ -85,6 +105,30 @@ export default {
     Materiel: materiel
   },
   methods: {
+    showpzdate () {
+      this.$createDatePicker({
+        title: '凭证日期',
+        min: new Date(2008, 7, 8),
+        max: new Date(2020, 9, 20),
+        value: new Date(),
+        onSelect: this.pz
+      }).show()
+    },
+    showjzdate () {
+      this.$createDatePicker({
+        title: '记账日期',
+        min: new Date(2008, 7, 8),
+        max: new Date(2020, 9, 20),
+        value: new Date(),
+        onSelect: this.jz
+      }).show()
+    },
+    pz (date, selectedVal, selectedText) {
+      this.transDate = selectedVal.join('-')
+    },
+    jz (date, selectedVal, selectedText) {
+      this.chalkupDate = selectedVal.join('-')
+    },
     showPicker () {
       if (!this.picker) {
         this.picker = this.$createPicker({
@@ -99,17 +143,15 @@ export default {
       console.log(selectedVal.join(', '))
       console.log(selectedIndex)
       this.selectedIndex = selectedIndex[0]
-      this.voucherId = selectedVal.join(', ')
+      this.voucherNo = selectedVal.join(', ')
     },
     getInfo (no) {
       getpmPoOutStoreById({ poNo: no })
         .then(res => {
-          console.log('砂夹石')
-          console.log(res)
           this.info = res
           this.init_voucherList = res.voucherList
           this.voucherList = res.voucherList.map(item => {
-            return { text: item.voucher_id, value: item.voucher_id }
+            return { text: item.voucherNo, value: item.voucherNo }
           })
           console.log('**&&')
           this.wuliao = {
@@ -125,7 +167,7 @@ export default {
             img: res.imgList.length > 0 ? res.imgList[0].imgUrl : ''
           }
         })
-        .catch((err) => {
+        .catch(err => {
           console.error(err)
           this.showDialog({
             title: '出错了',
@@ -143,9 +185,17 @@ export default {
       if (this.wuliao.value < 1) {
         this.showToast('数量不足')
         return
-      };
-      if (!this._voucherId) {
+      }
+      if (!this._voucherNo) {
         this.showToast('请选择收货凭证号')
+        return
+      }
+      if (!this.chalkupDate) {
+        this.showToast('请选择记账日期')
+        return
+      }
+      if (!this.transDate) {
+        this.showToast('请选择记账日期')
         return
       }
       this.showLoading()
@@ -155,7 +205,9 @@ export default {
         matId: this.info.matId,
         toBeReceivedQty: this.wuliao.value,
         remark: this.remark,
-        voucherId: this._voucherId
+        voucherNo: this._voucherNo,
+        transDate: this.transDate,
+        chalkupDate: this.transDate
       })
         .then(res => {
           this.hideLoading()
@@ -179,10 +231,10 @@ export default {
       }
       return this.init_voucherList[index].voucherQty
     },
-    _voucherId () {
+    _voucherNo () {
       const index = this.selectedIndex
       if (this.init_voucherList.length > 0) {
-        return this.init_voucherList[index].voucher_id
+        return this.init_voucherList[index].voucherNo
       } else {
         return ''
       }
@@ -190,7 +242,7 @@ export default {
   }
 }
 </script>
-<style lang='less' scoped>
+<style lang="less" scoped>
 .title {
   padding: 14px;
   font-size: 12px;
