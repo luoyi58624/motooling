@@ -7,19 +7,23 @@
       <div class="table">
         <div>
           <div>生产订单</div>
-          <div>{{info.poNo}}</div>
+          <div>{{ info.poNo }}</div>
         </div>
         <div>
           <div>仓管员</div>
-          <div>{{username}}</div>
+          <div>{{ username }}</div>
         </div>
         <div>
           <div>凭证日期</div>
-          <div>{{info.createdAt?info.createdAt.slice(0,10):""}}</div>
+          <div @click="showpzdate">
+            {{ transDate || "请选择" }}
+          </div>
         </div>
         <div>
           <div>记账日期</div>
-          <div>{{info.updatedAt?info.updatedAt.slice(0,10):""}}</div>
+          <div @click="showjzdate">
+            {{ chalkupDate || "请选择" }}
+          </div>
         </div>
         <div>
           <div>收发货单编号</div>
@@ -37,7 +41,15 @@
     </div>
     <div class="title">备注</div>
     <div class="content">
-      <textarea name id cols="30" rows="10" border class="bz" v-model="remark"></textarea>
+      <textarea
+        name
+        id
+        cols="30"
+        rows="10"
+        border
+        class="bz"
+        v-model="remark"
+      ></textarea>
     </div>
     <div class="zw"></div>
     <div class="bot">
@@ -56,6 +68,8 @@ import { username } from '@/utils/utils.js'
 export default {
   data () {
     return {
+      chalkupDate: '',
+      transDate: '',
       info: {},
       wuliao: {},
       remark: '',
@@ -72,6 +86,30 @@ export default {
     Screen: screen
   },
   methods: {
+    showpzdate () {
+      this.$createDatePicker({
+        title: '凭证日期',
+        min: new Date(2008, 7, 8),
+        max: new Date(2020, 9, 20),
+        value: new Date(),
+        onSelect: this.pz
+      }).show()
+    },
+    showjzdate () {
+      this.$createDatePicker({
+        title: '记账日期',
+        min: new Date(2008, 7, 8),
+        max: new Date(2020, 9, 20),
+        value: new Date(),
+        onSelect: this.jz
+      }).show()
+    },
+    pz (date, selectedVal, selectedText) {
+      this.transDate = selectedVal.join('-')
+    },
+    jz (date, selectedVal, selectedText) {
+      this.chalkupDate = selectedVal.join('-')
+    },
     getInfo (no) {
       getpmPoInStore({ poNo: no })
         .then(res => {
@@ -105,6 +143,14 @@ export default {
         })
     },
     save () {
+      if (!this.chalkupDate) {
+        this.showToast('请选择记账日期')
+        return
+      }
+      if (!this.transDate) {
+        this.showToast('请选择记账日期')
+        return
+      }
       this.showLoading()
       inStoreSave({
         poNo: this.info.poNo,
@@ -127,7 +173,7 @@ export default {
   }
 }
 </script>
-<style lang='less' scoped>
+<style lang="less" scoped>
 .title {
   padding: 14px;
   font-size: 12px;
