@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <Screen />
+    <!-- <Screen /> -->
     <div class="title">收货信息</div>
     <div class="content">
       <div class="table">
@@ -62,7 +62,7 @@
 
 <script>
 import materiel from './Components/materiel'
-import screen from './Components/screen'
+// import screen from './Components/screen'
 import { getpmPoInStore, inStoreSave } from '@/api/order/order.js'
 import { username } from '@/utils/utils.js'
 export default {
@@ -82,8 +82,8 @@ export default {
     this.getInfo(this.no)
   },
   components: {
-    Materiel: materiel,
-    Screen: screen
+    Materiel: materiel
+    // Screen: screen
   },
   methods: {
     showpzdate () {
