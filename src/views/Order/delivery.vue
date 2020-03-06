@@ -85,15 +85,16 @@ import { username } from '@/utils/utils.js'
 export default {
   data () {
     return {
-      chalkupDate: '',
-      transDate: '',
+      chalkupDate: getRaday(),
+      transDate: getRaday(),
       info: {},
       wuliao: {},
       remark: '',
       voucherNo: '',
       voucherList: '', // 收货列表
       selectedIndex: 0,
-      init_voucherList: []
+      init_voucherList: [],
+      isold: 0// 用来判断是不是第一次进来这个页面
     }
   },
   created () {
@@ -148,6 +149,12 @@ export default {
     getInfo (no) {
       getpmPoOutStoreById({ poNo: no })
         .then(res => {
+          if (res === null && this.isold) { // 若结果为空并且不是第一次调用该函数
+            this.wuliao.list[4].content = 0
+            this.wuliao.value = 0
+            return true
+          }
+          this.isold++
           this.info = res
           this.init_voucherList = res.voucherList
           this.voucherList = res.voucherList.map(item => {
@@ -170,8 +177,8 @@ export default {
         .catch(err => {
           console.error(err)
           this.showDialog({
-            title: '出错了',
-            content: '可能单号有误，将为您返回上一页',
+            title: '提示',
+            content: '单号有误或已不存在，将为您返回上一页',
             onConfirm: () => {
               this.$router.go(-1)
             },
@@ -206,6 +213,7 @@ export default {
         toBeReceivedQty: this.wuliao.value,
         remark: this.remark,
         voucherNo: this._voucherNo,
+        voucherId: this.init_voucherList[this.selectedIndex]['voucher_id'],
         transDate: this.transDate,
         chalkupDate: this.transDate
       })
@@ -240,6 +248,20 @@ export default {
       }
     }
   }
+}
+function getRaday () {
+  var date = new Date()
+  var year = date.getFullYear()
+  var month = date.getMonth() + 1
+  var day = date.getDate()
+  if (month < 10) {
+    month = '0' + month
+  }
+  if (day < 10) {
+    day = '0' + day
+  }
+  var nowData = year + '-' + month + '-' + day
+  return nowData
 }
 </script>
 <style lang="less" scoped>

@@ -1,7 +1,7 @@
 <!--  -->
 <template>
   <div>
-    <Screen />
+    <!-- <Screen /> -->
     <div class="title">收货信息</div>
     <div class="content">
       <div class="table">
@@ -62,7 +62,7 @@
 
 <script>
 import materiel from './Components/materiel'
-import screen from './Components/screen'
+// import screen from './Components/screen'
 import { getpmPoInStore, inStoreSave } from '@/api/order/order.js'
 import { username } from '@/utils/utils.js'
 export default {
@@ -73,7 +73,8 @@ export default {
       info: {},
       wuliao: {},
       remark: '',
-      no: ''
+      no: '',
+      isold: 0
     }
   },
   created () {
@@ -82,8 +83,8 @@ export default {
     this.getInfo(this.no)
   },
   components: {
-    Materiel: materiel,
-    Screen: screen
+    Materiel: materiel
+    // Screen: screen
   },
   methods: {
     showpzdate () {
@@ -113,7 +114,12 @@ export default {
     getInfo (no) {
       getpmPoInStore({ poNo: no })
         .then(res => {
-          console.log(res)
+          if (res === null && this.isold) { // 若结果为空并且不是第一次调用该函数
+            this.wuliao.list[4].content = 0
+            this.wuliao.value = 0
+            return true
+          }
+          this.isold++
           this.info = res
           this.wuliao = {
             list: [
