@@ -73,7 +73,8 @@ export default {
       info: {},
       wuliao: {},
       remark: '',
-      no: ''
+      no: '',
+      isold: 0
     }
   },
   created () {
@@ -113,7 +114,12 @@ export default {
     getInfo (no) {
       getpmPoInStore({ poNo: no })
         .then(res => {
-          console.log(res)
+          if (res === null && this.isold) { // 若结果为空并且不是第一次调用该函数
+            this.wuliao.list[4].content = 0
+            this.wuliao.value = 0
+            return true
+          }
+          this.isold++
           this.info = res
           this.wuliao = {
             list: [

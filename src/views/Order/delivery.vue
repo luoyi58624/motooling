@@ -93,7 +93,8 @@ export default {
       voucherNo: '',
       voucherList: '', // 收货列表
       selectedIndex: 0,
-      init_voucherList: []
+      init_voucherList: [],
+      isold: 0// 用来判断是不是第一次进来这个页面
     }
   },
   created () {
@@ -148,6 +149,12 @@ export default {
     getInfo (no) {
       getpmPoOutStoreById({ poNo: no })
         .then(res => {
+          if (res === null && this.isold) { // 若结果为空并且不是第一次调用该函数
+            this.wuliao.list[4].content = 0
+            this.wuliao.value = 0
+            return true
+          }
+          this.isold++
           this.info = res
           this.init_voucherList = res.voucherList
           this.voucherList = res.voucherList.map(item => {
@@ -170,8 +177,8 @@ export default {
         .catch(err => {
           console.error(err)
           this.showDialog({
-            title: '出错了',
-            content: '可能单号有误，将为您返回上一页',
+            title: '提示',
+            content: '单号有误或已不存在，将为您返回上一页',
             onConfirm: () => {
               this.$router.go(-1)
             },
