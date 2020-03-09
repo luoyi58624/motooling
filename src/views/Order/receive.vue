@@ -68,8 +68,8 @@ import { username } from '@/utils/utils.js'
 export default {
   data () {
     return {
-      chalkupDate: '',
-      transDate: '',
+      chalkupDate: getRaday(),
+      transDate: getRaday(),
       info: {},
       wuliao: {},
       remark: '',
@@ -177,6 +177,20 @@ export default {
         })
     }
   }
+}
+function getRaday () {
+  var date = new Date()
+  var year = date.getFullYear()
+  var month = date.getMonth() + 1
+  var day = date.getDate()
+  if (month < 10) {
+    month = '0' + month
+  }
+  if (day < 10) {
+    day = '0' + day
+  }
+  var nowData = year + '-' + month + '-' + day
+  return nowData
 }
 </script>
 <style lang="less" scoped>
