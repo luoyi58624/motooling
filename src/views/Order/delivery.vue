@@ -141,8 +141,6 @@ export default {
       this.picker.show()
     },
     selectHandle (selectedVal, selectedIndex, selectedText) {
-      console.log(selectedVal.join(', '))
-      console.log(selectedIndex)
       this.selectedIndex = selectedIndex[0]
       this.voucherNo = selectedVal.join(', ')
     },
@@ -160,6 +158,7 @@ export default {
           this.voucherList = res.voucherList.map(item => {
             return { text: item.voucherNo, value: item.voucherNo }
           })
+          this._voucherQty = this.init_voucherList[this.selectedIndex].voucherQty
           console.log('**&&')
           this.wuliao = {
             list: [
@@ -230,22 +229,32 @@ export default {
     }
   },
   computed: {
-    _voucherQty () {
-      console.log('计算属性')
-      const index = this.selectedIndex
-      console.log(this.init_voucherList.length + 'eee')
-      if (this.init_voucherList.length === 0) {
-        return 0
-      }
-      return this.init_voucherList[index].voucherQty
-    },
+    // _voucherQty () {
+    //   const index = this.selectedIndex
+    //   console.log(5678)
+    //   // console.log(index)
+    //   // console.log(this.init_voucherList)
+    //   // console.log(this.init_voucherList[index].voucherQty)
+    //   if (this.init_voucherList.length === 0) {
+    //     return 0
+    //   }
+    //   return this.init_voucherList[this.selectedIndex].voucherQty
+    // },
     _voucherNo () {
       const index = this.selectedIndex
+      console.log('12341')
       if (this.init_voucherList.length > 0) {
         return this.init_voucherList[index].voucherNo
       } else {
         return ''
       }
+    }
+  },
+  watch: {
+    selectedIndex (val) {
+      this._voucherQty = this.init_voucherList[this.selectedIndex].voucherQty
+      const no = this.$route.query.no
+      this.getInfo(no)
     }
   }
 }
