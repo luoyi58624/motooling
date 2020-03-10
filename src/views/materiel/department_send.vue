@@ -158,8 +158,10 @@ export default {
       var list = this.wuliaoList.map(item => {
         const _item = item.info
         _item.quantity = item.value
-        return _item
-      })
+        if (item.value && item.selected) {
+          return _item
+        }
+      }).filter(item => { return item })
       const depId = this.depId
       const depName = this.depName
       const applyManId = this.applyManId
