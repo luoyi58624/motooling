@@ -169,12 +169,16 @@ export default {
         this.showToast('未填写收发货单编号')
         return
       }
-
       var list = this.wuliaoList.map(item => {
         const _item = item.info
         _item.quantity = item.value
+        _item.selected = item.selected
         return _item
       })
+        .filter(item => {
+          console.log(item)
+          return item.quantity > 0 && item.selected
+        })
       const depId = this.depId
       //  const depName=this.depName;
       //  const applyManId=this.applyManId;
