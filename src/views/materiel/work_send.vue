@@ -10,8 +10,14 @@
             <div @click="slecteNo">{{moldNo||"请选择"}}</div>
           </div>
         </div>
-        <div>
-          <div>BOM类型</div>
+         <div>
+          <div>发料类型</div>
+          <div>
+            <div @click="slecteType">{{maTypeText||"请选择"}}</div>
+          </div>
+        </div>
+        <div v-if="maTypeValue=='1'">
+          <div >BOM类型</div>
           <div @click="selectBom">{{bomTypeText||'请选择'}}</div>
         </div>
         <div>
@@ -54,6 +60,9 @@
         </div>
       </div>
     </div>
+     <div class="add" @click="add" v-show="this.maTypeValue==='2'">
+        <i class="cubeic-add"></i>添加物料
+      </div>
     <div class="title">备注</div>
     <div class="content">
       <textarea name id cols="30" rows="10" border class="bz" v-model="remark"></textarea>
@@ -84,9 +93,12 @@ export default {
       voucherList: '', // 收货列表
       noList: [], // 工装号列表
       moldNo: '', // 选中的工装号
-      wuliaoList: [],
+      // wuliaoList: [],
       transDate: getRaday(), // 凭证日期
       chalkupDate: getRaday(), // 记账日期
+      maTypeText: '',
+      maTypeValue: '',
+      inwuliaoList: [],
       bomTypeList: [
         // bom类型列表
         {
@@ -97,6 +109,10 @@ export default {
           text: '辅BOM',
           value: '2'
         }
+      ],
+      MaTypeList: [
+        { text: '按bom', value: '1' },
+        { text: '增发物料', value: '2' }
       ],
       indentNo: '', // 收发货单编号
       billNo: '', // 收发货单边行
@@ -115,7 +131,13 @@ export default {
     Materiel: materiel
   },
   computed: {
+    wuliaoList () {
+      return this.maTypeValue === '2' ? this.$store.state.wuliaoList : this.inwuliaoList
+    },
     allQuantity () {
+      console.log(123)
+      console.log(this.wuliaoList)
+      if (!this.wuliaoList || this.wuliaoList.length === 0) { return 0 }
       return this.wuliaoList.reduce((total, item) => {
         console.log(total)
         if (item.selected) {
@@ -150,6 +172,13 @@ export default {
         onSelect: this.selectedBom
       }).show()
     },
+    slecteType () {
+      this.$createPicker({
+        title: '选择发料类型',
+        data: [this.MaTypeList],
+        onSelect: this.selectedMa
+      }).show()
+    },
     getName () {
       // 获取领料人
       listPickingName()
@@ -172,6 +201,17 @@ export default {
       this.bomTypeText = selectedText.join(', ')
       this.bomTypeValue = selectedVal.join(', ')
       this.getInfo()
+    },
+    selectedMa (selectedVal, selectedIndex, selectedText) {
+      this.maTypeText = selectedText.join(', ')
+      this.maTypeValue = selectedVal.join(', ')
+      if (!this.bomTypeText && this.maTypeValue === '1') {
+        this.bomTypeValue = 1
+        this.bomTypeText = '主BOM'
+        this.getInfo()
+      }
+
+      // this.getInfo()
     },
     getNoList () {
       // 获取工装列表
@@ -201,11 +241,6 @@ export default {
     },
     selectedNo (selectedVal, selectedIndex, selectedText) {
       this.moldNo = selectedText.join(', ')
-      if (!this.bomTypeText) {
-        this.bomTypeValue = 1
-        this.bomTypeText = '主BOM'
-      }
-      this.getInfo()
     },
     select (value, index) {
       this.wuliaoList[index]['selected'] = value
@@ -214,12 +249,17 @@ export default {
       // var newList = this.wuliaoList
       // newList[index]['value'] = value
     },
+    add () {
+      this.$router.push({
+        path: '/materiel/select'
+      })
+    },
     getInfo () {
       // 获取发料信息
       inStorePOTooling({ moldNo: this.moldNo, bomType: this.bomTypeValue })
         .then(res => {
           console.log(res)
-          this.wuliaoList = res.map(item => {
+          this.inwuliaoList = res.map(item => {
             console.log(item)
             return {
               list: [
@@ -420,5 +460,16 @@ function getRaday () {
 }
 .zw {
   height: 50px; /*no*/
+}
+.add {
+  font-size: 16px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  color: #5496ff;
+  align-items: center;
+  > i {
+    font-size: 20px;
+  }
 }
 </style>
