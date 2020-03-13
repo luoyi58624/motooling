@@ -366,7 +366,8 @@ export default {
       })
         .then(res => {
           this.hideLoading()
-          this.showToast('操作成功')
+          this.showToast('发料成功')
+          this.$store.commit('changeWuliaoList', [])
           this.getInfo()
         })
         .catch(err => {
