@@ -221,14 +221,14 @@ export default {
                 { title: '规格型号', content: item.matModel },
                 { title: '仓库', content: item.storeHouseName },
                 {
-                  title: '库存数量',
-                  content: item.stockQty ? item.stockQty : 0
-                },
-                { title: '应发数量', content: item.quantity1 }
+                  title: '可退料数',
+                  content: item.quantity1 ? item.quantity1 : 0
+                }
+                // { title: '应发数量', content: item.quantity1 }
               ],
-              max: Math.min(item.stockQty ? item.stockQty : 0, item.quantity1),
+              max: Math.min(item.quantity1 ? item.quantity1 : 0, item.quantity1),
               value:
-                Math.min(item.stockQty ? item.stockQty : 0, item.quantity1) > 0
+                Math.min(item.quantity1 ? item.quantity1 : 0, item.quantity1) > 0
                   ? item.quantity
                   : 0,
               selected: true,
