@@ -54,6 +54,7 @@
             v-model="item.value"
             :selected="item.selected"
             :index="index"
+            :img="item.fileList?item.fileList[0].imgUrl:''||require('@/assets/default.png')"
             @changeSel="select"
             stepperName="发料数量"
           />

@@ -22,21 +22,21 @@ module.exports = {
   // },
   devServer: {
     // proxy: 'http://localhost:4000'
-    proxy: {
-      '/invitation': {
-        target: 'http://www.motooling.com:8809/',
-        ws: true,
-        changeOrigin: true
-      },
-      '/mtH5': {
-        target: 'http://www.motooling.com:8809/',
-        ws: true,
-        changeOrigin: true
-      },
-      '/img': {
-        target: 'http://www.motooling.com:8809/'
-      }
-    }
+    // proxy: {
+    //   '/invitation': {
+    //     target: 'http://www.motooling.com:8809/',
+    //     ws: true,
+    //     changeOrigin: true
+    //   },
+    //   '/mtH5': {
+    //     target: 'http://www.motooling.com:8809/',
+    //     ws: true,
+    //     changeOrigin: true
+    //   },
+    //   '/img': {
+    //     target: 'http://www.motooling.com:8809/'
+    //   }
+    // }
     // proxy: {
     //   '/invitation': {
     //     target: 'http://192.168.2.247:8808/',

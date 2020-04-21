@@ -54,6 +54,7 @@
           :selected="item.selected"
           :index="index"
           @changeSel="select"
+          :img="item.fileList?item.fileList[0].imgUrl:''||require('@/assets/default.png')"
           stepperName="应退数量"
         />
       </div>

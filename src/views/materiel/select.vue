@@ -30,6 +30,7 @@
           :selected="item.selected"
           :index="index"
           @changeSel="select"
+          :img="item.fileList?item.fileList[0].imgUrl:''||require('@/assets/default.png')"
           stepperName="物料数量"
         />
       </div>
@@ -133,7 +134,7 @@ export default {
               return {
                 list: [
                   { title: '物料编码', content: item.matNo },
-                  { title: '物料描述', content: item.matName },
+                  { title: '物料描述', content: item.matDesc },
                   { title: '规格型号', content: item.matModel },
                   { title: '仓库', content: item.storeHouseName },
                   { title: '库存数量', content: item.stockQty }
