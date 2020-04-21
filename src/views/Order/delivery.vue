@@ -52,6 +52,7 @@
           :info="wuliao"
           v-model="wuliao.value"
           stepperName="退货数量"
+          :img="item.fileList?item.fileList[0].imgUrl:''||require('@/assets/default.png')"
         />
       </div>
     </div>

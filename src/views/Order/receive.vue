@@ -36,7 +36,7 @@
     <div class="title">收货物料</div>
     <div>
       <div class="list">
-        <Materiel :info="wuliao" v-model="wuliao.value" />
+        <Materiel :info="wuliao" v-model="wuliao.value" :img="item.fileList?item.fileList[0].imgUrl:''||require('@/assets/default.png')" />
       </div>
     </div>
     <div class="title">备注</div>
