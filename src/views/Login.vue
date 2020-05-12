@@ -6,13 +6,12 @@
         <img class="logo" alt="logo" src="../assets/logo.png">
       </div>
     </div>
-    <div style="text-align:center">请使用微信打开</div>
     <div class="group">
       <cube-input v-model="loginData.mobile" placeholder="请输入手机号码" type="text" :maxlength="11" :autocomplete="true"></cube-input>
     </div>
     <div class="group">
-      <cube-input v-model="loginData.phoneCode" placeholder="请输入验证码" type="tel" :maxlength="6" :autocomplete="false">
-        <cube-button slot="append" :inline="true" @click="getCode">获取验证码</cube-button>
+      <cube-input v-model="loginData.password" placeholder="请输入密码" type="password" :autocomplete="false">
+
       </cube-input>
     </div>
     <div class="group">
@@ -22,9 +21,8 @@
 </template>
 
 <script>
-import { getPhoneCode } from '@/api/login'
+import { accountPasswordLogin } from '@/api/login'
 import { getUrlQueryString } from '@/utils/utils.js'
-import { getUser } from '@/api/Person/User.js'
 export default {
   data () {
     return {
@@ -34,38 +32,34 @@ export default {
       },
       loginData: {
         mobile: '',
-        phoneCode: ''
+        password: ''
       }
     }
   },
   methods: {
-    getCode () {
-      getPhoneCode(this.loginData.mobile, 1)
-        .then(function (res) {
-          console.log(res)
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    },
-
     login () {
-      var self = this
-      getUser(this.loginData)
-        .then(function (res) {
-          let rdata = res.data
-          console.log(rdata)
-          if (rdata.code === '000000') {
-            let next = self.$router.currentRoute.query.next
-            sessionStorage.setItem('isLogin', 1)
-            sessionStorage.setItem('loginData', JSON.stringify(self.loginData))
-            sessionStorage.setItem('userData', JSON.stringify(rdata.data))
-            self.$router.replace(next)
+      accountPasswordLogin(this.loginData)
+        .then((res) => {
+          if (res.data.code === '000000') {
+            var data = res.data.data
+            sessionStorage.setItem('token', data.token)
+            localStorage.setItem('uid', data.uid)
+            localStorage.setItem('avatar', data.avatar)
+            // localStorage.setItem("WEBURL", data.weburl);
+            localStorage.setItem('fileServerUrl', data.fileServerUrl)
+            localStorage.setItem('mobile', data.mobile)
+
+            let redirectURL = getUrlQueryString('redirectURL')
+
+            if (redirectURL) {
+              let nexturl = decodeURIComponent(redirectURL)
+              this.$router.push(nexturl)
+            } else {
+              this.$router.push('/')
+            }
           } else {
+            this.$toast(res.data.msg)
           }
-        })
-        .catch(function (err) {
-          console.log(err)
         })
     }
   },
