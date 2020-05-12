@@ -49,3 +49,18 @@ export function wxBindPhone (param) {
     data
   })
 }
+
+export function accountPasswordLogin (data) {
+  const _data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data
+  }
+
+  return request({
+    url: BASEURL() + '/mtH5/user/accountPasswordLogin',
+    method: 'post',
+    data: _data
+  })
+}
