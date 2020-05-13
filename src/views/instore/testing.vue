@@ -112,7 +112,7 @@
                 <cube-checkbox
                   @input="selMb($event,item.tmplId)"
                   :value="SelMbList.includes(item.tmplId)"
-                >{{item.fileName}}</cube-checkbox>
+                >{{item.fileName.substr(0,3)+'..'}}</cube-checkbox>
               </div>
             </div>
           </div>
@@ -126,7 +126,7 @@
                 <cube-checkbox
                   @input="selMb($event,item.tmplId)"
                   :value="SelMbList.includes(item.tmplId)"
-                >{{item.fileName}}</cube-checkbox>
+                >{{item.fileName.substr(0,3)+'..'}}</cube-checkbox>
               </div>
             </div>
           </div>
@@ -140,7 +140,7 @@
                 <cube-checkbox
                   @input="selMb($event,item.tmplId)"
                   :value="SelMbList.includes(item.tmplId)"
-                >{{item.fileName}}</cube-checkbox>
+                >{{item.fileName.substr(0,3)+'..'}}</cube-checkbox>
               </div>
             </div>
           </div>
