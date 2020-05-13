@@ -34,7 +34,7 @@
           <span class="iconfont icon-iconset0141"></span>
         </div>
         <div class="img-wrapper">
-          <img :src="item.fileList?item.fileList[0].imgUrl:''||require('@/assets/default.png')" alt />
+          <img :src="item.fileList&&item.fileList.length>0?item.fileList[0].imgUrl:''||require('@/assets/default.png')" alt />
         </div>
         <div class="center-wrapper">
           <div class="title">名称:</div>
