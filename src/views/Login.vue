@@ -47,8 +47,10 @@ export default {
             localStorage.setItem('uid', data.uid)
             localStorage.setItem('avatar', data.avatar)
             // localStorage.setItem("WEBURL", data.weburl);
+            localStorage.setItem('username', resObj.data.username)
             localStorage.setItem('fileServerUrl', data.fileServerUrl)
             localStorage.setItem('mobile', data.mobile)
+            localStorage.setItem('companyId', resObj.data.companyId)
 
             let redirectURL = getUrlQueryString('redirectURL')
 

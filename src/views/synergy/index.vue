@@ -203,7 +203,7 @@ export default {
       // 关联id
       relationId: '1001',
       // 公司id
-      companyId: 1,
+      companyId: localStorage.companyId,
       // 输入的文字内容
       content: '',
       recordList: [
