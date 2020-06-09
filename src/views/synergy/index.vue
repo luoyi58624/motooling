@@ -419,7 +419,8 @@ export default {
             }
           },
           function (msg) {
-            this.$createDialog({
+            self.hideLoading()
+            self.$createDialog({
               type: 'alert',
               title: '录音失败',
               content: msg,
