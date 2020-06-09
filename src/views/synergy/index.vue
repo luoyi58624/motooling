@@ -892,6 +892,9 @@ input {
   width: 40px; /* no */
   border-radius: 6px; /* no */
   flex-shrink: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 .talk-contents .talk-space .talk-user-name {
   font-size: 14px; /* no */
