@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     login () {
-      const self = this
+      const _this = this
       accountPasswordLogin(this.loginData)
         .then((res) => {
           if (res.data.code === '000000') {
@@ -56,12 +56,12 @@ export default {
 
             if (redirectURL) {
               let nexturl = decodeURIComponent(redirectURL)
-              self.$router.push(nexturl)
+              _this.$router.push(nexturl)
             } else {
-              self.$router.push('/')
+              _this.$router.push('/')
             }
           } else {
-            self.$toast(res.data.msg)
+            _this.$toast(res.data.msg)
           }
         })
     }
