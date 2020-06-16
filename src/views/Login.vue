@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     login () {
-      const _this = this
+      var _this = this
       accountPasswordLogin(this.loginData)
         .then((res) => {
           if (res.data.code === '000000') {
