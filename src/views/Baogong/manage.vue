@@ -16,9 +16,6 @@
           <span v-else  style="font-size:12px;">更新成功</span>
           <div v-if="props.pullDownRefresh" class="cube-pulldown-wrapper">
             <div class="pulldown-content">
-              <img
-                src="https://dpubstatic.udache.com/static/dpubimg/7d895941-251f-471f-abc4-3eca25762465.jpg"
-              >
               <span v-if="props.beforePullDown">{{pullDownTip}}</span>
               <template v-else>
                 <span v-if="props.isPullingDown" style="font-size:12px;">正在更新...</span>
@@ -152,6 +149,7 @@ export default {
   },
   methods: {
     reverse (sort) {
+      this.pageNum = 1
       this.sort = sort
       this.list = []
       this.done = true
