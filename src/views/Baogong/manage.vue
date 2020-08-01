@@ -64,7 +64,7 @@
                 <p @click="showFix(item.poId,item.popId)" class="rizhi">日志</p>
               </div>
               <div>物料编码:{{item.matNo}}</div>
-              <div>上工序:{{item.matName}}</div>
+              <div v-if="type==1">上工序:{{item.prevProcDesc}}</div>
               <div>操作人:{{item.prevWorkerName}}</div>
               <div>描述:{{item.procDesc}}</div>
               <div>工序:{{item.procSeq}}</div>

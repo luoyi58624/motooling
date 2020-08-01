@@ -886,7 +886,7 @@ export default {
         title: '注意',
         content: `是否确认${
           this.opr === 'fenpei' ? '分配工件至' : '使此工件加入'
-        }${this.shebeiList[this.shebeiCurrentIdx * 6 + i].deviceName}`,
+        }${this.shebeiList[this.shebeiCurrentIdx * 6 + i].memberName}`,
         confirmBtn: {
           text: '确定',
           active: true,
