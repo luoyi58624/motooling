@@ -41,38 +41,38 @@
                     />
 
                     <span
-                      v-show="ie.showOption&&ie.deviceStatus == 1"
+                      v-show="ie.showOption&&ie.memberStatus == 1"
                       style
                       class="iconfont icon-xiangshang-"
                     ></span>
-                    <div v-show="ie.showOption&&ie.deviceStatus == 1">
+                    <div v-show="ie.showOption&&ie.memberStatus == 1">
                       <div
                         @click="wangong(2, ie.deviceId, 1, ie.pgId)"
-                        v-show="ie.deviceStatus == 1"
+                        v-show="ie.memberStatus == 1"
                       >
                         完成
                       </div>
                       <div
                         @click="join(ie.memberId)"
-                        v-show="ie.deviceStatus == 1"
+                        v-show="ie.memberStatus == 1"
                       >
                         加入
                       </div>
                       <div
                         @click="ybwg(ie.deviceId, ie.pgId)"
-                       v-show="ie.deviceStatus == 1"
+                       v-show="ie.memberStatus == 1"
                       >
                         预报
                       </div>
                        <div
                         @click="jiaojie(1, ie.deviceId, 1, ie.pgId)"
-                        v-show="ie.deviceStatus == 1"
+                        v-show="ie.memberStatus == 1"
                       >
                         交接
                       </div>
                       <div
                         @click="handleCancel(ie.deviceId, ie.pgId)"
-                        v-show="ie.deviceStatus == 1"
+                        v-show="ie.memberStatus == 1"
                       >
                         取消
                       </div>
@@ -1164,7 +1164,6 @@ swiper-slide {
   margin: 1.6%;
   border-radius: 4px;
   position: relative;
-  overflow: hidden;
   transition: all 0.1s;
 }
 .box > div.big {
@@ -1248,6 +1247,10 @@ swiper-slide {
   // width: 25%;
   line-height:20px;
   box-sizing: border-box
+}
+
+.select > div > div:last-child {
+  border-right: none;
 }
 
 .state {
