@@ -36,7 +36,7 @@
     <div class="title">收货物料</div>
     <div>
       <div class="list">
-        <Materiel :info="wuliao" v-model="wuliao.value" :img="wuliao.fileList?item.fileList[0].imgUrl:''||require('@/assets/default.png')" />
+        <Materiel :info="wuliao" v-model="wuliao.value" :img="wuliao.fileList?wuliao.fileList[0].imgUrl:''||require('@/assets/default.png')" />
       </div>
     </div>
     <div class="title">备注</div>
@@ -131,7 +131,7 @@ export default {
             ],
             max: res.toBeReceivedQty,
             value: 1,
-            img: res.imgList.length > 0 ? res.imgList[0].imgUrl : ''
+            fileList: res.imgList.length > 0 ? res.imgList[0].imgUrl : ''
           }
         })
         .catch(err => {
