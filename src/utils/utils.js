@@ -50,3 +50,16 @@ export function fileAddressFormat (url) {
     return fileServerUrl() + url
   }
 }
+
+// 获取 URL 中除域名之外，后半部分
+export function urlToPath (url) {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    if (url.indexOf('/', 8) !== -1) {
+      return url.slice(url.indexOf('/', 8))
+    } else {
+      return url
+    }
+  } else {
+    return url
+  }
+}

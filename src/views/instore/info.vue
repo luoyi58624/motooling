@@ -220,7 +220,7 @@ import {
 } from '@/api/instore/instore'
 import myHeader from '@/components/header'
 import CuUpload from '@/components/upload/Upload'
-import { WEBURL } from '@/utils/utils.js'
+import { WEBURL, urlToPath } from '@/utils/utils.js'
 import md5 from 'md5'
 
 const token = sessionStorage.getItem('token') || ''
@@ -464,16 +464,16 @@ export default {
         }
         const qualityList = this.wordList.map(item => {
           if (item.response) {
-            return { fileName: item.name, fileUrl: item.response.data.url }
+            return { fileName: item.name, fileUrl: item.response.data.fileUrl }
           } else {
-            return item
+            return { fileName: item.name, fileUrl: urlToPath(item.url) }
           }
         })
         const factoryReportList = this.pdfList.map(item => {
           if (item.response) {
-            return { fileName: item.name, fileUrl: item.response.data.url }
+            return { fileName: item.name, fileUrl: item.response.data.fileUrl }
           } else {
-            return item
+            return { fileName: item.name, fileUrl: urlToPath(item.url) }
           }
         })
         var data3 = Object.assign({}, { purchSubId, qualityList, factoryReportList }, this.info)
