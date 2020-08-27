@@ -260,6 +260,17 @@ export default {
         this.storeRoomId = res.inStoreInfo.storeRoomId
       })
     },
+    urlToPath (url) {
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        if (url.indexOf('/', 8) !== -1) {
+          return url.slice(url.indexOf('/', 8))
+        } else {
+          return url
+        }
+      } else {
+        return url
+      }
+    },
     save () {
       var factoryReportList = []
       for (var key in this.mbList) {
@@ -293,9 +304,9 @@ export default {
       }
       const qualityList = this.wordList.map(item => {
         if (item.response) {
-          return { fileName: item.name, fileUrl: item.response.data.url }
+          return { fileName: item.name, fileUrl: item.response.data.fileUrl }
         } else {
-          return item
+          return { fileName: item.name, fileUrl: this.urlToPath(item.url) }
         }
       })
 
