@@ -161,7 +161,7 @@ import {
   // getStoreHouse,
   // getStoreRoom
 } from '@/api/assinstore/assinstore'
-import { WEBURL } from '@/utils/utils.js'
+import { WEBURL, urlToPath } from '@/utils/utils.js'
 import md5 from 'md5'
 
 const token = sessionStorage.getItem('token') || ''
@@ -260,6 +260,7 @@ export default {
         this.storeRoomId = res.inStoreInfo.storeRoomId
       })
     },
+
     save () {
       var factoryReportList = []
       for (var key in this.mbList) {
@@ -293,9 +294,9 @@ export default {
       }
       const qualityList = this.wordList.map(item => {
         if (item.response) {
-          return { fileName: item.name, fileUrl: item.response.data.url }
+          return { fileName: item.name, fileUrl: item.response.data.fileUrl }
         } else {
-          return item
+          return { fileName: item.name, fileUrl: urlToPath(item.url) }
         }
       })
 
