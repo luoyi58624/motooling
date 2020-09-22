@@ -111,7 +111,7 @@ export default {
   data () {
     return {
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 1000,
       hasMore: true,
       done: true,
       value: '',
