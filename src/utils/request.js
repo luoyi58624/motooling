@@ -1,13 +1,14 @@
 import axios from 'axios'
 import { decrypt } from '@/utils/crypt'
 import router from '../router'
+import Vue from 'vue'
 // import md5 from 'md5'
 // encryption
 const instance = axios.create({
   // baseURL: process.env.base_API,
   // baseURL: 'http://192.168.2.136:8808',
   // baseURL: 'http://www.motooling.com:8080',
-  timeout: 5000
+  timeout: 10000
 })
 
 instance.interceptors.request.use(
@@ -37,6 +38,12 @@ instance.interceptors.response.use(
   },
   error => {
     console.warn('err: ' + error)
+    const vm = new Vue()
+    if (error.message.includes('timeout')) {
+      vm.showToast('接口请求超时')
+    } else {
+      vm.showToast(error.message)
+    }
     // console.log('this', this)
     // this.toast = this.$createToast({
     //   txt: 'Plain txt',
