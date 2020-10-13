@@ -39,7 +39,8 @@
               item.data.contentType === 1 ||
                 item.data.contentType === 2 ||
                 item.data.contentType === 3 ||
-                item.data.contentType === 4
+                item.data.contentType === 4 ||
+                item.data.contentType === 6
             "
           >
             <div class="talk-user-name" v-if="uid != item.data.senderId">
@@ -62,6 +63,15 @@
             </div>
             <div
               class="talk-content"
+              v-if="item.data.contentType == 6"
+              @click="
+                showImagePreview(fileAddressFormatFunc(item.data.content))
+              "
+            >
+              <img :src="fileAddressFormatFunc(item.data.content)" />
+            </div>
+            <div
+              class="talk-content"
               v-if="item.data.contentType === 3"
               @click="playAudio(fileAddressFormatFunc(item.data.content))"
             >
@@ -70,8 +80,9 @@
             </div>
             <div class="talk-content" v-if="item.data.contentType === 4">
               <video
+                preload="meta"
                 :src="fileAddressFormatFunc(item.data.content)"
-                controls="controls"
+                @click="playVideo($event)"
               ></video>
             </div>
             <div
@@ -136,14 +147,15 @@
             id="uploadImageField"
             multiple
             hidden
+            accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
             @change="uploadImage"
           />
-          <div class="list-item">
+           <label class="list-item" for="uploadImageField">
             <div class="item-icon">
               <div class="icon icon-album"></div>
             </div>
             <div class="center item-text">相册</div>
-          </div>
+          </label>
           <div class="list-item">
             <router-link
               :to="
@@ -437,6 +449,14 @@ export default {
       console.log(12313)
       this.$refs.audio.src = src
       this.$refs.audio.play()
+    },
+    playVideo (event) {
+      console.log(event)
+      if (event.target.paused) {
+        event.target.play()
+      } else {
+        event.target.pause()
+      }
     },
     // 群成员添加
     addSynergyAddMember () {
