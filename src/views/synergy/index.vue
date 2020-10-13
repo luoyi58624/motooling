@@ -136,14 +136,15 @@
             id="uploadImageField"
             multiple
             hidden
+            accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
             @change="uploadImage"
           />
-          <div class="list-item">
+           <label class="list-item" for="uploadImageField">
             <div class="item-icon">
               <div class="icon icon-album"></div>
             </div>
             <div class="center item-text">相册</div>
-          </div>
+          </label>
           <div class="list-item">
             <router-link
               :to="
