@@ -82,6 +82,7 @@
               <video
                 preload="meta"
                 :src="fileAddressFormatFunc(item.data.content)"
+                controls="controls"
                 @click="playVideo($event)"
               ></video>
             </div>
