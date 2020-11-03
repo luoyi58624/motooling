@@ -501,7 +501,8 @@ export default {
     init () {
       getOpenSynergy({
         relationType: this.relationType,
-        relationId: this.relationId
+        relationId: this.relationId,
+        groupId: this.groupId
       })
         .then(res => {
           this.synergyGroup = res.synergyGroup
@@ -814,8 +815,9 @@ export default {
   },
   created () {
     var self = this
-    this.relationId = this.$route.params.id
-    this.relationType = this.$route.params.typeid
+    this.relationId = this.$route.params.id || this.$route.query.relationId
+    this.relationType = this.$route.params.typeid || this.$route.query.relationType
+    this.groupId = this.$route.query.groupId
     this.imurl = localStorage.imurl
     console.log(this.relationId)
     this.init()
