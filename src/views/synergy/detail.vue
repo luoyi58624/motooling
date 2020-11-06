@@ -819,9 +819,17 @@ export default {
     this.relationType = this.$route.params.typeid || this.$route.query.relationType
     this.groupId = this.$route.query.groupId
     this.imurl = localStorage.imurl
-    console.log(this.relationId)
-    this.init()
-    this.getUserInfo()
+    if (this.relationType === '66' || this.relationType === '666') {
+      this.isEnable = false
+      this.$createToast({
+        time: 0,
+        txt: '参数错误，协同开启失败',
+        type: 'warn'
+      }).show()
+    } else {
+      this.init()
+      this.getUserInfo()
+    }
     wx.ready(() => {
       wx.onVoiceRecordEnd({
         complete: function (res) {
