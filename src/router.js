@@ -332,10 +332,22 @@ var router = new Router({
       name: 'synergySummaryDetail',
       component: () => import('./views/synergy/summary/detail')
     },
+    // query 参数：
+    // relationType=
+    // &relationId=
+    // &groupId=
+    {
+      path: '/synergy/detail',
+      name: 'synergy',
+      component: () => import('./views/synergy/detail'),
+      meta: {
+        keepAlive: true
+      }
+    },
     {
       path: '/synergy/:typeid/:id',
       name: 'synergy',
-      component: () => import('./views/synergy/index'),
+      component: () => import('./views/synergy/detail'),
       meta: {
         keepAlive: true
       }

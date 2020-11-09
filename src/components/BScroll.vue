@@ -92,6 +92,7 @@ export default {
       // better-scroll的初始化
       this.scroll = new BetterScroll(this.$refs.wrapper, {
         probeType: this.probeType,
+        mouseWheel: true,
         click: this.click,
         scrollY: true,
         scrollX: this.scrollX
