@@ -1132,12 +1132,7 @@ body {
   right: 0;
   left: 0;
 }
-swiper-slide {
-  width: 100%;
-  height: 200px;
-  text-align: center;
-  line-height: 200px;
-}
+
 .first-banner {
   width: 100%;
   margin: 0 auto;
@@ -1229,6 +1224,7 @@ swiper-slide {
 
 .select {
   position: relative;
+  z-index: 1000;
 }
 .select > div {
   position: absolute;
