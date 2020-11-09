@@ -11,6 +11,8 @@ const isiOS = function () {
 
 export default new Vuex.Store({
   state: {
+    // 用户选择组件选中的值
+    userSelectedList: [],
     founderList: [],
     founderManagerList: [],
     verifyerList: [],
@@ -24,6 +26,9 @@ export default new Vuex.Store({
     wxSignUrl: '' // 调用微信jssdk接口所需要的url地址
   },
   mutations: {
+    changeUserSelectedList (state, newArr) {
+      state.userSelectedList = newArr
+    },
     changeReciveList (state, newArr) {
       state.founderList = newArr
     },

@@ -2,14 +2,14 @@
   <div>
     <div class="member-list-wrap" v-if="isEnable">
       <div class="member-list">
-        <template v-for="item in synergyMemberList">
+        <template v-for="item in resMemberList">
           <img
             :src="item.avatar ? item.avatar : require('@/assets/person.png')"
             :key="item.id"
           />
         </template>
       </div>
-      <div @click="addUser('changeSynergyMemberList', 'synergyMemberList')">
+      <div @click="selectUser()">
         <img src="../../assets/icon-add.png" />
       </div>
     </div>
@@ -180,6 +180,9 @@
         </div>
       </transition>
     </div>
+    <div v-show="show">
+      <UserSelect :visible.sync="show" @confirm="confirm" @cancel="cancel" />
+    </div>
   </div>
 </template>
 <script>
@@ -195,11 +198,13 @@ import { getUser } from '@/api/Person/User.js'
 import wx from 'weixin-js-sdk'
 // import { BetterScroll } from 'cube-ui'
 import scroll from '@/components/BScroll.vue'
+import UserSelect from '@/components/UserSelect.vue'
 import shortid from 'shortid'
 
 export default {
   components: {
-    scroll
+    scroll,
+    UserSelect
   },
   data () {
     return {
@@ -236,7 +241,8 @@ export default {
       /* eslint-disable no-undef */
       rec: Recorder({ type: 'mp3' }),
       currentAudioSrc: '',
-      startTimestamp: 0 // 开始录音的时间戳
+      startTimestamp: 0, // 开始录音的时间戳
+      show: false
     }
   },
   computed: {
@@ -246,28 +252,9 @@ export default {
       }
       return 0
     },
-    synergyMemberList () {
-      if (
-        this.$store.state.synergyMemberList &&
-        this.$store.state.synergyMemberList.length > 0
-      ) {
-        return this.$store.state.synergyMemberList
-      } else {
-        return this.resMemberList
-      }
-    },
+
     watchData () {
       return [...this.recordList, this.moreBtnStatus]
-    }
-  },
-  beforeRouteEnter (to, from, next) {
-    if (from.name === 'instore-pick') {
-      next(vm => {
-        // 通过 `vm` 访问组件实例
-        vm.addSynergyAddMember()
-      })
-    } else {
-      next()
     }
   },
   mounted () {
@@ -287,6 +274,18 @@ export default {
     this.socket.close()
   },
   methods: {
+    confirm () {
+      this.show = false
+      this.addSynergyAddMember()
+    },
+    cancel () {
+      this.show = false
+    },
+
+    selectUser () {
+      this.$store.commit('changeUserSelectedList', this.resMemberList)
+      this.show = true
+    },
     focus () {
       // 输入框聚焦时事件
       this.moreBtnStatus = false
@@ -447,7 +446,6 @@ export default {
       fileUpload()
     },
     playAudio (src) {
-      console.log(12313)
       this.$refs.audio.src = src
       this.$refs.audio.play()
     },
@@ -461,18 +459,17 @@ export default {
     },
     // 群成员添加
     addSynergyAddMember () {
-      console.log(this.synergyGroup)
       synergyAddMember({
         groupId: this.synergyGroup.id,
         inviterId: this.uid,
         companyId: this.companyId,
         companyName: this.companyName,
-        uList: this.synergyMemberList.map(function (item) {
+        uList: this.$store.state.userSelectedList.map(function (item) {
           return { uid: item.uid }
         })
       })
         .then(res => {
-          console.log(res)
+          this.resMemberList = res.existList.concat(res.successList)
           this.$createToast({
             time: 2000,
             txt: '添加群成员成功',
@@ -507,6 +504,7 @@ export default {
         .then(res => {
           this.synergyGroup = res.synergyGroup
           this.resMemberList = res.memberList
+
           this.recordList = res.recordList.reverse()
           if (this.recordList.length > 0) {
             this.oldestId = this.recordList[0].data.id
