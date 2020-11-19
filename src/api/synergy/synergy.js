@@ -160,3 +160,19 @@ export function getNotReadCount (params) {
     data
   })
 }
+
+// 获取消息列表接口
+export function getNewsList (params = {}) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+
+  return request({
+    url: WEBURL() + '/mtH5/synergy/newsList',
+    method: 'post',
+    data
+  })
+}

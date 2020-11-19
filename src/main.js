@@ -4,11 +4,12 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import 'amfe-flexible'
-import { Stepper } from 'vant'
+import { Stepper, Search } from 'vant'
 import 'vant/lib/index.css'
 import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
 import wx from 'weixin-js-sdk'
 Vue.use(Stepper)
+Vue.use(Search)
 Vue.config.productionTip = false
 var toast
 function showToast (val) {

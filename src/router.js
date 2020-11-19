@@ -302,6 +302,29 @@ var router = new Router({
       name: 'synergySummaryList',
       component: () => import('./views/synergy/summary/list')
     },
+    {
+      path: '/synergy/chat/messageList',
+      name: 'synergyMessageList',
+      component: () => import('./views/synergy/chat/messageList')
+    },
+    {
+      path: '/synergy/chat/layout',
+      name: 'synergyChatLayout',
+      redirect: '/synergy/chat/layout/noMessage',
+      component: () => import('./views/synergy/chat/layout'),
+      children: [
+        {
+          path: 'chatPanel',
+          name: 'synergyChatPanel',
+          component: () => import('./views/synergy/chat/chatPanel')
+        },
+        {
+          path: 'noMessage',
+          name: 'noMessage',
+          component: () => import('./views/synergy/chat/noMessage')
+        }
+      ]
+    },
     // 生成纪要时，type为new、id为lastRecordId
     // 获取纪要时，type为view、id为summaryId
     {
