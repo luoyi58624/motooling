@@ -1,5 +1,5 @@
 <template>
-  <cube-scroll class="scroll">
+  <cube-scroll class="scroll" :options="options">
     <div class="_containner" v-show="visible">
       <div
         class="select-box"
@@ -50,7 +50,10 @@ export default {
   data () {
     return {
       list: [],
-      initSelectedList: []
+      initSelectedList: [],
+      options: {
+        mouseWheel: true
+      }
     }
   },
   props: {

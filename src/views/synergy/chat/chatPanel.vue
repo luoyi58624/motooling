@@ -1,16 +1,16 @@
 <template>
   <div class="chat-panel">
-    <nav>瓦拉西</nav>
+    <nav>{{chatTargetName}}<div class="add-member"></div></nav>
     <div class="chat-content">
       <div class="talk-wrapper">
         <div class="talk-content" ref="talkContent">
           <div class="talker" v-for="item in recordList" :key="item.id">
-            <div :class="uid == item.data.senderId?'my-content':'others-content'" v-if="item.data.contentType === 1">
-              <div class="talker-name">{{item.data.username}}</div>
-              <div class="talker-info">{{item.data.content}}</div>
+            <div :class="uid == item.senderId?'my-content':'others-content'" v-if="item.contentType === 1">
+              <div class="talker-name">{{item.username}}</div>
+              <div class="talker-info">{{item.content}}</div>
             </div>
-            <div :class="uid == item.data.senderId?'my-content':'others-content'" v-if="item.data.contentType === 5">
-              <div class="sys-notifacation"><span>{{item.data.content}}</span></div>
+            <div v-if="item.contentType === 5">
+              <div class="sys-notifacation"><span>{{item.content}}</span></div>
             </div>
           </div>
         </div>
@@ -19,8 +19,12 @@
           <div class="enter-message" @click="sendWordMessage(2)">发送</div>
         </div>
       </div>
-      <div class="group-members">
-        <p class="group-members-title">群成员 · 22</p>
+      <div class="group-members" v-show="groupMembers.length > 2">
+        <p class="group-members-title">群成员 · {{groupMembers.length}}</p>
+        <div class="group-members-item" v-for="item in groupMembers" :key="item.uid">
+            <img :src="item.avatar" alt="">
+          <span>{{item.username}}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -39,29 +43,40 @@ export default {
       uid: localStorage.uid,
       mainKeyId: '',
       wordContent: '',
-      recordList: []
+      recordList: [],
+      interval: null
     }
   },
   computed: {
-    // relationType(){
-    //   return this.$router.params.relationType
-    // },
-    // relationId(){
-    //   return this.$router.params.relationId
-    // }
+    relationType () {
+      return this.$route.query.relationType
+    },
+    relationId () {
+      return this.$route.query.relationId
+    },
+    groupId () {
+      return this.$route.query.groupId
+    },
+    chatTargetName () {
+      return this.$store.state.chatTargetName
+    },
+    groupMembers () {
+      return this.$store.state.groupMembers
+    }
   },
   beforeRouteUpdate (to, from, next) {
-    console.log('enter')
-    // this.init().then(() => {
-    //   this.loadMoreRecordList()
-    // })
     next()
-    // this.loadMoreRecordList()
+    this.isClose = true
+    this.socket.close()
+    this.init().then(() => {
+      this.$refs.talkContent.scrollTop = 9999
+    })
   },
-  async mounted () {
+  mounted () {
     this.imurl = localStorage.imurl
-    await this.init()
-    this.loadMoreRecordList()
+    this.init().then(() => {
+      this.$refs.talkContent.scrollTop = 9999
+    })
     this.$refs.talkContent.addEventListener('scroll', this.loadMoreRecordList)
   },
   beforeDestroy () {
@@ -74,14 +89,18 @@ export default {
   methods: {
     async init () {
       await getOpenSynergy({
-        relationType: this.$route.query.relationType,
-        // relationId: 2
-        groupId: this.$route.query.groupId
+        relationType: this.relationType,
+        relationId: this.relationId,
+        groupId: this.groupId
       }).then(res => {
-        console.log(res.recordList)
+        console.log('recordList', res)
+        this.isClose = false
         this.synergyGroup = res.synergyGroup
-        this.recordList = res.recordList.reverse()
-        this.mainKeyId = res.recordList[0].data.id
+        let recordList = res.recordList.reverse()
+        this.recordList = recordList.map(item => {
+          return item.data
+        })
+        this.mainKeyId = res.recordList[0] && res.recordList[0].data.id
         this.im()
       })
     },
@@ -111,23 +130,10 @@ export default {
     },
     websocketonopen () {
       console.log('连接成功')
-      let that = this
-      let heartCheck = {
-        timeout: 10000,
-        timeoutObj: null,
-        reset: function () {
-          clearInterval(this.timeoutObj)
-          return this
-        },
-        start: function () {
-          this.timeoutObj = setInterval(() => {
-            console.log('ping')
-            that.sendMessage(1)
-          }, this.timeout)
-        }
-
-      }
-      heartCheck.reset().start()
+      this.interval = setInterval(() => {
+        console.log('ping')
+        this.sendMessage(1)
+      }, 10000)
     },
     websocketonerror () {
       console.log('link occur error')
@@ -142,19 +148,27 @@ export default {
       if (this.isClose === false) {
         this.im()
       } else {
-        this.websocketonopen.heartCheck.reset()
+        console.log('清除定时器')
+        clearInterval(this.interval)
       }
     },
     receiveMessage (message) {
       console.log(message)
-      let _message = [{ data: { ...message.data, username: localStorage.username } }]
-      this.recordList = this.recordList.concat(_message)
+      if (message.responseType === '666666') {
+        this.recordList.push(message.data)
+        let responseServer = Object.assign({}, message)
+        responseServer.requestType = '555555'
+        this.sendMessage(3, responseServer)
+      } else {
+        let _message = [{ ...message.data, username: localStorage.username }]
+        this.recordList = this.recordList.concat(_message)
+      }
       this.$nextTick(() => {
         this.$refs.talkContent.scrollTop = 9999
       })
     },
     // 发送消息
-    sendMessage (type) {
+    sendMessage (type, data) {
       let message = {
         requestType: 'h5',
         serialNumber: 'h5' + shortid.generate(),
@@ -175,6 +189,9 @@ export default {
       }
       if (type === 2) {
         message.data.content = this.wordContent
+      }
+      if (type === 3) {
+        message = data
       }
       if (this.socket.readyState === 1) {
         this.socket.send(JSON.stringify(
@@ -202,7 +219,7 @@ export default {
     loadMoreRecordList () {
       if (this.$refs.talkContent.scrollTop === 0) {
         this.getRecordList()
-        this.$refs.talkContent.scrollTo(0, 100)
+        this.$refs.talkContent.scrollTo(0, 300)
       }
     }
   }
@@ -221,8 +238,17 @@ border-radius: 3px;
 background: rgba(159, 162, 169);
 }
 .chat-panel {
+  position: relative;
   height: 100%;
   background-color: #fff;
+  .add-member {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    // background: url("../../../assets/add-member.png") no-repeat cover;
+  }
 }
 nav{
   height: 59px;
@@ -243,6 +269,9 @@ nav{
       overflow-y: auto;
       .talker {
         font-size: 14px;
+      }
+      .talker-name {
+        padding-top: 8px;
       }
       .talker-info {
           background-color: #dee0e3;
@@ -303,6 +332,18 @@ nav{
     border-left: 1px solid #dadcdf;
     box-sizing: border-box;
     padding: 10px;
+    .group-members-item {
+      margin-top: 8px;
+        img{
+          width:15px;
+          height:15px;
+          vertical-align:middle;
+          background-color:#ccc
+        }
+      span {
+        padding-left: 5px;
+      }
+    }
   }
 }
 </style>

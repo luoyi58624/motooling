@@ -25,7 +25,9 @@ export default new Vuex.Store({
     wuliaoList: [],
     wxSignUrl: '', // 调用微信jssdk接口所需要的url地址
     // 群成员
-    groupMembers: []
+    groupMembers: [],
+    // 当前聊天对象
+    chatTargetName: ''
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -67,6 +69,9 @@ export default new Vuex.Store({
     // 群成员
     groupMembers (state, data) {
       state.groupMembers = data
+    },
+    setChatTargetName (state, name) {
+      state.chatTargetName = name
     }
   },
   getters: {
