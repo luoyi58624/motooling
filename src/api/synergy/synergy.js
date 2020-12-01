@@ -66,6 +66,20 @@ export function synergyGroupMember (params) {
   })
 }
 
+// 删除群成员
+export function deleteGroupMember (params) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL() + '/mtH5/synergy/delGroupMember',
+    method: 'post',
+    data
+  })
+}
 // 设置已读接口
 export function synergySetUpRead (params) {
   const data = {
@@ -172,6 +186,69 @@ export function getNewsList (params = {}) {
 
   return request({
     url: WEBURL() + '/mtH5/synergy/newsList',
+    method: 'post',
+    data
+  })
+}
+
+// 退出群
+export function signOutGroup (params = {}) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+
+  return request({
+    url: WEBURL() + '/mtH5/synergy/signOutGroup',
+    method: 'post',
+    data
+  })
+}
+
+// 清楚聊天记录
+export function clearChatRecords (params = {}) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+
+  return request({
+    url: WEBURL() + '/mtH5/synergy/cleanGroupRecord',
+    method: 'post',
+    data
+  })
+}
+
+// 清楚聊天记录
+export function updateGroupInfo (params = {}) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+
+  return request({
+    url: WEBURL() + '/mtH5/synergy/updateGroupInfo',
+    method: 'post',
+    data
+  })
+}
+
+// 设置已读
+export function alreadyRead (params) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL() + '/mtH5/synergy/setUpRead',
     method: 'post',
     data
   })

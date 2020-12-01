@@ -24,10 +24,10 @@ export default new Vuex.Store({
     // 对部门发料
     wuliaoList: [],
     wxSignUrl: '', // 调用微信jssdk接口所需要的url地址
-    // 群成员
-    groupMembers: [],
     // 当前聊天对象
-    chatTargetName: ''
+    chatTargetInfo: {},
+    newsList: []
+    // group_id: null
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -66,13 +66,26 @@ export default new Vuex.Store({
       }
       state.wxSignUrl = wxSignUrl
     },
-    // 群成员
-    groupMembers (state, data) {
-      state.groupMembers = data
+    setChatTargetInfo (state, data) {
+      state.chatTargetInfo = data
     },
-    setChatTargetName (state, name) {
-      state.chatTargetName = name
+    SET_NEWS_LIST (state, list) {
+      state.newsList = list
     }
+    // EXIT_GROUP (state, id) {
+    //   state.group_id = id
+    // }
+  },
+  actions: {
+    getNewGroupMember ({ commit }, data) {
+      commit('changeUserSelectedList', data)
+    },
+    newsList ({ commit }, list) {
+      commit('SET_NEWS_LIST', list)
+    }
+    // exitgroup ({ commit }, id) {
+    //   commit('EXIT_GROUP', id)
+    // }
   },
   getters: {
     getWechatSignUrl: state => state.wxSignUrl

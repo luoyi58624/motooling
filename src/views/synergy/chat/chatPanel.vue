@@ -1,13 +1,22 @@
 <template>
   <div class="chat-panel">
-    <nav>{{chatTargetName}}<div class="add-member"></div></nav>
+    <nav>
+      <div class="chatting-name">
+        <input type="text" v-if="chattingTarget.type==666" v-model="chattingTarget.name" @blur="setGroupName($event.target.value)">
+        <span v-else>{{chattingTarget.name}}</span>
+      </div>
+      <div class="add-member" v-if="chattingTarget.type == 666" @click="$emit('add-user',true)"></div>
+    </nav>
     <div class="chat-content">
       <div class="talk-wrapper">
         <div class="talk-content" ref="talkContent">
-          <div class="talker" v-for="item in recordList" :key="item.id">
-            <div :class="uid == item.senderId?'my-content':'others-content'" v-if="item.contentType === 1">
+          <div v-for="(item,index) in recordList" :key="index">
+            <div :class="uid == item.senderId?'my-content':'others-content'" v-if="item.contentType !== 5">
               <div class="talker-name">{{item.username}}</div>
-              <div class="talker-info">{{item.content}}</div>
+              <div class="word-message message" v-if="item.contentType === 1">{{item.content}}</div>
+              <div class="image-message message" v-else-if="item.contentType === 2" @dblclick="showImagePreview(fileAddressFormatFunc(item.content))">
+                <img :src="fileAddressFormatFunc(item.smallImg)" alt="">
+              </div>
             </div>
             <div v-if="item.contentType === 5">
               <div class="sys-notifacation"><span>{{item.content}}</span></div>
@@ -19,11 +28,16 @@
           <div class="enter-message" @click="sendWordMessage(2)">发送</div>
         </div>
       </div>
-      <div class="group-members" v-show="groupMembers.length > 2">
-        <p class="group-members-title">群成员 · {{groupMembers.length}}</p>
-        <div class="group-members-item" v-for="item in groupMembers" :key="item.uid">
+      <div class="group-members" v-if="chattingTarget.type === 666" >
+        <p class="group-members-title">群成员 · {{groupMember.length}}</p>
+        <div class="group-members-item" v-for="item in groupMember" :key="item.uid" @click.right="handleGroupMember(item,$event)">
             <img :src="item.avatar" alt="">
-          <span>{{item.username}}</span>
+          <span v-if="item.memberType===1">{{item.username}} · 群主</span>
+          <span v-else>{{item.username}}</span>
+          <div class="popover" v-if="item.uid === selectedGroupMember" v-clickoutside="hiden">
+            <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
+            <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">移出群聊</p>
+          </div>
         </div>
       </div>
     </div>
@@ -31,49 +45,73 @@
 </template>
 
 <script>
-import { getOpenSynergy, synergyRecordPage } from '@/api/synergy/synergy.js'
+import { fileAddressFormat } from '@/utils/utils.js'
 import shortid from 'shortid'
+import {
+  getOpenSynergy,
+  synergyRecordPage,
+  deleteGroupMember,
+  updateGroupInfo,
+  getNewsList,
+  alreadyRead
+} from '@/api/synergy/synergy.js'
+import clickoutside from '@/utils/clickoutside'
 export default {
+  directives: { clickoutside },
+  props: {
+    invitedMembers: {
+      type: String,
+      default: ''
+    },
+    invidedMembersInfo: {
+      type: Array,
+      default: () => []
+    }
+  },
   data () {
     return {
       isClose: false,
       companyId: localStorage.companyId,
+      imurl: localStorage.imurl,
       socket: {},
       synergyGroup: {},
       uid: localStorage.uid,
       mainKeyId: '',
       wordContent: '',
       recordList: [],
-      interval: null
+      value: '',
+      interval: null,
+      selectedGroupMember: null,
+      groupOwnerUid: null,
+      chattingTarget: {},
+      groupMember: [],
+      noMoreRecords: false
+    }
+  },
+  watch: {
+    invitedMembers (newVal) {
+      this.sendMessage(2, { contentType: 5, content: `${localStorage.username}邀请${newVal}加入群聊` })
+    },
+    invidedMembersInfo (val) {
+      this.groupMember = this.groupMember.concat(val)
     }
   },
   computed: {
-    relationType () {
-      return this.$route.query.relationType
-    },
-    relationId () {
-      return this.$route.query.relationId
-    },
-    groupId () {
-      return this.$route.query.groupId
-    },
-    chatTargetName () {
-      return this.$store.state.chatTargetName
-    },
-    groupMembers () {
-      return this.$store.state.groupMembers
+    chatTargetInfo () {
+      return this.$store.state.chatTargetInfo
     }
   },
   beforeRouteUpdate (to, from, next) {
     next()
-    this.isClose = true
-    this.socket.close()
-    this.init().then(() => {
-      this.$refs.talkContent.scrollTop = 9999
-    })
+    if (!from.query.relationId) {
+      this.isClose = true
+      this.socket.close()
+      this.init().then(() => {
+        this.$refs.talkContent.scrollTop = 9999
+      })
+    }
   },
   mounted () {
-    this.imurl = localStorage.imurl
     this.init().then(() => {
       this.$refs.talkContent.scrollTop = 9999
     })
@@ -88,20 +126,45 @@ export default {
   },
   methods: {
     async init () {
+      let uid = this.$route.query.relationId
+      if (uid) {
+        await this.createPrivateChatting(uid)
+      }
       await getOpenSynergy({
-        relationType: this.relationType,
-        relationId: this.relationId,
-        groupId: this.groupId
+        relationType: this.$route.query.relationType,
+        relationId: this.$route.query.ralationId,
+        groupId: this.$route.query.groupId
       }).then(res => {
-        console.log('recordList', res)
         this.isClose = false
+        this.chattingTarget = { name: res.synergyGroup.subject || res.memberList[1].username, type: res.synergyGroup.relationType }
+        let memberList = JSON.parse(JSON.stringify(res.memberList))
+        this.groupMember = memberList
+        this.groupOwnerUid = memberList[0].uid
+        this.$store.commit('changeUserSelectedList', res.memberList)
+
         this.synergyGroup = res.synergyGroup
         let recordList = res.recordList.reverse()
+
+        let recordLen = recordList['length'] - 1
+        if (recordLen >= 0) {
+          alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
+            getNewsList().then(res => {
+              this.$store.dispatch('newsList', res.newsList)
+            })
+          })
+        }
+
         this.recordList = recordList.map(item => {
           return item.data
         })
         this.mainKeyId = res.recordList[0] && res.recordList[0].data.id
         this.im()
+      }).catch(err => {
+        this.$createToast({
+          time: 2000,
+          txt: err.msg || '互动消息开启失败,请检查网络',
+          type: 'error'
+        }).show()
       })
     },
     im () {
@@ -129,53 +192,59 @@ export default {
       }
     },
     websocketonopen () {
-      console.log('连接成功')
       this.interval = setInterval(() => {
-        console.log('ping')
         this.sendMessage(1)
       }, 10000)
     },
     websocketonerror () {
-      console.log('link occur error')
+      this.isEnable = false
+      this.$createToast({
+        time: 2000,
+        txt: '网络连接发生错误，请检查网络',
+        type: 'warn'
+      }).show()
     },
     websocketonmessage (e) {
-      console.log('接收消息')
       this.receiveMessage(JSON.parse(e.data))
-      this.wordContent = ''
     },
     websocketclose () {
-      console.log('连接已关闭')
       if (this.isClose === false) {
         this.im()
       } else {
-        console.log('清除定时器')
         clearInterval(this.interval)
       }
     },
-    receiveMessage (message) {
-      console.log(message)
-      if (message.responseType === '666666') {
-        this.recordList.push(message.data)
-        let responseServer = Object.assign({}, message)
-        responseServer.requestType = '555555'
-        this.sendMessage(3, responseServer)
+    // 设置群名称
+    setGroupName (name) {
+      if (name === '') {
+        this.$createToast({
+          time: 2000,
+          txt: '群名不能为空',
+          type: 'error'
+        }).show()
       } else {
-        let _message = [{ ...message.data, username: localStorage.username }]
-        this.recordList = this.recordList.concat(_message)
+        updateGroupInfo({
+          groupId: this.$route.query.groupId,
+          subject: name
+        }).then(res => {
+          this.sendMessage(2, { contentType: 5, content: `${localStorage.username}修改群名为"${name}"` })
+          getNewsList().then(res => {
+            this.$store.dispatch('newsList', res.newsList)
+          })
+        })
       }
-      this.$nextTick(() => {
-        this.$refs.talkContent.scrollTop = 9999
-      })
     },
-    // 发送消息
-    sendMessage (type, data) {
+    hiden () {
+      this.selectedGroupMember = null
+    },
+    // 发送信息
+    sendMessage (type, { contentType, content, smallImg, duration } = {}, data) {
       let message = {
         requestType: 'h5',
         serialNumber: 'h5' + shortid.generate(),
         data: {
           groupId: this.synergyGroup.id,
-          senderId: this.uid,
-          contentType: 1
+          senderId: this.uid
         }
       }
       if (type === 1) {
@@ -188,7 +257,10 @@ export default {
         }
       }
       if (type === 2) {
-        message.data.content = this.wordContent
+        message.data.contentType = contentType
+        if (content) {
+          message.data.content = content
+        }
       }
       if (type === 3) {
         message = data
@@ -201,60 +273,136 @@ export default {
         this.im()
       }
     },
+    fileAddressFormatFunc (url) {
+      return fileAddressFormat(url)
+    },
+    receiveMessage (message) {
+      if (message.responseType === '666666') { // 服务器主动推送
+        this.recordList.push(message.data)
+        let responseServer = Object.assign({}, message)
+        responseServer.requestType = '555555'
+        this.sendMessage(3, {}, responseServer)
+      } else {
+        let _message = [{ ...message.data, username: localStorage.username }]
+        this.recordList = this.recordList.concat(_message)
+      }
+      this.$nextTick(() => {
+        this.$refs.talkContent.scrollTop = 9999
+      })
+    },
     // 发送文字消息
     sendWordMessage (type) {
-      this.sendMessage(type)
+      if (this.wordContent.trim() !== '') {
+        this.sendMessage(2, {
+          contentType: 1,
+          content: this.wordContent
+        })
+        this.wordContent = ''
+      } else {
+        this.$createToast({
+          time: 2000,
+          txt: '请输入要发送的内容',
+          type: 'error'
+        }).show()
+      }
     },
     // 获取聊天记录
     getRecordList () {
-      synergyRecordPage({ pageSize: 10, id: this.mainKeyId, groupId: this.synergyGroup.id }).then(res => {
+      synergyRecordPage({ id: this.mainKeyId, groupId: this.$route.query.groupId }).then(res => {
         const result = res.recordList
-        console.log('chatRecord', res.recordList)
         if (result.length !== 0) {
           this.mainKeyId = result[0].data.id
-          this.recordList = result.reverse().concat(this.recordList)
+          let recordList = result.reverse()
+          let _recordList = recordList.map(item => item.data)
+          this.recordList = _recordList.concat(this.recordList)
+        }
+        if (result.length < 16) {
+          this.noMoreRecords = true
         }
       })
     },
     loadMoreRecordList () {
-      if (this.$refs.talkContent.scrollTop === 0) {
-        this.getRecordList()
-        this.$refs.talkContent.scrollTo(0, 300)
+      if (this.noMoreRecords) {
+        return false
+      } else {
+        if (this.$refs.talkContent.scrollTop === 0) {
+          this.getRecordList()
+          this.$refs.talkContent.scrollTo(0, 300)
+        }
       }
+    },
+    // 图片预览
+    showImagePreview (url) {
+      this.$createImagePreview({
+        imgs: [url]
+      }).show()
+    },
+    // 对群成员的操作
+    handleGroupMember (item, event) {
+      if (event) {
+        event.preventDefault()
+      }
+      this.selectedGroupMember = item.uid
+    },
+    // 移除群聊
+    removeFromGroup (member) {
+      deleteGroupMember({
+        groupId: this.$route.query.groupId,
+        memberList: [{ uid: member.uid }]
+      }).then(items => {
+        const deletedMember = items.delUserList[0]
+        this.sendMessage(2, { contentType: 5, content: `${this.groupMember[0].username}将${deletedMember.username}移出了群聊` })
+        let groupMembers = this.groupMember.filter(item => {
+          return item.uid !== deletedMember.uid
+        })
+
+        this.groupMember = groupMembers
+        this.$store.dispatch('getNewGroupMember', groupMembers)
+      })
+    },
+    // 选择群组中的某人创建聊天
+    async createPrivateChatting (uid) {
+      await getOpenSynergy({
+        relationId: uid,
+        relationType: 66
+      }).then(res => {
+        this.selectedGroupMember = null
+        this.$router.push({
+          path: 'chatPanel',
+          query: {
+            groupId: res.synergyGroup.id,
+            relationType: res.synergyGroup.relationType
+          }
+        })
+        getNewsList().then(res => {
+          this.$store.dispatch('newsList', res.newsList)
+        })
+      })
     }
   }
 }
 </script>
 
 <style scoped lang="less">
-/* 滚动条 */
-::-webkit-scrollbar {
-width: 6px;
-height: 6px;
-}
-/* 滚动条滑块 */
-::-webkit-scrollbar-thumb {
-border-radius: 3px;
-background: rgba(159, 162, 169);
-}
+@import url('./common.less');
 .chat-panel {
-  position: relative;
   height: 100%;
   background-color: #fff;
-  .add-member {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    width: 20px;
-    height: 20px;
-    // background: url("../../../assets/add-member.png") no-repeat cover;
-  }
 }
 nav{
+  position: relative;
   height: 59px;
-  line-height: 60px;
+  line-height: 59px;
   border-bottom: 1px solid #dadcdf;
   padding-left: 18px;
+    .add-member {
+    position: absolute;
+    bottom: 8px;
+    right: 15px;
+    width: 20px;
+    height: 20px;
+    background: url("../../../assets/add-member.png") no-repeat center/cover;
+  }
 }
 .chat-content {
   width: 100%;
@@ -265,18 +413,23 @@ nav{
     height: 100%;
     width: calc(100% - 122px);
     .talk-content {
+      font-size: 14px;
       height: calc(100% - 155px);
+      // overflow: hidden;
       overflow-y: auto;
-      .talker {
-        font-size: 14px;
-      }
+      // &:hover {
+      //   margin-right: -6px;
+      //   overflow-y: auto;
+      // }
       .talker-name {
         padding-top: 8px;
       }
-      .talker-info {
+      .message {
+          margin: 8px 0;
+      }
+      .word-message {
           background-color: #dee0e3;
           padding: 8px;
-          margin: 8px 0;
           border-radius: 5px;
         }
       .my-content {
@@ -285,8 +438,13 @@ nav{
         align-items: flex-end;
         margin-right: 18px;
       }
+      .others-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 18px;
+      }
       .sys-notifacation {
-        max-width: 80%;
         text-align: center;
         margin: 8px auto;
         span{
@@ -294,12 +452,6 @@ nav{
           padding: 8px;
           background-color: #e4e7eb;
         }
-      }
-      .others-content {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-left: 18px;
       }
     }
     .input-area {
@@ -331,9 +483,13 @@ nav{
     font-size: 12px;
     border-left: 1px solid #dadcdf;
     box-sizing: border-box;
-    padding: 10px;
+    padding-top: 10px;
+    .group-members-title {
+      padding-left: 10px;
+    }
     .group-members-item {
-      margin-top: 8px;
+      position: relative;
+      padding: 4px 0 4px 10px ;
         img{
           width:15px;
           height:15px;
@@ -342,6 +498,9 @@ nav{
         }
       span {
         padding-left: 5px;
+      }
+      &:hover{
+        background-color: #e6e8eb;
       }
     }
   }
