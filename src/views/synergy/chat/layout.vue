@@ -1,48 +1,90 @@
 <template>
   <div class="layout">
-    <div class="message-list">
-      <message-list @add-user="show = true" />
+    <div class="aside">
+      <message-list @add-user="createNewChatting" />
     </div>
     <div class="chat-panel">
       <transition>
         <keep-alive>
-          <router-view></router-view>
+          <router-view @add-user="addGroupMember" :invitedMembers="invitedMembers" :invidedMembersInfo="invidedMembersInfo"></router-view>
         </keep-alive>
       </transition>
     </div>
     <div class="add-user" v-show="show">
-      <UserSelect @confirm="confirm" :visible.sync="show" @cancel="show=false" />
+      <UserSelect @confirm="confirm" :visible.sync="show" @cancel="cancel" />
     </div>
   </div>
 </template>
 
 <script>
-// import chatPanel from './chatPanel'
-import { getOpenSynergy } from '@/api/synergy/synergy.js'
+import { getOpenSynergy, synergyAddMember, getNewsList } from '@/api/synergy/synergy.js'
 import UserSelect from '@/components/UserSelect.vue'
 import messageList from './messageList'
 export default {
   components: {
-    // chatPanel,
     messageList,
     UserSelect
   },
   data () {
     return {
-      show: false
+      show: false,
+      isGroup: false,
+      inviterId: localStorage.uid,
+      addedMembers: [],
+      invitedMembers: '',
+      initMembers: [],
+      invidedMembersInfo: []
+    }
+  },
+  computed: {
+    userSelectedList () {
+      return this.$store.state.userSelectedList
     }
   },
   methods: {
+    // 创建新的聊天
+    createNewChatting () {
+      this.show = true
+      this.initMembers = JSON.parse(JSON.stringify(this.userSelectedList))
+      this.$store.dispatch('getNewGroupMember', [])
+    },
     confirm () {
-      // userSelectedList
       this.show = false
-      let userCount = this.$store.state.userSelectedList
-      let parameter = this.shiftParameter(userCount)
-      getOpenSynergy(
-        parameter
-      ).then(res => {
-        console.log('userlist', res)
-      })
+      if (this.isGroup) {
+        this.isGroup = false
+        let data = {
+          groupId: this.$route.query.groupId,
+          inviterId: this.inviterId,
+          uList: this.userSelectedList.map(item => ({ uid: item.uid }))
+        }
+        synergyAddMember(data).then(res => {
+          this.invitedMembers = res.successList.map(item => item.username).join('、')
+          this.invidedMembersInfo = res.successList
+        })
+      } else {
+        let parameter = this.shiftParameter(this.userSelectedList)
+        getOpenSynergy(
+          parameter
+        ).then(res => {
+          this.$router.push({
+            path: 'chatPanel',
+            query: {
+              groupId: res.synergyGroup.id,
+              relationType: res.synergyGroup.relationType
+            }
+          })
+          getNewsList().then(res => {
+            this.$store.dispatch('newsList', res.newsList)
+          })
+        })
+      }
+    },
+    cancel () {
+      this.show = false
+      if (!this.isGroup) {
+        this.$store.dispatch('getNewGroupMember', this.initMembers)
+      }
+      this.isGroup = false
     },
     shiftParameter (data) {
       let relationType = ''
@@ -63,6 +105,11 @@ export default {
           relationType, uList
         }
       }
+    },
+    // 添加群成员处理
+    addGroupMember (isGroup) {
+      this.show = true
+      this.isGroup = isGroup
     }
   }
 }
@@ -74,10 +121,9 @@ export default {
   height: 100%;
   font-size: 16px;
   display: flex;
-  .message-list {
+  .aside {
     width: 260px;
     flex: 0 0 auto;
-    overflow-y: auto;
     background-color: #e6e8eb;
   }
   .chat-panel {

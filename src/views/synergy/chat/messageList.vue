@@ -3,63 +3,168 @@
     <div class="search">
       <div class="enter-keyword">
         <van-search v-model="value" background="#e6e8eb" placeholder="搜索" />
-        <img src="../../../assets/icon-add.png" alt="" @click="$emit('add-user')">
+        <img :src="require('@/assets/icon-add.png')" alt="" @click="$emit('add-user')">
       </div>
     </div>
     <div class="message-list">
-        <router-link class="message-list-item" tag='div' v-for="item in newsList" :key="item.groupId"
+        <router-link class="message-list-wrapper" tag='div' v-for="item in newsList" :key="item.groupId"
         :to="{path:'chatPanel', query:{groupId:item.groupId,relationType:item.relationType}}">
-        <div @click="shiftChatTarget(item)">
-          <div><img :src="item.avatar" alt=""></div>
+        <div class="message-list-item" @click.right="handleGroup(item,$event)" v-clickoutside="visible">
+          <div class="file-picture">
+            <img :src="item.avatar" v-if="item.relationType===66">
+            <img :src="require('@/assets/group.png')" v-else>
+            <div class="no-read-count" v-if="item.notReadCount <= 99 && item.notReadCount > 0">{{item.notReadCount}}</div>
+            <div class="no-read-count" v-else-if="item.notReadCount !== 0">...</div>
+          </div>
           <div class="user-name"><p>{{item.username || item.subject}}</p>
           <p>{{item.newMsg}}</p></div>
+        </div>
+        <div class="popover" v-if="item.groupId === groupId && item.relationType === 666">
+          <p @click.stop="clearChattingRecords(item)">清空聊天记录</p>
+          <p @click.stop="signOutGroup(item.groupId)">退出群聊</p>
         </div>
         </router-link>
     </div>
   </div>
 </template>
 <script>
-import { getNewsList } from '@/api/synergy/synergy.js'
+import {
+  getNewsList,
+  signOutGroup,
+  clearChatRecords,
+  getOpenSynergy
+} from '@/api/synergy/synergy.js'
+import clickoutside from '@/utils/clickoutside'
+
 export default {
+  directives: { clickoutside },
   data () {
     return {
+      socket: {},
       value: '',
-      newsList: []
+      groupId: null,
+      group_id: null,
+      interval: null,
+      isClose: false,
+      signOut: '',
+      imurl: localStorage.imurl,
+      companyId: localStorage.companyId,
+      uid: localStorage.uid
+    }
+  },
+  computed: {
+    newsList () {
+      return this.$store.state.newsList
     }
   },
   mounted () {
     getNewsList().then(res => {
-      this.newsList = res.newsList
-      console.log('newsList', this.newsList)
-      // this.$store.commit(groupMembers,)
+      this.$store.dispatch('newsList', res.newsList)
+    }).catch(err => {
+      this.$createToast({
+        time: 2000,
+        txt: err.msg || '获取消息列表失败',
+        type: 'error'
+      }).show()
     })
+    this.im()
+  },
+  beforeDestroy () {
+    this.isClose = true
+    this.socket.close()
   },
   methods: {
-    shiftChatTarget (item) {
-      console.log({ members: item })
-      let currentGroupMembers = item.memberList
-      let chatTargetName = item.subject || item.username
-      this.$store.commit('setChatTargetName', chatTargetName)
-      this.$store.commit('groupMembers', currentGroupMembers)
+    im () {
+      let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
+      if (this.isClose === false || (this.socket && this.socket.readyState === 3)) {
+        this.socket = new WebSocket(`${prefix}${this.imurl}/MtMsgWebSocket/${this.companyId}/H5/${this.uid}`)
+        this.socket.onopen = () => {
+          this.interval = setInterval(() => {
+            if (this.socket.readyState === 1) {
+              this.socket.send(JSON.stringify({ requestType: 'ping', serialNumber: null }))
+            } else {
+              this.im()
+            }
+          }, 10000)
+        }
+        this.socket.onclose = () => {
+          if (this.isClose === false) {
+            this.im()
+          } else {
+            clearInterval(this.socket)
+          }
+        }
+        this.socket.onmessage = (msg) => {
+          let receivedMessage = JSON.parse(msg.data)
+          this.socket.send(JSON.stringify({
+            requestType: '555555',
+            serialNumber: `${receivedMessage.serialNumber}`
+          }))
+          getNewsList().then(res => {
+            this.$store.dispatch('newsList', res.newsList)
+          }).catch(err => {
+            this.$createToast({
+              time: 2000,
+              txt: err.msg || '获取消息列表失败',
+              type: 'error'
+            }).show()
+          })
+        }
+      }
+    },
+    handleGroup (data, e) {
+      if (e) {
+        e.preventDefault()
+      }
+      this.groupId = data.groupId
+      this.group_id = data.groupId
+    },
+    visible () {
+      this.groupId = null
+    },
+    // 清空聊天记录
+    clearChattingRecords (data) {
+      getOpenSynergy({ relationType: data.relationType, groupId: data.groupId }).then(item => {
+        return item.recordList[0].data.id
+      })
+        .then(key => {
+          clearChatRecords({ groupId: data.groupId, lastRecordId: `${key}` }).then((item) => {
+            this.groupId = null
+            getNewsList().then(res => {
+              this.$store.dispatch('newsList', res.newsList)
+            })
+          })
+        })
+    },
+    // 退出群聊
+    signOutGroup (groupId) {
+      signOutGroup({ groupId }).then(item => {
+        this.groupId = null
+        getNewsList().then(res => {
+          this.$store.dispatch('newsList', res.newsList)
+        })
+      })
     }
   }
 }
 </script>
 
 <style scoped lang="less">
+@import url('./common.less');
 .router-link-exact-active {
   background-color: #c3c5c7;
 }
 .list {
   position: relative;
-  width: 100%;
-  box-sizing: border-box;
+  height: 100%;
+  overflow: hidden;
   background-color: #e6e8eb;
   .search {
     position: fixed;
     left: 0;
     top: 0;
     height: 60px;
+    background-color: #e6e8eb;
     .enter-keyword {
       display: flex;
       align-items: center;
@@ -73,16 +178,34 @@ export default {
 }
 .message-list {
   margin-top: 60px;
-    .message-list-item{
-
+  height: calc(100% - 60px);
+  overflow-y: auto;
+    .message-list-wrapper{
+      position: relative;
       height: 64px;
       font-size: 14px;
       padding: 12px 0 12px 12px ;
       box-sizing: border-box;
       border-bottom: 1px solid #dadcdf;
-      & > div {
+      .message-list-item {
       display: flex;
       flex-wrap: nowrap;
+      .file-picture {
+        position: relative;
+        .no-read-count {
+          position: absolute;
+          right: -8px;
+          top: -8px;
+          width: 20px;
+          height: 20px;
+          text-align: center;
+          line-height: 20px;
+          border-radius: 50%;
+          background-color: #fa5151;
+          font-size: 12px;
+          color: #fff;
+        }
+      }
       }
       img {
         width: 40px;
@@ -96,10 +219,10 @@ export default {
       justify-content: space-between;
       height: 40px;
       p:last-child {
-        width: 150px; //必须指定宽度
-        text-overflow: ellipsis; //超出部分显示为省略号
-        overflow: hidden; //隐藏超出部分
-        white-space: nowrap; //不换行
+        width: 150px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
         color: #8c8d8f;
       }
     }
