@@ -64,36 +64,38 @@ async function getwechat () {
   })
   return config
 }
-getwechat().then(config => {
-  wx.config(config)
-})
 
-Vue.prototype.getwechat = getwechat
 Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading
 Vue.prototype.hideLoading = hideLoading
 Vue.prototype.showDialog = showDialog
 
-wx.ready(function () {
-  wx.updateAppMessageShareData({
-    title: document.title, // 分享标题
-    desc: 'motooling-智造未来', // 分享描述
-    link: location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-    imgUrl: 'http://wechat.motooling.com/mthtml/img/logo.36bf0d3c.png', // 分享图标
-    success: function () {
-      // 设置成功
-    }
+if (/MicroMessenger/.test(window.navigator.userAgent)) {
+  getwechat().then(config => {
+    wx.config(config)
   })
-  wx.updateTimelineShareData({
-    title: document.title, // 分享标题
-    desc: 'motooling-智造未来', // 分享描述
-    link: location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-    imgUrl: 'http://wechat.motooling.com/mthtml/img/logo.36bf0d3c.png', // 分享图标
-    success: function () {
+  Vue.prototype.getwechat = getwechat
+  wx.ready(function () {
+    wx.updateAppMessageShareData({
+      title: document.title, // 分享标题
+      desc: 'motooling-智造未来', // 分享描述
+      link: location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+      imgUrl: 'http://wechat.motooling.com/mthtml/img/logo.36bf0d3c.png', // 分享图标
+      success: function () {
       // 设置成功
-    }
+      }
+    })
+    wx.updateTimelineShareData({
+      title: document.title, // 分享标题
+      desc: 'motooling-智造未来', // 分享描述
+      link: location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+      imgUrl: 'http://wechat.motooling.com/mthtml/img/logo.36bf0d3c.png', // 分享图标
+      success: function () {
+      // 设置成功
+      }
+    })
   })
-})
+}
 new Vue({
   router,
   store,
