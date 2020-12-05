@@ -253,3 +253,18 @@ export function alreadyRead (params) {
     data
   })
 }
+
+// 发送消息
+export function sendMessage (params) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL() + '/mtH5/synergy/pushRecord',
+    method: 'post',
+    data
+  })
+}

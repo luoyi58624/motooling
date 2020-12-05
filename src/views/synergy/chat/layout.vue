@@ -76,6 +76,12 @@ export default {
           getNewsList().then(res => {
             this.$store.dispatch('newsList', res.newsList)
           })
+        }).catch(err => {
+          this.$createToast({
+            time: 2000,
+            txt: err.msg || '互动消息开启失败,请检查网络',
+            type: 'error'
+          }).show()
         })
       }
     },

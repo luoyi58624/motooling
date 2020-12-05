@@ -25,7 +25,7 @@
         </div>
         <div class="input-area">
           <textarea v-model="wordContent"></textarea>
-          <div class="enter-message" @click="sendWordMessage(2)">发送</div>
+          <div class="enter-message" @click="sendWordMessage">发送</div>
         </div>
       </div>
       <div class="group-members" v-if="chattingTarget.type === 666" >
@@ -53,7 +53,8 @@ import {
   deleteGroupMember,
   updateGroupInfo,
   getNewsList,
-  alreadyRead
+  alreadyRead,
+  sendMessage
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
 export default {
@@ -112,9 +113,6 @@ export default {
     }
   },
   mounted () {
-    this.init().then(() => {
-      this.$refs.talkContent.scrollTop = 9999
-    })
     this.$refs.talkContent.addEventListener('scroll', this.loadMoreRecordList)
   },
   beforeDestroy () {
@@ -132,9 +130,9 @@ export default {
       }
       await getOpenSynergy({
         relationType: this.$route.query.relationType,
-        relationId: this.$route.query.ralationId,
         groupId: this.$route.query.groupId
       }).then(res => {
+        console.log('res', res)
         this.isClose = false
         this.chattingTarget = { name: res.synergyGroup.subject || res.memberList[1].username, type: res.synergyGroup.relationType }
         let memberList = JSON.parse(JSON.stringify(res.memberList))
@@ -145,14 +143,14 @@ export default {
         this.synergyGroup = res.synergyGroup
         let recordList = res.recordList.reverse()
 
-        let recordLen = recordList['length'] - 1
-        if (recordLen >= 0) {
-          alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
-            getNewsList().then(res => {
-              this.$store.dispatch('newsList', res.newsList)
-            })
-          })
-        }
+        // let recordLen = recordList.length - 1
+        // if (recordLen >= 0) {
+        //   alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
+        //     getNewsList().then(res => {
+        //       this.$store.dispatch('newsList', res.newsList)
+        //     })
+        //   })
+        // }
 
         this.recordList = recordList.map(item => {
           return item.data
@@ -160,6 +158,7 @@ export default {
         this.mainKeyId = res.recordList[0] && res.recordList[0].data.id
         this.im()
       }).catch(err => {
+        console.log('请求超时')
         this.$createToast({
           time: 2000,
           txt: err.msg || '互动消息开启失败,请检查网络',
@@ -193,10 +192,15 @@ export default {
     },
     websocketonopen () {
       this.interval = setInterval(() => {
-        this.sendMessage(1)
+        console.log('ping')
+        this.socket.send(JSON.stringify({
+          requestType: 'ping',
+          serialNumber: null,
+          data: {} }))
       }, 10000)
     },
     websocketonerror () {
+      console.log('error')
       this.isEnable = false
       this.$createToast({
         time: 2000,
@@ -238,37 +242,15 @@ export default {
       this.selectedGroupMember = null
     },
     // 发送信息
-    sendMessage (type, { contentType, content, smallImg, duration } = {}, data) {
-      let message = {
-        requestType: 'h5',
-        serialNumber: 'h5' + shortid.generate(),
-        data: {
-          groupId: this.synergyGroup.id,
-          senderId: this.uid
-        }
-      }
-      if (type === 1) {
-        message = {
-          requestType: 'ping',
-          serialNumber: null,
-          data: {
-
-          }
-        }
-      }
-      if (type === 2) {
-        message.data.contentType = contentType
-        if (content) {
-          message.data.content = content
-        }
-      }
-      if (type === 3) {
-        message = data
-      }
+    sendMessage ({ contentType, content, smallImg } = {}) {
       if (this.socket.readyState === 1) {
-        this.socket.send(JSON.stringify(
-          message
-        ))
+        sendMessage({
+          groupId: this.$route.query.groupId,
+          senderId: this.uid,
+          contentType,
+          content,
+          smallImg
+        })
       } else {
         this.im()
       }
@@ -277,6 +259,14 @@ export default {
       return fileAddressFormat(url)
     },
     receiveMessage (message) {
+      if (message.responseType === '666666') {
+        alreadyRead({ lastRecordId: message.data.id, groupId: message.data.groupId }).then(() => {
+          getNewsList().then(res => {
+            this.$store.dispatch('newsList', res.newsList)
+          })
+        })
+      }
+
       if (message.responseType === '666666') { // 服务器主动推送
         this.recordList.push(message.data)
         let responseServer = Object.assign({}, message)
@@ -291,12 +281,24 @@ export default {
       })
     },
     // 发送文字消息
-    sendWordMessage (type) {
+    sendWordMessage () {
       if (this.wordContent.trim() !== '') {
-        this.sendMessage(2, {
-          contentType: 1,
-          content: this.wordContent
-        })
+        if (this.socket.readyState === 1) {
+          sendMessage({
+            groupId: this.$route.query.groupId,
+            senderId: this.uid,
+            contentType: 1,
+            content: this.wordContent
+          }).then(res => {
+            let _message = [{ ...res.data, username: localStorage.username }]
+            this.recordList = this.recordList.concat(_message)
+            this.$nextTick(() => {
+              this.$refs.talkContent.scrollTop = 9999
+            })
+          })
+        } else {
+          this.im()
+        }
         this.wordContent = ''
       } else {
         this.$createToast({
@@ -366,6 +368,7 @@ export default {
         relationId: uid,
         relationType: 66
       }).then(res => {
+        console.log('success')
         this.selectedGroupMember = null
         this.$router.push({
           path: 'chatPanel',
@@ -377,6 +380,13 @@ export default {
         getNewsList().then(res => {
           this.$store.dispatch('newsList', res.newsList)
         })
+      }).catch(err => {
+        console.log('error')
+        this.$createToast({
+          time: 2000,
+          txt: err.msg || '互动消息开启失败,请检查网络',
+          type: 'error'
+        }).show()
       })
     }
   }
@@ -425,12 +435,14 @@ nav{
         padding-top: 8px;
       }
       .message {
-          margin: 8px 0;
+          margin: 8px 0 8px 20px;
       }
       .word-message {
           background-color: #dee0e3;
           padding: 8px;
           border-radius: 5px;
+          user-select: text;
+          white-space: pre-wrap;
         }
       .my-content {
         display: flex;

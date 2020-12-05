@@ -2,7 +2,12 @@
   <div class="list">
     <div class="search">
       <div class="enter-keyword">
-        <van-search v-model="value" background="#e6e8eb" placeholder="搜索" />
+        <van-search
+        v-model="value"
+        background="#e6e8eb"
+        placeholder="搜索"
+        :clearable="false"
+        @input="search"/>
         <img :src="require('@/assets/icon-add.png')" alt="" @click="$emit('add-user')">
       </div>
     </div>
@@ -25,6 +30,20 @@
         </div>
         </router-link>
     </div>
+    <div class="search-contacts" v-show="value">
+      <ul>
+        <li class="message-list-wrapper" v-for="item in contacts" :key="item.groupId" @click="enterChatting(item)">
+          <div class="message-list-item">
+            <div class="file-picture">
+              <img :src="item.avatar" v-if="item.relationType===66">
+              <img :src="require('@/assets/group.png')" v-else>
+            </div>
+            <div class="user-name"><p>{{item.username || item.subject}}</p>
+            <p>{{item.depName}}</p></div>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 <script>
@@ -45,11 +64,13 @@ export default {
       groupId: null,
       group_id: null,
       interval: null,
+      timeout: null,
       isClose: false,
       signOut: '',
       imurl: localStorage.imurl,
       companyId: localStorage.companyId,
-      uid: localStorage.uid
+      uid: localStorage.uid,
+      contacts: []
     }
   },
   computed: {
@@ -144,6 +165,29 @@ export default {
           this.$store.dispatch('newsList', res.newsList)
         })
       })
+    },
+    // 搜索
+    search (e) {
+      if (!e) return
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+        this.timeout = null
+      }
+      this.timeout = setTimeout(() => {
+        getNewsList({ queryValues: e }).then(res => {
+          this.contacts = res.newsList
+        })
+      }, 500)
+    },
+    enterChatting (data) {
+      this.$router.push({
+        path: 'chatPanel',
+        query: {
+          groupId: data.groupId,
+          relationType: data.relationType
+        }
+      })
+      this.value = ''
     }
   }
 }
@@ -159,12 +203,23 @@ export default {
   height: 100%;
   overflow: hidden;
   background-color: #e6e8eb;
+  .search-contacts {
+    position: absolute;
+    top: 47px;
+    left: 12px;
+    width: 210px;
+    border: 1px solid skyblue;
+    & > ul {
+      background-color: #fff;
+    }
+  }
   .search {
     position: fixed;
     left: 0;
     top: 0;
     height: 60px;
     background-color: #e6e8eb;
+
     .enter-keyword {
       display: flex;
       align-items: center;
@@ -180,52 +235,56 @@ export default {
   margin-top: 60px;
   height: calc(100% - 60px);
   overflow-y: auto;
-    .message-list-wrapper{
+}
+.message-list-wrapper{
+  position: relative;
+  height: 64px;
+  font-size: 14px;
+  padding: 12px 0 12px 12px ;
+  box-sizing: border-box;
+  border-bottom: 1px solid #dadcdf;
+  cursor: pointer;
+    &:hover {
+    background-color: #d8ecff;
+  }
+  .message-list-item {
+  display: flex;
+  flex-wrap: nowrap;
+    .file-picture {
       position: relative;
-      height: 64px;
-      font-size: 14px;
-      padding: 12px 0 12px 12px ;
-      box-sizing: border-box;
-      border-bottom: 1px solid #dadcdf;
-      .message-list-item {
-      display: flex;
-      flex-wrap: nowrap;
-      .file-picture {
-        position: relative;
-        .no-read-count {
-          position: absolute;
-          right: -8px;
-          top: -8px;
-          width: 20px;
-          height: 20px;
-          text-align: center;
-          line-height: 20px;
-          border-radius: 50%;
-          background-color: #fa5151;
-          font-size: 12px;
-          color: #fff;
-        }
-      }
-      }
-      img {
-        width: 40px;
-        height: 40px;
-      }
-    .user-name {
-      padding-left: 10px;
-      flex: 0 0 150px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 40px;
-      p:last-child {
-        width: 150px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        color: #8c8d8f;
+      .no-read-count {
+        position: absolute;
+        right: -8px;
+        top: -8px;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        border-radius: 50%;
+        background-color: #fa5151;
+        font-size: 12px;
+        color: #fff;
       }
     }
+  }
+  img {
+    width: 40px;
+    height: 40px;
+  }
+  .user-name {
+    padding-left: 10px;
+    flex: 0 0 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 40px;
+    p:last-child {
+      width: 150px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      color: #8c8d8f;
     }
+  }
 }
 </style>
