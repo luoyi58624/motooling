@@ -24,8 +24,13 @@
           </div>
         </div>
         <div class="input-area">
+<<<<<<< HEAD
+          <textarea v-model="wordContent" @keyup.enter="sendWordMessage"></textarea>
+          <div class="enter-message" @click="sendWordMessage">发送</div>
+=======
           <textarea v-model="wordContent"></textarea>
           <div class="enter-message" @click="sendWordMessage(2)">发送</div>
+>>>>>>> parent of f6a0833... 增加搜索功能、更换发送消息接口
         </div>
       </div>
       <div class="group-members" v-if="chattingTarget.type === 666" >
@@ -53,7 +58,8 @@ import {
   deleteGroupMember,
   updateGroupInfo,
   getNewsList,
-  alreadyRead
+  alreadyRead,
+  sendMessage
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
 export default {
@@ -90,7 +96,7 @@ export default {
   },
   watch: {
     invitedMembers (newVal) {
-      this.sendMessage(2, { contentType: 5, content: `${localStorage.username}邀请${newVal}加入群聊` })
+      this.socketMessage(2, { contentType: 5, content: `${localStorage.username}邀请${newVal}加入群聊` })
     },
     invidedMembersInfo (val) {
       this.groupMember = this.groupMember.concat(val)
@@ -99,6 +105,9 @@ export default {
   computed: {
     chatTargetInfo () {
       return this.$store.state.chatTargetInfo
+    },
+    notReadCount () {
+      return this.$store.state.notReadCount
     }
   },
   beforeRouteUpdate (to, from, next) {
@@ -145,8 +154,8 @@ export default {
         this.synergyGroup = res.synergyGroup
         let recordList = res.recordList.reverse()
 
-        let recordLen = recordList['length'] - 1
-        if (recordLen >= 0) {
+        let recordLen = recordList.length - 1
+        if (this.notReadCount !== 0) {
           alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
             getNewsList().then(res => {
               this.$store.dispatch('newsList', res.newsList)
@@ -227,7 +236,7 @@ export default {
           groupId: this.$route.query.groupId,
           subject: name
         }).then(res => {
-          this.sendMessage(2, { contentType: 5, content: `${localStorage.username}修改群名为"${name}"` })
+          this.socketMessage(2, { contentType: 5, content: `${localStorage.username}修改群名为"${name}"` })
           getNewsList().then(res => {
             this.$store.dispatch('newsList', res.newsList)
           })
@@ -237,8 +246,7 @@ export default {
     hiden () {
       this.selectedGroupMember = null
     },
-    // 发送信息
-    sendMessage (type, { contentType, content, smallImg, duration } = {}, data) {
+    socketMessage (type, { contentType, content, smallImg, duration } = {}, data) {
       let message = {
         requestType: 'h5',
         serialNumber: 'h5' + shortid.generate(),
@@ -273,18 +281,31 @@ export default {
         this.im()
       }
     },
+    // 发送信息
+    // sendMessage ({ contentType, content, smallImg } = {}) {
+    //   if (this.socket.readyState === 1) {
+    //     sendMessage({
+    //       groupId: this.$route.query.groupId,
+    //       senderId: this.uid,
+    //       contentType,
+    //       content,
+    //       smallImg
+    //     })
+    //   } else {
+    //     this.im()
+    //   }
+    // },
     fileAddressFormatFunc (url) {
       return fileAddressFormat(url)
     },
     receiveMessage (message) {
       if (message.responseType === '666666') { // 服务器主动推送
+        this.$store.dispatch('latestMessageId', message.data.id)
+
         this.recordList.push(message.data)
         let responseServer = Object.assign({}, message)
         responseServer.requestType = '555555'
-        this.sendMessage(3, {}, responseServer)
-      } else {
-        let _message = [{ ...message.data, username: localStorage.username }]
-        this.recordList = this.recordList.concat(_message)
+        this.socketMessage(3, {}, responseServer)
       }
       this.$nextTick(() => {
         this.$refs.talkContent.scrollTop = 9999
@@ -293,9 +314,17 @@ export default {
     // 发送文字消息
     sendWordMessage (type) {
       if (this.wordContent.trim() !== '') {
-        this.sendMessage(2, {
+        sendMessage({
+          groupId: this.$route.query.groupId,
+          senderId: this.uid,
           contentType: 1,
           content: this.wordContent
+        }).then(res => {
+          let _message = [{ ...res.data, username: localStorage.username }]
+          this.recordList = this.recordList.concat(_message)
+          this.$nextTick(() => {
+            this.$refs.talkContent.scrollTop = 9999
+          })
         })
         this.wordContent = ''
       } else {
@@ -351,7 +380,7 @@ export default {
         memberList: [{ uid: member.uid }]
       }).then(items => {
         const deletedMember = items.delUserList[0]
-        this.sendMessage(2, { contentType: 5, content: `${this.groupMember[0].username}将${deletedMember.username}移出了群聊` })
+        this.socketMessage(2, { contentType: 5, content: `${this.groupMember[0].username}将${deletedMember.username}移出了群聊` })
         let groupMembers = this.groupMember.filter(item => {
           return item.uid !== deletedMember.uid
         })
@@ -377,6 +406,12 @@ export default {
         getNewsList().then(res => {
           this.$store.dispatch('newsList', res.newsList)
         })
+      }).catch(err => {
+        this.$createToast({
+          time: 2000,
+          txt: err.msg || '互动消息开启失败,请检查网络',
+          type: 'error'
+        }).show()
       })
     }
   }
