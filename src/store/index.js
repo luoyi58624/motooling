@@ -26,9 +26,8 @@ export default new Vuex.Store({
     wxSignUrl: '', // 调用微信jssdk接口所需要的url地址
     // 当前聊天对象
     chatTargetInfo: {},
-    newsList: [],
-    latestMessageId: null,
-    notReadCount: null
+    newsList: []
+    // group_id: null
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -70,15 +69,12 @@ export default new Vuex.Store({
     setChatTargetInfo (state, data) {
       state.chatTargetInfo = data
     },
-    SET_NEWS_LIST: (state, list) => {
+    SET_NEWS_LIST (state, list) {
       state.newsList = list
-    },
-    LATEST_MESSAGE_ID: (state, id) => {
-      state.latestMessageId = id
-    },
-    NOT_READ_COUNT: (state, count) => {
-      state.notReadCount = count
     }
+    // EXIT_GROUP (state, id) {
+    //   state.group_id = id
+    // }
   },
   actions: {
     getNewGroupMember ({ commit }, data) {
@@ -86,13 +82,10 @@ export default new Vuex.Store({
     },
     newsList ({ commit }, list) {
       commit('SET_NEWS_LIST', list)
-    },
-    latestMessageId ({ commit }, id) {
-      commit('LATEST_MESSAGE_ID', id)
-    },
-    notReadCount ({ commit }, count) {
-      commit('NOT_READ_COUNT', count)
     }
+    // exitgroup ({ commit }, id) {
+    //   commit('EXIT_GROUP', id)
+    // }
   },
   getters: {
     getWechatSignUrl: state => state.wxSignUrl

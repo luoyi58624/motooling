@@ -24,13 +24,8 @@
           </div>
         </div>
         <div class="input-area">
-<<<<<<< HEAD
           <textarea v-model="wordContent" @keyup.enter="sendWordMessage"></textarea>
           <div class="enter-message" @click="sendWordMessage">发送</div>
-=======
-          <textarea v-model="wordContent"></textarea>
-          <div class="enter-message" @click="sendWordMessage(2)">发送</div>
->>>>>>> parent of f6a0833... 增加搜索功能、更换发送消息接口
         </div>
       </div>
       <div class="group-members" v-if="chattingTarget.type === 666" >
@@ -96,7 +91,7 @@ export default {
   },
   watch: {
     invitedMembers (newVal) {
-      this.socketMessage(2, { contentType: 5, content: `${localStorage.username}邀请${newVal}加入群聊` })
+      this.sendMessage(2, { contentType: 5, content: `${localStorage.username}邀请${newVal}加入群聊` })
     },
     invidedMembersInfo (val) {
       this.groupMember = this.groupMember.concat(val)
@@ -105,9 +100,6 @@ export default {
   computed: {
     chatTargetInfo () {
       return this.$store.state.chatTargetInfo
-    },
-    notReadCount () {
-      return this.$store.state.notReadCount
     }
   },
   beforeRouteUpdate (to, from, next) {
@@ -121,9 +113,6 @@ export default {
     }
   },
   mounted () {
-    this.init().then(() => {
-      this.$refs.talkContent.scrollTop = 9999
-    })
     this.$refs.talkContent.addEventListener('scroll', this.loadMoreRecordList)
   },
   beforeDestroy () {
@@ -144,6 +133,7 @@ export default {
         relationId: this.$route.query.ralationId,
         groupId: this.$route.query.groupId
       }).then(res => {
+        console.log('res', res)
         this.isClose = false
         this.chattingTarget = { name: res.synergyGroup.subject || res.memberList[1].username, type: res.synergyGroup.relationType }
         let memberList = JSON.parse(JSON.stringify(res.memberList))
@@ -154,14 +144,14 @@ export default {
         this.synergyGroup = res.synergyGroup
         let recordList = res.recordList.reverse()
 
-        let recordLen = recordList.length - 1
-        if (this.notReadCount !== 0) {
-          alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
-            getNewsList().then(res => {
-              this.$store.dispatch('newsList', res.newsList)
-            })
-          })
-        }
+        // let recordLen = recordList.length - 1
+        // if (recordLen >= 0) {
+        //   alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
+        //     getNewsList().then(res => {
+        //       this.$store.dispatch('newsList', res.newsList)
+        //     })
+        //   })
+        // }
 
         this.recordList = recordList.map(item => {
           return item.data
@@ -169,6 +159,7 @@ export default {
         this.mainKeyId = res.recordList[0] && res.recordList[0].data.id
         this.im()
       }).catch(err => {
+        console.log('请求超时')
         this.$createToast({
           time: 2000,
           txt: err.msg || '互动消息开启失败,请检查网络',
@@ -206,6 +197,7 @@ export default {
       }, 10000)
     },
     websocketonerror () {
+      console.log('error')
       this.isEnable = false
       this.$createToast({
         time: 2000,
@@ -236,7 +228,7 @@ export default {
           groupId: this.$route.query.groupId,
           subject: name
         }).then(res => {
-          this.socketMessage(2, { contentType: 5, content: `${localStorage.username}修改群名为"${name}"` })
+          this.sendMessage(2, { contentType: 5, content: `${localStorage.username}修改群名为"${name}"` })
           getNewsList().then(res => {
             this.$store.dispatch('newsList', res.newsList)
           })
@@ -246,66 +238,39 @@ export default {
     hiden () {
       this.selectedGroupMember = null
     },
-    socketMessage (type, { contentType, content, smallImg, duration } = {}, data) {
-      let message = {
-        requestType: 'h5',
-        serialNumber: 'h5' + shortid.generate(),
-        data: {
-          groupId: this.synergyGroup.id,
-          senderId: this.uid
-        }
-      }
-      if (type === 1) {
-        message = {
-          requestType: 'ping',
-          serialNumber: null,
-          data: {
-
-          }
-        }
-      }
-      if (type === 2) {
-        message.data.contentType = contentType
-        if (content) {
-          message.data.content = content
-        }
-      }
-      if (type === 3) {
-        message = data
-      }
+    // 发送信息
+    sendMessage ({ contentType, content, smallImg } = {}) {
       if (this.socket.readyState === 1) {
-        this.socket.send(JSON.stringify(
-          message
-        ))
+        sendMessage({
+          groupId: this.$route.query.groupId,
+          senderId: this.uid,
+          contentType,
+          content,
+          smallImg
+        })
       } else {
         this.im()
       }
     },
-    // 发送信息
-    // sendMessage ({ contentType, content, smallImg } = {}) {
-    //   if (this.socket.readyState === 1) {
-    //     sendMessage({
-    //       groupId: this.$route.query.groupId,
-    //       senderId: this.uid,
-    //       contentType,
-    //       content,
-    //       smallImg
-    //     })
-    //   } else {
-    //     this.im()
-    //   }
-    // },
     fileAddressFormatFunc (url) {
       return fileAddressFormat(url)
     },
     receiveMessage (message) {
+      if (message.responseType === '666666') {
+        alreadyRead({ lastRecordId: message.data.id, groupId: message.data.groupId }).then(() => {
+          getNewsList().then(res => {
+            this.$store.dispatch('newsList', res.newsList)
+          })
+        })
+      }
       if (message.responseType === '666666') { // 服务器主动推送
-        this.$store.dispatch('latestMessageId', message.data.id)
-
         this.recordList.push(message.data)
         let responseServer = Object.assign({}, message)
         responseServer.requestType = '555555'
-        this.socketMessage(3, {}, responseServer)
+        this.sendMessage(3, {}, responseServer)
+      } else {
+        let _message = [{ ...message.data, username: localStorage.username }]
+        this.recordList = this.recordList.concat(_message)
       }
       this.$nextTick(() => {
         this.$refs.talkContent.scrollTop = 9999
@@ -314,18 +279,22 @@ export default {
     // 发送文字消息
     sendWordMessage (type) {
       if (this.wordContent.trim() !== '') {
-        sendMessage({
-          groupId: this.$route.query.groupId,
-          senderId: this.uid,
-          contentType: 1,
-          content: this.wordContent
-        }).then(res => {
-          let _message = [{ ...res.data, username: localStorage.username }]
-          this.recordList = this.recordList.concat(_message)
-          this.$nextTick(() => {
-            this.$refs.talkContent.scrollTop = 9999
+        if (this.socket.readyState === 1) {
+          sendMessage({
+            groupId: this.$route.query.groupId,
+            senderId: this.uid,
+            contentType: 1,
+            content: this.wordContent
+          }).then(res => {
+            let _message = [{ ...res.data, username: localStorage.username }]
+            this.recordList = this.recordList.concat(_message)
+            this.$nextTick(() => {
+              this.$refs.talkContent.scrollTop = 9999
+            })
           })
-        })
+        } else {
+          this.im()
+        }
         this.wordContent = ''
       } else {
         this.$createToast({
@@ -380,7 +349,7 @@ export default {
         memberList: [{ uid: member.uid }]
       }).then(items => {
         const deletedMember = items.delUserList[0]
-        this.socketMessage(2, { contentType: 5, content: `${this.groupMember[0].username}将${deletedMember.username}移出了群聊` })
+        this.sendMessage(2, { contentType: 5, content: `${this.groupMember[0].username}将${deletedMember.username}移出了群聊` })
         let groupMembers = this.groupMember.filter(item => {
           return item.uid !== deletedMember.uid
         })
@@ -395,6 +364,7 @@ export default {
         relationId: uid,
         relationType: 66
       }).then(res => {
+        console.log('success')
         this.selectedGroupMember = null
         this.$router.push({
           path: 'chatPanel',
@@ -407,6 +377,7 @@ export default {
           this.$store.dispatch('newsList', res.newsList)
         })
       }).catch(err => {
+        console.log('error')
         this.$createToast({
           time: 2000,
           txt: err.msg || '互动消息开启失败,请检查网络',
