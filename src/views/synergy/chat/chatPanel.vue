@@ -24,8 +24,13 @@
           </div>
         </div>
         <div class="input-area">
+<<<<<<< HEAD
           <textarea v-model="wordContent" @keyup.enter="sendWordMessage"></textarea>
           <div class="enter-message" @click="sendWordMessage">发送</div>
+=======
+          <textarea v-model="wordContent"></textarea>
+          <div class="enter-message" @click="sendWordMessage(2)">发送</div>
+>>>>>>> parent of f6a0833... 增加搜索功能、更换发送消息接口
         </div>
       </div>
       <div class="group-members" v-if="chattingTarget.type === 666" >
@@ -136,6 +141,7 @@ export default {
       }
       await getOpenSynergy({
         relationType: this.$route.query.relationType,
+        relationId: this.$route.query.ralationId,
         groupId: this.$route.query.groupId
       }).then(res => {
         this.isClose = false
@@ -196,11 +202,7 @@ export default {
     },
     websocketonopen () {
       this.interval = setInterval(() => {
-        console.log('ping')
-        this.socket.send(JSON.stringify({
-          requestType: 'ping',
-          serialNumber: null,
-          data: {} }))
+        this.sendMessage(1)
       }, 10000)
     },
     websocketonerror () {
@@ -297,8 +299,6 @@ export default {
       return fileAddressFormat(url)
     },
     receiveMessage (message) {
-      console.log({ message })
-
       if (message.responseType === '666666') { // 服务器主动推送
         this.$store.dispatch('latestMessageId', message.data.id)
 
@@ -312,7 +312,7 @@ export default {
       })
     },
     // 发送文字消息
-    sendWordMessage () {
+    sendWordMessage (type) {
       if (this.wordContent.trim() !== '') {
         sendMessage({
           groupId: this.$route.query.groupId,
@@ -460,14 +460,12 @@ nav{
         padding-top: 8px;
       }
       .message {
-          margin: 8px 0 8px 20px;
+          margin: 8px 0;
       }
       .word-message {
           background-color: #dee0e3;
           padding: 8px;
           border-radius: 5px;
-          user-select: text;
-          white-space: pre-wrap;
         }
       .my-content {
         display: flex;
