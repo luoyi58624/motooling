@@ -14,7 +14,7 @@
     <div class="message-list">
         <router-link class="message-list-wrapper" tag='div' v-for="item in newsList" :key="item.groupId"
         :to="{path:'chatPanel', query:{groupId:item.groupId,relationType:item.relationType}}">
-        <div class="message-list-item" @click.right="handleGroup(item,$event)" v-clickoutside="visible">
+        <div class="message-list-item" @click.left="startChatting(item)" @click.right="handleGroup(item,$event)" v-clickoutside="visible">
           <div class="file-picture">
             <img :src="item.avatar" v-if="item.relationType===66">
             <img :src="require('@/assets/group.png')" v-else>
@@ -51,7 +51,8 @@ import {
   getNewsList,
   signOutGroup,
   clearChatRecords,
-  getOpenSynergy
+  getOpenSynergy,
+  alreadyRead
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
 
@@ -76,6 +77,9 @@ export default {
   computed: {
     newsList () {
       return this.$store.state.newsList
+    },
+    latestMessageId () {
+      return this.$store.state.latestMessageId
     }
   },
   mounted () {
@@ -115,12 +119,17 @@ export default {
             clearInterval(this.socket)
           }
         }
-        this.socket.onmessage = (msg) => {
+        this.socket.onmessage = async msg => {
           let receivedMessage = JSON.parse(msg.data)
           this.socket.send(JSON.stringify({
             requestType: '555555',
             serialNumber: `${receivedMessage.serialNumber}`
           }))
+
+          if (this.latestMessageId) {
+            await alreadyRead({ lastRecordId: this.latestMessageId, groupId: this.$route.query.groupId })
+          }
+
           getNewsList().then(res => {
             this.$store.dispatch('newsList', res.newsList)
           }).catch(err => {
@@ -188,6 +197,10 @@ export default {
         }
       })
       this.value = ''
+    },
+    // 选择聊天对象，开启聊天
+    startChatting (data) {
+      this.$store.dispatch('notReadCount', data.notReadCount)
     }
   }
 }
