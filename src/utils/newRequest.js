@@ -20,7 +20,6 @@ instance.interceptors.request.use(
 
     return config
   }, error => {
-    console.log(error)
     return Promise.reject(error)
   }
 )
@@ -28,17 +27,13 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   response => {
     response.data.resultData = decrypt(response.data.resultData)
-    console.log(response)
     if (response.data.code === '444444' || response.data.code === '666666') {
       router.replace('/login')
       let fullPath = router.currentRoute.fullPath
-      console.log(fullPath)
       router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
     } else if (response.data.code === '000000') {
-      console.log(response)
       return response.data.data
     } else {
-      // console.error('youdianwenti')
       return Promise.reject(response.data)
     }
   },
@@ -50,12 +45,6 @@ instance.interceptors.response.use(
     } else {
       vm.showToast(error.message)
     }
-    // console.log('this', this)
-    // this.toast = this.$createToast({
-    //   txt: 'Plain txt',
-    //   type: 'txt'
-    // })
-    // this.toast.show()
     return Promise.reject(error)
   }
 )
