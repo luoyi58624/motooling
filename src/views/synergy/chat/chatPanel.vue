@@ -14,8 +14,28 @@
             <div :class="uid == item.senderId?'my-content':'others-content'" v-if="item.contentType !== 5">
               <div class="talker-name">{{item.username}}</div>
               <div class="word-message message" v-if="item.contentType === 1">{{item.content}}</div>
-              <div class="image-message message" v-else-if="item.contentType === 2" @dblclick="showImagePreview(fileAddressFormatFunc(item.content))">
-                <img :src="fileAddressFormatFunc(item.smallImg)" alt="">
+              <div class="image-message message" v-else-if="item.contentType === 2 || item.contentType === 6" @dblclick="showImagePreview(fileAddressFormatFunc(item.content))">
+                <img :src="fileAddressFormatFunc(item.content)" alt="">
+              </div>
+              <div class="audio-message message"
+                v-else-if="item.contentType === 3"
+                @click="playAudio(fileAddressFormatFunc(item.content))"
+              >
+                <img :src="require('@/assets/icon-voice-white.png')" alt="">
+                <span>{{item.duration}}"</span>
+              </div>
+              <div
+                class="video-message message"
+                v-else-if="item.contentType === 4"
+              >
+                <video
+                 preload="meta"
+                 :src="fileAddressFormatFunc(item.content)"
+                 controls="controls"
+                 width="250"
+                 @click="playVideo()"
+                >
+                </video>
               </div>
             </div>
             <div v-if="item.contentType === 5">
@@ -24,6 +44,22 @@
           </div>
         </div>
         <div class="input-area">
+          <div class="upload-wrapper">
+            <label for="upload">
+              <div class="icon icon-image"></div>
+            </label>
+            <input
+            type="file"
+            id="upload"
+            multiple
+            hidden
+            accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
+            @change="upload"
+            >
+            <label for="upload">
+              <div class="icon icon-video"></div>
+            </label>
+          </div>
           <textarea v-model="wordContent" @keyup.enter="sendWordMessage"></textarea>
           <div class="enter-message" @click="sendWordMessage">发送</div>
         </div>
@@ -41,6 +77,7 @@
         </div>
       </div>
     </div>
+    <audio :src="currentAudio" ref="audio"></audio>
   </div>
 </template>
 
@@ -57,6 +94,7 @@ import {
   sendMessage
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
+import { imgUpload, fileUpload } from '@/api/upload/upload.js'
 export default {
   directives: { clickoutside },
   props: {
@@ -86,7 +124,8 @@ export default {
       groupOwnerUid: null,
       chattingTarget: {},
       groupMember: [],
-      noMoreRecords: false
+      noMoreRecords: false,
+      currentAudio: ''
     }
   },
   watch: {
@@ -149,8 +188,8 @@ export default {
         this.synergyGroup = res.synergyGroup
         let recordList = res.recordList.reverse()
 
-        let recordLen = recordList.length - 1
         if (this.notReadCount !== 0) {
+          let recordLen = recordList.length - 1
           alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
             getNewsList().then(res => {
               this.$store.dispatch('newsList', res.newsList)
@@ -279,25 +318,23 @@ export default {
         this.im()
       }
     },
-    // 发送信息
-    // sendMessage ({ contentType, content, smallImg } = {}) {
-    //   if (this.socket.readyState === 1) {
-    //     sendMessage({
-    //       groupId: this.$route.query.groupId,
-    //       senderId: this.uid,
-    //       contentType,
-    //       content,
-    //       smallImg
-    //     })
-    //   } else {
-    //     this.im()
-    //   }
-    // },
     fileAddressFormatFunc (url) {
       return fileAddressFormat(url)
     },
+    // 播放音频
+    playAudio (src) {
+      this.$refs.audio.src = src
+      this.$refs.audio.play()
+    },
+    // 播放视频
+    playVideo (e) {
+      if (e.target.paused) {
+        e.target.play()
+      } else {
+        e.target.pause()
+      }
+    },
     receiveMessage (message) {
-      console.log({ message })
       this.recordList.push(message.data)
       if (message.responseType === '666666') { // 服务器主动推送
         this.$store.dispatch('latestMessageId', message.data.id)
@@ -318,11 +355,12 @@ export default {
           contentType: 1,
           content: this.wordContent
         }).then(res => {
-          let _message = [{ ...res.data, username: localStorage.username }]
-          this.recordList = this.recordList.concat(_message)
-          this.$nextTick(() => {
-            this.$refs.talkContent.scrollTop = 9999
-          })
+          // let _message = [{ ...res.data, username: localStorage.username }]
+          // this.recordList = this.recordList.concat(_message)
+          // this.$nextTick(() => {
+          //   this.$refs.talkContent.scrollTop = 9999
+          // })
+          this.concatMessage(res)
         })
         this.wordContent = ''
       } else {
@@ -332,6 +370,14 @@ export default {
           type: 'error'
         }).show()
       }
+    },
+    concatMessage (res) {
+      let _message = [{ ...res.data, username: localStorage.username }]
+      this.recordList = this.recordList.concat(_message)
+      this.$nextTick(() => {
+        console.log('触发了')
+        this.$refs.talkContent.scrollTop = 9999
+      })
     },
     // 获取聊天记录
     getRecordList () {
@@ -411,6 +457,72 @@ export default {
           type: 'error'
         }).show()
       })
+    },
+    // 上传图片或视频
+    upload (e) {
+      const files = e.target.files
+      for (let i = 0; i < files.length; i++) {
+        if (/image/.test(files[i].type)) {
+          imgUpload(files[i]).then(res => {
+            sendMessage({
+              groupId: this.$route.query.groupId,
+              senderId: this.uid,
+              contentType: 2,
+              content: res.rawImgUrl,
+              smallImg: res.imgUrl
+            }).then(res => {
+              // this.concatMessage(res)
+              let _message = [{ ...res.data, username: localStorage.username }]
+              this.recordList = this.recordList.concat(_message)
+              this.$nextTick(() => {
+                this.$refs.talkContent.scrollTop = 9999
+              })
+              this.$refs.talkContent.scrollTop = 9999
+            }).catch(err => {
+              this.$createToast({
+                time: 2000,
+                txt: err.message || '发送失败，请重试',
+                type: 'warn'
+              }).show()
+            })
+          })
+        } else if (/audio/.test(files[i].type)) {
+          fileUpload(files[i]).then(res => {
+            sendMessage({
+              groupId: this.$route.query.groupId,
+              senderId: this.uid,
+              contentType: 3,
+              content: res.fileUrl
+            }).then(res => {
+              this.concatMessage(res)
+            }).catch(err => {
+              this.$createToast({
+                time: 2000,
+                txt: err.message || '发送失败，请重试',
+                type: 'warn'
+              }).show()
+            })
+          })
+        } else {
+          fileUpload(files[i]).then(res => {
+            console.log({ video: res })
+            sendMessage({
+              groupId: this.$route.query.groupId,
+              senderId: this.uid,
+              contentType: 4,
+              content: res.fileUrl
+            }).then(res => {
+              this.concatMessage(res)
+            }).catch(err => {
+              this.$createToast({
+                time: 2000,
+                txt: err.message || '发送失败，请重试',
+                type: 'warn'
+              }).show()
+            })
+          })
+        }
+      }
     }
   }
 }
@@ -448,10 +560,11 @@ nav{
     .talk-content {
       font-size: 14px;
       height: calc(100% - 155px);
+      background-color: #f2f3f5;
       // overflow: hidden;
       overflow-y: auto;
       // &:hover {
-      //   margin-right: -6px;
+      //   // margin-right: -6px;
       //   overflow-y: auto;
       // }
       .talker-name {
@@ -467,6 +580,20 @@ nav{
           user-select: text;
           white-space: pre-wrap;
 
+        }
+        .image-message {
+          img {
+            display: inline-block;
+            max-height: 250px;
+            object-fit: contain;
+          }
+        }
+        .audio-message {
+          img{
+          height: 30px;
+          width: 30px;
+          vertical-align: middle;
+          }
         }
       .my-content {
         display: flex;
@@ -494,11 +621,28 @@ nav{
       height: 154px;
       border-top: 1px solid #dadcdf;
       position: relative;
+      .upload-wrapper {
+        height: 20px;
+        margin-top: 5px;
+        .icon {
+          float: left;
+          width: 20px;
+          height: 20px;
+          margin-left: 10px;
+        }
+        .icon-image {
+          background: url('../../../assets/icon-album.png') center/cover;
+        }
+        .icon-video {
+          background: url('../../../assets/icon-camera.png') center/cover;
+        }
+      }
       textarea {
-        width: 98%;
-        height: calc(100% - 30px);
+        width: 95%;
+        height: calc(100% - 54px);
         resize: none;
         border: 0;
+        padding-left:10px;
       }
       .enter-message {
         position: absolute;

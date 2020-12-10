@@ -28,7 +28,8 @@ export default new Vuex.Store({
     chatTargetInfo: {},
     newsList: [],
     latestMessageId: null,
-    notReadCount: null
+    notReadCount: null,
+    value: null
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -78,6 +79,9 @@ export default new Vuex.Store({
     },
     NOT_READ_COUNT: (state, count) => {
       state.notReadCount = count
+    },
+    VALUE: (state, value) => {
+      state.value = value
     }
   },
   actions: {
@@ -92,6 +96,9 @@ export default new Vuex.Store({
     },
     notReadCount ({ commit }, count) {
       commit('NOT_READ_COUNT', count)
+    },
+    value ({ commit }, value) {
+      commit('VALUE', value)
     }
   },
   getters: {
