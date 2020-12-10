@@ -30,8 +30,8 @@
         </div>
         </router-link>
     </div>
-    <div class="search-contacts" v-show="value">
-      <ul>
+    <div class="search-contacts" v-if="value" v-clickoutside="showSearch">
+      <ul v-if="contacts.length">
         <li class="message-list-wrapper" v-for="item in contacts" :key="item.groupId" @click="enterChatting(item)">
           <div class="message-list-item">
             <div class="file-picture">
@@ -43,6 +43,9 @@
           </div>
         </li>
       </ul>
+      <p class="no-result" v-else>
+          无查询结果
+      </p>
     </div>
   </div>
 </template>
@@ -152,6 +155,9 @@ export default {
     visible () {
       this.groupId = null
     },
+    showSearch () {
+      this.value = ''
+    },
     // 清空聊天记录
     clearChattingRecords (data) {
       getOpenSynergy({ relationType: data.relationType, groupId: data.groupId }).then(item => {
@@ -169,6 +175,7 @@ export default {
     // 退出群聊
     signOutGroup (groupId) {
       signOutGroup({ groupId }).then(item => {
+        console.log({ item })
         this.groupId = null
         getNewsList().then(res => {
           this.$store.dispatch('newsList', res.newsList)
@@ -177,6 +184,7 @@ export default {
     },
     // 搜索
     search (e) {
+      this.$store.dispatch('value', e)
       if (!e) return
       if (this.timeout) {
         clearTimeout(this.timeout)
@@ -185,7 +193,6 @@ export default {
       this.timeout = setTimeout(() => {
         getNewsList({ queryValues: e }).then(res => {
           this.contacts = res.newsList
-          console.log({ contacts: this.contacts })
         })
       }, 500)
     },
@@ -225,6 +232,12 @@ export default {
     border: 1px solid skyblue;
     & > ul {
       background-color: #fff;
+    }
+    .no-result {
+      text-align: center;
+      color: #ccc;
+      background-color: #fff;
+      padding: 10px 0;
     }
   }
   .search {
