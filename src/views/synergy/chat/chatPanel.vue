@@ -151,6 +151,7 @@ export default {
   beforeRouteUpdate (to, from, next) {
     next()
     if (!from.query.relationId) {
+      this.noMoreRecords = false
       this.isClose = true
       this.socket.close()
       this.init().then(() => {
@@ -481,17 +482,17 @@ export default {
       for (let i = 0; i < files.length; i++) {
         if (/image/.test(files[i].type)) {
           imgUpload(files[i]).then(res => {
-            let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawImgUrl }
+            let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawUrl }
             this.handleMessage(params)
           })
         } else if (/audio/.test(files[i].type)) {
           fileUpload(files[i]).then(res => {
-            let params = { contentType: 3, smallImg: '', content: res.fileUrl }
+            let params = { contentType: 3, smallImg: '', content: res.url }
             this.handleMessage(params)
           })
         } else if (/video/.test(files[i].type)) {
           fileUpload(files[i]).then(res => {
-            let params = { contentType: 4, smallImg: '', content: res.fileUrl }
+            let params = { contentType: 4, smallImg: '', content: res.url }
             this.handleMessage(params)
           })
         } else {
