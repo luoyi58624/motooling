@@ -33,7 +33,7 @@
                  :src="fileAddressFormatFunc(item.content)"
                  controls="controls"
                  width="250"
-                 @click="playVideo()"
+                 @click="playVideo($event)"
                 >
                 </video>
               </div>
@@ -60,19 +60,21 @@
               <div class="icon icon-video"></div>
             </label>
           </div>
-          <textarea v-model="wordContent" @keyup.enter="sendWordMessage"></textarea>
+          <textarea v-model="wordContent" @keyup.enter.exact="sendWordMessage"></textarea>
           <div class="enter-message" @click="sendWordMessage">发送</div>
         </div>
       </div>
       <div class="group-members" v-if="chattingTarget.type === 666" >
         <p class="group-members-title">群成员 · {{groupMember.length}}</p>
-        <div class="group-members-item" v-for="item in groupMember" :key="item.uid" @click.right="handleGroupMember(item,$event)">
-            <img :src="item.avatar" alt="">
-          <span v-if="item.memberType===1">{{item.username}} · 群主</span>
-          <span v-else>{{item.username}}</span>
-          <div class="popover" v-if="item.uid === selectedGroupMember" v-clickoutside="hiden">
-            <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
-            <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">移出群聊</p>
+        <div class="group-members-wrapper">
+          <div class="group-members-item" v-for="item in groupMember" :key="item.uid" @click.right="handleGroupMember(item,$event)">
+              <img :src="item.avatar" alt="">
+            <span v-if="item.memberType===1">{{item.username}} · 群主</span>
+            <span v-else>{{item.username}}</span>
+            <div class="popover" v-if="item.uid === selectedGroupMember" v-clickoutside="hiden">
+              <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
+              <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">移出群聊</p>
+            </div>
           </div>
         </div>
       </div>
@@ -114,7 +116,6 @@ export default {
       imurl: localStorage.imurl,
       socket: {},
       synergyGroup: {},
-      uid: localStorage.uid,
       mainKeyId: '',
       wordContent: '',
       recordList: [],
@@ -142,6 +143,9 @@ export default {
     },
     notReadCount () {
       return this.$store.state.notReadCount
+    },
+    uid () {
+      return this.$store.state.uid
     }
   },
   beforeRouteUpdate (to, from, next) {
@@ -355,12 +359,11 @@ export default {
           contentType: 1,
           content: this.wordContent
         }).then(res => {
-          // let _message = [{ ...res.data, username: localStorage.username }]
-          // this.recordList = this.recordList.concat(_message)
-          // this.$nextTick(() => {
-          //   this.$refs.talkContent.scrollTop = 9999
-          // })
-          this.concatMessage(res)
+          let _message = [{ ...res.data, username: localStorage.username }]
+          this.recordList = this.recordList.concat(_message)
+          this.$nextTick(() => {
+            this.$refs.talkContent.scrollTop = 9999
+          })
         })
         this.wordContent = ''
       } else {
@@ -370,14 +373,6 @@ export default {
           type: 'error'
         }).show()
       }
-    },
-    concatMessage (res) {
-      let _message = [{ ...res.data, username: localStorage.username }]
-      this.recordList = this.recordList.concat(_message)
-      this.$nextTick(() => {
-        console.log('触发了')
-        this.$refs.talkContent.scrollTop = 9999
-      })
     },
     // 获取聊天记录
     getRecordList () {
@@ -458,69 +453,53 @@ export default {
         }).show()
       })
     },
+    handleMessage ({ contentType, smallImg, content } = { }) {
+      sendMessage({
+        groupId: this.$route.query.groupId,
+        senderId: this.uid,
+        contentType,
+        content,
+        smallImg
+      }).then(res => {
+        let _message = [{ ...res.data, username: localStorage.username }]
+        this.recordList = this.recordList.concat(_message)
+        this.$nextTick(() => {
+          let ele = this.$refs.talkContent
+          ele.scrollTop = ele.scrollHeight
+        })
+      }).catch(err => {
+        this.$createToast({
+          time: 2000,
+          txt: err.message || '发送失败，请重试',
+          type: 'warn'
+        }).show()
+      })
+    },
     // 上传图片或视频
     upload (e) {
       const files = e.target.files
       for (let i = 0; i < files.length; i++) {
         if (/image/.test(files[i].type)) {
           imgUpload(files[i]).then(res => {
-            sendMessage({
-              groupId: this.$route.query.groupId,
-              senderId: this.uid,
-              contentType: 2,
-              content: res.rawImgUrl,
-              smallImg: res.imgUrl
-            }).then(res => {
-              // this.concatMessage(res)
-              let _message = [{ ...res.data, username: localStorage.username }]
-              this.recordList = this.recordList.concat(_message)
-              this.$nextTick(() => {
-                this.$refs.talkContent.scrollTop = 9999
-              })
-              this.$refs.talkContent.scrollTop = 9999
-            }).catch(err => {
-              this.$createToast({
-                time: 2000,
-                txt: err.message || '发送失败，请重试',
-                type: 'warn'
-              }).show()
-            })
+            let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawImgUrl }
+            this.handleMessage(params)
           })
         } else if (/audio/.test(files[i].type)) {
           fileUpload(files[i]).then(res => {
-            sendMessage({
-              groupId: this.$route.query.groupId,
-              senderId: this.uid,
-              contentType: 3,
-              content: res.fileUrl
-            }).then(res => {
-              this.concatMessage(res)
-            }).catch(err => {
-              this.$createToast({
-                time: 2000,
-                txt: err.message || '发送失败，请重试',
-                type: 'warn'
-              }).show()
-            })
+            let params = { contentType: 3, smallImg: '', content: res.fileUrl }
+            this.handleMessage(params)
+          })
+        } else if (/video/.test(files[i].type)) {
+          fileUpload(files[i]).then(res => {
+            let params = { contentType: 4, smallImg: '', content: res.fileUrl }
+            this.handleMessage(params)
           })
         } else {
-          fileUpload(files[i]).then(res => {
-            console.log({ video: res })
-            sendMessage({
-              groupId: this.$route.query.groupId,
-              senderId: this.uid,
-              contentType: 4,
-              content: res.fileUrl
-            }).then(res => {
-              this.concatMessage(res)
-            }).catch(err => {
-              this.$createToast({
-                time: 2000,
-                txt: err.message || '发送失败，请重试',
-                type: 'warn'
-              }).show()
-            })
-          })
+          this.$createToast({
+            time: 2000,
+            txt: '不支持发送该文件',
+            type: 'warn'
+          }).show()
         }
       }
     }
@@ -583,8 +562,7 @@ nav{
         }
         .image-message {
           img {
-            display: inline-block;
-            max-height: 250px;
+            max-height: 200px;
             object-fit: contain;
           }
         }
@@ -662,13 +640,14 @@ nav{
     width: 121px;
     font-size: 12px;
     border-left: 1px solid #dadcdf;
-    box-sizing: border-box;
-    padding-top: 10px;
     .group-members-title {
-      padding-left: 10px;
+      padding: 10px;
+    }
+    .group-members-wrapper{
+      height: calc(100% - 32px);
+      overflow-y: auto;
     }
     .group-members-item {
-      position: relative;
       padding: 4px 0 4px 10px ;
         img{
           width:15px;

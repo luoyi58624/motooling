@@ -268,3 +268,17 @@ export function sendMessage (params) {
     data
   })
 }
+
+// 获取用户信息
+export function getUserInfo () {
+  return request({
+    url: WEBURL() + '/mtH5/user/getUserLoginInfo',
+    method: 'post',
+    data: {
+      token: token(),
+      md5: getMd5String(),
+      timestamp: timestamp,
+      data: {}
+    }
+  })
+}
