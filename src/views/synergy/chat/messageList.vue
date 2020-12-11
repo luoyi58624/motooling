@@ -84,13 +84,13 @@ export default {
     latestMessageId () {
       return this.$store.state.latestMessageId
     },
-    uid () {
-      return this.$store.state.uid
+    userInfo () {
+      return this.$store.state.userInfo
     }
   },
-  mounted () {
-    getUserInfo().then(res => {
-      this.$store.dispatch('userInfo', res.uid)
+  async mounted () {
+    await getUserInfo().then(res => {
+      this.$store.dispatch('userInfo', res)
     })
     getNewsList().then(res => {
       this.$store.dispatch('newsList', res.newsList)
@@ -111,7 +111,7 @@ export default {
     im () {
       let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
       if (this.isClose === false || (this.socket && this.socket.readyState === 3)) {
-        this.socket = new WebSocket(`${prefix}${this.imurl}/MtMsgWebSocket/${this.companyId}/H5/${this.uid}`)
+        this.socket = new WebSocket(`${prefix}${this.imurl}/MtMsgWebSocket/${this.userInfo.companyId}/H5/${this.userInfo.uid}`)
         this.socket.onopen = () => {
           this.interval = setInterval(() => {
             if (this.socket.readyState === 1) {
