@@ -29,7 +29,8 @@ export default new Vuex.Store({
     newsList: [],
     latestMessageId: null,
     notReadCount: null,
-    value: null
+    value: null,
+    uid: null
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -82,6 +83,9 @@ export default new Vuex.Store({
     },
     VALUE: (state, value) => {
       state.value = value
+    },
+    USER_INFO: (state, uid) => {
+      state.uid = uid
     }
   },
   actions: {
@@ -99,6 +103,9 @@ export default new Vuex.Store({
     },
     value ({ commit }, value) {
       commit('VALUE', value)
+    },
+    userInfo ({ commit }, uid) {
+      commit('USER_INFO', uid)
     }
   },
   getters: {

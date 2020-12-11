@@ -55,7 +55,8 @@ import {
   signOutGroup,
   clearChatRecords,
   getOpenSynergy,
-  alreadyRead
+  alreadyRead,
+  getUserInfo
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
 
@@ -73,8 +74,7 @@ export default {
       signOut: '',
       contacts: [],
       imurl: localStorage.imurl,
-      companyId: localStorage.companyId,
-      uid: localStorage.uid
+      companyId: localStorage.companyId
     }
   },
   computed: {
@@ -83,9 +83,15 @@ export default {
     },
     latestMessageId () {
       return this.$store.state.latestMessageId
+    },
+    uid () {
+      return this.$store.state.uid
     }
   },
   mounted () {
+    getUserInfo().then(res => {
+      this.$store.dispatch('userInfo', res.uid)
+    })
     getNewsList().then(res => {
       this.$store.dispatch('newsList', res.newsList)
     }).catch(err => {
@@ -175,7 +181,6 @@ export default {
     // 退出群聊
     signOutGroup (groupId) {
       signOutGroup({ groupId }).then(item => {
-        console.log({ item })
         this.groupId = null
         getNewsList().then(res => {
           this.$store.dispatch('newsList', res.newsList)
