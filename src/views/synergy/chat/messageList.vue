@@ -86,8 +86,8 @@ export default {
       return this.$store.state.latestMessageId
     }
   },
-  async created () {
-    await getUserInfo().then(res => {
+  created () {
+    getUserInfo().then(res => {
       localStorage.setItem('fileServerUrl', res.fileServerUrl)
       localStorage.setItem('companyId', res.companyId)
       localStorage.setItem('uid', res.uid)
