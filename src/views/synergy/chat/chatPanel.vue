@@ -11,7 +11,7 @@
       <div class="talk-wrapper">
         <div class="talk-content" ref="talkContent">
           <div v-for="(item,index) in recordList" :key="index">
-            <div :class="userInfo.uid == item.senderId?'my-content':'others-content'" v-if="item.contentType !== 5">
+            <div :class="uid == item.senderId?'my-content':'others-content'" v-if="item.contentType !== 5">
               <div class="talker-name">{{item.username}}</div>
               <div class="word-message message" v-if="item.contentType === 1">{{item.content}}</div>
               <div class="image-message message" v-else-if="item.contentType === 2 || item.contentType === 6" @dblclick="showImagePreview(fileAddressFormatFunc(item.content))">
@@ -73,7 +73,7 @@
             <span v-else>{{item.username}}</span>
             <div class="popover" v-if="item.uid === selectedGroupMember" v-clickoutside="hiden">
               <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
-              <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == userInfo.uid">移出群聊</p>
+              <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">移出群聊</p>
             </div>
           </div>
         </div>
@@ -115,6 +115,7 @@ export default {
       isClose: false,
       companyId: localStorage.companyId,
       imurl: localStorage.imurl,
+      uid: localStorage.uid,
       socket: {},
       synergyGroup: {},
       mainKeyId: '',
@@ -144,9 +145,6 @@ export default {
     },
     notReadCount () {
       return this.$store.state.notReadCount
-    },
-    userInfo () {
-      return this.$store.state.userInfo
     }
   },
   beforeRouteUpdate (to, from, next) {
@@ -226,7 +224,7 @@ export default {
         this.socket = new WebSocket(
           prefix + this.imurl +
             '/mtwebsocket/' +
-            this.userInfo.companyId +
+            this.companyId +
             '/' +
             this.synergyGroup.id +
             '/' +
@@ -242,6 +240,7 @@ export default {
     },
     websocketonopen () {
       this.interval = setInterval(() => {
+        console.log('ping')
         this.socket.send(JSON.stringify({
           requestType: 'ping',
           serialNumber: null,
@@ -295,7 +294,7 @@ export default {
         serialNumber: 'h5' + shortid.generate(),
         data: {
           groupId: this.synergyGroup.id,
-          senderId: this.userInfo.uid
+          senderId: this.uid
         }
       }
       if (type === 1) {
@@ -357,7 +356,7 @@ export default {
       if (this.wordContent.trim() !== '') {
         sendMessage({
           groupId: this.$route.query.groupId,
-          senderId: this.userInfo.uid,
+          senderId: this.uid,
           contentType: 1,
           content: this.wordContent
         }).then(res => {
@@ -458,7 +457,7 @@ export default {
     handleMessage ({ contentType, smallImg, content } = { }) {
       sendMessage({
         groupId: this.$route.query.groupId,
-        senderId: this.userInfo.uid,
+        senderId: this.uid,
         contentType,
         content,
         smallImg

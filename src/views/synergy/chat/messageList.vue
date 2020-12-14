@@ -74,7 +74,8 @@ export default {
       signOut: '',
       contacts: [],
       imurl: localStorage.imurl,
-      companyId: localStorage.companyId
+      companyId: localStorage.companyId,
+      uid: localStorage.uid
     }
   },
   computed: {
@@ -83,15 +84,16 @@ export default {
     },
     latestMessageId () {
       return this.$store.state.latestMessageId
-    },
-    userInfo () {
-      return this.$store.state.userInfo
     }
   },
-  async mounted () {
+  async created () {
     await getUserInfo().then(res => {
-      this.$store.dispatch('userInfo', res)
+      localStorage.setItem('fileServerUrl', res.fileServerUrl)
+      localStorage.setItem('companyId', res.companyId)
+      localStorage.setItem('uid', res.uid)
     })
+  },
+  mounted () {
     getNewsList().then(res => {
       this.$store.dispatch('newsList', res.newsList)
     }).catch(err => {
@@ -111,7 +113,7 @@ export default {
     im () {
       let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
       if (this.isClose === false || (this.socket && this.socket.readyState === 3)) {
-        this.socket = new WebSocket(`${prefix}${this.imurl}/MtMsgWebSocket/${this.userInfo.companyId}/H5/${this.userInfo.uid}`)
+        this.socket = new WebSocket(`${prefix}${this.imurl}/MtMsgWebSocket/${this.companyId}/H5/${this.uid}`)
         this.socket.onopen = () => {
           this.interval = setInterval(() => {
             if (this.socket.readyState === 1) {
