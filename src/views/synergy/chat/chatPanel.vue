@@ -183,7 +183,16 @@ export default {
         groupId: this.$route.query.groupId
       }).then(res => {
         this.isClose = false
-        this.chattingTarget = { name: res.synergyGroup.subject || res.memberList[1].username, type: res.synergyGroup.relationType }
+        if (res.synergyGroup.relationType === 666) {
+          this.chattingTarget = { name: res.synergyGroup.subject, type: 666 }
+        } else {
+          res.memberList.forEach(member => {
+            if (member.uid !== this.uid) {
+              this.chattingTarget = { name: member.username, type: 66 }
+            }
+          })
+        }
+
         let memberList = JSON.parse(JSON.stringify(res.memberList))
         this.groupMember = memberList
         this.groupOwnerUid = memberList[0].uid
