@@ -156,6 +156,7 @@ export default {
     if (!from.query.relationId) {
       this.noMoreRecords = false
       this.isClose = true
+      this.loadRecordTag = ''
       this.socket.close()
       this.init().then(() => {
         this.$refs.talkContent.scrollTop = 9999
@@ -375,6 +376,7 @@ export default {
     },
     // 发送文字消息
     sendWordMessage (type) {
+      this.loadRecordTag = ''
       if (this.wordContent.trim() !== '') {
         sendMessage({
           groupId: this.$route.query.groupId,
@@ -499,6 +501,7 @@ export default {
     },
     // 上传图片或视频
     upload (e) {
+      this.loadRecordTag = ''
       const files = e.target.files
       for (let i = 0; i < files.length; i++) {
         if (/image/.test(files[i].type)) {
