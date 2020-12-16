@@ -15,7 +15,7 @@
               <div class="talker-name">{{item.username}}</div>
               <div class="word-message message" v-if="item.contentType === 1">{{item.content}}</div>
               <div class="image-message message" v-else-if="item.contentType === 2 || item.contentType === 6" @dblclick="showImagePreview(fileAddressFormatFunc(item.content))">
-                <img :src="fileAddressFormatFunc(item.content)" alt="">
+                <img :src="fileAddressFormatFunc(item.content)" loading="lazy" @load="handleImgload">
               </div>
               <div class="audio-message message"
                 v-else-if="item.contentType === 3"
@@ -125,10 +125,14 @@ export default {
       interval: null,
       selectedGroupMember: null,
       groupOwnerUid: null,
+      timeout: null,
       chattingTarget: {},
       groupMember: [],
       noMoreRecords: false,
-      currentAudio: ''
+      currentAudio: '',
+      loadedScrollTop: 0,
+      beforeLoadedScrollTop: 0,
+      loadRecordTag: ''
     }
   },
   watch: {
@@ -187,7 +191,7 @@ export default {
           this.chattingTarget = { name: res.synergyGroup.subject, type: 666 }
         } else {
           res.memberList.forEach(member => {
-            if (member.uid !== this.uid) {
+            if (member.uid !== this.uid * 1) {
               this.chattingTarget = { name: member.username, type: 66 }
             }
           })
@@ -213,7 +217,7 @@ export default {
         this.recordList = recordList.map(item => {
           return item.data
         })
-        this.mainKeyId = res.recordList[0] && res.recordList[0].data.id
+        this.mainKeyId = recordList[0] && recordList[0].data.id
         this.im()
       }).catch(err => {
         this.$createToast({
@@ -272,6 +276,15 @@ export default {
         this.im()
       } else {
         clearInterval(this.interval)
+      }
+    },
+    handleImgload () {
+      if (this.loadRecordTag === 'load') {
+        this.loadedScrollTop = this.$refs.talkContent.scrollHeight
+        this.$refs.talkContent.scrollTop = this.loadedScrollTop - this.beforeLoadedScrollTop
+      } else {
+        let ele = this.$refs.talkContent
+        ele.scrollTop = ele.scrollHeight
       }
     },
     // 设置群名称
@@ -357,7 +370,7 @@ export default {
         this.socketMessage(3, {}, responseServer)
       }
       this.$nextTick(() => {
-        this.$refs.talkContent.scrollTop = 9999
+        this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
       })
     },
     // 发送文字消息
@@ -385,27 +398,30 @@ export default {
       }
     },
     // 获取聊天记录
-    getRecordList () {
-      synergyRecordPage({ id: this.mainKeyId, groupId: this.$route.query.groupId }).then(res => {
-        const result = res.recordList
-        if (result.length !== 0) {
-          this.mainKeyId = result[0].data.id
-          let recordList = result.reverse()
-          let _recordList = recordList.map(item => item.data)
-          this.recordList = _recordList.concat(this.recordList)
-        }
-        if (result.length < 15) {
-          this.noMoreRecords = true
-        }
-      })
-    },
     loadMoreRecordList () {
       if (this.noMoreRecords) {
         return false
       } else {
         if (this.$refs.talkContent.scrollTop === 0) {
-          this.getRecordList()
-          this.$refs.talkContent.scrollTo(0, 300)
+          this.loadRecordTag = 'load'
+          this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
+          synergyRecordPage({ id: this.mainKeyId, groupId: this.$route.query.groupId }).then(res => {
+            const result = res.recordList
+            if (result.length !== 0) {
+              let recordList = result.reverse()
+              this.mainKeyId = recordList[0].data.id
+              let _recordList = recordList.map(item => item.data)
+              this.recordList = _recordList.concat(this.recordList)
+            }
+            if (result.length < 15) {
+              this.noMoreRecords = true
+            }
+
+            this.$nextTick(() => {
+              this.loadedScrollTop = this.$refs.talkContent.scrollHeight
+              this.$refs.talkContent.scrollTop = this.loadedScrollTop - this.beforeLoadedScrollTop
+            })
+          })
         }
       }
     },
@@ -473,10 +489,6 @@ export default {
       }).then(res => {
         let _message = [{ ...res.data, username: localStorage.username }]
         this.recordList = this.recordList.concat(_message)
-        this.$nextTick(() => {
-          let ele = this.$refs.talkContent
-          ele.scrollTop = ele.scrollHeight
-        })
       }).catch(err => {
         this.$createToast({
           time: 2000,
@@ -550,12 +562,7 @@ nav{
       font-size: 14px;
       height: calc(100% - 155px);
       background-color: #f2f3f5;
-      // overflow: hidden;
       overflow-y: auto;
-      // &:hover {
-      //   // margin-right: -6px;
-      //   overflow-y: auto;
-      // }
       .talker-name {
         padding-top: 8px;
       }
