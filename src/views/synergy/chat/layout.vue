@@ -41,6 +41,12 @@ export default {
       return this.$store.state.userSelectedList
     }
   },
+  activated () {
+    console.log('activated')
+  },
+  deactivated () {
+    console.log('deactivated')
+  },
   methods: {
     // 创建新的聊天
     createNewChatting () {
