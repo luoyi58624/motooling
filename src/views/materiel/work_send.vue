@@ -200,6 +200,9 @@ export default {
       this.bomTypeText = selectedText.join(', ')
       this.bomTypeValue = selectedVal.join(', ')
       this.getInfo()
+      // 还原领料人和收发货编号
+      this.name = ''
+      this.indentNo = ''
     },
     selectedMa (selectedVal, selectedIndex, selectedText) {
       this.maTypeText = selectedText.join(', ')
@@ -211,6 +214,10 @@ export default {
         this.bomTypeText = '主BOM'
         this.getInfo()
       }
+
+      // 还原领料人和收发货编号
+      this.name = ''
+      this.indentNo = ''
 
       // this.getInfo()
     },
@@ -229,6 +236,7 @@ export default {
           }
         })
     },
+    // 选择工装号
     slecteNo () {
       if (this.noList.length === 0) {
         this.showToast('没有工装号可供选择')
@@ -242,6 +250,14 @@ export default {
     },
     selectedNo (selectedVal, selectedIndex, selectedText) {
       this.moldNo = selectedText.join(', ')
+
+      // 还原发料类型、领料人和收发货编号
+      this.bomTypeText = ''
+      this.maTypeText = ''
+      this.maTypeValue = ''
+      this.name = ''
+      this.indentNo = ''
+      this.inwuliaoList = []
     },
     select (value, index) {
       this.wuliaoList[index]['selected'] = value
@@ -295,8 +311,8 @@ export default {
       // 选择凭证日期
       this.$createDatePicker({
         title: '凭证日期',
-        min: new Date(2008, 7, 8),
-        max: new Date(2020, 9, 20),
+        min: new Date(2000, 1, 1),
+        max: new Date(2100, 12, 31),
         value: new Date(),
         onSelect: this.pz
       }).show()
@@ -305,8 +321,8 @@ export default {
       // 选择记账日期
       this.$createDatePicker({
         title: '记账日期',
-        min: new Date(2008, 7, 8),
-        max: new Date(2020, 9, 20),
+        min: new Date(2000, 1, 1),
+        max: new Date(2100, 12, 31),
         value: new Date(),
         onSelect: this.jz
       }).show()
