@@ -63,3 +63,14 @@ export function urlToPath (url) {
     return url
   }
 }
+
+// 聊天界面消息发送的时间处理
+export function time (time) {
+  const currentYear = new Date().getFullYear()
+  const re = new RegExp(currentYear)
+  let processedTime
+  if (re.test(time)) {
+    processedTime = time.splice(5, -3)
+    return processedTime
+  }
+}
