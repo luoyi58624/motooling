@@ -61,7 +61,7 @@
         </div>
       </div>
     </div>
-     <div class="add" @click="add" v-show="this.maTypeValue==='2'">
+     <div class="add" @click="add" v-show="this.maTypeValue==='3'">
         <i class="cubeic-add"></i>添加物料
       </div>
     <div class="title">备注</div>
@@ -133,11 +133,9 @@ export default {
   },
   computed: {
     wuliaoList () {
-      return this.maTypeValue === '2' ? this.$store.state.wuliaoList : this.inwuliaoList
+      return this.maTypeValue === '3' ? this.$store.state.wuliaoList : this.inwuliaoList
     },
     allQuantity () {
-      console.log(123)
-      console.log(this.wuliaoList)
       if (!this.wuliaoList || this.wuliaoList.length === 0) { return 0 }
       return this.wuliaoList.reduce((total, item) => {
         console.log(total)
@@ -207,6 +205,7 @@ export default {
       this.maTypeText = selectedText.join(', ')
       this.maTypeValue = selectedVal.join(', ')
       this.bomTypeValue = selectedVal.join(', ')
+      // 主bom类型
       if (!this.bomTypeText && this.maTypeValue === '1') {
         this.bomTypeValue = 1
         this.bomTypeText = '主BOM'
