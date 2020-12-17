@@ -41,12 +41,6 @@ export default {
       return this.$store.state.userSelectedList
     }
   },
-  activated () {
-    console.log('activated')
-  },
-  deactivated () {
-    console.log('deactivated')
-  },
   methods: {
     // 创建新的聊天
     createNewChatting () {
@@ -66,6 +60,13 @@ export default {
         synergyAddMember(data).then(res => {
           this.invitedMembers = res.successList.map(item => item.username).join('、')
           this.invidedMembersInfo = res.successList
+        }).catch(() => {
+          this.$createToast({
+            time: 2000,
+            txt: '邀请失败，请重试',
+            type: 'error'
+          }).show()
+          this.$store.dispatch('getNewGroupMember', this.initMembers)
         })
       } else {
         let parameter = this.shiftParameter(this.userSelectedList)

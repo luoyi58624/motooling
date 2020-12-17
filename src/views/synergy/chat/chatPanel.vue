@@ -10,38 +10,38 @@
     <div class="chat-content">
       <div class="talk-wrapper">
         <div class="talk-content" ref="talkContent">
-          <div v-for="(item,index) in recordList" :key="index">
-            <div :class="uid == item.senderId?'my-content':'others-content'" v-if="item.contentType !== 5">
-              <div class="talker-name">{{item.username}}</div>
-              <div class="word-message message" v-if="item.contentType === 1">{{item.content}}</div>
-              <div class="image-message message" v-else-if="item.contentType === 2 || item.contentType === 6" @dblclick="showImagePreview(fileAddressFormatFunc(item.content))">
-                <img :src="fileAddressFormatFunc(item.content)" loading="lazy" @load="handleImgload">
-              </div>
-              <div class="audio-message message"
-                v-else-if="item.contentType === 3"
-                @click="playAudio(fileAddressFormatFunc(item.content))"
-              >
-                <img :src="require('@/assets/icon-voice-white.png')" alt="">
-                <span>{{item.duration}}"</span>
-              </div>
-              <div
-                class="video-message message"
-                v-else-if="item.contentType === 4"
-              >
-                <video
-                 preload="meta"
-                 :src="fileAddressFormatFunc(item.content)"
-                 controls="controls"
-                 width="250"
-                 @click="playVideo($event)"
+            <div v-for="(item,index) in recordList" :key="index">
+              <div :class="uid == item.senderId?'my-content':'others-content'" v-if="item.contentType !== 5">
+                <div class="time-name"><span class="time">{{item.sendTime}}</span><span class="name">{{item.username}}</span></div>
+                <div class="word-message message" v-if="item.contentType === 1">{{item.content}}</div>
+                <div class="image-message message" v-else-if="item.contentType === 2 || item.contentType === 6" @dblclick="showImagePreview(fileAddressFormatFunc(item.content))">
+                  <img :src="fileAddressFormatFunc(item.content)" @load="handleImgload">
+                </div>
+                <div class="audio-message message"
+                  v-else-if="item.contentType === 3"
+                  @click="playAudio(fileAddressFormatFunc(item.content))"
                 >
-                </video>
+                  <img :src="require('@/assets/icon-voice-white.png')" alt="">
+                  <span>{{item.duration}}"</span>
+                </div>
+                <div
+                  class="video-message message"
+                  v-else-if="item.contentType === 4"
+                >
+                  <video
+                  preload="meta"
+                  :src="fileAddressFormatFunc(item.content)"
+                  controls="controls"
+                  width="250"
+                  @click="playVideo($event)"
+                  >
+                  </video>
+                </div>
+              </div>
+              <div v-if="item.contentType === 5">
+                <div class="sys-notifacation"><span>{{item.content}}</span></div>
               </div>
             </div>
-            <div v-if="item.contentType === 5">
-              <div class="sys-notifacation"><span>{{item.content}}</span></div>
-            </div>
-          </div>
         </div>
         <div class="input-area">
           <div class="upload-wrapper">
@@ -85,6 +85,7 @@
 
 <script>
 import { fileAddressFormat } from '@/utils/utils.js'
+import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
   getOpenSynergy,
@@ -197,7 +198,6 @@ export default {
             }
           })
         }
-
         let memberList = JSON.parse(JSON.stringify(res.memberList))
         this.groupMember = memberList
         this.groupOwnerUid = memberList[0].uid
@@ -215,9 +215,8 @@ export default {
           })
         }
 
-        this.recordList = recordList.map(item => {
-          return item.data
-        })
+        this.recordList = time(recordList)
+
         this.mainKeyId = recordList[0] && recordList[0].data.id
         this.im()
       }).catch(err => {
@@ -254,7 +253,6 @@ export default {
     },
     websocketonopen () {
       this.interval = setInterval(() => {
-        console.log('ping')
         this.socket.send(JSON.stringify({
           requestType: 'ping',
           serialNumber: null,
@@ -363,7 +361,9 @@ export default {
       }
     },
     receiveMessage (message) {
-      this.recordList.push(message.data)
+      const currentTime = new Date()
+      const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
+      this.recordList.push({ ...message.data, sendTime })
       if (message.responseType === '666666') { // 服务器主动推送
         this.$store.dispatch('latestMessageId', message.data.id)
         let responseServer = Object.assign({}, message)
@@ -378,17 +378,24 @@ export default {
     sendWordMessage (type) {
       this.loadRecordTag = ''
       if (this.wordContent.trim() !== '') {
+        const currentTime = new Date()
+        const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
+        let _message = [{ contentType: 1, content: this.wordContent, senderId: this.uid, sendTime, username: localStorage.username }]
+        this.recordList = this.recordList.concat(_message)
+        this.$nextTick(() => {
+          this.$refs.talkContent.scrollTop = 9999
+        })
         sendMessage({
           groupId: this.$route.query.groupId,
           senderId: this.uid,
           contentType: 1,
           content: this.wordContent
-        }).then(res => {
-          let _message = [{ ...res.data, username: localStorage.username }]
-          this.recordList = this.recordList.concat(_message)
-          this.$nextTick(() => {
-            this.$refs.talkContent.scrollTop = 9999
-          })
+        }).catch(err => {
+          this.$createToast({
+            time: 2000,
+            txt: err.msg || '发送失败，请检查网络',
+            type: 'error'
+          }).show()
         })
         this.wordContent = ''
       } else {
@@ -412,7 +419,8 @@ export default {
             if (result.length !== 0) {
               let recordList = result.reverse()
               this.mainKeyId = recordList[0].data.id
-              let _recordList = recordList.map(item => item.data)
+
+              let _recordList = time(recordList)
               this.recordList = _recordList.concat(this.recordList)
             }
             if (result.length < 15) {
@@ -482,15 +490,16 @@ export default {
       })
     },
     handleMessage ({ contentType, smallImg, content } = { }) {
+      const currentTime = new Date()
+      const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
+      let message = [{ contentType, smallImg, content, sendTime, username: localStorage.username, senderId: this.uid }]
+      this.recordList = this.recordList.concat(message)
       sendMessage({
         groupId: this.$route.query.groupId,
         senderId: this.uid,
         contentType,
         content,
         smallImg
-      }).then(res => {
-        let _message = [{ ...res.data, username: localStorage.username }]
-        this.recordList = this.recordList.concat(_message)
       }).catch(err => {
         this.$createToast({
           time: 2000,
@@ -566,8 +575,13 @@ nav{
       height: calc(100% - 155px);
       background-color: #f2f3f5;
       overflow-y: auto;
-      .talker-name {
+      .time-name {
         padding-top: 8px;
+        .time{
+          font-size: 12px;
+          padding: 0 3px;
+          color: #828c99;
+        }
       }
       .message {
           margin: 8px 0 8px 20px;
@@ -598,12 +612,21 @@ nav{
         flex-direction: column;
         align-items: flex-end;
         margin-right: 18px;
+        .time-name {
+          display: flex;
+          align-items: center;
+        }
       }
       .others-content {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         margin-left: 18px;
+        .time-name {
+          display: flex;
+          flex-direction: row-reverse;
+          align-items: center;
+        }
       }
       .sys-notifacation {
         text-align: center;
