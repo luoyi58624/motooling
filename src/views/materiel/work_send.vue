@@ -363,7 +363,7 @@ export default {
         list: list,
         indentNo: this.indentNo,
         username: this.name,
-        bomtype: this.bomTypeValue
+        bomType: this.bomTypeValue
       })
         .then(res => {
           this.hideLoading()
