@@ -113,7 +113,7 @@ export default {
       ],
       MaTypeList: [
         { text: '按bom', value: '1' },
-        { text: '增发物料', value: '2' }
+        { text: '增发物料', value: '3' }
       ],
       indentNo: '', // 收发货单编号
       billNo: '', // 收发货单边行
@@ -206,6 +206,7 @@ export default {
     selectedMa (selectedVal, selectedIndex, selectedText) {
       this.maTypeText = selectedText.join(', ')
       this.maTypeValue = selectedVal.join(', ')
+      this.bomTypeValue = selectedVal.join(', ')
       if (!this.bomTypeText && this.maTypeValue === '1') {
         this.bomTypeValue = 1
         this.bomTypeText = '主BOM'
