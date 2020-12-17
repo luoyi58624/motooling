@@ -112,7 +112,7 @@ export default {
         }
       ],
       MaTypeList: [
-        { text: '按bom', value: '1' },
+        { text: '按BOM', value: '1' },
         { text: '增发物料', value: '3' }
       ],
       indentNo: '', // 收发货单编号
