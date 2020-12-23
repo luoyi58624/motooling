@@ -477,13 +477,12 @@ var router = new Router({
     {
       path: '/tooling',
       name: 'tooling',
-      component: () => import('./views/tooling')
+      component: () => import('./views/tooling/tooling.vue')
     }
   ]
 })
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || 'MoTooling'
-  console.log(WEBURL(), token())
   const path = to.path.toLowerCase()
   if (to.query.weburl) {
     localStorage.WEBURL = decodeURIComponent(to.query.weburl)

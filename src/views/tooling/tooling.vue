@@ -319,6 +319,7 @@ ul li {
 header {
   background-color: #2f3648;
   color: #fff;
+  padding-left: 10px;
   height: 32px;
   line-height: 32px;
 }
