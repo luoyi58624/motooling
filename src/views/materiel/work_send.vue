@@ -61,7 +61,7 @@
         </div>
       </div>
     </div>
-     <div class="add" @click="add" v-show="this.maTypeValue==='2'">
+     <div class="add" @click="add" v-show="this.maTypeValue==='3'">
         <i class="cubeic-add"></i>添加物料
       </div>
     <div class="title">备注</div>
@@ -112,8 +112,8 @@ export default {
         }
       ],
       MaTypeList: [
-        { text: '按bom', value: '1' },
-        { text: '增发物料', value: '2' }
+        { text: '按BOM', value: '1' },
+        { text: '增发物料', value: '3' }
       ],
       indentNo: '', // 收发货单编号
       billNo: '', // 收发货单边行
@@ -133,11 +133,9 @@ export default {
   },
   computed: {
     wuliaoList () {
-      return this.maTypeValue === '2' ? this.$store.state.wuliaoList : this.inwuliaoList
+      return this.maTypeValue === '3' ? this.$store.state.wuliaoList : this.inwuliaoList
     },
     allQuantity () {
-      console.log(123)
-      console.log(this.wuliaoList)
       if (!this.wuliaoList || this.wuliaoList.length === 0) { return 0 }
       return this.wuliaoList.reduce((total, item) => {
         console.log(total)
@@ -202,15 +200,24 @@ export default {
       this.bomTypeText = selectedText.join(', ')
       this.bomTypeValue = selectedVal.join(', ')
       this.getInfo()
+      // 还原领料人和收发货编号
+      this.name = ''
+      this.indentNo = ''
     },
     selectedMa (selectedVal, selectedIndex, selectedText) {
       this.maTypeText = selectedText.join(', ')
       this.maTypeValue = selectedVal.join(', ')
+      this.bomTypeValue = selectedVal.join(', ')
+      // 主bom类型
       if (!this.bomTypeText && this.maTypeValue === '1') {
         this.bomTypeValue = 1
         this.bomTypeText = '主BOM'
         this.getInfo()
       }
+
+      // 还原领料人和收发货编号
+      this.name = ''
+      this.indentNo = ''
 
       // this.getInfo()
     },
@@ -229,6 +236,7 @@ export default {
           }
         })
     },
+    // 选择工装号
     slecteNo () {
       if (this.noList.length === 0) {
         this.showToast('没有工装号可供选择')
@@ -242,6 +250,14 @@ export default {
     },
     selectedNo (selectedVal, selectedIndex, selectedText) {
       this.moldNo = selectedText.join(', ')
+
+      // 还原发料类型、领料人和收发货编号
+      this.bomTypeText = ''
+      this.maTypeText = ''
+      this.maTypeValue = ''
+      this.name = ''
+      this.indentNo = ''
+      this.inwuliaoList = []
     },
     select (value, index) {
       this.wuliaoList[index]['selected'] = value
@@ -295,8 +311,8 @@ export default {
       // 选择凭证日期
       this.$createDatePicker({
         title: '凭证日期',
-        min: new Date(2008, 7, 8),
-        max: new Date(2020, 9, 20),
+        min: new Date(2000, 1, 1),
+        max: new Date(2100, 12, 31),
         value: new Date(),
         onSelect: this.pz
       }).show()
@@ -305,8 +321,8 @@ export default {
       // 选择记账日期
       this.$createDatePicker({
         title: '记账日期',
-        min: new Date(2008, 7, 8),
-        max: new Date(2020, 9, 20),
+        min: new Date(2000, 1, 1),
+        max: new Date(2100, 12, 31),
         value: new Date(),
         onSelect: this.jz
       }).show()
@@ -363,7 +379,7 @@ export default {
         list: list,
         indentNo: this.indentNo,
         username: this.name,
-        bomtype: this.bomTypeValue
+        bomType: this.bomTypeValue
       })
         .then(res => {
           this.hideLoading()
