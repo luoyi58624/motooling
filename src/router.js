@@ -473,6 +473,11 @@ var router = new Router({
       meta: {
         title: '关注公众号'
       }
+    },
+    {
+      path: '/tooling',
+      name: 'tooling',
+      component: () => import('./views/tooling')
     }
   ]
 })
