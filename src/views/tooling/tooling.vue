@@ -275,7 +275,7 @@ export default {
         }
       }
       window.parent.postMessage(
-        JSON.stringify(data),
+        data,
         document.referrer
       )
     }
