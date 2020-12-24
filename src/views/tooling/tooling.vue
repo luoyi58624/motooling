@@ -276,7 +276,7 @@ export default {
       }
       window.parent.postMessage(
         JSON.stringify(data),
-        'http://api.unit.testing.motooling.com'
+        'http://mtu3d.motooling.com'
       )
     }
   }
