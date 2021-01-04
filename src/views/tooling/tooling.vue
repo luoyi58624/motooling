@@ -28,7 +28,7 @@
               <template slot-scope="scope">
                 <span
                   @click="checkPartInfo(scope.row.matNo)"
-                  style="color:#3c76af;text-decoration: underline;cursor: pointer;"
+                  style="color:#80d1ff;text-decoration: underline;cursor: pointer;"
                   >{{ scope.row.matNo }}</span
                 >
               </template>
@@ -84,7 +84,7 @@
               <ul>
                 <li>
                   <span>紧迫度</span
-                  ><span class="status">紧张（{{ baseMap.urgency }}）</span>
+                  ><span class="status" :style="{color:baseMap.urgencyColor}">{{ baseMap.urgency }}</span>
                 </li>
                 <li>
                   <span>验证日期</span><span>{{ baseMap.firstTryDate }}</span>
@@ -362,8 +362,9 @@ main {
     color: #fff;
   }
   .mold-info {
+    margin-right: 20px;
     ul {
-      width: 220px;
+      width: 100%;
       padding: 20px 0;
       font-size: 14px;
       li {
@@ -374,7 +375,7 @@ main {
           color: #fec900;
         }
         a {
-          color: #2b76b7;
+          color: #80d1ff;
         }
       }
     }
