@@ -96,7 +96,7 @@
                 </li>
                 <li>
                   <span>ISSUE记录</span
-                  ><a :href="baseMap.issueUrl" target="_parent">MoWork链接</a>
+                  ><a :href="baseMap.issueUrl" :target="baseMap.issueUrl === '' ? '_self' : '_parent'">MoWork链接</a>
                 </li>
               </ul>
             </div>
