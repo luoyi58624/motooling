@@ -6,6 +6,7 @@
         <div class="board-table">
           <el-table
             :data="tableData"
+            ref="el_table"
             style="width: 100%"
             :stripe="true"
             :header-row-style="{
@@ -36,14 +37,15 @@
             <el-table-column
               prop="totalWorkTime"
               label="总工时"
-              sortable
+              :sortable="true"
+              :sort-method="sort"
               align="center"
             >
             </el-table-column>
             <el-table-column
               prop="finishedPercent"
               label="加工进度"
-              sortable
+              :sortable="true"
               width="180"
               align="center"
             >
@@ -246,6 +248,7 @@ export default {
           item.currentList = item.currentList.length
             ? item.currentList[0].procName
             : ''
+          item.finishedPercent = Number(item.finishedPercent)
           partProgressList.push(item)
         })
         this.tableData = partProgressList
@@ -278,6 +281,17 @@ export default {
         data,
         document.referrer
       )
+    },
+    sort (num1, num2) {
+      const val1 = parseFloat(num1.totalWorkTime)
+      const val2 = parseFloat(num2.totalWorkTime)
+      if (val1 < val2) {
+        return -1
+      } else if (val1 > val2) {
+        return 1
+      } else {
+        return 0
+      }
     }
   }
 }
