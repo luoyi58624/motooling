@@ -478,6 +478,11 @@ var router = new Router({
       path: '/tooling',
       name: 'tooling',
       component: () => import('./views/tooling/tooling.vue')
+    },
+    {
+      path: '/logistic',
+      name: 'logistic',
+      component: () => import('./views/logistics')
     }
   ]
 })
@@ -495,6 +500,10 @@ router.beforeEach((to, from, next) => {
   }
   if (to.query.imurl) {
     localStorage.imurl = decodeURIComponent(to.query.imurl)
+  }
+  if (to.path === '/logistic') {
+    next()
+    return
   }
   if (to.query.token && to.query.weburl) {
     next()
