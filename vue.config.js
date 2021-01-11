@@ -52,6 +52,12 @@ module.exports = {
     //     target: 'http://192.168.2.247:8808/'
     //   }
     // }
+  },
+  configureWebpack: {
+    externals: {
+      AMap: 'AMap',
+      AMapUI: 'AMapUI'
+    }
   }
 }
 
