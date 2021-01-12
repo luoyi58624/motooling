@@ -61,11 +61,17 @@ export default {
             map: this.map,
             icon: marker.icon,
             position: [marker.position[0], marker.position[1]],
+            offset: new AMap.Pixel(-40, -40),
             label: {
               content: content,
               offset: new AMap.Pixel(20, -9)
             }
 
+          }).on('dblclick', () => {
+            window.parent.postMessage(
+              { type: 'openflow' },
+              document.referrer
+            )
           })
         })
         this.map.getCenter()
