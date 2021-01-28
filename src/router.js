@@ -473,12 +473,21 @@ var router = new Router({
       meta: {
         title: '关注公众号'
       }
+    },
+    {
+      path: '/tooling',
+      name: 'tooling',
+      component: () => import('./views/tooling/tooling.vue')
+    },
+    {
+      path: '/logistic',
+      name: 'logistic',
+      component: () => import('./views/logistics')
     }
   ]
 })
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || 'MoTooling'
-  console.log(WEBURL(), token())
   const path = to.path.toLowerCase()
   if (to.query.weburl) {
     localStorage.WEBURL = decodeURIComponent(to.query.weburl)
@@ -491,6 +500,10 @@ router.beforeEach((to, from, next) => {
   }
   if (to.query.imurl) {
     localStorage.imurl = decodeURIComponent(to.query.imurl)
+  }
+  if (to.path === '/logistic') {
+    next()
+    return
   }
   if (to.query.token && to.query.weburl) {
     next()

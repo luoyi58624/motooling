@@ -124,7 +124,7 @@ export default {
       recordList: [],
       value: '',
       interval: null,
-      selectedGroupMember: null,
+      selectedGroupMember: 0,
       groupOwnerUid: null,
       timeout: null,
       chattingTarget: {},

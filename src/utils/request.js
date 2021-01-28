@@ -19,7 +19,6 @@ instance.interceptors.request.use(
 
     return config
   }, error => {
-    console.log(error)
     return Promise.reject(error)
   }
 )
@@ -27,11 +26,9 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   response => {
     response.data.resultData = decrypt(response.data.resultData)
-    console.log(response)
     if (response.data.code === '444444') {
       router.replace('/login')
       let fullPath = router.currentRoute.fullPath
-      console.log(fullPath)
       router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
     }
     return (response)

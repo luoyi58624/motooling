@@ -2,13 +2,17 @@
   <div class="list">
     <div class="search">
       <div class="enter-keyword">
-        <van-search
-        v-model="value"
-        background="#e6e8eb"
-        placeholder="搜索"
-        :clearable="false"
-        @input="search"/>
-        <img :src="require('@/assets/icon-add.png')" alt="" @click="$emit('add-user')">
+        <div>
+          <el-input
+            placeholder="搜索"
+            prefix-icon="el-icon-search"
+            size="mini"
+            v-model="value"
+            :clearable="true"
+            @input="search">
+          </el-input>
+        </div>
+        <i class="el-icon-plus" @click="$emit('add-user')"></i>
       </div>
     </div>
     <div class="message-list">
@@ -251,15 +255,14 @@ export default {
     position: fixed;
     left: 0;
     top: 0;
-    height: 60px;
+    margin: 20px 0 0 10px;
     background-color: #e6e8eb;
     .enter-keyword {
       display: flex;
       align-items: center;
     }
-    img{
-      width: 21px;
-      height: 21px;
+    i{
+      margin-left: 8px;
       cursor: pointer;
     }
   }
