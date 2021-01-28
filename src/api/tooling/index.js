@@ -28,3 +28,10 @@ export function projectProgress (moldNo) {
     }
   })
 }
+
+export function apifox () {
+  return request({
+    method: 'get',
+    url: 'http://127.0.0.1:4523/mock/372507/pet/1'
+  })
+}
