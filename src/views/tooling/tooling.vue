@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import { makingMoldList, projectProgress } from '@/api/tooling'
+import { makingMoldList, projectProgress, apifox } from '@/api/tooling'
 import debounce from '@/utils/debounce'
 import * as echarts from 'echarts'
 export default {
@@ -212,6 +212,9 @@ export default {
   created () {
     this.resize = debounce(this.resize, 300)
     this.selectedMoldNoInfo()
+    apifox().then(res => {
+      console.log({ apifox: res })
+    })
   },
   async mounted () {
     await makingMoldList().then(res => {

@@ -1,4 +1,14 @@
-import { Select, Table, Progress, Option, TableColumn, Input, Icon } from 'element-ui'
+import {
+  Select,
+  Table,
+  Progress,
+  Option,
+  TableColumn,
+  Input,
+  Icon,
+  Dialog,
+  Pagination
+} from 'element-ui'
 const element = {
   install: function (Vue) {
     Vue.use(Table)
@@ -8,6 +18,8 @@ const element = {
     Vue.use(TableColumn)
     Vue.use(Input)
     Vue.use(Icon)
+    Vue.use(Dialog)
+    Vue.use(Pagination)
   }
 }
 

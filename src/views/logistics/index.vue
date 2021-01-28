@@ -1,14 +1,26 @@
 <template>
- <div id="all-map" class="map"></div>
+<div>
+  <div id="all-map" class="map"></div>
+  <div v-if="transitVisible">
+    <transit
+    :truckId="truckId"
+    ref="truck"
+    @update-visible="transitVisible=false" />
+  </div>
+</div>
 </template>
 <script>
 import AMap from 'AMap'
-import AMapUI from 'AMapUI'
+import transit from './transit'
+import { pathData } from '@/api/logistics'
 export default {
   components: {
+    transit
   },
   data () {
     return {
+      transitVisible: false,
+      truckId: 1
     }
   },
   mounted () {
@@ -67,86 +79,57 @@ export default {
               offset: new AMap.Pixel(20, -9)
             }
 
-          }).on('dblclick', () => {
-            window.parent.postMessage(
-              { type: 'openflow' },
-              document.referrer
-            )
           })
         })
         this.map.getCenter()
 
-        AMapUI.load(['ui/misc/PathSimplifier', 'lib/$'], (PathSimplifier, $) => {
-          if (!PathSimplifier.supportCanvas) {
-            alert('当前环境不支持 Canvas！')
-            return
-          }
-          const pathSimplifierIns = new PathSimplifier({
-            zIndex: 100,
-            autoSetFitView: true,
-            map: this.map, // 所属的地图实例
+        pathData().then(d => {
+          const routes = d.data.filter((route, index) => {
+            return index === 0 || index === 4 || index === 5
+          })
 
-            getPath: function (pathData, pathIndex) {
-              return pathData.path
-            },
-            getHoverTitle: function (pathData, pathIndex, pointIndex) {
-              if (pathIndex === 0) {
-                // point
-                return '物流运输中，预计今天14:20到达目的地'
-              } else if (pathIndex === 1) {
-                return '物流已到达郑州，下一站武汉。'
+          routes.forEach(route => {
+            const polyline = new AMap.Polyline({
+              map: this.map,
+              path: route.path,
+              showDir: true,
+              strokeColor: '#28F',
+              strokeWeight: 6
+            })
+          })
+
+          routes.forEach((route, index) => {
+            if (index !== 0) {
+              let truckId, routeLine
+              if (index === 1) {
+                truckId = 1
+                routeLine = route.path.slice(0, 5000)
               } else {
-                return '无物流信息'
+                truckId = 2
+                routeLine = route.path.slice(0, 3000)
               }
-            },
-            // 轨迹线的样式
-            renderOptions: {
-              renderAllPointsIfNumberBelow: -1 // 绘制路线节点，如不需要可设置为-1
+              const truckMarker = new AMap.Marker({
+                map: this.map,
+                icon: new AMap.Icon({
+                  image: require('@/assets/car.png'),
+                  size: new AMap.Size(40, 44),
+                  imageSize: new AMap.Size(40, 44)
+                }),
+                position: [114.829826, 28.026514],
+                offset: new AMap.Pixel(-22, -22),
+                autoRotation: true
+              }).on('click', () => {
+                this.transitVisible = true
+                this.truckId = truckId
+                this.$nextTick(() => {
+                  this.transitVisible = true
+                  this.$refs.truck.init()
+                })
+              })
+              truckMarker.moveAlong(routeLine, 4000000)
             }
           })
-          window.pathSimplifierIns = pathSimplifierIns
-          $.getJSON('https://a.amap.com/amap-ui/static/data/big-routes.json', function (d) {
-            const routes = d.filter((route, index) => {
-              return index === 0 || index === 4 || index === 5
-            })
-            routes.splice(0, 1, {
-              name: 'fly',
-              path: PathSimplifier.getGeodesicPath(
-                routes[0].path[0], routes[0].path[routes[0].path.length - 1], 100)
-            })
-
-            pathSimplifierIns.setData(routes)
-            function onload () {
-              pathSimplifierIns.renderLater()
-            }
-
-            function onerror (e) {
-              alert('图片加载失败！')
-            }
-            const navg1 = pathSimplifierIns.createPathNavigator(0, {
-              loop: true, // 循环播放
-              speed: 100000, // 巡航速度，单位千米/小时
-              pathNavigatorStyle: {
-                width: 30,
-                height: 30,
-                // 使用图片
-                content: PathSimplifier.Render.Canvas.getImageContent(require('@/assets/plane.png'), onload, onerror),
-                strokeStyle: null,
-                fillStyle: null
-              }
-            })
-            const navg2 = pathSimplifierIns.createPathNavigator(1, {
-              loop: true, // 循环播放
-              speed: 100000, // 巡航速度，单位千米/小时
-              pathNavigatorStyle: {
-                width: 30,
-                height: 30,
-                content: PathSimplifier.Render.Canvas.getImageContent(require('@/assets/car.png'), onload, onerror)
-              }
-            })
-            navg1.start()
-            navg2.start()
-          })
+          this.map.setFitView()
         })
       })
     }
