@@ -79,6 +79,11 @@ export default {
               offset: new AMap.Pixel(20, -9)
             }
 
+          }).on('click', () => {
+            window.parent.postMessage(
+              { type: 'openflow' },
+              document.referrer
+            )
           })
         })
         this.map.getCenter()
