@@ -12,3 +12,9 @@ export function transit (truckId) {
     url: `http://192.168.2.133:4523/mock/372693/truck/${truckId}`
   })
 }
+
+export function arrivalTime () {
+  return request({
+    url: 'http://192.168.2.133:4523/mock/372693/arrival'
+  })
+}
