@@ -30,12 +30,9 @@ instance.interceptors.response.use(
       router.replace('/login')
       let fullPath = router.currentRoute.fullPath
       router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
-    } else if (response.data.code === '000000') {
-      return response.data.data
     } else if (response.data.code === '555555') {
-      console.log(55555)
-      return Promise.reject(response.data.data)
-    } else if (response.status === 200) {
+      return Promise.reject(response)
+    } else if (response.status === 200 || response.data.code === '000000') {
       return response
     } else {
       return Promise.reject(response.data)
