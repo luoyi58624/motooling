@@ -490,9 +490,14 @@ var router = new Router({
       component: () => import('./views/logistics/arrival')
     },
     {
-      path: '/departure',
+      path: '/departure-time',
       name: 'departure',
       component: () => import('./views/logistics/departure')
+    },
+    {
+      path: '/stock',
+      name: 'stock',
+      component: () => import('./views/logistics/stock/index')
     }
   ]
 })
@@ -511,7 +516,7 @@ router.beforeEach((to, from, next) => {
   if (to.query.imurl) {
     localStorage.imurl = decodeURIComponent(to.query.imurl)
   }
-  if (to.path === '/logistic' || to.path === '/arrival' || to.path === '/departure') {
+  if (to.path === '/logistic' || to.path === '/arrival' || to.path === '/departure-time' || to.path === '/stock') {
     next()
     return
   }

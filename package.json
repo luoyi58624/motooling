@@ -18,6 +18,7 @@
     "element-ui": "^2.14.1",
     "good-storage": "^1.1.0",
     "md5": "^2.2.1",
+    "resize-detector": "^0.2.2",
     "shortid": "^2.2.14",
     "vant": "^2.0.6",
     "vue": "^2.6.10",
