@@ -22,11 +22,9 @@ export default {
             radius: '50%',
             center: ['50%', '50%'],
             data: [
-              { value: 1048, name: '搜索引擎' },
-              { value: 735, name: '直接访问' },
-              { value: 580, name: '邮件营销' },
-              { value: 484, name: '联盟广告' },
-              { value: 300, name: '视频广告' }
+              { value: 1048, name: '待发货量' },
+              { value: 735, name: '已签收量' },
+              { value: 580, name: '待收货量' }
             ],
             label: {
               color: '#fff',

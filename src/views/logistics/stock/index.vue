@@ -4,27 +4,46 @@
   <div class="pie-chart">
     <div class="goods-rate">
       <div ref="goodsRate" style="width:100%;height:300px"></div>
+      <p>库存物资占比</p>
     </div>
     <div class="receive-send">
       <stock />
+      <p>今日收发货量</p>
     </div>
   </div>
   <div class="chargers">
-    <img src="" alt="">
-    <span>负责人: 陈彦威</span>
+    <div class="chargers-item" v-for="(member,index) in chargers" :key="index">
+      <img :src="require('@/assets/male.png')" @click="startChat(member.memberName)">
+      <p> {{member.memberName}}</p>
+    </div>
   </div>
+  <el-dialog
+    :visible.sync="visible"
+    width="500px"
+    top="0"
+    custom-class="transit-dialog"
+    :before-close="handleClose">
+    <div style="height:500px">
+      <chat :userId="userId" :talkMember="talkMember" />
+    </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import * as echarts from 'echarts'
 import stock from './stock'
+import chat from '@/views/synergy/chat/chatPanel'
 import { addListener, removeListener } from 'resize-detector'
 import debounce from '@/utils/debounce'
 export default {
-  components: { stock },
+  components: { stock, chat },
   data () {
     return {
+      chargers: [{ memberName: '韩立' }, { memberName: '李笑来' }, { memberName: '昌恒' }],
+      talkMember: '',
+      userId: 0,
+      visible: false,
       option: {
         tooltip: {
           trigger: 'item'
@@ -35,11 +54,11 @@ export default {
             radius: '50%',
             center: ['50%', '50%'],
             data: [
-              { value: 1048, name: '搜索引擎' },
-              { value: 735, name: '直接访问' },
-              { value: 580, name: '邮件营销' },
-              { value: 484, name: '联盟广告' },
-              { value: 300, name: '视频广告' }
+              { value: 1048, name: '成品' },
+              { value: 735, name: '半成品' },
+              { value: 580, name: '封存料' },
+              { value: 484, name: '原材料' },
+              { value: 300, name: '其他' }
             ],
             label: {
               color: '#fff',
@@ -81,12 +100,19 @@ export default {
     },
     resize () {
       this.chart.resize()
+    },
+    startChat (member) {
+      this.visible = true
+      this.talkMember = member
+    },
+    handleClose () {
+      this.visible = false
     }
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .stock {
   color: #fff;
   background-color: rgb(42, 49, 59);
@@ -100,8 +126,29 @@ export default {
 }
 .pie-chart {
   display: flex;
+  p {
+    text-align: center;
+    font-size: 16px;
+  }
 }
 .goods-rate, .receive-send {
     width: 50%;
+  }
+  .chargers {
+    margin-top: 20px;
+    display: flex;
+    .chargers-item {
+      margin-left: 20px;
+      img {
+        display: block;
+        width: 90px;
+        height: 109px;
+        border-radius: 8px;
+      }
+      p{
+        text-align: center;
+        line-height: 2;
+      }
+    }
   }
 </style>

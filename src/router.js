@@ -498,6 +498,11 @@ var router = new Router({
       path: '/stock',
       name: 'stock',
       component: () => import('./views/logistics/stock/index')
+    },
+    {
+      path: '/cargo-load',
+      name: 'stock',
+      component: () => import('./views/logistics/cargoLoad')
     }
   ]
 })
@@ -516,7 +521,11 @@ router.beforeEach((to, from, next) => {
   if (to.query.imurl) {
     localStorage.imurl = decodeURIComponent(to.query.imurl)
   }
-  if (to.path === '/logistic' || to.path === '/arrival' || to.path === '/departure-time' || to.path === '/stock') {
+  if (to.path === '/logistic' ||
+  to.path === '/arrival' ||
+  to.path === '/departure-time' ||
+  to.path === '/stock' ||
+  to.path === '/cargo-load') {
     next()
     return
   }

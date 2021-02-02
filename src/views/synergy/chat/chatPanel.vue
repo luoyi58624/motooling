@@ -3,7 +3,8 @@
     <nav>
       <div class="chatting-name">
         <input type="text" v-if="chattingTarget.type==666" v-model="chattingTarget.name" @blur="setGroupName($event.target.value)">
-        <span v-else>{{chattingTarget.name}}</span>
+        <span v-else-if="chattingTarget.type==66">{{chattingTarget.name}}</span>
+        <span v-else>{{talkMember}}</span>
       </div>
       <div class="add-member" v-if="chattingTarget.type == 666" @click="$emit('add-user',true)"></div>
     </nav>
@@ -109,6 +110,14 @@ export default {
     invidedMembersInfo: {
       type: Array,
       default: () => []
+    },
+    userId: {
+      type: Number,
+      default: 0
+    },
+    talkMember: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -125,7 +134,7 @@ export default {
       value: '',
       interval: null,
       selectedGroupMember: 0,
-      groupOwnerUid: null,
+      groupOwnerUid: '',
       timeout: null,
       chattingTarget: {},
       groupMember: [],
@@ -179,53 +188,53 @@ export default {
   },
   methods: {
     async init () {
-      let uid = this.$route.query.relationId
+      let uid = this.$route.query.relationId || this.userId
       if (uid) {
         await this.createPrivateChatting(uid)
-      }
-      await getOpenSynergy({
-        relationType: this.$route.query.relationType,
-        relationId: this.$route.query.ralationId,
-        groupId: this.$route.query.groupId
-      }).then(res => {
-        this.isClose = false
-        if (res.synergyGroup.relationType === 666) {
-          this.chattingTarget = { name: res.synergyGroup.subject, type: 666 }
-        } else {
-          res.memberList.forEach(member => {
-            if (member.uid !== this.uid * 1) {
-              this.chattingTarget = { name: member.username, type: 66 }
-            }
-          })
-        }
-        let memberList = JSON.parse(JSON.stringify(res.memberList))
-        this.groupMember = memberList
-        this.groupOwnerUid = memberList[0].uid
-        this.$store.commit('changeUserSelectedList', res.memberList)
-
-        this.synergyGroup = res.synergyGroup
-        let recordList = res.recordList.reverse()
-
-        if (this.notReadCount !== 0) {
-          let recordLen = recordList.length - 1
-          alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
-            getNewsList().then(res => {
-              this.$store.dispatch('newsList', res.newsList)
+      } else {
+        await getOpenSynergy({
+          relationType: this.$route.query.relationType,
+          groupId: this.$route.query.groupId
+        }).then(res => {
+          this.isClose = false
+          if (res.synergyGroup.relationType === 666) {
+            this.chattingTarget = { name: res.synergyGroup.subject, type: 666 }
+          } else {
+            res.memberList.forEach(member => {
+              if (member.uid !== this.uid * 1) {
+                this.chattingTarget = { name: member.username, type: 66 }
+              }
             })
-          })
-        }
+          }
+          let memberList = JSON.parse(JSON.stringify(res.memberList))
+          this.groupMember = memberList
+          this.groupOwnerUid = memberList[0].uid
+          this.$store.commit('changeUserSelectedList', res.memberList)
 
-        this.recordList = time(recordList)
+          this.synergyGroup = res.synergyGroup
+          let recordList = res.recordList.reverse()
 
-        this.mainKeyId = recordList[0] && recordList[0].data.id
-        this.im()
-      }).catch(err => {
-        this.$createToast({
-          time: 2000,
-          txt: err.msg || '互动消息开启失败,请检查网络',
-          type: 'error'
-        }).show()
-      })
+          if (this.notReadCount !== 0) {
+            let recordLen = recordList.length - 1
+            alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
+              getNewsList().then(res => {
+                this.$store.dispatch('newsList', res.newsList)
+              })
+            })
+          }
+
+          this.recordList = time(recordList)
+
+          this.mainKeyId = recordList[0] && recordList[0].data.id
+          this.im()
+        }).catch(err => {
+          this.$createToast({
+            time: 2000,
+            txt: err.msg || '互动消息开启失败,请检查网络',
+            type: 'error'
+          }).show()
+        })
+      }
     },
     im () {
       let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
