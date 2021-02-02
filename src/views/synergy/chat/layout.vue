@@ -4,11 +4,7 @@
       <message-list @add-user="createNewChatting" />
     </div>
     <div class="chat-panel">
-      <transition>
-        <keep-alive>
-          <router-view @add-user="addGroupMember" :invitedMembers="invitedMembers" :invidedMembersInfo="invidedMembersInfo"></router-view>
-        </keep-alive>
-      </transition>
+        <router-view @add-user="addGroupMember" :invitedMembers="invitedMembers" :invidedMembersInfo="invidedMembersInfo"></router-view>
     </div>
     <div class="add-user" v-show="show">
       <UserSelect @confirm="confirm" :visible.sync="show" @cancel="cancel" />
