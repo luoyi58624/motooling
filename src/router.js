@@ -503,6 +503,11 @@ var router = new Router({
       path: '/cargo-load',
       name: 'stock',
       component: () => import('./views/logistics/cargoLoad')
+    },
+    {
+      path: '/material-storage',
+      name: 'stock',
+      component: () => import('./views/logistics/materialStorage')
     }
   ]
 })
@@ -525,7 +530,8 @@ router.beforeEach((to, from, next) => {
   to.path === '/arrival' ||
   to.path === '/departure-time' ||
   to.path === '/stock' ||
-  to.path === '/cargo-load') {
+  to.path === '/cargo-load' ||
+  to.path === '/material-storage') {
     next()
     return
   }

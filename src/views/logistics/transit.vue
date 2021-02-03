@@ -45,11 +45,11 @@
             <div class="goods-info" v-for="(item,index) in goods" :key="index">
               <img :src="item.image" alt="">
               <div class="desc">
-                <div class="desc-line">
+                <div class="desc-material">
                   <p>物料描述：{{item.desc}}</p>
                   <p>数量：{{item.amount}}</p>
                 </div>
-                <div class="desc-line">
+                <div class="desc-amount">
                   <p>规格型号：{{item.type}}</p>
                   <p>总量：{{item.weight}}</p>
                 </div>
@@ -76,10 +76,6 @@
 import { transit } from '@/api/logistics'
 export default {
   props: {
-    // visible: {
-    //   type: Boolean,
-    //   default: false
-    // },
     truckId: {
       type: Number,
       default: 1
@@ -209,10 +205,14 @@ export default {
       width: calc(100% - 60px);
       display: flex;
       justify-content: space-around;
-      .desc-line {
-        p {
-          line-height: 20px;
-        }
+      p {
+        line-height: 20px;
+      }
+      .desc-material {
+        width: 42%;
+      }
+      .desc-amount {
+        width: 48%;
       }
     }
   }
