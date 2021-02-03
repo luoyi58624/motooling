@@ -26,12 +26,17 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   response => {
     response.data.resultData = decrypt(response.data.resultData)
-    if (response.data.code === '444444') {
+    if (response.data.code === '444444' || response.data.code === '666666') {
       router.replace('/login')
       let fullPath = router.currentRoute.fullPath
       router.replace('/login?redirectURL=' + encodeURIComponent(fullPath))
+    } else if (response.data.code === '555555' || response.data.code === '999999') {
+      return Promise.reject(response)
+    } else if (response.data.code === '000000') {
+      return response
+    } else {
+      return Promise.reject(response.data)
     }
-    return (response)
   },
   error => {
     console.warn('err: ' + error)
