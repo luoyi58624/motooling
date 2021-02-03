@@ -9,18 +9,18 @@ export function pathData () {
 
 export function transit (truckId) {
   return request({
-    url: `http://192.168.2.133:4523/mock/372693/truck/${truckId}`
+    url: `http://127.0.0.1:4523/mock/372693/truck/${truckId}`
   })
 }
 
 export function arrivalTime () {
   return request({
-    url: 'http://192.168.2.133:4523/mock/372693/arrival'
+    url: 'http://127.0.0.1:4523/mock/372693/arrival'
   })
 }
 
 export function departureTime () {
   return request({
-    url: 'http://192.168.2.133:4523/mock/372693/departure'
+    url: 'http://127.0.0.1:4523/mock/372693/departure'
   })
 }
