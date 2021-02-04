@@ -12,9 +12,10 @@
     </div>
   </div>
   <div class="chargers">
-    <div class="chargers-item" v-for="(member,index) in chargers" :key="index">
+    <div class="chargers-item" v-for="(member,index) in chargers" :key="index" :class="{leader:member.leader}">
       <img :src="require('@/assets/male.png')" @click="startChat(member.memberName)">
-      <p> {{member.memberName}}</p>
+      <p v-if="member.leader"> 负责人：{{member.memberName}}</p>
+      <p v-else> {{member.memberName}}</p>
     </div>
   </div>
   <el-dialog
@@ -40,7 +41,7 @@ export default {
   components: { stock, chat },
   data () {
     return {
-      chargers: [{ memberName: '韩立' }, { memberName: '李笑来' }, { memberName: '昌恒' }],
+      chargers: [{ memberName: '韩立', leader: false }, { memberName: '李笑来', leader: true }, { memberName: '昌恒', leader: false }],
       talkMember: '',
       userId: 0,
       visible: false,
@@ -137,6 +138,7 @@ export default {
   .chargers {
     margin-top: 20px;
     display: flex;
+    align-items: flex-end;
     .chargers-item {
       margin-left: 20px;
       img {
@@ -148,6 +150,12 @@ export default {
       p{
         text-align: center;
         line-height: 2;
+      }
+    }
+    .leader {
+      order: -1;
+      img {
+      height: 120px
       }
     }
   }
