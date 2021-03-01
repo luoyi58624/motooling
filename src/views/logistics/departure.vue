@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { departureTime } from '@/api/logistics'
+import Logistics from '@/api/logistics'
 export default {
   data () {
     return {
@@ -55,14 +55,13 @@ export default {
     }
   },
   mounted () {
-    departureTime().then(res => {
-      this.data = res.departureTime
-      this.tableData = this.data.slice(0, 10)
-    })
+    const departure = new Logistics()
+
+    this.tableData = departure.departureTime()
   },
   methods: {
     currentPage (page) {
-      this.tableData = this.data.slice((page - 1) * 10, page * 10)
+      // this.tableData = this.data.slice((page - 1) * 10, page * 10)
     }
   }
 }
