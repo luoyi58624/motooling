@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { transit } from '@/api/logistics'
+import Logistics from '@/api/logistics'
 export default {
   props: {
     truckId: {
@@ -92,11 +92,38 @@ export default {
     }
   },
   mounted () {
-    transit(this.truckId).then(res => {
-      this.truckInfo = res.truckInfo
-      this.amountGoods = res.goods
-      this.goods = res.goods.slice(0, 6)
-    })
+    const logistic = new Logistics(this.truckId)
+    this.truckInfo = logistic.carCargo()
+    this.goods = [
+      {
+        'image': 'http://dummyimage.com/200x100/FF6600',
+        'desc': '无线充电器',
+        'type': 'IBYIWSID',
+        'amount': 665,
+        'weight': '980KG'
+      },
+      {
+        'image': 'http://dummyimage.com/200x100/FF6600',
+        'desc': '移动电源',
+        'type': 'RYLPTBWZ',
+        'amount': 737,
+        'weight': '980KG'
+      },
+      {
+        'image': 'http://dummyimage.com/200x100/FF6600',
+        'desc': '自行车前灯',
+        'type': 'QRCWRTDQ',
+        'amount': 872,
+        'weight': '980KG'
+      },
+      {
+        'image': 'http://dummyimage.com/200x100/FF6600',
+        'desc': '毛绒玩具',
+        'type': 'QRCWRTDQ',
+        'amount': 872,
+        'weight': '980KG'
+      }
+    ]
   },
   methods: {
     init () {
@@ -114,11 +141,8 @@ export default {
       }
     },
     chooseDriver (id) {
-      transit(id).then(res => {
-        this.truckInfo = res.truckInfo
-        this.amountGoods = res.goods
-        this.goods = res.goods.slice(0, 6)
-      })
+      const logistic = new Logistics(id)
+      this.truckInfo = logistic.carCargo()
     }
   }
 }

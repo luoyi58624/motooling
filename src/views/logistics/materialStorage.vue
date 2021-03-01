@@ -43,23 +43,66 @@ export default {
   data () {
     return {
       amountGoods: [],
-      goods: [],
+      goods: [
+        {
+          'image': 'http://dummyimage.com/200x100/FF6600',
+          'desc': '切去五列万',
+          'type': 'RDCHGXFD',
+          'amount': 887,
+          'weight': '980KG'
+        },
+        {
+          'image': 'http://dummyimage.com/200x100/FF6600',
+          'desc': '例于话何权',
+          'type': 'TIENJGUJ',
+          'amount': 738,
+          'weight': '980KG'
+        },
+        {
+          'image': 'http://dummyimage.com/200x100/FF6600',
+          'desc': '体元两',
+          'type': 'KTUONNJK',
+          'amount': 779,
+          'weight': '980KG'
+        },
+        {
+          'image': 'http://dummyimage.com/200x100/FF6600',
+          'desc': '新除世',
+          'type': 'PRYJXPLO',
+          'amount': 973,
+          'weight': '980KG'
+        },
+        {
+          'image': 'http://dummyimage.com/200x100/FF6600',
+          'desc': '家适本布',
+          'type': 'RVSKCWUJ',
+          'amount': 763,
+          'weight': '980KG'
+        },
+        {
+          'image': 'http://dummyimage.com/200x100/FF6600',
+          'desc': '消任其',
+          'type': 'SWTKPKTX',
+          'amount': 768,
+          'weight': '980KG'
+        }
+      ],
       page: 0
     }
   },
   mounted () {
-    transit(2).then(res => {
-      this.truckInfo = res.truckInfo
-      this.amountGoods = res.goods
-      this.goods = res.goods.slice(0, 6)
-    })
+    // transit(2).then(res => {
+    //   this.truckInfo = res.truckInfo
+    //   this.amountGoods = res.goods
+    //   this.goods = res.goods.slice(0, 6)
+    // })
   },
   methods: {
     pageChange (currentPage) {
       if (currentPage === 1) {
-        this.goods = this.amountGoods.slice(0, 6)
+        // this.goods = this.amountGoods.slice(0, 6)
       } else {
-        this.goods = this.amountGoods.slice(6)
+        // this.goods = this.amountGoods.slice(6)
       }
     }
   }
