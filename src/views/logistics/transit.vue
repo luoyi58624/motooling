@@ -14,8 +14,8 @@
           </ul>
           <div class="driver-truck">
             <div class="driver">
-              <img :src="require('@/assets/driver1.png')" v-if="truckInfo.id === 1">
-              <img :src="require('@/assets/driver2.png')" v-else>
+              <img :src="require('@/assets/driver1.png')" v-if="truckInfo.id === 1" @click="startChat('老李')">
+              <img :src="require('@/assets/driver2.png')" v-else @click="startChat('张达')">
               <p>驾驶员：{{truckInfo.driver}}</p>
               <p>性别：{{truckInfo.sex}}</p>
               <p>年龄：{{truckInfo.age}}</p>
@@ -69,12 +69,22 @@
         </div>
       </div>
       </el-dialog>
+      <el-dialog
+        :visible.sync="chatVisible"
+        width="500px"
+        :before-close="chatEnd">
+        <div style="height:600px">
+          <chat :userId="userId" :talkMember="talkMember" />
+        </div>
+      </el-dialog>
   </div>
 </template>
 
 <script>
 import Logistics from '@/api/logistics'
+import chat from '@/views/synergy/chat/chatPanel'
 export default {
+  components: { chat },
   props: {
     truckId: {
       type: Number,
@@ -85,10 +95,13 @@ export default {
     return {
       truckInfo: {},
       amountGoods: [],
+      userId: 0,
       goods: [],
       route: null,
       page: 0,
-      visible: false
+      talkMember: '',
+      visible: false,
+      chatVisible: false
     }
   },
   mounted () {
@@ -143,6 +156,13 @@ export default {
     chooseDriver (id) {
       const logistic = new Logistics(id)
       this.truckInfo = logistic.carCargo()
+    },
+    startChat (name) {
+      this.chatVisible = true
+      this.talkMember = name
+    },
+    chatEnd () {
+      this.chatVisible = false
     }
   }
 }
