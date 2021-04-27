@@ -526,12 +526,12 @@ router.beforeEach((to, from, next) => {
   if (to.query.imurl) {
     localStorage.imurl = decodeURIComponent(to.query.imurl)
   }
-  if (to.path === '/logistic' ||
-  to.path === '/arrival' ||
-  to.path === '/departure-time' ||
-  to.path === '/stock' ||
-  to.path === '/cargo-load' ||
-  to.path === '/material-storage') {
+  if (path === '/logistic' ||
+  path === '/arrival' ||
+  path === '/departure-time' ||
+  path === '/stock' ||
+  path === '/cargo-load' ||
+  path === '/material-storage') {
     next()
     return
   }
