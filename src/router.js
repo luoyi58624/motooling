@@ -531,22 +531,18 @@ router.beforeEach((to, from, next) => {
   path === '/departure-time' ||
   path === '/stock' ||
   path === '/cargo-load' ||
-  path === '/material-storage') {
-    next()
-    return
-  }
-  if (to.query.token && to.query.weburl) {
-    next()
-    return
-  } else if (
-    path === '/login' ||
-    path === '/daohang' ||
-    path === '/list' ||
-    path === '/' ||
-    path === '/wxlogin' ||
-    path === '/wxloginsuccess' ||
-    path === '/wxbindphone'
+  path === '/material-storage' ||
+  path === '/login' ||
+  path === '/daohang' ||
+  path === '/list' ||
+  path === '/' ||
+  path === '/wxlogin' ||
+  path === '/wxloginsuccess' ||
+  path === '/wxbindphone'
   ) {
+    next()
+  } else if (to.query.token && to.query.weburl) {
+    next()
   } else if (!WEBURL() || !token()) {
     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
     return
