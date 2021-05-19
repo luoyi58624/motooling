@@ -279,6 +279,7 @@ var popId // 预报用
 var pgId // 预报用
 var deviceId // 预报用
 export default {
+  inject: ['reload'], // 注入刷新组件
   data () {
     return {
       shebeiCurrentIdx: 0,
@@ -787,6 +788,7 @@ export default {
       that._getDeviceAndStatus()
       that._getProcessTask()
       that._getProcessTaskDone()
+      vm.reload()
     },
 
     getPart (type) {

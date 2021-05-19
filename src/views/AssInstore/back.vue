@@ -212,7 +212,7 @@ export default {
         .then(res => {
           console.log(res)
           this.wuliaoList = res.list.map(item => {
-            console.log(item)
+            console.log(item, '物料信息')
             return {
               list: [
                 { title: '工装号', content: item.billNo },
@@ -221,7 +221,7 @@ export default {
                 { title: '外协类型', content: item.assTypeName },
                 { title: '可退数量', content: item.quantity1 }
               ],
-              max: 1,
+              max: item.quantity1 || 0,
               value: Math.min(item.quantity1, 1),
               selected: true,
               matId: item.matId,
@@ -307,7 +307,7 @@ export default {
       this.$createDatePicker({
         title: '凭证日期',
         min: new Date(2008, 7, 8),
-        max: new Date(2020, 9, 20),
+        max: new Date(2022, 9, 20),
         value: new Date(),
         onSelect: this.pz
       }).show()
@@ -316,7 +316,7 @@ export default {
       this.$createDatePicker({
         title: '记账日期',
         min: new Date(2008, 7, 8),
-        max: new Date(2020, 9, 20),
+        max: new Date(2022, 9, 20),
         value: new Date(),
         onSelect: this.jz
       }).show()
