@@ -1,7 +1,7 @@
 <template>
   <div id="tooling">
     <div class="tooling-board">
-      <header>Part Assembly Schedule</header>
+      <header>零件装配进度表</header>
       <main>
         <div class="board-table">
           <el-table
@@ -25,7 +25,7 @@
             }"
             :cell-style="{ borderBottom: 'unset' }"
           >
-            <el-table-column label="Part Number" align="center">
+            <el-table-column label="零件号" align="center">
               <template slot-scope="scope">
                 <span
                   @click="checkPartInfo(scope.row.matNo)"
@@ -36,7 +36,7 @@
             </el-table-column>
             <el-table-column
               prop="totalWorkTime"
-              label="Total Working Hours"
+              label="总工时"
               :sortable="true"
               :sort-method="sort"
               align="center"
@@ -44,7 +44,7 @@
             </el-table-column>
             <el-table-column
               prop="finishedPercent"
-              label="Processing Progress"
+              label="加工进度"
               :sortable="true"
               width="180"
               align="center"
@@ -58,7 +58,7 @@
             </el-table-column>
             <el-table-column
               prop="currentList"
-              label="Current Detention Process"
+              label="当前滞留工序"
               sortable
               align="center"
             >
@@ -85,24 +85,24 @@
             <div class="mold-info">
               <ul>
                 <li>
-                  <span>Urgency</span
+                  <span>紧迫度</span
                   ><span class="status" :style="{color:baseMap.urgencyColor}">{{ baseMap.urgency }}</span>
                 </li>
                 <li>
-                  <span>Verification Date</span><span>{{ baseMap.firstTryDate }}</span>
+                  <span>验证日期</span><span>{{ baseMap.firstTryDate }}</span>
                 </li>
                 <li>
-                  <span>Delivery Date</span><span>{{ baseMap.deliveryDate }}</span>
+                  <span>交付日期</span><span>{{ baseMap.deliveryDate }}</span>
                 </li>
                 <li>
-                  <span>ISSUE Records</span
-                  ><a :href="baseMap.issueUrl" :target="baseMap.issueUrl === '' ? '_self' : '_parent'">MoWork Link</a>
+                  <span>ISSUE记录</span
+                  ><a :href="baseMap.issueUrl" :target="baseMap.issueUrl === '' ? '_self' : '_parent'">MoWork链接</a>
                 </li>
               </ul>
             </div>
           </div>
           <div class="mold-chart">
-            <p>The readiness status of the next part</p>
+            <p>下层零件到位情况</p>
             <div ref="chart" style="width: 100%;height:200px"></div>
           </div>
         </div>
