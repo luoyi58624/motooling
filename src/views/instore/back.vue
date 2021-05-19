@@ -299,7 +299,7 @@ export default {
       this.$createDatePicker({
         title: '凭证日期',
         min: new Date(2008, 7, 8),
-        max: new Date(2020, 9, 20),
+        max: new Date(2022, 9, 20),
         value: new Date(),
         onSelect: this.pz
       }).show()
@@ -308,7 +308,7 @@ export default {
       this.$createDatePicker({
         title: '记账日期',
         min: new Date(2008, 7, 8),
-        max: new Date(2020, 9, 20),
+        max: new Date(2022, 9, 20),
         value: new Date(),
         onSelect: this.jz
       }).show()
