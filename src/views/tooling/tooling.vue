@@ -69,7 +69,7 @@
           <div class="select-wrapper">
             <el-select
               v-model="moldNo"
-              placeholder="请选择"
+              placeholder="Select"
               @change="selectedMoldNoInfo"
               size="small"
               popper-class="moldNo-select"
