@@ -167,7 +167,7 @@ export default {
       this.noMoreRecords = false
       this.isClose = true
       this.loadRecordTag = ''
-      this.socket.close()
+      // this.socket.close()
       this.init().then(() => {
         this.$refs.talkContent.scrollTop = 9999
       })
