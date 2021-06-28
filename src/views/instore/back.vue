@@ -12,10 +12,10 @@
           <div>供应商</div>
           <div>{{supName}}</div>
         </div>
-        <div>
+<!--        <div>
           <div>仓管员</div>
           <div>{{}}</div>
-        </div>
+        </div> -->
         <div>
           <div>退货人</div>
           <div @click="selectName">{{name||'请选择'}}</div>
