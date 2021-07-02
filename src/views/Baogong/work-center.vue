@@ -805,14 +805,17 @@ export default {
       // 开始移动工件
       this.shebeiArray = []
       var shebeiDom = document.getElementsByClassName('shebei')
+      console.log(shebeiDom)
       var myDom = Array.prototype.slice.call(
         shebeiDom,
-        this.shebeiCurrentIdx * 6,
-        this.shebeiCurrentIdx * 6 + 6
+        this.shebeiCurrentIdx * 6
+        // this.shebeiCurrentIdx * 6 + 6 设置数组上限
       )
+      console.log(this.shebeiCurrentIdx)
       for (var i = 0; i < myDom.length; i++) {
         this.shebeiArray.push(myDom[i].getBoundingClientRect())
       }
+      console.log(this.shebeiArray)
       let element = e.targetTouches[0] // 记录初始 client 位置，用于计算移动距离
       this.source.client = {
         x: element.clientX,
@@ -828,12 +831,15 @@ export default {
     },
     tE (e, index, idx) {
       // 松手
+      console.log(e, index, idx, 8 * idx + index, '函数参数')
       document.getElementsByClassName('moveBox')[8 * idx + index].style = `transform: none;z-index:1`
       let element = e.changedTouches[0]
       let a = element.clientX
       let b = element.clientY
       let x = element.clientX - this.source.client.x
       let y = element.clientY - this.source.client.y
+      console.log(a, b, x, y, '移动后位置和移动距离')
+      console.log(this.shebeiArray.length, this.shebeiArray, '方块数组的长度')
       if (x <= 5 && x >= -5 && y <= 5 && y >= -5) {
         this.handleSelectWait(idx * 8 + index)
         return
