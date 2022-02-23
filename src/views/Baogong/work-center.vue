@@ -249,7 +249,7 @@
       <div class="bar"></div>
     </cube-scroll>
     <cube-popup type="my-popup" ref="myPopup">操作成功</cube-popup>
-    <toSynergy v-if="bigMode" />
+    <toSynergy v-if="bigMode&&isRelation" relationType="8" :relationId="poId+''"/>
   </div>
 </template>
 
@@ -285,7 +285,8 @@ export default {
       shebeiCurrentIdx: 0,
       swiperOption: {
         pagination: {
-          el: '.swiper-pagination'
+          el: '.swiper-pagination',
+          dynamicBullets: false
         },
         on: {
           reachEnd: function (event) {
@@ -349,11 +350,20 @@ export default {
       shebeiArray: [], // 当前显示在页面上的设备列表
       storeWaitList: null,
       isLeader: 0,
-      opr: 'jiagong'
+      opr: 'jiagong',
+      poId: 0, // 协同时使用的relationId
+      isRelation: false// 是否显示协同按钮
     }
   },
   created () {
     vm = this
+    // let wechatInfo = sessionStorage.getItem('wechatInfo')
+    // console.log(wechatInfo)
+    // if (wechatInfo) {
+    //   wechatInfo = JSON.parse(wechatInfo)
+    //   let acces = wechatInfo.headimgurl
+    //   console.log(acces, '头像')
+    // }
     // const token = this.$route.query.token
     // const uid = this.$route.query.uid
     const deviceId = this.$route.query.deviceId
@@ -749,6 +759,12 @@ export default {
           if (!this.storeWaitList || this.storeWaitList.length === 0) {
             this.storeWaitList = this.waitList
           }
+          if (this.shebeiList[i].processList[0]) {
+            this.poId = this.shebeiList[i].processList[0].poId
+            this.isRelation = true
+          } else {
+            this.isRelation = false
+          }
           this.waitList = this.shebeiList[i].waitProcessList || []
           // this.shebeiList[i].big = true
         } else {
@@ -805,17 +821,15 @@ export default {
       // 开始移动工件
       this.shebeiArray = []
       var shebeiDom = document.getElementsByClassName('shebei')
-      console.log(shebeiDom)
+      // console.log(shebeiDom)
       var myDom = Array.prototype.slice.call(
         shebeiDom,
         this.shebeiCurrentIdx * 6
         // this.shebeiCurrentIdx * 6 + 6 设置数组上限
       )
-      console.log(this.shebeiCurrentIdx)
       for (var i = 0; i < myDom.length; i++) {
         this.shebeiArray.push(myDom[i].getBoundingClientRect())
       }
-      console.log(this.shebeiArray)
       let element = e.targetTouches[0] // 记录初始 client 位置，用于计算移动距离
       this.source.client = {
         x: element.clientX,
@@ -831,15 +845,12 @@ export default {
     },
     tE (e, index, idx) {
       // 松手
-      console.log(e, index, idx, 8 * idx + index, '函数参数')
       document.getElementsByClassName('moveBox')[8 * idx + index].style = `transform: none;z-index:1`
       let element = e.changedTouches[0]
       let a = element.clientX
       let b = element.clientY
       let x = element.clientX - this.source.client.x
       let y = element.clientY - this.source.client.y
-      console.log(a, b, x, y, '移动后位置和移动距离')
-      console.log(this.shebeiArray.length, this.shebeiArray, '方块数组的长度')
       if (x <= 5 && x >= -5 && y <= 5 && y >= -5) {
         this.handleSelectWait(idx * 8 + index)
         return
