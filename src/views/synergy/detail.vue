@@ -148,7 +148,8 @@
             id="uploadImageField"
             multiple
             hidden
-            accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
+            accept="audio/mpeg,video/mp4,image/*"
+            capture="environment"
             @change="uploadImage"
           />
            <label class="list-item" for="uploadImageField">
