@@ -227,9 +227,13 @@ export default {
       const receiver = memberList.find(item => {
         return item.uid !== this.uid
       })
+      const sender = memberList.find(item => {
+        return item.uid == this.uid
+      })
+      console.log({ receiver: memberList })
       this.$eventBus.$emit('beat', {
         senterID: this.uid,
-        senderName: localStorage.username,
+        senderName: sender.username || sender.nickname,
         receiverID: receiver.uid,
         username: receiver.username || receiver.nickname
       })
@@ -283,7 +287,10 @@ export default {
 .message-list {
   margin-top: 60px;
   height: calc(100% - 60px);
-  overflow-y: auto;
+  overflow-y: hidden;
+}
+.message-list:hover {
+  overflow-y: auto
 }
     .message-list-wrapper{
       position: relative;
