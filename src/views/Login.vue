@@ -52,9 +52,8 @@ export default {
             localStorage.setItem('fileServerUrl', data.fileServerUrl)
             localStorage.setItem('mobile', data.mobile)
             localStorage.setItem('companyId', data.companyId)
-
+            localStorage.setItem('imurl', 'im.motooling.com')
             let redirectURL = getUrlQueryString('redirectURL')
-
             if (redirectURL) {
               let nexturl = decodeURIComponent(redirectURL)
               _this.$router.push(nexturl)
@@ -68,9 +67,11 @@ export default {
     }
   },
   created () {
+    console.log(localStorage)
     if (/MicroMessenger/.test(window.navigator.userAgent)) {
       // 微信浏览器进入微信登录
       this.$router.replace('/wxlogin?redirectURL=' + getUrlQueryString('redirectURL'))
+      localStorage.setItem('imurl', 'im.motooling.com')
     }
   }
 }
