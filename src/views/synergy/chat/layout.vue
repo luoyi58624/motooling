@@ -3,8 +3,8 @@
     <div class="aside">
       <message-list @add-user="createNewChatting" />
     </div>
-    <div class="chat-panel">
-        <router-view @add-user="addGroupMember" :invitedMembers="invitedMembers" :invidedMembersInfo="invidedMembersInfo"></router-view>
+    <div class="chat-panel" v-show="groupId">
+        <chat-panel @add-user="addGroupMember" :invitedMembers="invitedMembers" :invidedMembersInfo="invidedMembersInfo"></chat-panel>
     </div>
     <div class="add-user" v-show="show">
       <UserSelect @confirm="confirm" :visible.sync="show" @cancel="cancel" />
@@ -13,13 +13,16 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { getOpenSynergy, synergyAddMember, getNewsList } from '@/api/synergy/synergy.js'
 import UserSelect from '@/components/UserSelect.vue'
 import messageList from './messageList'
+import chatPanel from './chatPanel.vue'
 export default {
   components: {
     messageList,
-    UserSelect
+    UserSelect,
+    chatPanel
   },
   data () {
     return {
@@ -33,9 +36,10 @@ export default {
     }
   },
   computed: {
-    userSelectedList () {
-      return this.$store.state.userSelectedList
-    }
+    ...mapState({
+      groupId: state => state.groupId,
+      userSelectedList: state => state.userSelectedList
+    })
   },
   methods: {
     // 创建新的聊天
@@ -49,7 +53,7 @@ export default {
       if (this.isGroup) {
         this.isGroup = false
         let data = {
-          groupId: this.$route.query.groupId,
+          groupId: this.groupId,
           inviterId: this.inviterId,
           uList: this.userSelectedList.map(item => ({ uid: item.uid }))
         }
@@ -69,13 +73,7 @@ export default {
         getOpenSynergy(
           parameter
         ).then(res => {
-          this.$router.push({
-            path: 'chatPanel',
-            query: {
-              groupId: res.synergyGroup.id,
-              relationType: res.synergyGroup.relationType
-            }
-          })
+          this.$store.commit('currentConversation', { groupId: res.synergyGroup.id, relationType: res.synergyGroup.relationType })
           getNewsList().then(res => {
             this.$store.dispatch('newsList', res.newsList)
           }).catch(err => {

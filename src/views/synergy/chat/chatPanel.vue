@@ -2,47 +2,73 @@
   <div class="chat-panel">
     <nav>
       <div class="chatting-name">
-        <input type="text" v-if="chattingTarget.type==666" v-model="chattingTarget.name" @blur="setGroupName($event.target.value)">
-        <span v-else-if="chattingTarget.type==66">{{chattingTarget.name}}</span>
-        <span v-else>{{talkMember}}</span>
+        <input
+          type="text"
+          v-if="chattingTarget.type == 666"
+          v-model="chattingTarget.name"
+          @blur="setGroupName($event.target.value)"
+        />
+        <span v-else-if="chattingTarget.type == 66">{{ chattingTarget.name }}</span>
+        <span v-else>{{ talkMember }}</span>
       </div>
-      <div class="add-member" v-if="chattingTarget.type == 666" @click="$emit('add-user',true)"></div>
+      <div
+        class="add-member"
+        v-if="chattingTarget.type == 666"
+        @click="$emit('add-user', true)"
+      ></div>
     </nav>
     <div class="chat-content">
       <div class="talk-wrapper">
         <div class="talk-content" ref="talkContent">
-            <div v-for="(item,index) in recordList" :key="index">
-              <div :class="uid == item.senderId?'my-content':'others-content'" v-if="item.contentType !== 5">
-                <div class="time-name"><span class="time">{{item.sendTime}}</span><span class="name">{{item.username}}</span></div>
-                <div class="word-message message" v-if="item.contentType === 1">{{item.content}}</div>
-                <div class="image-message message" v-else-if="item.contentType === 2 || item.contentType === 6" @dblclick="showImagePreview(fileAddressFormatFunc(item.content))">
-                  <img :src="fileAddressFormatFunc(item.content)" @load="handleImgload">
-                </div>
-                <div class="audio-message message"
-                  v-else-if="item.contentType === 3"
-                  @click="playAudio(fileAddressFormatFunc(item.content))"
-                >
-                  <img :src="require('@/assets/icon-voice-white.png')" alt="">
-                  <span>{{item.duration}}"</span>
-                </div>
-                <div
-                  class="video-message message"
-                  v-else-if="item.contentType === 4"
-                >
-                  <video
+          <div v-for="(item, index) in recordList" :key="index">
+            <div
+              :class="uid == item.senderId ? 'my-content' : 'others-content'"
+              v-if="item.contentType !== 5"
+            >
+              <div class="time-name">
+                <span class="time">{{ item.sendTime }}</span
+                ><span class="name">{{ item.username }}</span>
+              </div>
+              <div class="word-message message" v-if="item.contentType === 1">
+                {{ item.content }}
+              </div>
+              <div
+                class="image-message message"
+                v-else-if="item.contentType === 2 || item.contentType === 6"
+                @dblclick="showImagePreview(fileAddressFormatFunc(item.content))"
+              >
+                <img :src="fileAddressFormatFunc(item.content)" @load="handleImgload" />
+              </div>
+              <div
+                class="audio-message message"
+                v-else-if="item.contentType === 3"
+                @click="playAudio(fileAddressFormatFunc(item.content))"
+              >
+                <img :src="require('@/assets/icon-voice-white.png')" alt="" />
+                <span>{{ item.duration }}"</span>
+              </div>
+              <div class="video-message message" v-else-if="item.contentType === 4">
+                <video
                   preload="meta"
                   :src="fileAddressFormatFunc(item.content)"
                   controls="controls"
                   width="250"
                   @click="playVideo($event)"
-                  >
-                  </video>
-                </div>
-              </div>
-              <div v-if="item.contentType === 5">
-                <div class="sys-notifacation"><span>{{item.content}}</span></div>
+                ></video>
               </div>
             </div>
+            <div v-if="item.contentType === 5 || item.contentType === 7">
+              <div class="sys-notifacation" v-if="item.content.senderId == uid">
+                <span>{{ item.content.sendeContent }}</span>
+              </div>
+              <div class="sys-notifacation" v-else-if="item.content.receiverId == uid">
+                <span>{{ item.content.receiverContent }}</span>
+              </div>
+              <div class="sys-notifacation" v-else>
+                <span>{{ item.content.otherContent }}</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="input-area">
           <div class="upload-wrapper">
@@ -50,13 +76,13 @@
               <div class="icon icon-image"></div>
             </label>
             <input
-            type="file"
-            id="upload"
-            multiple
-            hidden
-            accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
-            @change="upload"
-            >
+              type="file"
+              id="upload"
+              multiple
+              hidden
+              accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
+              @change="upload"
+            />
             <label for="upload">
               <div class="icon icon-video"></div>
             </label>
@@ -65,16 +91,28 @@
           <div class="enter-message" @click="sendWordMessage">发送</div>
         </div>
       </div>
-      <div class="group-members" v-if="chattingTarget.type === 666" >
-        <p class="group-members-title">群成员 · {{groupMember.length}}</p>
+      <div class="group-members" v-if="chattingTarget.type === 666">
+        <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
         <div class="group-members-wrapper">
-          <div class="group-members-item" v-for="item in groupMember" :key="item.uid" @click.right="handleGroupMember(item,$event)">
-              <img :src="item.avatar" alt="">
-            <span v-if="item.memberType===1">{{item.username}} · 群主</span>
-            <span v-else>{{item.username}}</span>
-            <div class="popover" v-if="item.uid === selectedGroupMember" v-clickoutside="hiden">
+          <div
+            class="group-members-item"
+            v-for="item in groupMember"
+            :key="item.uid"
+            @click.right="handleGroupMember(item, $event)"
+          >
+            <img :src="item.avatar" alt="" />
+            <span v-if="item.memberType === 1">{{ item.username }} · 群主</span>
+            <span v-else>{{ item.username }}</span>
+            <div
+              class="popover"
+              v-if="item.uid === selectedGroupMember"
+              v-clickoutside="hiden"
+            >
               <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
-              <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">移出群聊</p>
+              <p @click.stop="beat(item)">拍一拍找人</p>
+              <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">
+                移出群聊
+              </p>
             </div>
           </div>
         </div>
@@ -85,6 +123,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { fileAddressFormat } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
@@ -111,10 +150,6 @@ export default {
       type: Array,
       default: () => []
     },
-    userId: {
-      type: Number,
-      default: 0
-    },
     talkMember: {
       type: String,
       default: ''
@@ -126,6 +161,7 @@ export default {
       companyId: localStorage.companyId,
       imurl: localStorage.imurl,
       uid: localStorage.uid,
+      senderName: localStorage.username,
       socket: {},
       synergyGroup: {},
       mainKeyId: '',
@@ -147,40 +183,44 @@ export default {
   },
   watch: {
     invitedMembers (newVal) {
-      this.socketMessage(2, { contentType: 5, content: `${localStorage.username}邀请${newVal}加入群聊` })
+      this.socketMessage(2, {
+        contentType: 5,
+        content: `${localStorage.username}邀请${newVal}加入群聊`
+      })
     },
     invidedMembersInfo (val) {
       this.groupMember = this.groupMember.concat(val)
-    }
-  },
-  computed: {
-    chatTargetInfo () {
-      return this.$store.state.chatTargetInfo
     },
-    notReadCount () {
-      return this.$store.state.notReadCount
-    }
-  },
-  beforeRouteUpdate (to, from, next) {
-    next()
-    if (!from.query.relationId) {
-      this.noMoreRecords = false
-      this.isClose = true
-      this.loadRecordTag = ''
-      this.socket.close()
+    groupId (newVal) {
       this.init().then(() => {
         this.$refs.talkContent.scrollTop = 9999
       })
     }
   },
-  mounted () {
-    this.init().then(() => {
-      this.$refs.talkContent.scrollTop = 9999
+  computed: {
+    ...mapState({
+      groupId: (state) => state.groupId,
+      relationType: (state) => state.relationType,
+      notReadCount: (state) => state.notReadCount,
+      chatTargetInfo: (state) => state.chatTargetInfo
     })
-    this.$refs.talkContent.addEventListener('scroll', debounce(this.loadMoreRecordList, 500))
+  },
+  mounted () {
+    const id = this.$route.query.relationId
+    if (id) {
+      this.createPrivateChatting(id)
+    }
+    this.$eventBus.$on('beat', this.beat)
+    this.$refs.talkContent.addEventListener(
+      'scroll',
+      debounce(this.loadMoreRecordList, 500)
+    )
   },
   beforeDestroy () {
-    this.$refs.talkContent.removeEventListener('scroll', debounce(this.loadMoreRecordList, 500))
+    this.$refs.talkContent.removeEventListener(
+      'scroll',
+      debounce(this.loadMoreRecordList, 500)
+    )
   },
   destroyed () {
     this.isClose = true
@@ -188,19 +228,16 @@ export default {
   },
   methods: {
     async init () {
-      let uid = this.$route.query.relationId || this.userId
-      if (uid) {
-        await this.createPrivateChatting(uid)
-      } else {
-        await getOpenSynergy({
-          relationType: this.$route.query.relationType,
-          groupId: this.$route.query.groupId
-        }).then(res => {
+      getOpenSynergy({
+        relationType: this.relationType,
+        groupId: this.groupId
+      })
+        .then((res) => {
           this.isClose = false
           if (res.synergyGroup.relationType === 666) {
             this.chattingTarget = { name: res.synergyGroup.subject, type: 666 }
           } else {
-            res.memberList.forEach(member => {
+            res.memberList.forEach((member) => {
               if (member.uid !== this.uid * 1) {
                 this.chattingTarget = { name: member.username, type: 66 }
               }
@@ -216,25 +253,34 @@ export default {
 
           if (this.notReadCount !== 0) {
             let recordLen = recordList.length - 1
-            alreadyRead({ lastRecordId: recordList[recordLen].data.id, groupId: this.$route.query.groupId }).then(() => {
-              getNewsList().then(res => {
+            alreadyRead({
+              lastRecordId: recordList[recordLen].data.id,
+              groupId: this.groupId
+            }).then(() => {
+              getNewsList().then((res) => {
                 this.$store.dispatch('newsList', res.newsList)
               })
             })
           }
 
+          recordList.forEach(item => {
+            if (item.data.contentType === 7) {
+              item.data.content = JSON.parse(item.data.content)
+            }
+          })
           this.recordList = time(recordList)
 
           this.mainKeyId = recordList[0] && recordList[0].data.id
           this.im()
-        }).catch(err => {
+        })
+        .catch((err) => {
+          console.log({ err })
           this.$createToast({
             time: 2000,
             txt: err.msg || '互动消息开启失败,请检查网络',
             type: 'error'
           }).show()
         })
-      }
     },
     im () {
       let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
@@ -244,7 +290,8 @@ export default {
           (this.socket && this.socket.readyState === 3))
       ) {
         this.socket = new WebSocket(
-          prefix + this.imurl +
+          prefix +
+            this.imurl +
             '/mtwebsocket/' +
             this.companyId +
             '/' +
@@ -262,10 +309,13 @@ export default {
     },
     websocketonopen () {
       this.interval = setInterval(() => {
-        this.socket.send(JSON.stringify({
-          requestType: 'ping',
-          serialNumber: null,
-          data: {} }))
+        this.socket.send(
+          JSON.stringify({
+            requestType: 'ping',
+            serialNumber: null,
+            data: {}
+          })
+        )
       }, 10000)
     },
     websocketonerror () {
@@ -289,7 +339,8 @@ export default {
     handleImgload () {
       if (this.loadRecordTag === 'load') {
         this.loadedScrollTop = this.$refs.talkContent.scrollHeight
-        this.$refs.talkContent.scrollTop = this.loadedScrollTop - this.beforeLoadedScrollTop
+        this.$refs.talkContent.scrollTop =
+          this.loadedScrollTop - this.beforeLoadedScrollTop
       } else {
         let ele = this.$refs.talkContent
         ele.scrollTop = ele.scrollHeight
@@ -305,11 +356,14 @@ export default {
         }).show()
       } else {
         updateGroupInfo({
-          groupId: this.$route.query.groupId,
+          groupId: this.groupId,
           subject: name
-        }).then(res => {
-          this.socketMessage(2, { contentType: 5, content: `${localStorage.username}修改群名为"${name}"` })
-          getNewsList().then(res => {
+        }).then((res) => {
+          this.socketMessage(2, {
+            contentType: 5,
+            content: `${localStorage.username}修改群名为"${name}"`
+          })
+          getNewsList().then((res) => {
             this.$store.dispatch('newsList', res.newsList)
           })
         })
@@ -331,9 +385,7 @@ export default {
         message = {
           requestType: 'ping',
           serialNumber: null,
-          data: {
-
-          }
+          data: {}
         }
       }
       if (type === 2) {
@@ -346,9 +398,7 @@ export default {
         message = data
       }
       if (this.socket.readyState === 1) {
-        this.socket.send(JSON.stringify(
-          message
-        ))
+        this.socket.send(JSON.stringify(message))
       } else {
         this.im()
       }
@@ -370,10 +420,18 @@ export default {
       }
     },
     receiveMessage (message) {
+      console.log({ message })
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
-      this.recordList.push({ ...message.data, sendTime })
-      if (message.responseType === '666666') { // 服务器主动推送
+      if (message.data.contentType === 7) {
+        const content = JSON.parse(message.data.content)
+        console.log({ message })
+        this.recordList.push({ ...message.data, sendTime, content })
+      } else {
+        this.recordList.push({ ...message.data, sendTime })
+      }
+      if (message.responseType === '666666') {
+        // 服务器主动推送
         this.$store.dispatch('latestMessageId', message.data.id)
         let responseServer = Object.assign({}, message)
         responseServer.requestType = '555555'
@@ -389,17 +447,25 @@ export default {
       if (this.wordContent.trim() !== '') {
         const currentTime = new Date()
         const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
-        let _message = [{ contentType: 1, content: this.wordContent, senderId: this.uid, sendTime, username: localStorage.username }]
+        let _message = [
+          {
+            contentType: 1,
+            content: this.wordContent,
+            senderId: this.uid,
+            sendTime,
+            username: localStorage.username
+          }
+        ]
         this.recordList = this.recordList.concat(_message)
         this.$nextTick(() => {
           this.$refs.talkContent.scrollTop = 9999
         })
         sendMessage({
-          groupId: this.$route.query.groupId,
+          groupId: this.groupId,
           senderId: this.uid,
           contentType: 1,
           content: this.wordContent
-        }).catch(err => {
+        }).catch((err) => {
           this.$createToast({
             time: 2000,
             txt: err.msg || '发送失败，请检查网络',
@@ -423,7 +489,7 @@ export default {
         if (this.$refs.talkContent.scrollTop === 0) {
           this.loadRecordTag = 'load'
           this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
-          synergyRecordPage({ id: this.mainKeyId, groupId: this.$route.query.groupId }).then(res => {
+          synergyRecordPage({ id: this.mainKeyId, groupId: this.groupId }).then((res) => {
             const result = res.recordList
             if (result.length !== 0) {
               let recordList = result.reverse()
@@ -438,7 +504,8 @@ export default {
 
             this.$nextTick(() => {
               this.loadedScrollTop = this.$refs.talkContent.scrollHeight
-              this.$refs.talkContent.scrollTop = this.loadedScrollTop - this.beforeLoadedScrollTop
+              this.$refs.talkContent.scrollTop =
+                this.loadedScrollTop - this.beforeLoadedScrollTop
             })
           })
         }
@@ -460,12 +527,15 @@ export default {
     // 移除群聊
     removeFromGroup (member) {
       deleteGroupMember({
-        groupId: this.$route.query.groupId,
+        groupId: this.groupId,
         memberList: [{ uid: member.uid }]
-      }).then(items => {
+      }).then((items) => {
         const deletedMember = items.delUserList[0]
-        this.socketMessage(2, { contentType: 5, content: `${this.groupMember[0].username}将${deletedMember.username}移出了群聊` })
-        let groupMembers = this.groupMember.filter(item => {
+        this.socketMessage(2, {
+          contentType: 5,
+          content: `${this.groupMember[0].username}将${deletedMember.username}移出了群聊`
+        })
+        let groupMembers = this.groupMember.filter((item) => {
           return item.uid !== deletedMember.uid
         })
 
@@ -478,38 +548,43 @@ export default {
       await getOpenSynergy({
         relationId: uid,
         relationType: 66
-      }).then(res => {
-        this.selectedGroupMember = null
-        this.$router.push({
-          path: 'chatPanel',
-          query: {
-            groupId: res.synergyGroup.id,
-            relationType: res.synergyGroup.relationType
-          }
-        })
-        getNewsList().then(res => {
-          this.$store.dispatch('newsList', res.newsList)
-        })
-      }).catch(err => {
-        this.$createToast({
-          time: 2000,
-          txt: err.msg || '互动消息开启失败,请检查网络',
-          type: 'error'
-        }).show()
       })
+        .then(async (res) => {
+          this.selectedGroupMember = null
+          this.$store.commit('currentConversation', { groupId: res.synergyGroup.id, relationType: res.synergyGroup.relationType })
+          const { newsList } = await getNewsList()
+          this.$store.dispatch('newsList', newsList)
+          this.$store.commit('ACTIVE_ID', res.synergyGroup.id)
+        })
+        .catch((err) => {
+          this.$createToast({
+            time: 2000,
+            txt: err.msg || '互动消息开启失败,请检查网络',
+            type: 'error'
+          }).show()
+        })
     },
-    handleMessage ({ contentType, smallImg, content } = { }) {
+    handleMessage ({ contentType, smallImg, content } = {}) {
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
-      let message = [{ contentType, smallImg, content, sendTime, username: localStorage.username, senderId: this.uid }]
+      let message = [
+        {
+          contentType,
+          smallImg,
+          content,
+          sendTime,
+          username: localStorage.username,
+          senderId: this.uid
+        }
+      ]
       this.recordList = this.recordList.concat(message)
       sendMessage({
-        groupId: this.$route.query.groupId,
+        groupId: this.groupId,
         senderId: this.uid,
         contentType,
         content,
         smallImg
-      }).catch(err => {
+      }).catch((err) => {
         this.$createToast({
           time: 2000,
           txt: err.message || '发送失败，请重试',
@@ -523,17 +598,18 @@ export default {
       const files = e.target.files
       for (let i = 0; i < files.length; i++) {
         if (/image/.test(files[i].type)) {
-          imgUpload(files[i]).then(res => {
+          console.log({ file: files[i] })
+          imgUpload(files[i]).then((res) => {
             let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawUrl }
             this.handleMessage(params)
           })
         } else if (/audio/.test(files[i].type)) {
-          fileUpload(files[i]).then(res => {
+          fileUpload(files[i]).then((res) => {
             let params = { contentType: 3, smallImg: '', content: res.url }
             this.handleMessage(params)
           })
         } else if (/video/.test(files[i].type)) {
-          fileUpload(files[i]).then(res => {
+          fileUpload(files[i]).then((res) => {
             let params = { contentType: 4, smallImg: '', content: res.url }
             this.handleMessage(params)
           })
@@ -545,24 +621,36 @@ export default {
           }).show()
         }
       }
+    },
+    beat (data) {
+      this.socketMessage(2, {
+        contentType: 7,
+        content: JSON.stringify({
+          senderId: data.senterID || this.uid,
+          receiverId: data.receiverID || data.uid,
+          otherContent: `${this.senderName}拍了拍${data.username}`,
+          receiverContent: `${this.senderName}拍了拍我`,
+          sendeContent: `我拍了拍${data.username}`
+        })
+      })
     }
   }
 }
 </script>
 
 <style scoped lang="less">
-@import url('./common.less');
+@import url("./common.less");
 .chat-panel {
   height: 100%;
   background-color: #fff;
 }
-nav{
+nav {
   position: relative;
   height: 59px;
   line-height: 59px;
   border-bottom: 1px solid #dadcdf;
   padding-left: 18px;
-    .add-member {
+  .add-member {
     position: absolute;
     bottom: 8px;
     right: 15px;
@@ -586,36 +674,35 @@ nav{
       overflow-y: auto;
       .time-name {
         padding-top: 8px;
-        .time{
+        .time {
           font-size: 12px;
           padding: 0 3px;
           color: #828c99;
         }
       }
       .message {
-          margin: 8px 0 8px 20px;
+        margin: 8px 0 8px 20px;
       }
       .word-message {
-          background-color: #dee0e3;
-          padding: 8px;
-          border-radius: 5px;
-          user-select: text;
-          white-space: pre-wrap;
-
+        background-color: #dee0e3;
+        padding: 8px;
+        border-radius: 5px;
+        user-select: text;
+        white-space: pre-wrap;
+      }
+      .image-message {
+        img {
+          max-height: 200px;
+          object-fit: contain;
         }
-        .image-message {
-          img {
-            max-height: 200px;
-            object-fit: contain;
-          }
-        }
-        .audio-message {
-          img{
+      }
+      .audio-message {
+        img {
           height: 30px;
           width: 30px;
           vertical-align: middle;
-          }
         }
+      }
       .my-content {
         display: flex;
         flex-direction: column;
@@ -640,7 +727,7 @@ nav{
       .sys-notifacation {
         text-align: center;
         margin: 8px auto;
-        span{
+        span {
           display: inline-block;
           padding: 8px;
           background-color: #e4e7eb;
@@ -661,10 +748,10 @@ nav{
           margin-left: 10px;
         }
         .icon-image {
-          background: url('../../../assets/icon-album.png') center/cover;
+          background: url("../../../assets/icon-album.png") center/cover;
         }
         .icon-video {
-          background: url('../../../assets/icon-camera.png') center/cover;
+          background: url("../../../assets/icon-camera.png") center/cover;
         }
       }
       textarea {
@@ -672,7 +759,7 @@ nav{
         height: calc(100% - 54px);
         resize: none;
         border: 0;
-        padding-left:10px;
+        padding-left: 10px;
       }
       .enter-message {
         position: absolute;
@@ -695,22 +782,22 @@ nav{
     .group-members-title {
       padding: 10px;
     }
-    .group-members-wrapper{
+    .group-members-wrapper {
       height: calc(100% - 32px);
       overflow-y: auto;
     }
     .group-members-item {
-      padding: 4px 0 4px 10px ;
-        img{
-          width:15px;
-          height:15px;
-          vertical-align:middle;
-          background-color:#ccc
-        }
+      padding: 4px 0 4px 10px;
+      img {
+        width: 15px;
+        height: 15px;
+        vertical-align: middle;
+        background-color: #ccc;
+      }
       span {
         padding-left: 5px;
       }
-      &:hover{
+      &:hover {
         background-color: #e6e8eb;
       }
     }
