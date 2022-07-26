@@ -32,7 +32,7 @@
           <p @click.stop="signOutGroup(item.groupId)">退出群聊</p>
         </div>
         <div class="popover" v-if="item.groupId === groupId && item.relationType === 66">
-          <p @click.stop="handleBeat(item)">拍一拍找人</p>
+          <p @click.stop="handleBeat(item)">找一找</p>
         </div>
         </div>
     </div>
@@ -228,7 +228,7 @@ export default {
         return item.uid !== this.uid
       })
       const sender = memberList.find(item => {
-        return item.uid == this.uid
+        return item.uid === this.uid
       })
       console.log({ receiver: memberList })
       this.$eventBus.$emit('beat', {
