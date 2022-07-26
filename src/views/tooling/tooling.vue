@@ -1,7 +1,6 @@
 <template>
   <div id="tooling">
     <div class="tooling-board">
-      <header>零件装配进度表</header>
       <main>
         <div class="board-table">
           <el-table
