@@ -1,7 +1,6 @@
 <template>
   <div id="tooling">
     <div class="tooling-board">
-      <header>Part Assembly Schedule</header>
       <main>
         <div class="board-table">
           <el-table
