@@ -26,7 +26,6 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   response => {
-    console.log(response)
     response.data.resultData = decrypt(response.data.resultData)
     if (response.data.code === '444444' || response.data.code === '666666') {
       router.replace('/login')

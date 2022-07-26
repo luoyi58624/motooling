@@ -57,7 +57,6 @@ function hideLoading () {
 }
 async function getwechat () {
   const { appId } = await getAppid()
-  console.log(appId)
   let url = /(Android)/i.test(navigator.userAgent) ? location.href.split('#')[0] : window.entryUrl
   const { configInfo } = await getJsSDKConfigInfo({ url })
   const config = await Object.assign({}, { appId }, configInfo, {
@@ -71,6 +70,7 @@ Vue.prototype.showToast = showToast
 Vue.prototype.showLoading = showLoading
 Vue.prototype.hideLoading = hideLoading
 Vue.prototype.showDialog = showDialog
+Vue.prototype.$eventBus = new Vue()
 
 if (/MicroMessenger/.test(window.navigator.userAgent)) {
   getwechat().then(config => {

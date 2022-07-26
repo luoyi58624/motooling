@@ -29,7 +29,10 @@ export default new Vuex.Store({
     newsList: [],
     latestMessageId: null,
     notReadCount: null,
-    value: null
+    value: null,
+    groupId: null,
+    relationType: null,
+    activeId: 0
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -82,6 +85,15 @@ export default new Vuex.Store({
     },
     VALUE: (state, value) => {
       state.value = value
+    },
+    ACTIVE_ID: (state, activeID) => {
+      state.activeId = activeID
+    },
+
+    currentConversation: (state, { groupId, relationType }) => {
+      console.log({ groupId, relationType })
+      state.groupId = groupId
+      state.relationType = relationType
     }
   },
   actions: {

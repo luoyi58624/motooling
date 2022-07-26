@@ -1,8 +1,16 @@
 import axios from 'axios'
+import request from '@/utils/newRequest'
 
 export function pathData () {
   return axios({
     url: 'https://a.amap.com/amap-ui/static/data/big-routes.json'
+  })
+}
+
+export function warehouseAddr () {
+  return request({
+    method: 'post',
+    url: '192.168.2.192:8099/data/storeHouceConf/getAll'
   })
 }
 

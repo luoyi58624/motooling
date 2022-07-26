@@ -16,9 +16,8 @@
       </div>
     </div>
     <div class="message-list">
-        <router-link class="message-list-wrapper" tag='div' v-for="item in newsList" :key="item.groupId"
-        :to="{path:'chatPanel', query:{groupId:item.groupId,relationType:item.relationType}}">
-        <div class="message-list-item" @click.left="startChatting(item)" @click.right="handleGroup(item,$event)" v-clickoutside="visible">
+        <div class="message-list-wrapper" :class="{active: item.groupId == activeId}" v-for="item in newsList" :key="item.groupId">
+        <div class="message-list-item"  @click.left="startChatting(item)" @click.right="handleGroup(item,$event)" v-clickoutside="visible">
           <div class="file-picture">
             <img :src="item.avatar" v-if="item.relationType===66">
             <img :src="require('@/assets/group.png')" v-else>
@@ -32,7 +31,10 @@
           <p @click.stop="clearChattingRecords(item)">清空聊天记录</p>
           <p @click.stop="signOutGroup(item.groupId)">退出群聊</p>
         </div>
-        </router-link>
+        <div class="popover" v-if="item.groupId === groupId && item.relationType === 66">
+          <p @click.stop="handleBeat(item)">拍一拍找人</p>
+        </div>
+        </div>
     </div>
     <div class="search-contacts" v-if="value" v-clickoutside="showSearch">
       <ul v-if="contacts.length">
@@ -54,6 +56,7 @@
   </div>
 </template>
 <script>
+import { mapState } from 'vuex'
 import {
   getNewsList,
   signOutGroup,
@@ -77,18 +80,18 @@ export default {
       isClose: false,
       signOut: '',
       contacts: [],
+      newList: [],
       imurl: localStorage.imurl,
       companyId: localStorage.companyId,
-      uid: localStorage.uid
+      uid: +localStorage.uid
     }
   },
   computed: {
-    newsList () {
-      return this.$store.state.newsList
-    },
-    latestMessageId () {
-      return this.$store.state.latestMessageId
-    }
+    ...mapState({
+      activeId: state => state.activeId,
+      newsList: state => state.newsList,
+      latestMessageId: state => state.latestMessageId
+    })
   },
   created () {
     getUserInfo().then(res => {
@@ -99,6 +102,7 @@ export default {
   },
   mounted () {
     getNewsList().then(res => {
+      this.newList = res.newList
       this.$store.dispatch('newsList', res.newsList)
     }).catch(err => {
       this.$createToast({
@@ -208,18 +212,27 @@ export default {
       }, 500)
     },
     enterChatting (data) {
-      this.$router.push({
-        path: 'chatPanel',
-        query: {
-          groupId: data.groupId,
-          relationType: data.relationType
-        }
-      })
+      this.$store.commit('currentConversation', { groupId: data.groupId, relationType: data.relationType })
       this.value = ''
     },
     // 选择聊天对象，开启聊天
     startChatting (data) {
+      this.$store.commit('ACTIVE_ID', data.groupId)
+
+      this.$store.commit('currentConversation', { groupId: data.groupId, relationType: data.relationType })
       this.$store.dispatch('notReadCount', data.notReadCount)
+    },
+    // 拍一拍
+    handleBeat ({ memberList }) {
+      const receiver = memberList.find(item => {
+        return item.uid !== this.uid
+      })
+      this.$eventBus.$emit('beat', {
+        senterID: this.uid,
+        senderName: localStorage.username,
+        receiverID: receiver.uid,
+        username: receiver.username || receiver.nickname
+      })
     }
   }
 }
@@ -227,7 +240,7 @@ export default {
 
 <style scoped lang="less">
 @import url('./common.less');
-.router-link-exact-active {
+.active {
   background-color: #c3c5c7;
 }
 .list {

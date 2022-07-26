@@ -171,7 +171,7 @@ var router = new Router({
         },
         {
           path: 'select',
-          name: 'instore-select',
+          name: 'instore-select1',
           component: () => import('./views/instore/select'),
           meta: { keepAlive: true }
         }
@@ -249,7 +249,7 @@ var router = new Router({
       children: [
         {
           path: 'pick',
-          name: 'instore-pick',
+          name: 'instore-pick1',
           component: () => import('./views/instore/pick'),
           meta: { keepAlive: true }
         },
@@ -303,27 +303,9 @@ var router = new Router({
       component: () => import('./views/synergy/summary/list')
     },
     {
-      path: '/synergy/chat/messageList',
-      name: 'synergyMessageList',
-      component: () => import('./views/synergy/chat/messageList')
-    },
-    {
       path: '/synergy/chat/layout',
       name: 'synergyChatLayout',
-      redirect: '/synergy/chat/layout/noMessage',
-      component: () => import('./views/synergy/chat/layout'),
-      children: [
-        {
-          path: 'chatPanel',
-          name: 'synergyChatPanel',
-          component: () => import('./views/synergy/chat/chatPanel')
-        },
-        {
-          path: 'noMessage',
-          name: 'noMessage',
-          component: () => import('./views/synergy/chat/noMessage')
-        }
-      ]
+      component: () => import('./views/synergy/chat/layout')
     },
     // 生成纪要时，type为new、id为lastRecordId
     // 获取纪要时，type为view、id为summaryId
@@ -346,7 +328,7 @@ var router = new Router({
     },
     {
       path: '/synergy/:typeid/:id',
-      name: 'synergy',
+      name: 'synergy2',
       component: () => import('./views/synergy/detail'),
       meta: {
         keepAlive: true
@@ -436,7 +418,7 @@ var router = new Router({
     },
     {
       path: '/scan/nav-send',
-      name: 'scan-nav',
+      name: '2',
       component: () => import('./views/scan/nav-send'),
       meta: {
         title: '发货'
@@ -501,18 +483,23 @@ var router = new Router({
     },
     {
       path: '/stock',
-      name: 'stock',
+      name: 'stock1',
       component: () => import('./views/logistics/stock/index')
     },
     {
       path: '/cargo-load',
-      name: 'stock',
+      name: 'stock2',
       component: () => import('./views/logistics/cargoLoad')
     },
     {
       path: '/material-storage',
-      name: 'stock',
+      name: 'stock3',
       component: () => import('./views/logistics/materialStorage')
+    },
+    {
+      path: '/route',
+      name: 'route',
+      component: () => import('./views/route')
     }
   ]
 })
@@ -543,14 +530,17 @@ router.beforeEach((to, from, next) => {
   path === '/' ||
   path === '/wxlogin' ||
   path === '/wxloginsuccess' ||
-  path === '/wxbindphone'
+  path === '/wxbindphone' ||
+  path === '/synergy/chat/layout' ||
+  path === '/route'
   ) {
     next()
   } else if (to.query.token && to.query.weburl) {
     next()
   } else if (!WEBURL() || !token()) {
-    router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
-    return
+    // router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
+    // return
+    next()
   }
   if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
     window.entryUrl = location.href.split('#')[0]
