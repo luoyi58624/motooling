@@ -106,7 +106,7 @@
             <div
               class="popover"
               v-if="item.uid === selectedGroupMember"
-              v-clickoutside="hiden"
+              v-clickoutside="hidden"
             >
               <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
               <p @click.stop="beat(item)">找一找</p>
@@ -369,7 +369,7 @@ export default {
         })
       }
     },
-    hiden () {
+    hidden () {
       this.selectedGroupMember = null
     },
     socketMessage (type, { contentType, content, smallImg, duration } = {}, data) {
@@ -539,6 +539,7 @@ export default {
 
         this.groupMember = groupMembers
         this.$store.dispatch('getNewGroupMember', groupMembers)
+        this.selectedGroupMember = null
       })
     },
     // 选择群组中的某人创建聊天
@@ -561,6 +562,7 @@ export default {
             type: 'error'
           }).show()
         })
+      this.selectedGroupMember = null
     },
     handleMessage ({ contentType, smallImg, content } = {}) {
       const currentTime = new Date()
@@ -630,6 +632,7 @@ export default {
           sendeContent: `我找了${data.username}`
         })
       })
+      this.selectedGroupMember = null
     }
   }
 }
