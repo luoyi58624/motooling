@@ -623,6 +623,7 @@ export default {
       }
     },
     beat (data) {
+      console.log('2222222', data)
       this.socketMessage(2, {
         contentType: 7,
         content: JSON.stringify({
