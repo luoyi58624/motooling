@@ -424,7 +424,6 @@ export default {
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
       if (message.data.contentType === 7) {
         const content = JSON.parse(message.data.content)
-        console.log({ message })
         this.recordList.push({ ...message.data, sendTime, content })
       } else {
         this.recordList.push({ ...message.data, sendTime })
@@ -621,7 +620,6 @@ export default {
       }
     },
     beat (data) {
-      console.log(data)
       this.socketMessage(2, {
         contentType: 7,
         content: JSON.stringify({

@@ -95,6 +95,7 @@ export default {
   },
   created () {
     getUserInfo().then(res => {
+      localStorage.setItem('username', res.username)
       localStorage.setItem('fileServerUrl', res.fileServerUrl)
       localStorage.setItem('companyId', res.companyId)
       localStorage.setItem('uid', res.uid)
