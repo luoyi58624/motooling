@@ -420,12 +420,10 @@ export default {
       }
     },
     receiveMessage (message) {
-      console.log({ message })
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
       if (message.data.contentType === 7) {
         const content = JSON.parse(message.data.content)
-        console.log({ message })
         this.recordList.push({ ...message.data, sendTime, content })
       } else {
         this.recordList.push({ ...message.data, sendTime })
@@ -623,14 +621,15 @@ export default {
       }
     },
     beat (data) {
+      console.log({ data })
       this.socketMessage(2, {
         contentType: 7,
         content: JSON.stringify({
           senderId: data.senterID || this.uid,
           receiverId: data.receiverID || data.uid,
-          otherContent: `${this.senderName}拍了拍${data.username}`,
-          receiverContent: `${this.senderName}拍了拍我`,
-          sendeContent: `我拍了拍${data.username}`
+          otherContent: `${this.senderName}找了${data.username}`,
+          receiverContent: `${this.senderName}找了我`,
+          sendeContent: `我找了${data.username}`
         })
       })
     }
