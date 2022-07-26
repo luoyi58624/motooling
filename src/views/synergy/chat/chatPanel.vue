@@ -109,7 +109,7 @@
               v-clickoutside="hiden"
             >
               <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
-              <p @click.stop="beat(item)">拍一拍找人</p>
+              <p @click.stop="beat(item)">找一找</p>
               <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">
                 移出群聊
               </p>
@@ -623,7 +623,6 @@ export default {
       }
     },
     beat (data) {
-      console.log('2222222', data)
       this.socketMessage(2, {
         contentType: 7,
         content: JSON.stringify({
