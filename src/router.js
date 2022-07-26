@@ -462,6 +462,11 @@ var router = new Router({
       component: () => import('./views/tooling/tooling.vue')
     },
     {
+      path: '/tooling-cn',
+      name: 'tooling',
+      component: () => import('./views/tooling/tooling-cn.vue')
+    },
+    {
       path: '/logistic',
       name: 'logistic',
       component: () => import('./views/logistics')

@@ -249,7 +249,7 @@
       <div class="bar"></div>
     </cube-scroll>
     <cube-popup type="my-popup" ref="myPopup">操作成功</cube-popup>
-    <toSynergy v-if="bigMode" />
+    <toSynergy v-if="bigMode&&isRelation" relationType="8" :relationId="poId+''"/>
   </div>
 </template>
 
@@ -279,12 +279,14 @@ var popId // 预报用
 var pgId // 预报用
 var deviceId // 预报用
 export default {
+  inject: ['reload'], // 注入刷新组件
   data () {
     return {
       shebeiCurrentIdx: 0,
       swiperOption: {
         pagination: {
-          el: '.swiper-pagination'
+          el: '.swiper-pagination',
+          dynamicBullets: false
         },
         on: {
           reachEnd: function (event) {
@@ -348,11 +350,20 @@ export default {
       shebeiArray: [], // 当前显示在页面上的设备列表
       storeWaitList: null,
       isLeader: 0,
-      opr: 'jiagong'
+      opr: 'jiagong',
+      poId: 0, // 协同时使用的relationId
+      isRelation: false// 是否显示协同按钮
     }
   },
   created () {
     vm = this
+    // let wechatInfo = sessionStorage.getItem('wechatInfo')
+    // console.log(wechatInfo)
+    // if (wechatInfo) {
+    //   wechatInfo = JSON.parse(wechatInfo)
+    //   let acces = wechatInfo.headimgurl
+    //   console.log(acces, '头像')
+    // }
     // const token = this.$route.query.token
     // const uid = this.$route.query.uid
     const deviceId = this.$route.query.deviceId
@@ -748,6 +759,12 @@ export default {
           if (!this.storeWaitList || this.storeWaitList.length === 0) {
             this.storeWaitList = this.waitList
           }
+          if (this.shebeiList[i].processList[0]) {
+            this.poId = this.shebeiList[i].processList[0].poId
+            this.isRelation = true
+          } else {
+            this.isRelation = false
+          }
           this.waitList = this.shebeiList[i].waitProcessList || []
           // this.shebeiList[i].big = true
         } else {
@@ -787,6 +804,7 @@ export default {
       that._getDeviceAndStatus()
       that._getProcessTask()
       that._getProcessTaskDone()
+      vm.reload()
     },
 
     getPart (type) {
@@ -803,10 +821,11 @@ export default {
       // 开始移动工件
       this.shebeiArray = []
       var shebeiDom = document.getElementsByClassName('shebei')
+      // console.log(shebeiDom)
       var myDom = Array.prototype.slice.call(
         shebeiDom,
-        this.shebeiCurrentIdx * 6,
-        this.shebeiCurrentIdx * 6 + 6
+        this.shebeiCurrentIdx * 6
+        // this.shebeiCurrentIdx * 6 + 6 设置数组上限
       )
       for (var i = 0; i < myDom.length; i++) {
         this.shebeiArray.push(myDom[i].getBoundingClientRect())
