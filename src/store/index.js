@@ -91,7 +91,6 @@ export default new Vuex.Store({
     },
 
     currentConversation: (state, { groupId, relationType }) => {
-      console.log({ groupId, relationType })
       state.groupId = groupId
       state.relationType = relationType
     }

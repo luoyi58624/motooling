@@ -1,7 +1,7 @@
 export default {
   bind (el, binding, vnode) {
     el.handle = e => {
-      if (!el.contains(e.target)) {
+      if (el.contains(e.target)) {
         let method = binding.expression
         vnode.context[method]()
       }

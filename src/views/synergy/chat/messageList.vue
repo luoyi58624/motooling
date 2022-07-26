@@ -144,9 +144,8 @@ export default {
             requestType: '555555',
             serialNumber: `${receivedMessage.serialNumber}`
           }))
-
           if (this.latestMessageId) {
-            await alreadyRead({ lastRecordId: this.latestMessageId, groupId: this.$route.query.groupId })
+            await alreadyRead({ lastRecordId: this.latestMessageId, groupId: this.$store.state.groupId })
           }
 
           getNewsList().then(res => {
@@ -217,6 +216,7 @@ export default {
     },
     // 选择聊天对象，开启聊天
     startChatting (data) {
+      this.groupId = data.groupId
       this.$store.commit('ACTIVE_ID', data.groupId)
 
       this.$store.commit('currentConversation', { groupId: data.groupId, relationType: data.relationType })
@@ -230,13 +230,13 @@ export default {
       const sender = memberList.find(item => {
         return item.uid === this.uid
       })
-      console.log({ receiver: memberList })
       this.$eventBus.$emit('beat', {
         senterID: this.uid,
         senderName: sender.username || sender.nickname,
         receiverID: receiver.uid,
         username: receiver.username || receiver.nickname
       })
+      this.groupId = null
     }
   }
 }
