@@ -32,7 +32,8 @@ export default new Vuex.Store({
     value: null,
     groupId: null,
     relationType: null,
-    activeId: 0
+    activeId: 0,
+    userInfo: {}
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -88,6 +89,10 @@ export default new Vuex.Store({
     },
     ACTIVE_ID: (state, activeID) => {
       state.activeId = activeID
+    },
+
+    USER_INFO: (state, data) => {
+      state.userInfo = data
     },
 
     currentConversation: (state, { groupId, relationType }) => {

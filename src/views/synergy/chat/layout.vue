@@ -3,7 +3,7 @@
     <div class="aside">
       <message-list @add-user="createNewChatting" />
     </div>
-    <div class="chat-panel" v-show="groupId">
+    <div class="chat-panel" v-if="groupId">
         <chat-panel @add-user="addGroupMember" :invitedMembers="invitedMembers" :invidedMembersInfo="invidedMembersInfo"></chat-panel>
     </div>
     <div class="add-user" v-show="show">
