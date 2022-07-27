@@ -109,7 +109,7 @@
               v-clickoutside="hidden"
             >
               <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
-              <p @click.stop="beat(item)" v-if="item.uid !== uid">找一找</p>
+              <p @click.stop="beat(item)" v-if="item.uid != uid">找一找</p>
               <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">
                 移出群聊
               </p>
@@ -158,10 +158,7 @@ export default {
   data () {
     return {
       isClose: false,
-      companyId: localStorage.companyId,
       imurl: localStorage.imurl,
-      uid: localStorage.uid,
-      senderName: localStorage.username,
       socket: {},
       synergyGroup: {},
       mainKeyId: '',
@@ -185,7 +182,7 @@ export default {
     invitedMembers (newVal) {
       this.socketMessage(2, {
         contentType: 5,
-        content: `${localStorage.username}邀请${newVal}加入群聊`
+        content: `${this.senderName}邀请${newVal}加入群聊`
       })
     },
     invidedMembersInfo (val) {
@@ -202,7 +199,10 @@ export default {
       groupId: (state) => state.groupId,
       relationType: (state) => state.relationType,
       notReadCount: (state) => state.notReadCount,
-      chatTargetInfo: (state) => state.chatTargetInfo
+      chatTargetInfo: (state) => state.chatTargetInfo,
+      companyId: (state) => state.userInfo.companyId,
+      uid: (state) => state.userInfo.uid,
+      senderName: (state) => state.userInfo.username
     })
   },
   mounted () {
@@ -361,7 +361,7 @@ export default {
         }).then((res) => {
           this.socketMessage(2, {
             contentType: 5,
-            content: `${localStorage.username}修改群名为"${name}"`
+            content: `${this.senderName}修改群名为"${name}"`
           })
           getNewsList().then((res) => {
             this.$store.dispatch('newsList', res.newsList)
@@ -451,7 +451,7 @@ export default {
             content: this.wordContent,
             senderId: this.uid,
             sendTime,
-            username: localStorage.username
+            username: this.senderName
           }
         ]
         this.recordList = this.recordList.concat(_message)
@@ -573,7 +573,7 @@ export default {
           smallImg,
           content,
           sendTime,
-          username: localStorage.username,
+          username: this.senderName,
           senderId: this.uid
         }
       ]
@@ -622,13 +622,14 @@ export default {
       }
     },
     beat (data) {
+      const senderName = this.senderName
       this.socketMessage(2, {
         contentType: 7,
         content: JSON.stringify({
           senderId: data.senterID || this.uid,
           receiverId: data.receiverID || data.uid,
-          otherContent: `${this.senderName}找了${data.username}`,
-          receiverContent: `${this.senderName}找了我`,
+          otherContent: `${senderName}找了${data.username}`,
+          receiverContent: `${senderName}找了我`,
           sendeContent: `我找了${data.username}`
         })
       })

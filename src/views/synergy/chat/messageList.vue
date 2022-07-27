@@ -81,24 +81,21 @@ export default {
       signOut: '',
       contacts: [],
       newList: [],
-      imurl: localStorage.imurl,
-      companyId: localStorage.companyId,
-      uid: +localStorage.uid
+      imurl: localStorage.imurl
     }
   },
   computed: {
     ...mapState({
       activeId: state => state.activeId,
       newsList: state => state.newsList,
-      latestMessageId: state => state.latestMessageId
+      latestMessageId: state => state.latestMessageId,
+      companyId: state => state.userInfo.companyId,
+      uid: state => state.userInfo.uid
     })
   },
   created () {
     getUserInfo().then(res => {
-      localStorage.setItem('username', res.username)
-      localStorage.setItem('fileServerUrl', res.fileServerUrl)
-      localStorage.setItem('companyId', res.companyId)
-      localStorage.setItem('uid', res.uid)
+      this.$store.commit('USER_INFO', res)
     })
   },
   mounted () {
@@ -122,7 +119,7 @@ export default {
     im () {
       let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
       if (this.isClose === false || (this.socket && this.socket.readyState === 3)) {
-        this.socket = new WebSocket(`${prefix}${this.imurl}/MtMsgWebSocket/${this.companyId}/H5/${this.uid}`)
+        this.socket = new WebSocket(`${prefix}${this.imurl}/MtMsgWebSocket/${this.companyId}/H5/${this.uid * 1}`)
         this.socket.onopen = () => {
           this.interval = setInterval(() => {
             if (this.socket.readyState === 1) {
@@ -226,13 +223,13 @@ export default {
     // 拍一拍
     handleBeat ({ memberList }) {
       const receiver = memberList.find(item => {
-        return item.uid !== this.uid
+        return item.uid !== +this.uid
       })
       const sender = memberList.find(item => {
-        return item.uid === this.uid
+        return item.uid === +this.uid
       })
       this.$eventBus.$emit('beat', {
-        senterID: this.uid,
+        senterID: +this.uid,
         senderName: sender.username || sender.nickname,
         receiverID: receiver.uid,
         username: receiver.username || receiver.nickname
