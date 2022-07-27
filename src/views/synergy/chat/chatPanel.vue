@@ -427,12 +427,8 @@ export default {
     receiveMessage (message) {
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
-      if (message.data.contentType === 7) {
-        const content = JSON.parse(message.data.content)
-        this.recordList.push({ ...message.data, sendTime, content })
-      } else {
-        this.recordList.push({ ...message.data, sendTime })
-      }
+      this.recordList.push({ ...message.data, sendTime })
+
       if (message.responseType === '666666') {
         // 服务器主动推送
         this.$store.dispatch('latestMessageId', message.data.id)
@@ -628,16 +624,31 @@ export default {
     },
     beat (data) {
       const senderName = this.senderName
-      this.socketMessage(2, {
+      const content = {
+        senderId: data.senterID || this.uid,
+        receiverId: data.receiverID || data.uid,
+        otherContent: `${senderName}找了${data.username}`,
+        receiverContent: `${senderName}找了我`,
+        sendeContent: `我找了${data.username}`
+      }
+
+      sendMessage({
+        groupId: this.groupId,
+        senderId: data.senterID || this.uid,
         contentType: 7,
-        content: JSON.stringify({
-          senderId: data.senterID || this.uid,
-          receiverId: data.receiverID || data.uid,
-          otherContent: `${senderName}找了${data.username}`,
-          receiverContent: `${senderName}找了我`,
-          sendeContent: `我找了${data.username}`
-        })
+        content: JSON.stringify(content
+
+        )
+      }).then(() => {
+        this.recordList.push(content)
       })
+        .catch((err) => {
+          this.$createToast({
+            time: 2000,
+            txt: err.msg || '发送失败，请检查网络',
+            type: 'error'
+          }).show()
+        })
       this.selectedGroupMember = null
     }
   }
