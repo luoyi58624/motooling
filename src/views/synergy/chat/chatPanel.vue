@@ -188,10 +188,13 @@ export default {
     invidedMembersInfo (val) {
       this.groupMember = this.groupMember.concat(val)
     },
-    groupId (newVal) {
-      this.init().then(() => {
-        this.$refs.talkContent.scrollTop = 9999
-      })
+    groupId: {
+      handler: function () {
+        this.init().then(() => {
+          this.$refs.talkContent.scrollTop = 9999
+        })
+      },
+      immediate: true
     }
   },
   computed: {
@@ -309,13 +312,15 @@ export default {
     },
     websocketonopen () {
       this.interval = setInterval(() => {
-        this.socket.send(
-          JSON.stringify({
-            requestType: 'ping',
-            serialNumber: null,
-            data: {}
-          })
-        )
+        if (this.socket.readyState === 1) {
+          this.socket.send(
+            JSON.stringify({
+              requestType: 'ping',
+              serialNumber: null,
+              data: {}
+            })
+          )
+        }
       }, 10000)
     },
     websocketonerror () {
