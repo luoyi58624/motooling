@@ -638,7 +638,7 @@ export default {
         contentType: 7,
         content: JSON.stringify(content)
       }).then(() => {
-        this.recordList.push({ ...content, contentType: 7 })
+        this.recordList.push({ content, contentType: 7 })
       })
         .catch((err) => {
           this.$createToast({
