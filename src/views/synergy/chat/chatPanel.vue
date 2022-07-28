@@ -636,11 +636,9 @@ export default {
         groupId: this.groupId,
         senderId: data.senterID || this.uid,
         contentType: 7,
-        content: JSON.stringify(content
-
-        )
+        content: JSON.stringify(content)
       }).then(() => {
-        this.recordList.push(content)
+        this.recordList.push({ ...content, contentType: 7 })
       })
         .catch((err) => {
           this.$createToast({
