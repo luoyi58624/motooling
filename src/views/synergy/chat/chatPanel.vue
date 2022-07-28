@@ -190,9 +190,7 @@ export default {
     },
     groupId: {
       handler: function () {
-        this.init().then(() => {
-          this.$refs.talkContent.scrollTop = 9999
-        })
+        this.init()
       },
       immediate: true
     }
@@ -230,7 +228,7 @@ export default {
     this.socket.close()
   },
   methods: {
-    async init () {
+    init () {
       getOpenSynergy({
         relationType: this.relationType,
         groupId: this.groupId
@@ -272,12 +270,12 @@ export default {
             }
           })
           this.recordList = time(recordList)
+          this.scrolltoButtom()
 
           this.mainKeyId = recordList[0] && recordList[0].data.id
           this.im()
         })
         .catch((err) => {
-          console.log({ err })
           this.$createToast({
             time: 2000,
             txt: err.msg || '互动消息开启失败,请检查网络',
@@ -350,6 +348,16 @@ export default {
         let ele = this.$refs.talkContent
         ele.scrollTop = ele.scrollHeight
       }
+    },
+    // 滚到底部
+    scrolltoButtom () {
+      this.$nextTick(() => {
+        let messageListNode = this.$refs.talkContent
+        if (!messageListNode) {
+          return
+        }
+        messageListNode.scrollTop = messageListNode.scrollHeight
+      })
     },
     // 设置群名称
     setGroupName (name) {
@@ -456,9 +464,7 @@ export default {
           }
         ]
         this.recordList = this.recordList.concat(_message)
-        this.$nextTick(() => {
-          this.$refs.talkContent.scrollTop = 9999
-        })
+        this.scrolltoButtom()
         sendMessage({
           groupId: this.groupId,
           senderId: this.uid,
@@ -632,21 +638,21 @@ export default {
         sendeContent: `我找了${data.username}`
       }
 
+      this.recordList.push({ content, contentType: 7 })
+      this.scrolltoButtom()
+
       sendMessage({
         groupId: this.groupId,
         senderId: data.senterID || this.uid,
         contentType: 7,
         content: JSON.stringify(content)
-      }).then(() => {
-        this.recordList.push({ content, contentType: 7 })
+      }).catch((err) => {
+        this.$createToast({
+          time: 2000,
+          txt: err.msg || '发送失败，请检查网络',
+          type: 'error'
+        }).show()
       })
-        .catch((err) => {
-          this.$createToast({
-            time: 2000,
-            txt: err.msg || '发送失败，请检查网络',
-            type: 'error'
-          }).show()
-        })
       this.selectedGroupMember = null
     }
   }
