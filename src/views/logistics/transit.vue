@@ -82,7 +82,7 @@
 
 <script>
 import Logistics from '@/api/logistics'
-import chat from '@/views/synergy/chat/chatPanel'
+import chat from '@/views/synergy/chat/layout'
 export default {
   components: { chat },
   props: {
