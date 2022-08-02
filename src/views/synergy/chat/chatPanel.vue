@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-panel">
+  <div class="chat-panel" v-show="groupId">
     <nav>
       <div class="chatting-name">
         <input
@@ -189,8 +189,16 @@ export default {
       this.groupMember = this.groupMember.concat(val)
     },
     groupId: {
-      handler: function () {
-        this.init()
+      handler: function (val) {
+        if (val) {
+          this.init()
+        }
+      },
+      immediate: true
+    },
+    relationId: {
+      handler: function (val) {
+        this.createPrivateChatting(val)
       },
       immediate: true
     }
@@ -204,13 +212,12 @@ export default {
       companyId: (state) => state.userInfo.companyId,
       uid: (state) => state.userInfo.uid,
       senderName: (state) => state.userInfo.username
-    })
+    }),
+    relationId () {
+      return this.$route.query.relationId * 1
+    }
   },
   mounted () {
-    const id = this.$route.query.relationId
-    if (id) {
-      this.createPrivateChatting(id)
-    }
     this.$eventBus.$on('beat', this.beat)
     this.$refs.talkContent.addEventListener(
       'scroll',
@@ -560,9 +567,9 @@ export default {
           this.$store.commit('currentConversation', { groupId: res.synergyGroup.id, relationType: res.synergyGroup.relationType })
           const { newsList } = await getNewsList()
           this.$store.dispatch('newsList', newsList)
-          this.$store.commit('ACTIVE_ID', res.synergyGroup.id)
         })
         .catch((err) => {
+          console.log({ err })
           this.$createToast({
             time: 2000,
             txt: err.msg || '互动消息开启失败,请检查网络',

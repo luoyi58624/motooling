@@ -3,7 +3,7 @@
     <div class="aside">
       <message-list @add-user="createNewChatting" />
     </div>
-    <div class="chat-panel" v-if="groupId">
+    <div class="chat-panel">
         <chat-panel @add-user="addGroupMember" :invitedMembers="invitedMembers" :invidedMembersInfo="invidedMembersInfo"></chat-panel>
     </div>
     <div class="add-user" v-show="show">
@@ -142,7 +142,7 @@ export default {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 500px;
-    height: 70%;
+    height: 60%;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <cube-scroll class="scroll" :options="options">
+  <cube-scroll class="scroll" :options="options" style="overflow: auto">
     <div class="_containner" v-show="visible">
       <div
         class="select-box"
@@ -121,13 +121,13 @@ export default {
   margin-top: 20px;
 }
 .scroll {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  // position: fixed;
+  // top: 0;
+  // left: 0;
+  // bottom: 0;
+  // right: 0;
   background: #fff;
-  z-index: 20;
+  // z-index: 20;
 }
 ._containner {
   padding: 15px;
