@@ -27,6 +27,14 @@ export function getStringQueryString (str, query) {
   return null
 }
 
+export function isWeiXin () {
+  const ua = window.navigator.userAgent.toLocaleLowerCase()
+  if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+    return true
+  } else {
+    return false
+  }
+}
 // 获取URL中查询参数
 export const WEBURL = () => localStorage.getItem('WEBURL') || ''
 
