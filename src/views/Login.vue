@@ -67,10 +67,9 @@ export default {
     }
   },
   created () {
-    if (isWeiXin()) {
+    if (isWeiXin) {
       // 微信浏览器进入微信登录
       this.$router.replace('/wxlogin?redirectURL=' + getUrlQueryString('redirectURL'))
-      localStorage.setItem('imurl', 'im.motooling.com')
     }
   }
 }
