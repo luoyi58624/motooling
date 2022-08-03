@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import { WEBURL, token } from '@/utils/utils.js'
+const whiteList = ['/logistic', '/arrival', '/departure-time', '/stock', '/cargo-load', '/material-storage', '/login', '/daohang', '/list', '/', '/wxlogin', '/wxloginsuccess', '/wxbindphone', '/synergy/chat/layout', '/route']
 // import store from '@/store'
 // const isiOS = function () {
 //   const u = navigator.userAgent
@@ -505,7 +506,6 @@ var router = new Router({
 })
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || 'MoTooling'
-  const path = to.path.toLowerCase()
   if (to.query.weburl) {
     localStorage.WEBURL = decodeURIComponent(to.query.weburl)
   }
@@ -518,29 +518,14 @@ router.beforeEach((to, from, next) => {
   if (to.query.imurl) {
     localStorage.imurl = decodeURIComponent(to.query.imurl)
   }
-  if (path === '/logistic' ||
-  path === '/arrival' ||
-  path === '/departure-time' ||
-  path === '/stock' ||
-  path === '/cargo-load' ||
-  path === '/material-storage' ||
-  path === '/login' ||
-  path === '/daohang' ||
-  path === '/list' ||
-  path === '/' ||
-  path === '/wxlogin' ||
-  path === '/wxloginsuccess' ||
-  path === '/wxbindphone' ||
-  path === '/synergy/chat/layout' ||
-  path === '/route'
-  ) {
+  if (whiteList.includes(to.path)) {
     next()
   } else if (to.query.token && to.query.weburl) {
     next()
   } else if (!WEBURL() || !token()) {
-    // router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
-    // return
-    next()
+    router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
+    return
+    // next()
   }
   if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
     window.entryUrl = location.href.split('#')[0]
