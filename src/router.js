@@ -506,6 +506,9 @@ var router = new Router({
 })
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || 'MoTooling'
+  if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
+    window.entryUrl = location.href.split('#')[0]
+  }
   if (to.query.weburl) {
     localStorage.WEBURL = decodeURIComponent(to.query.weburl)
   }
@@ -522,15 +525,15 @@ router.beforeEach((to, from, next) => {
     next()
   } else if (to.query.token && to.query.weburl) {
     next()
-  } else if (!WEBURL() || !token()) {
-    router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
-    return
-    // next()
+  } else if (!token() && to.path !== '/login') {
+    // router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
+    next({
+      path: '/login?redirectURL=' + encodeURIComponent(to.fullPath),
+      replace: true
+    })
+  } else {
+    next()
   }
-  if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
-    window.entryUrl = location.href.split('#')[0]
-  }
-  next()
 })
 
 export default router
