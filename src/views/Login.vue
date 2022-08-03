@@ -22,7 +22,7 @@
 
 <script>
 import { accountPasswordLogin } from '@/api/login'
-import { getUrlQueryString } from '@/utils/utils.js'
+import { getUrlQueryString, isWeiXin } from '@/utils/utils.js'
 export default {
   data () {
     return {
@@ -68,7 +68,7 @@ export default {
     }
   },
   created () {
-    if (/MicroMessenger/.test(window.navigator.userAgent)) {
+    if (isWeiXin()) {
       // 微信浏览器进入微信登录
       this.$router.replace('/wxlogin?redirectURL=' + getUrlQueryString('redirectURL'))
     }
