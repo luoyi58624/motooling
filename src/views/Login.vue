@@ -70,7 +70,13 @@ export default {
   created () {
     if (isWeiXin()) {
       // 微信浏览器进入微信登录
-      this.$router.replace('/wxlogin?redirectURL=' + getUrlQueryString('redirectURL'))
+      this.$router.push({
+        path: '/wxlogin',
+        query: {
+          redirectURL: getUrlQueryString('redirectURL')
+        },
+        repace: true
+      })
     }
   }
 }
