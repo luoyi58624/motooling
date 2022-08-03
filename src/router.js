@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import { WEBURL, token } from '@/utils/utils.js'
-const whiteList = ['/logistic', '/arrival', '/departure-time', '/stock', '/cargo-load', '/material-storage', '/login', '/daohang', '/list', '/', '/wxlogin', '/wxloginsuccess', '/wxbindphone', '/synergy/chat/layout', '/route']
+import { token } from '@/utils/utils.js'
+const whiteList = ['/logistic', '/arrival', '/departure-time', '/stock', '/cargo-load', '/material-storage', '/daohang', '/list', '/synergy/chat/layout', '/route']
 // import store from '@/store'
 // const isiOS = function () {
 //   const u = navigator.userAgent
@@ -520,7 +520,7 @@ router.beforeEach((to, from, next) => {
     next()
   } else if (to.query.token && to.query.weburl) {
     next()
-  } else if (!token() && to.path !== '/login') {
+  } else if (!token() && to.path !== '/login' && to.path !== 'wxlogin' && to.path !== 'wxLoginSuccess') {
     // router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
     next({
       path: '/login?redirectURL=' + encodeURIComponent(to.fullPath),
