@@ -523,7 +523,10 @@ router.beforeEach((to, from, next) => {
   } else if (!token() && to.path !== '/login' && to.path !== '/wxlogin' && to.path !== '/wxLoginSuccess') {
     // router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
     next({
-      path: '/login?redirectURL=' + encodeURIComponent(to.fullPath),
+      path: '/login',
+      query: {
+        redirectURL: encodeURIComponent(to.fullPath)
+      },
       replace: true
     })
   } else {
