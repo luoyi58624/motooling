@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import { token } from '@/utils/utils.js'
-const whiteList = ['/logistic', '/arrival', '/departure-time', '/stock', '/cargo-load', '/material-storage', '/daohang', '/list', '/synergy/chat/layout', '/route']
+const whiteList = ['/logistic', '/arrival', '/departure-time', '/stock', '/cargo-load', '/material-storage', '/daohang', '/list', '/route']
 // import store from '@/store'
 // const isiOS = function () {
 //   const u = navigator.userAgent

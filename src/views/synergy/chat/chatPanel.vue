@@ -716,7 +716,7 @@ nav {
         padding: 8px;
         border-radius: 5px;
         user-select: text;
-        white-space: pre-wrap;
+        // white-space: pre-wrap;
       }
       .image-message {
         img {
