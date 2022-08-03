@@ -7,6 +7,31 @@
   </div>
 </template>
 
+<script>
+// 控制刷新当前页面的组件
+export default {
+  name: 'App',
+  provide () {
+    return {
+      reload: this.reload
+    }
+  },
+  data () {
+    return {
+      isRouterAlive: true
+    }
+  },
+  methods: {
+    reload () {
+      this.isRouterAlive = false
+      this.$nextTick(function () {
+        this.isRouterAlive = true
+      })
+    }
+  }
+}
+</script>
+
 <style lang="less">
 /**@import url("../static/iconfont/iconfont.css");**/
 @import url("//at.alicdn.com/t/font_1109928_0bj316ek8gup.css");
