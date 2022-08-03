@@ -52,9 +52,8 @@ export default {
             localStorage.setItem('fileServerUrl', data.fileServerUrl)
             localStorage.setItem('mobile', data.mobile)
             localStorage.setItem('companyId', data.companyId)
-
+            localStorage.setItem('imurl', 'im.motooling.com')
             let redirectURL = getUrlQueryString('redirectURL')
-
             if (redirectURL) {
               let nexturl = decodeURIComponent(redirectURL)
               _this.$router.push(nexturl)

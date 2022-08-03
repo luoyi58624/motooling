@@ -313,6 +313,10 @@ export default {
         .then(res => {
           this.getInfo()
           this.showToast('质检成功')
+          if (this.noQualifiedQty * 1 + this.qualifiedQty * 1 ===
+        this.info.waitQcQty) {
+            this.showToast('质检已经完成,即将跳转到上一界面')
+          }
         })
         .catch(err => {
           if (err.msg) {

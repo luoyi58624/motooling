@@ -148,7 +148,8 @@
             id="uploadImageField"
             multiple
             hidden
-            accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
+            accept="audio/mpeg,video/mp4,image/*"
+            capture="environment"
             @change="uploadImage"
           />
            <label class="list-item" for="uploadImageField">
@@ -637,24 +638,32 @@ export default {
       }
     },
     im () {
+      console.log(this.imurl)
       let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
       if (
         this.isClose === false &&
         (Object.keys(this.socket).length === 0 ||
           (this.socket && this.socket.readyState === 3))
       ) {
-        this.socket = new WebSocket(
-          prefix + this.imurl +
-            '/mtwebsocket/' +
-            // 'ws://192.168.2.180:8070/mtwebsocket/' +
-            this.companyId +
-            '/' +
-            this.synergyGroup.id +
-            '/' +
-            sessionStorage.token +
-            '/' +
-            localStorage.WEBURL.split('//')[1]
-        )
+        if (this.imurl.indexOf('ws') !== -1) {
+          this.socket = new WebSocket(
+            this.imurl
+          )
+        } else {
+          this.socket = new WebSocket(
+            prefix + this.imurl +
+              '/mtwebsocket/' +
+              // 'ws://192.168.2.180:8070/mtwebsocket/' +
+              this.companyId +
+              '/' +
+              this.synergyGroup.id +
+              '/' +
+              sessionStorage.token +
+              '/' +
+              localStorage.WEBURL.split('//')[1]
+            // this.imurl
+          )
+        }
         this.socket.onopen = this.websocketonopen
         this.socket.onerror = this.websocketonerror
         this.socket.onmessage = this.websocketonmessage
