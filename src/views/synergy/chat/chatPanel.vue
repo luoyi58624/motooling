@@ -195,12 +195,6 @@ export default {
         }
       },
       immediate: true
-    },
-    relationId: {
-      handler: function (val) {
-        this.createPrivateChatting(val)
-      },
-      immediate: true
     }
   },
   computed: {
@@ -215,6 +209,11 @@ export default {
     }),
     relationId () {
       return this.$route.query.relationId * 1
+    }
+  },
+  created () {
+    if (this.relationId) {
+      this.createPrivateChatting(this.relationId)
     }
   },
   mounted () {
@@ -564,12 +563,11 @@ export default {
       })
         .then(async (res) => {
           this.selectedGroupMember = null
-          this.$store.commit('currentConversation', { groupId: res.synergyGroup.id, relationType: res.synergyGroup.relationType })
           const { newsList } = await getNewsList()
           this.$store.dispatch('newsList', newsList)
+          this.$store.commit('currentConversation', { groupId: res.synergyGroup.id, relationType: res.synergyGroup.relationType })
         })
         .catch((err) => {
-          console.log({ err })
           this.$createToast({
             time: 2000,
             txt: err.msg || '互动消息开启失败,请检查网络',
