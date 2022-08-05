@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="message-list">
-        <div class="message-list-wrapper" :class="{active: item.groupId == groupId}" v-for="item in newsList" :key="item.groupId">
+        <div class="message-list-wrapper" :class="{active: item.groupId == currentConversation}" v-for="item in newsList" :key="item.groupId">
         <div class="message-list-item"  @click.left="startChatting(item)" @click.right="handleGroup(item,$event)" v-clickoutside="visible">
           <div class="file-picture">
             <img :src="item.avatar" v-if="item.relationType===66">
@@ -86,7 +86,7 @@ export default {
   },
   computed: {
     ...mapState({
-      groupId: state => state.groupId,
+      currentConversation: state => state.groupId,
       newsList: state => state.newsList,
       latestMessageId: state => state.latestMessageId,
       companyId: state => state.userInfo.companyId,
