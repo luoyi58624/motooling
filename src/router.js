@@ -505,7 +505,6 @@ var router = new Router({
   ]
 })
 router.beforeEach((to, from, next) => {
-  console.log(to.path)
   document.title = to.meta.title || 'MoTooling'
   if (typeof window.entryUrl === 'undefined' || window.entryUrl === '') {
     window.entryUrl = location.href.split('#')[0]
@@ -526,7 +525,7 @@ router.beforeEach((to, from, next) => {
     next()
   } else if (to.query.token && to.query.weburl) {
     next()
-  } else if (!token() && to.path !== '/login' && to.path !== '/wxlogin' && to.path !== '/wxLoginSuccess') {
+  } else if (!token() && to.path !== '/login' && to.path !== '/wxlogin' && to.path !== '/wxLoginSuccess' && to.path !== '/wxbindphone') {
     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
   } else {
     next()
