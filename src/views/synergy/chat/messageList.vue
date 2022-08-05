@@ -133,15 +133,17 @@ export default {
           if (this.isClose === false) {
             this.im()
           } else {
-            clearInterval(this.socket)
+            clearInterval(this.interval)
           }
         }
         this.socket.onmessage = async msg => {
           let receivedMessage = JSON.parse(msg.data)
-          this.socket.send(JSON.stringify({
-            requestType: '555555',
-            serialNumber: `${receivedMessage.serialNumber}`
-          }))
+          if (this.socket.readyState === 1) {
+            this.socket.send(JSON.stringify({
+              requestType: '555555',
+              serialNumber: `${receivedMessage.serialNumber}`
+            }))
+          }
           if (this.latestMessageId) {
             await alreadyRead({ lastRecordId: this.latestMessageId, groupId: this.$store.state.groupId })
           }
