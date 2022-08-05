@@ -10,7 +10,7 @@ export default {
     return {
       appid: 'wx70214a3c12e8e576',
       wxLinkBase: 'https://open.weixin.qq.com/connect/oauth2/authorize',
-      redirect_uri: 'http://www.motooling.com/mthtml/wxLoginSuccess'
+      redirect_uri: 'http://www.motooling.com/mthtml/wxloginSuccess'
     }
   },
   computed: {

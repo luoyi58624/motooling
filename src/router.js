@@ -44,7 +44,7 @@ var router = new Router({
       component: () => import('./views/wxBindPhone.vue')
     },
     {
-      path: '/wxLoginSuccess',
+      path: '/wxloginSuccess',
       name: 'wxLoginSuccess',
       component: () => import('./views/wxLoginSuccess.vue')
     },
@@ -525,7 +525,7 @@ router.beforeEach((to, from, next) => {
     next()
   } else if (to.query.token && to.query.weburl) {
     next()
-  } else if (!token() && to.path !== '/login' && to.path !== '/wxlogin' && to.path !== '/wxLoginSuccess' && to.path !== '/wxbindphone') {
+  } else if (!token() && to.path !== '/login' && to.path !== '/wxlogin' && to.path !== '/wxloginSuccess' && to.path !== '/wxbindphone') {
     router.replace('/login?redirectURL=' + encodeURIComponent(to.fullPath))
   } else {
     next()
