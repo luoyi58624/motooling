@@ -191,6 +191,7 @@ export default {
     groupId: {
       handler: function (val) {
         if (val) {
+          console.log({ val })
           this.init()
         }
       },
@@ -280,13 +281,6 @@ export default {
 
           this.mainKeyId = recordList[0] && recordList[0].data.id
           this.im()
-        })
-        .catch((err) => {
-          this.$createToast({
-            time: 2000,
-            txt: err.msg || '互动消息开启失败,请检查网络',
-            type: 'error'
-          }).show()
         })
     },
     im () {
