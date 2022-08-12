@@ -24,12 +24,12 @@
             <div class="no-read-count" v-if="item.notReadCount <= 99 && item.notReadCount > 0">{{item.notReadCount}}</div>
             <div class="no-read-count" v-else-if="item.notReadCount !== 0">...</div>
           </div>
-          <div class="user-name"><p>{{item.username || item.subject}}</p>
+          <div class="user-name"><p>{{item.username || item.subject.slice(0,8) + "..."}}</p>
           <p>{{item.newMsg}}</p></div>
         </div>
         <div class="popover" v-if="item.groupId === groupId && item.relationType === 666">
           <p @click.stop="clearChattingRecords(item)">清空聊天记录</p>
-          <p @click.stop="signOutGroup(item.groupId)">退出群聊</p>
+          <p @click.stop="signOutGroup(item)">退出群聊</p>
         </div>
         <div class="popover" v-if="item.groupId === groupId && item.relationType === 66">
           <p @click.stop="handleBeat(item)">找一找</p>
@@ -59,7 +59,6 @@
 import { mapState } from 'vuex'
 import {
   getNewsList,
-  signOutGroup,
   clearChatRecords,
   getOpenSynergy,
   alreadyRead,
@@ -188,13 +187,8 @@ export default {
         })
     },
     // 退出群聊
-    signOutGroup (groupId) {
-      signOutGroup({ groupId }).then(item => {
-        this.groupId = null
-        getNewsList().then(res => {
-          this.$store.dispatch('newsList', res.newsList)
-        })
-      })
+    signOutGroup (item) {
+      this.$eventBus.$emit('quit', item.groupId)
     },
     // 搜索
     search (e) {

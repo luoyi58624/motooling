@@ -57,7 +57,12 @@
                 ></video>
               </div>
             </div>
-            <div v-if="item.contentType === 5 || item.contentType === 7">
+            <div v-if="item.contentType === 5">
+              <div class="sys-notifacation">
+                <span>{{item.content}}</span>
+              </div>
+            </div>
+            <div v-if="item.contentType === 7">
               <div class="sys-notifacation" v-if="item.content.senderId == uid">
                 <span>{{ item.content.sendeContent }}</span>
               </div>
@@ -133,6 +138,7 @@ import {
   deleteGroupMember,
   updateGroupInfo,
   getNewsList,
+  signOutGroup,
   alreadyRead,
   sendMessage
 } from '@/api/synergy/synergy.js'
@@ -182,7 +188,7 @@ export default {
     invitedMembers (newVal) {
       this.socketMessage(2, {
         contentType: 5,
-        content: `${this.senderName}邀请${newVal}加入群聊`
+        content: `${this.senderName}邀请${newVal}、${newVal}加入群聊成功`
       })
     },
     invidedMembersInfo (val) {
@@ -191,7 +197,6 @@ export default {
     groupId: {
       handler: function (val) {
         if (val) {
-          console.log({ val })
           this.init()
         }
       },
@@ -219,6 +224,7 @@ export default {
   },
   mounted () {
     this.$eventBus.$on('beat', this.beat)
+    this.$eventBus.$on('quit', this.quitGroup)
     this.$refs.talkContent.addEventListener(
       'scroll',
       debounce(this.loadMoreRecordList, 500)
@@ -382,6 +388,22 @@ export default {
         })
       }
     },
+    // 退出群聊
+    quitGroup (groupId) {
+      signOutGroup({ groupId }).then(item => {
+        this.socketMessage(2, {
+          contentType: 5,
+          content: `${this.senderName}退出了群聊`
+        })
+        this.$store.commit('currentConversation', {
+          groupId: null,
+          relationType: null
+        })
+        getNewsList().then(res => {
+          this.$store.dispatch('newsList', res.newsList)
+        })
+      })
+    },
     hidden () {
       this.selectedGroupMember = null
     },
@@ -433,6 +455,7 @@ export default {
       }
     },
     receiveMessage (message) {
+      console.log({ message })
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
       this.recordList.push({ ...message.data, sendTime })
@@ -538,7 +561,7 @@ export default {
         const deletedMember = items.delUserList[0]
         this.socketMessage(2, {
           contentType: 5,
-          content: `${this.groupMember[0].username}将${deletedMember.username}移出了群聊`
+          content: `${this.groupMember[0].username}将${deletedMember.username}请出了群聊`
         })
         let groupMembers = this.groupMember.filter((item) => {
           return item.uid !== deletedMember.uid
