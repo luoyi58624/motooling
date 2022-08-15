@@ -464,7 +464,7 @@ var router = new Router({
     },
     {
       path: '/tooling-cn',
-      name: 'tooling',
+      name: 'toolingCN',
       component: () => import('./views/tooling/tooling-cn.vue')
     },
     {

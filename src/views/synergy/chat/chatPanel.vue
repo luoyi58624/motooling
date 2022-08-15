@@ -769,7 +769,7 @@ nav {
       }
       .sys-notifacation {
         text-align: center;
-        margin: 8px auto;
+        margin: 8px 20px;
         span {
           display: inline-block;
           padding: 8px;
