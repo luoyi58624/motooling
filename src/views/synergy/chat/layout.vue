@@ -130,11 +130,13 @@ export default {
   display: flex;
   .aside {
     width: 260px;
+    height: 100%;
     flex: 0 0 auto;
     background-color: #e6e8eb;
   }
   .chat-panel {
     flex: 1;
+    height: 100%;
   }
   .add-user {
     position: absolute;
