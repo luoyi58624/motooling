@@ -732,6 +732,7 @@ nav {
         border-radius: 5px;
         user-select: text;
         word-break: break-all;
+        white-space: pre-line;
       }
       .image-message {
         img {
