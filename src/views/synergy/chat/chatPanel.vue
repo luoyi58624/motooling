@@ -5,7 +5,7 @@
         <input
           type="text"
           v-if="chattingTarget.type == 666"
-          v-model="chattingTarget.name"
+          :value="chattingTarget.name"
           maxlength="20"
           @blur="setGroupName($event.target.value)"
         />
@@ -375,22 +375,22 @@ export default {
           type: 'error'
         }).show()
       } else {
-        if (name === this.chattingTarget.name) {
-          return
+        if (name !== this.chattingTarget.name) {
+          updateGroupInfo({
+            groupId: this.groupId,
+            subject: name
+          }).then(() => {
+            console.log('修改成功')
+            this.socketMessage(2, {
+              contentType: 5,
+              content: `${this.senderName}修改群名为"${name}"`
+            })
+            this.chattingTarget.name = name
+            getNewsList().then((res) => {
+              this.$store.dispatch('newsList', res.newsList)
+            })
+          })
         }
-        updateGroupInfo({
-          groupId: this.groupId,
-          subject: name
-        }).then(() => {
-          this.socketMessage(2, {
-            contentType: 5,
-            content: `${this.senderName}修改群名为"${name}"`
-          })
-          this.chattingTarget.name = name
-          getNewsList().then((res) => {
-            this.$store.dispatch('newsList', res.newsList)
-          })
-        })
       }
     },
     // 退出群聊
