@@ -1,5 +1,5 @@
 <template>
-  <cube-scroll class="scroll" :options="options" style="overflow: auto">
+  <cube-scroll class="scroll" :options="options">
     <div class="_containner" v-show="visible">
       <div
         class="select-box"

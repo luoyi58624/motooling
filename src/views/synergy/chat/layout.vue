@@ -28,7 +28,6 @@ export default {
     return {
       show: false,
       isGroup: false,
-      inviterId: localStorage.uid,
       addedMembers: [],
       invitedMembers: '',
       initMembers: [],
@@ -54,7 +53,7 @@ export default {
         this.isGroup = false
         let data = {
           groupId: this.groupId,
-          inviterId: this.inviterId,
+          inviterId: +localStorage.getItem('uid'),
           uList: this.userSelectedList.map(item => ({ uid: item.uid }))
         }
         synergyAddMember(data).then(res => {
