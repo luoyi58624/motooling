@@ -6,6 +6,7 @@
           type="text"
           v-if="chattingTarget.type == 666"
           v-model="chattingTarget.name"
+          maxlength="20"
           @blur="setGroupName($event.target.value)"
         />
         <span v-else-if="chattingTarget.type == 66">{{ chattingTarget.name }}</span>
@@ -374,14 +375,18 @@ export default {
           type: 'error'
         }).show()
       } else {
+        if (name === this.chattingTarget.name) {
+          return
+        }
         updateGroupInfo({
           groupId: this.groupId,
           subject: name
-        }).then((res) => {
+        }).then(() => {
           this.socketMessage(2, {
             contentType: 5,
             content: `${this.senderName}修改群名为"${name}"`
           })
+          this.chattingTarget.name = name
           getNewsList().then((res) => {
             this.$store.dispatch('newsList', res.newsList)
           })
