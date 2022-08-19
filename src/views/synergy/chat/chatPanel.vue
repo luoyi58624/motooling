@@ -30,8 +30,8 @@
                 <span class="time">{{ item.sendTime }}</span
                 ><span class="name">{{ item.username }}</span>
               </div>
-              <div class="word-message message" v-if="item.contentType === 1">
-                {{ item.content }}
+              <div class="message" v-if="item.contentType === 1">
+                <span class="word-message">{{ item.content }}</span>
               </div>
               <div
                 class="image-message message"
@@ -733,11 +733,13 @@ nav {
       }
       .word-message {
         background-color: #dee0e3;
-        padding: 8px;
+        padding: 5px;
         border-radius: 5px;
         user-select: text;
         word-break: break-all;
         white-space: pre-line;
+        display: inline-block;
+        overflow: hidden;
       }
       .image-message {
         img {
