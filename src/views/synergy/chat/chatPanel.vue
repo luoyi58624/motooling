@@ -189,7 +189,7 @@ export default {
     invitedMembers (newVal) {
       this.socketMessage(2, {
         contentType: 5,
-        content: `${this.senderName}邀请${newVal}、${newVal}加入群聊成功`
+        content: `${this.senderName}邀请${newVal}加入群聊成功`
       })
     },
     invidedMembersInfo (val) {
@@ -380,7 +380,6 @@ export default {
             groupId: this.groupId,
             subject: name
           }).then(() => {
-            console.log('修改成功')
             this.socketMessage(2, {
               contentType: 5,
               content: `${this.senderName}修改群名为"${name}"`
@@ -498,6 +497,10 @@ export default {
           senderId: this.uid,
           contentType: 1,
           content: this.wordContent
+        }).then(() => {
+          getNewsList().then((res) => {
+            this.$store.dispatch('newsList', res.newsList)
+          })
         }).catch((err) => {
           this.$createToast({
             time: 2000,
@@ -618,6 +621,10 @@ export default {
         contentType,
         content,
         smallImg
+      }).then(() => {
+        getNewsList().then((res) => {
+          this.$store.dispatch('newsList', res.newsList)
+        })
       }).catch((err) => {
         this.$createToast({
           time: 2000,
