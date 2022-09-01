@@ -136,6 +136,7 @@ export default {
           }
         }
         this.socket.onmessage = async msg => {
+          console.log({ msg })
           let receivedMessage = JSON.parse(msg.data)
           if (this.socket.readyState === 1) {
             this.socket.send(JSON.stringify({
