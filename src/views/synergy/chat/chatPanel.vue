@@ -93,7 +93,7 @@
               <div class="icon icon-video"></div>
             </label>
           </div>
-          <textarea v-model="wordContent" @keyup.enter.exact="sendWordMessage"></textarea>
+          <textarea ref="text-input" v-model="wordContent" @input="inputChange" @keyup.enter.exact="sendWordMessage"></textarea>
           <div class="enter-message" @click="sendWordMessage">发送</div>
         </div>
       </div>
@@ -125,6 +125,9 @@
       </div>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
+    <div class="member-list" v-if="groupAt">
+      <member-list @handleAt="handleGroupAt" />
+    </div>
   </div>
 </template>
 
@@ -141,13 +144,18 @@ import {
   getNewsList,
   signOutGroup,
   alreadyRead,
-  sendMessage
+  sendMessage,
+  at
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
+import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
 import { imgUpload, fileUpload } from '@/api/upload/upload.js'
 export default {
   directives: { clickoutside },
+  components: {
+    memberList
+  },
   props: {
     invitedMembers: {
       type: String,
@@ -182,7 +190,9 @@ export default {
       currentAudio: '',
       loadedScrollTop: 0,
       beforeLoadedScrollTop: 0,
-      loadRecordTag: ''
+      loadRecordTag: '',
+      groupAt: false,
+      uList: []
     }
   },
   watch: {
@@ -356,6 +366,12 @@ export default {
         ele.scrollTop = ele.scrollHeight
       }
     },
+    handleGroupAt (member) {
+      this.wordContent += `${member.username} `
+      this.uList.push({ uid: member.uid })
+      this.groupAt = false
+      this.$refs['text-input'].focus()
+    },
     // 滚到底部
     scrolltoButtom () {
       this.$nextTick(() => {
@@ -459,7 +475,6 @@ export default {
       }
     },
     receiveMessage (message) {
-      console.log({ message })
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
       this.recordList.push({ ...message.data, sendTime })
@@ -475,8 +490,16 @@ export default {
         this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
       })
     },
+    inputChange (e) {
+      if (this.chattingTarget.type === 666 && e.data === '@') {
+        this.groupAt = true
+      }
+      if (e.data === ' ' && this.wordContent.indexOf('@') !== -1) {
+        this.groupAt = false
+      }
+    },
     // 发送文字消息
-    sendWordMessage (type) {
+    sendWordMessage () {
       this.loadRecordTag = ''
       if (this.wordContent.trim() !== '') {
         const currentTime = new Date()
@@ -498,8 +521,15 @@ export default {
           contentType: 1,
           content: this.wordContent
         }).then(() => {
-          getNewsList().then((res) => {
-            this.$store.dispatch('newsList', res.newsList)
+          this.handleDebounce(function () {
+            getNewsList().then((res) => {
+              this.$store.dispatch('newsList', res.newsList)
+            })
+          }, 1000)
+          at({ groupId: this.groupId, imUrl: this.imurl, uList: this.uList }).then(() => {
+            this.uList = []
+          }).catch(() => {
+            this.uList = []
           })
         }).catch((err) => {
           this.$createToast({
@@ -516,6 +546,18 @@ export default {
           type: 'error'
         }).show()
       }
+    },
+    // 防抖
+    handleDebounce (func, wait) {
+      let args = arguments
+      let context = this
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+        this.timeout = null
+      }
+      this.timeout = setTimeout(() => {
+        func.apply(context, args)
+      }, wait)
     },
     // 获取聊天记录
     loadMoreRecordList () {
@@ -696,8 +738,14 @@ export default {
 <style scoped lang="less">
 @import url("./common.less");
 .chat-panel {
+  position: relative;
   height: 100%;
   background-color: #fff;
+}
+.member-list {
+  position: absolute;
+  bottom: 160px;
+  left: 110px;
 }
 nav {
   position: relative;

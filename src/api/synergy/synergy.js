@@ -35,6 +35,24 @@ export function synergyRecordPage (params) {
   })
 }
 
+export function at ({ groupId, imUrl, uList }) {
+  return request({
+    url: WEBURL() + '/mtH5/synergy/pushMessage',
+    method: 'post',
+    data: {
+      token: token(),
+      md5: getMd5String(),
+      timestamp: timestamp,
+      data: {
+        groupId,
+        webUrl: WEBURL(),
+        imUrl,
+        uList
+      }
+    }
+  })
+}
+
 export function synergyAddMember (params) {
   const data = {
     token: token(),
