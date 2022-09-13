@@ -41,7 +41,6 @@ export default {
       var _this = this
       accountPasswordLogin(this.loginData)
         .then((res) => {
-          console.log({ userInfo: res })
           if (res.data.code === '000000') {
             var data = res.data.data
             sessionStorage.setItem('token', data.token)

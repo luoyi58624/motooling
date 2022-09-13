@@ -6,12 +6,6 @@
     </cu-input>
     <cu-input label="设备描述" :required="true" v-model="submitmodel.device.deviceName" placeholder="输入" >
     </cu-input>
-    <cu-input label="设备尺寸(长)" v-model="submitmodel.device.deviceLength" placeholder="输入" >
-    </cu-input>
-    <cu-input label="设备尺寸(宽)" v-model="submitmodel.device.deviceWidth" placeholder="输入" >
-    </cu-input>
-    <cu-input label="设备品牌" v-model="submitmodel.device.deviceBrand" placeholder="输入" >
-    </cu-input>
     <cu-input label="设备型号" :required="true" v-model="submitmodel.device.deviceModel" placeholder="输入" >
     </cu-input>
     <cu-picker :pickerData="deviceSelectListData.deviceList" @select="deviceSelect" @cancel="deviceCancel" :alias="deviceAlias"
@@ -25,9 +19,11 @@
     :initialSelect="{val:submitmodel.device.pgId,Text:submitmodel.device.pgName}"
     >
       <div slot="label">
-        隶属部门
+        工作中心
       </div>
     </cu-picker>
+    <cu-input label="设备品牌" v-model="submitmodel.device.deviceBrand" placeholder="输入" >
+    </cu-input>
     <cu-picker :pickerData="deviceSelectListData.userList" @select="managerSelect" @cancel="managerCancel" :alias="managerAlias"
     :initialSelect="{val:submitmodel.device.managerId,Text:submitmodel.device.managerName}"
     >
@@ -35,8 +31,8 @@
         点检负责人
       </div>
     </cu-picker>
-    <cu-input label="购买日期" v-model="submitmodel.device.buyDate" placeholder="输入" >
-    </cu-input>
+    <!-- <cu-input label="购买日期" v-model="submitmodel.device.buyDate" placeholder="输入" >
+    </cu-input> -->
     <cu-upload
     @file-success="deviceImgsSuccess"
     @file-remove="deviceImgsRemove"
@@ -44,31 +40,35 @@
     :max='1'>
     <div slot="label">设备照片</div>
     </cu-upload>
-    <cu-upload
+    <cu-input label="设备尺寸(长)" v-model="submitmodel.device.deviceLength" placeholder="输入" >
+    </cu-input>
+    <cu-input label="设备尺寸(宽)" v-model="submitmodel.device.deviceWidth" placeholder="输入" >
+    </cu-input>
+    <!-- <cu-upload
     @file-success="deviceParamImgSuccess"
     @file-remove="deviceParamImgRemove"
     :initialFile="submitmodel.deviceParamImgList"
     :max='1'>
     <div slot="label">设备参数</div>
-    </cu-upload>
-    <cu-input label="参数备注" v-model="submitmodel.device.deviceParam" placeholder="输入" >
-    </cu-input>
-    <cu-upload
+    </cu-upload> -->
+    <!-- <cu-input label="参数备注" v-model="submitmodel.device.deviceParam" placeholder="输入" >
+    </cu-input> -->
+    <!-- <cu-upload
     @file-success="deviceServiceImgSuccess"
     @file-remove="deviceServiceImgRemove"
     :initialFile="submitmodel.deviceServiceImgList"
     :max='1'>
     <div slot="label">售后服务联系人</div>
-    </cu-upload>
-    <cu-input label="备注" v-model="submitmodel.device.remark" placeholder="输入">
+    </cu-upload> -->
+    <cu-input label="设备备注" v-model="submitmodel.device.remark" placeholder="输入">
     </cu-input>
     <!-- <cu-input label="售后服务信息" v-model="submitmodel.userInfo.permanentAddress" placeholder="输入" >
     </cu-input> -->
-    <div class="group-title">
+    <!-- <div class="group-title">
         <div>售后服务信息</div>
         <div class="group-sub-title">联系人</div>
-    </div>
-    <div v-for="(val, key) in submitmodel.deviceServiceList" :key="key">
+    </div> -->
+    <!-- <div v-for="(val, key) in submitmodel.deviceServiceList" :key="key">
       <div class="group-item-title">
         <div></div>
         <div @click="deleteList(submitmodel.deviceServiceList,key)">删除</div>
@@ -77,9 +77,9 @@
         <cu-input :label="item.label" v-model="submitmodel.deviceServiceList[key][item.name]" placeholder="输入">
         </cu-input>
       </div>
-    </div>
-    <div class="append-btn" @click="addList(submitmodel.deviceServiceList)">添加联系人</div>
-    <cube-button type="button" @click="submit">提交保存</cube-button>
+    </div> -->
+    <!-- <div class="append-btn" @click="addList(submitmodel.deviceServiceList)">添加联系人</div> -->
+    <cube-button type="button" @click="submit">提交</cube-button>
   </div>
 </template>
 
@@ -221,6 +221,7 @@ export default {
       deviceSelectList()
         .then(
           (res) => {
+            console.log(res)
             let deviceSelectListData = res.data
             this.deviceSelectListData = deviceSelectListData.data
           }
