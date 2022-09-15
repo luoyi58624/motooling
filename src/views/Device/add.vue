@@ -376,11 +376,12 @@ export default {
   .button-box {
     display: flex;
     justify-content: center;
+    margin-top: 14px;
   }
   .button {
     font-size: 16px;
-    padding: 5px 10px;
-    border-radius: 4px;
+    padding: 8px 28px;
+    border-radius: 8px;
     background-color: #0090ff;
     color: #fff;
   }

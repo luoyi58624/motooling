@@ -95,7 +95,7 @@ export default {
     position:absolute;
     top: 14px;
     right: 11px;
-    font-size: 10px;
+    font-size: 12px;
     color: red;
   }
   </style>
