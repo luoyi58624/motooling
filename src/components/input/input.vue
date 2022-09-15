@@ -7,6 +7,7 @@
       <cube-input v-model="newValue" @change="handleInput" :placeholder="placeholder" type="text" :disabled="disabled">
       </cube-input>
     </div>
+    <div class="tips" v-if="isRequired && !inputValue && validator">必填项</div>
   </div>
 </template>
 <script>
@@ -27,6 +28,7 @@ export default {
       type: Boolean,
       default: false
     },
+    validator: Boolean,
     value: [String, Number],
     placeholder: String
   },
@@ -34,7 +36,8 @@ export default {
     return {
       validity: {},
       valid: undefined,
-      newValue: this.value
+      newValue: this.value,
+      inputValue: ''
     }
   },
   watch: {
@@ -49,6 +52,7 @@ export default {
     handleInput (e) {
       this.$emit('input', e.target.value)
       console.log(e.target.value)
+      this.inputValue = e.target.value
     }
   }
 }
@@ -86,5 +90,12 @@ export default {
     top: 0;
     left: -8px;
     font-size: 10px;
+  }
+  .tips {
+    position:absolute;
+    top: 14px;
+    right: 11px;
+    font-size: 10px;
+    color: red;
   }
   </style>

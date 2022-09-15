@@ -6,6 +6,7 @@
       <div class="constom-input_content" @click="showPicker">
           {{select.Text||'请选择'}}
       </div>
+      <div class="tips" v-if="isRequired && !select.Text && validator ">必填项</div>
     </div>
   </template>
 <script>
@@ -43,7 +44,8 @@ export default {
           Text: '请选择'
         }
       }
-    }
+    },
+    validator: Boolean
   },
   watch: {
     initialSelect (curSelect, oldSelect) {
@@ -140,5 +142,12 @@ export default {
     top: 10px;
     left: -8px;
     font-size: 10px;
+  }
+  .tips {
+    position:absolute;
+    top: 14px;
+    right: 11px;
+    font-size: 10px;
+    color: red;
   }
 </style>

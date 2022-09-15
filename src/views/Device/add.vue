@@ -1,21 +1,19 @@
 <template>
   <div>
-    <cu-input label="id"  v-model="submitmodel.device.id" placeholder="输入" v-if="false">
+    <cu-input label="设备编号"  v-model="submitmodel.device.deviceNo" placeholder="输入" >
     </cu-input>
-    <cu-input label="设备编号" :required="true" v-model="submitmodel.device.deviceNo" placeholder="输入" >
+    <cu-input label="设备描述" :isRequired="true" :validator="validator" v-model="submitmodel.device.deviceName" placeholder="输入" >
     </cu-input>
-    <cu-input label="设备描述" :required="true" v-model="submitmodel.device.deviceName" placeholder="输入" >
+    <cu-input label="设备型号" :isRequired="true" :validator="validator" v-model="submitmodel.device.deviceModel" placeholder="输入" >
     </cu-input>
-    <cu-input label="设备型号" :required="true" v-model="submitmodel.device.deviceModel" placeholder="输入" >
-    </cu-input>
-    <cu-picker :pickerData="deviceSelectListData.deviceList" @select="deviceSelect" @cancel="deviceCancel" :alias="deviceAlias"
+    <cu-picker :pickerData="deviceSelectListData.deviceList"  @select="deviceSelect" @cancel="deviceCancel" :alias="deviceAlias"
     :initialSelect="{val:submitmodel.device.type,Text:submitmodel.device.typeName}"
     >
         <div slot="label">
           设备类型
         </div>
       </cu-picker>
-    <cu-picker :pickerData="deviceSelectListData.pmPgList" @select="pmPgSelect" @cancel="pmPgCancel" :alias="pmpgAlias"
+    <cu-picker :isRequired="true" :pickerData="deviceSelectListData.pmPgList" :validator="validator" @select="pmPgSelect" @cancel="pmPgCancel" :alias="pmpgAlias"
     :initialSelect="{val:submitmodel.device.pgId,Text:submitmodel.device.pgName}"
     >
       <div slot="label">
@@ -62,6 +60,13 @@
     </cu-upload> -->
     <cu-input label="设备备注" v-model="submitmodel.device.remark" placeholder="输入">
     </cu-input>
+    <cu-upload
+      @file-success="deviceParamImgSuccess"
+      @file-remove="deviceParamImgRemove"
+      :initialFile="submitmodel.deviceParamImgList"
+      :max='1'>
+      <!-- <div slot="label">设备参数</div> -->
+    </cu-upload>
     <!-- <cu-input label="售后服务信息" v-model="submitmodel.userInfo.permanentAddress" placeholder="输入" >
     </cu-input> -->
     <!-- <div class="group-title">
@@ -79,7 +84,9 @@
       </div>
     </div> -->
     <!-- <div class="append-btn" @click="addList(submitmodel.deviceServiceList)">添加联系人</div> -->
-    <cube-button type="button" @click="submit">提交</cube-button>
+    <div class="button-box">
+      <div class="button" @click="submit">提交</div>
+    </div>
   </div>
 </template>
 
@@ -130,6 +137,7 @@ export default {
           }
         ]
       },
+      validator: false,
       familyListFields: [],
       educationListFields: [],
       // 待提交至后端的表单数据
@@ -155,9 +163,10 @@ export default {
         deviceServiceList: [],
         deviceServiceImgList: [],
         deviceImgList: [],
-        deviceParamImgList: []
+        deviceParamImgList: [],
         // deviceImgs: [],
-        // deviceServiceImgs: []
+        // deviceServiceImgs: [],
+        deviceMarkImgList: []
       },
       // 是否为维护编辑
       forceEdit: this.$router.currentRoute.query.forceEdit && this.$router.currentRoute.query.forceEdit === '1'
@@ -243,6 +252,10 @@ export default {
     submit () {
       var self = this
       console.log(this.submitmodel)
+      if (!this.submitmodel.device.deviceName || !this.submitmodel.device.deviceModel || !this.submitmodel.device.pgName) {
+        this.validator = true
+        return
+      }
       addDeviceInfo(this.submitmodel)
         .then(function (res) {
           if (res.data.code === '000000') {
@@ -359,6 +372,17 @@ export default {
 
   .cube-input::after {
     display: none
+  }
+  .button-box {
+    display: flex;
+    justify-content: center;
+  }
+  .button {
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #0090ff;
+    color: #fff;
   }
 
 </style>
