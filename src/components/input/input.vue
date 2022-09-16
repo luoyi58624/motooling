@@ -37,7 +37,7 @@ export default {
       validity: {},
       valid: undefined,
       newValue: this.value,
-      inputValue: ''
+      inputValue: this.value
     }
   },
   watch: {
@@ -51,7 +51,6 @@ export default {
   methods: {
     handleInput (e) {
       this.$emit('input', e.target.value)
-      console.log(e.target.value)
       this.inputValue = e.target.value
     }
   }
