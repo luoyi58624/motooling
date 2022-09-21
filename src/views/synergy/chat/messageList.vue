@@ -49,7 +49,7 @@
           <p @click.stop="clearChattingRecords(item)">清空聊天记录</p>
           <p @click.stop="signOutGroup(item)">退出群聊</p>
         </div>
-        <div class="popover" v-if="item.groupId == groupId && item.relationType === 66">
+        <div class="popover" v-if="item.groupId == groupId && item.groupId == currentConversation && item.relationType === 66">
           <p @click.stop="handleBeat(item)">找一找</p>
         </div>
       </div>
