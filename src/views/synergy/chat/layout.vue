@@ -6,9 +6,11 @@
     <div class="chat-panel">
         <chat-panel @add-user="addGroupMember" :invitedMembers="invitedMembers" :invidedMembersInfo="invidedMembersInfo"></chat-panel>
     </div>
-    <div class="add-user" v-show="show">
-      <UserSelect @confirm="confirm" :visible.sync="show" @cancel="cancel" />
-    </div>
+    <overlay :show="show" @click="cancel">
+      <div class="add-user" v-show="show" @click.stop>
+        <UserSelect @confirm="confirm" :visible.sync="show" @cancel="cancel" />
+      </div>
+    </overlay>
   </div>
 </template>
 
@@ -18,11 +20,14 @@ import { getOpenSynergy, synergyAddMember, getNewsList } from '@/api/synergy/syn
 import UserSelect from '@/components/UserSelect.vue'
 import messageList from './messageList'
 import chatPanel from './chatPanel.vue'
+import { Overlay } from 'vant'
+
 export default {
   components: {
     messageList,
     UserSelect,
-    chatPanel
+    chatPanel,
+    Overlay
   },
   data () {
     return {
@@ -143,7 +148,19 @@ export default {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 500px;
-    height: 60%;
+    //height: 60%;
+  }
+}
+
+@media screen and (min-height: 0px) {
+  .add-user {
+    height: 310px;
+  }
+}
+
+@media screen and (min-height: 600px) {
+  .add-user {
+    height: 460px;
   }
 }
 </style>
