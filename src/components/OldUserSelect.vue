@@ -1,31 +1,30 @@
+<!--这是旧版的用户选择组件，/synergy/detail.vue组件引用-->
 <template>
-  <overlay :show="visible" @click="cancel">
-  <div class="add-user"  @click.stop>
-    <cube-scroll class="scroll" :options="options">
-      <div class="_containner" v-show="visible">
-        <div
-          class="select-box"
-          v-for="(listItem, index) in list"
-          :key="index"
-          @click="show(index)"
-        >
-          <div class="select-box-header">
-            <img src="../../static/img/s4.png" class="icon" />
-            <span class="header-text">{{ listItem.name }}</span>
+  <cube-scroll class="scroll" :options="options">
+    <div class="_containner" v-show="visible">
+      <div
+        class="select-box"
+        v-for="(listItem, index) in list"
+        :key="index"
+        @click="show(index)"
+      >
+        <div class="select-box-header">
+          <img src="../../static/img/s4.png" class="icon" />
+          <span class="header-text">{{ listItem.name }}</span>
 
-            <img
-              src="../../static/img/arrow.png"
-              class="arrow icon"
-              :class="{ down: listItem.isShow }"
-            />
-          </div>
-          <div class="select-box-list" v-show="listItem.isShow">
-            <div
-              class="select-box-list-item"
-              v-for="(item, index) in listItem.childrenList"
-              :key="index"
-              @click.stop="pick(item)"
-            >
+          <img
+            src="../../static/img/arrow.png"
+            class="arrow icon"
+            :class="{ down: listItem.isShow }"
+          />
+        </div>
+        <div class="select-box-list" v-show="listItem.isShow">
+          <div
+            class="select-box-list-item"
+            v-for="(item, index) in listItem.childrenList"
+            :key="index"
+            @click.stop="pick(item)"
+          >
             <span
               class="iconfont icon-iconfontxuanzhong4"
               :class="{
@@ -33,26 +32,22 @@
                 disabled:initSelectedList.some(it => it.uid === item.uid)
               }"
             ></span>
-              <img :src="item.avatar" />
-              <span class="text">{{ item.username }}</span>
-            </div>
+            <img :src="item.avatar" />
+            <span class="text">{{ item.username }}</span>
           </div>
         </div>
       </div>
-    </cube-scroll>
-    <div class="mt-30 dialog-footer">
-      <div @click="cancel" class="btn btn-cancel">取消</div>
-      <div @click="confirm" class="btn btn-confirm" :class="{disabled: selectedList.length===0}">确定</div>
+      <div class="mt-30">
+        <div @click="confirm" class="btn btn-comfirm">确定</div>
+        <div @click="cancel" class="btn btn-cancel">取消</div>
+      </div>
     </div>
-  </div>
-  </overlay>
+  </cube-scroll>
 </template>
 
 <script>
-import { Overlay } from 'vant'
 import { depUserList } from '@/api/instore/instore'
 export default {
-  components: { Overlay },
   data () {
     return {
       list: [],
@@ -87,10 +82,8 @@ export default {
 
   methods: {
     confirm () {
-      if (this.selectedList.length > 0) {
-        this.$store.commit('changeUserSelectedList', this.selectedList)
-        this.$emit('confirm')
-      }
+      this.$store.commit('changeUserSelectedList', this.selectedList)
+      this.$emit('confirm')
     },
     cancel () {
       this.$emit('cancel')
@@ -125,37 +118,6 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.add-user {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  //height: 60%;
-
-  .dialog-footer{
-    width: 100%;
-    height: 72px;
-    background-color: white;
-    position: absolute;
-    bottom: 0;
-    z-index: 10;
-    display: flex;
-  }
-}
-
-@media screen and (min-height: 0px) {
-  .add-user {
-    height: 310px;
-  }
-}
-
-@media screen and (min-height: 600px) {
-  .add-user {
-    height: 460px;
-  }
-}
-
 .mt-30 {
   margin-top: 20px;
 }
@@ -169,7 +131,7 @@ export default {
   // z-index: 20;
 }
 ._containner {
-  padding: 15px 15px 90px 15px;
+  padding: 15px;
 }
 .select-box {
   overflow: hidden;
@@ -237,8 +199,7 @@ export default {
 }
 
 .btn {
-  width: 50%;
-  height: 48px;
+  display: block;
   box-sizing: border-box;
   font-size: 20px;
   text-align: center;
@@ -248,9 +209,6 @@ export default {
   margin: 0 10px 10px;
   border-radius: 6px;
   border: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 .btn-cancel {
   background: #fcfcfc;
@@ -259,9 +217,5 @@ export default {
 }
 .btn-confirm {
   background: #5898fc;
-}
-.btn-confirm.disabled{
-  background-color: #8db0e7;
-  cursor: not-allowed;
 }
 </style>

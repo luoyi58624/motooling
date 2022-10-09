@@ -199,7 +199,7 @@ import { getUser } from '@/api/Person/User.js'
 import wx from 'weixin-js-sdk'
 // import { BetterScroll } from 'cube-ui'
 import scroll from '@/components/BScroll.vue'
-import UserSelect from '@/components/UserSelect.vue'
+import UserSelect from '@/components/OldUserSelect.vue'
 import shortid from 'shortid'
 
 export default {
