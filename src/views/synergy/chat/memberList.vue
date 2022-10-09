@@ -28,6 +28,12 @@ export default {
   border: 1px solid #ccc;
   height: 280px;
   overflow: auto;
+  background-color: #ffffff;
+  box-shadow:
+    6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
+    22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
+    100px 100px 80px rgba(0, 0, 0, 0.07)
+;
   .user-name {
     text-align: center;
     padding: 5px 0;

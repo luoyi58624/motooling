@@ -494,7 +494,7 @@ export default {
       if (this.chattingTarget.type === 666 && e.data === '@') {
         this.groupAt = true
       }
-      if (e.data === ' ' && this.wordContent.indexOf('@') !== -1) {
+      if ((e.data == null || e.data.trim() === '') && this.wordContent.indexOf('@') === -1) {
         this.groupAt = false
       }
     },
