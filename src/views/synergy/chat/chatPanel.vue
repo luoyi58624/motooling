@@ -89,10 +89,10 @@
               accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
               @change="upload"
             />
-            <!--            <label for="upload">-->
-            <!--              <div class="icon icon-video"></div>-->
-            <!--            </label>-->
-            <div class="icon icon-file" title="上传文件" @click="showRecordPanel"></div>
+                        <label for="upload">
+                          <div class="icon icon-video"></div>
+                        </label>
+<!--            <div class="icon icon-file" title="上传文件" @click="showRecordPanel"></div>-->
             <div class="icon icon-record" title="历史记录" @click="showRecordPanel"></div>
           </div>
           <textarea ref="text-input" v-model="wordContent"
