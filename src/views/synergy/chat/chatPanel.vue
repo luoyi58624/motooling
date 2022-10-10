@@ -38,14 +38,14 @@
                 v-else-if="item.contentType === 2 || item.contentType === 6"
                 @dblclick="showImagePreview(fileAddressFormatFunc(item.content))"
               >
-                <img :src="fileAddressFormatFunc(item.content)" @load="handleImgload" />
+                <img :src="fileAddressFormatFunc(item.content)" @load="handleImgload"/>
               </div>
               <div
                 class="audio-message message"
                 v-else-if="item.contentType === 3"
                 @click="playAudio(fileAddressFormatFunc(item.content))"
               >
-                <img :src="require('@/assets/icon-voice-white.png')" alt="" />
+                <img :src="require('@/assets/icon-voice-white.png')" alt=""/>
                 <span>{{ item.duration }}"</span>
               </div>
               <div class="video-message message" v-else-if="item.contentType === 4">
@@ -60,7 +60,7 @@
             </div>
             <div v-if="item.contentType === 5">
               <div class="sys-notifacation">
-                <span>{{item.content}}</span>
+                <span>{{ item.content }}</span>
               </div>
             </div>
             <div v-if="item.contentType === 7">
@@ -92,8 +92,10 @@
             <label for="upload">
               <div class="icon icon-video"></div>
             </label>
+            <div class="icon icon-record" @click="showRecordPanel"></div>
           </div>
-          <textarea ref="text-input" v-model="wordContent" @input="inputChange" @keyup.enter.exact="sendWordMessage"></textarea>
+          <textarea ref="text-input" v-model="wordContent" @input="inputChange"
+                    @keyup.enter.exact="sendWordMessage"></textarea>
           <div class="enter-message" @click="sendWordMessage">发送</div>
         </div>
       </div>
@@ -106,7 +108,7 @@
             :key="item.uid"
             @click.right="handleGroupMember(item, $event)"
           >
-            <img :src="item.avatar" alt="" />
+            <img :src="item.avatar" alt=""/>
             <span v-if="item.memberType === 1">{{ item.username }} · 群主</span>
             <span v-else>{{ item.username }}</span>
             <div
@@ -126,8 +128,9 @@
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
     <div class="member-list" v-if="groupAt">
-      <member-list @handleAt="handleGroupAt" />
+      <member-list @handleAt="handleGroupAt"/>
     </div>
+    <record-list :show-panel.sync="recordPanel" :init-date="recordList"/>
   </div>
 </template>
 
@@ -151,9 +154,13 @@ import clickoutside from '@/utils/clickoutside'
 import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
 import { imgUpload, fileUpload } from '@/api/upload/upload.js'
+import RecordList from '@/views/synergy/chat/recordList'
+import { Notify } from 'vant'
+
 export default {
   directives: { clickoutside },
   components: {
+    RecordList,
     memberList
   },
   props: {
@@ -192,7 +199,8 @@ export default {
       beforeLoadedScrollTop: 0,
       loadRecordTag: '',
       groupAt: false,
-      uList: []
+      uList: [],
+      recordPanel: false
     }
   },
   watch: {
@@ -309,15 +317,15 @@ export default {
       ) {
         this.socket = new WebSocket(
           prefix +
-            this.imurl +
-            '/mtwebsocket/' +
-            this.companyId +
-            '/' +
-            this.synergyGroup.id +
-            '/' +
-            sessionStorage.token +
-            '/' +
-            localStorage.WEBURL.split('//')[1]
+          this.imurl +
+          '/mtwebsocket/' +
+          this.companyId +
+          '/' +
+          this.synergyGroup.id +
+          '/' +
+          sessionStorage.token +
+          '/' +
+          localStorage.WEBURL.split('//')[1]
         )
         this.socket.onopen = this.websocketonopen
         this.socket.onerror = this.websocketonerror
@@ -572,7 +580,11 @@ export default {
             if (result.length !== 0) {
               let recordList = result.reverse()
               this.mainKeyId = recordList[0].data.id
-
+              recordList.forEach(item => {
+                if (item.data.contentType === 7) {
+                  item.data.content = JSON.parse(item.data.content)
+                }
+              })
               let _recordList = time(recordList)
               this.recordList = _recordList.concat(this.recordList)
             }
@@ -632,7 +644,10 @@ export default {
           this.selectedGroupMember = null
           const { newsList } = await getNewsList()
           this.$store.dispatch('newsList', newsList)
-          this.$store.commit('currentConversation', { groupId: res.synergyGroup.id, relationType: res.synergyGroup.relationType })
+          this.$store.commit('currentConversation', {
+            groupId: res.synergyGroup.id,
+            relationType: res.synergyGroup.relationType
+          })
         })
         .catch((err) => {
           this.$createToast({
@@ -730,6 +745,13 @@ export default {
         }).show()
       })
       this.selectedGroupMember = null
+    },
+    showRecordPanel () {
+      if (this.recordList.length > 0) {
+        this.recordPanel = true
+      } else {
+        Notify('没有消息记录')
+      }
     }
   }
 }
@@ -737,22 +759,26 @@ export default {
 
 <style scoped lang="less">
 @import url("./common.less");
+
 .chat-panel {
   position: relative;
   height: 100%;
   background-color: #fff;
 }
+
 .member-list {
   position: absolute;
   bottom: 160px;
   left: 110px;
 }
+
 nav {
   position: relative;
   height: 59px;
   line-height: 59px;
   border-bottom: 1px solid #dadcdf;
   padding-left: 18px;
+
   .add-member {
     position: absolute;
     bottom: 8px;
@@ -762,30 +788,37 @@ nav {
     background: url("../../../assets/add-member.png") no-repeat center/cover;
   }
 }
+
 .chat-content {
   width: 100%;
   height: calc(100% - 60px);
   display: flex;
+
   .talk-wrapper {
     flex: auto;
     height: 100%;
     width: calc(100% - 122px);
+
     .talk-content {
       font-size: 14px;
       height: calc(100% - 155px);
       background-color: #f2f3f5;
       overflow-y: auto;
+
       .time-name {
         padding-top: 8px;
+
         .time {
           font-size: 12px;
           padding: 0 3px;
           color: #828c99;
         }
       }
+
       .message {
         margin: 8px 0 8px 20px;
       }
+
       .word-message {
         background-color: #dee0e3;
         padding: 5px;
@@ -796,12 +829,14 @@ nav {
         display: inline-block;
         overflow: hidden;
       }
+
       .image-message {
         img {
           max-height: 200px;
           object-fit: contain;
         }
       }
+
       .audio-message {
         img {
           height: 30px;
@@ -809,30 +844,36 @@ nav {
           vertical-align: middle;
         }
       }
+
       .my-content {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
         margin-right: 18px;
+
         .time-name {
           display: flex;
           align-items: center;
         }
       }
+
       .others-content {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         margin-left: 18px;
+
         .time-name {
           display: flex;
           flex-direction: row-reverse;
           align-items: center;
         }
       }
+
       .sys-notifacation {
         text-align: center;
         margin: 8px 20px;
+
         span {
           display: inline-block;
           padding: 8px;
@@ -840,26 +881,36 @@ nav {
         }
       }
     }
+
     .input-area {
       height: 154px;
       border-top: 1px solid #dadcdf;
       position: relative;
+
       .upload-wrapper {
         height: 20px;
         margin-top: 5px;
+
         .icon {
           float: left;
           width: 20px;
           height: 20px;
           margin-left: 10px;
         }
+
         .icon-image {
           background: url("../../../assets/icon-album.png") center/cover;
         }
+
         .icon-video {
           background: url("../../../assets/icon-camera.png") center/cover;
         }
+
+        .icon-record {
+          background: url("../../../assets/icon-record.png") center/cover;
+        }
       }
+
       textarea {
         width: 95%;
         height: calc(100% - 54px);
@@ -867,6 +918,7 @@ nav {
         border: 0;
         padding-left: 10px;
       }
+
       .enter-message {
         position: absolute;
         bottom: 0;
@@ -875,34 +927,42 @@ nav {
         font-size: 14px;
         color: #6e7882;
         cursor: pointer;
+
         &:hover {
           color: #2391f5;
         }
       }
     }
   }
+
   .group-members {
     width: 121px;
     font-size: 12px;
     border-left: 1px solid #dadcdf;
+
     .group-members-title {
       padding: 10px;
     }
+
     .group-members-wrapper {
       height: calc(100% - 32px);
       overflow-y: auto;
     }
+
     .group-members-item {
       padding: 4px 0 4px 10px;
+
       img {
         width: 15px;
         height: 15px;
         vertical-align: middle;
         background-color: #ccc;
       }
+
       span {
         padding-left: 5px;
       }
+
       &:hover {
         background-color: #e6e8eb;
       }
