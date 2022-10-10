@@ -1,19 +1,22 @@
 <template>
   <div class="layout">
     <div class="aside">
-      <message-list @add-user="createNewChatting" />
+      <message-list @add-user="createNewChatting"/>
     </div>
     <div class="chat-panel">
-        <chat-panel @add-user="addGroupMember" :invitedMembers="invitedMembers" :invidedMembersInfo="invidedMembersInfo"></chat-panel>
+      <chat-panel @add-user="addGroupMember" :invitedMembers="invitedMembers"
+                  :invidedMembersInfo="invidedMembersInfo"></chat-panel>
     </div>
-    <UserSelect v-show="show" @confirm="confirm" :visible.sync="show" @cancel="cancel" />
+    <div class="add-user" v-show="show">
+      <UserSelect @confirm="confirm" :visible.sync="show" @cancel="cancel"/>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { getOpenSynergy, synergyAddMember, getNewsList } from '@/api/synergy/synergy.js'
-import UserSelect from '@/components/UserSelect.vue'
+import UserSelect from '@/components/OldUserSelect'
 import messageList from './messageList'
 import chatPanel from './chatPanel.vue'
 
@@ -71,7 +74,10 @@ export default {
         getOpenSynergy(
           parameter
         ).then(res => {
-          this.$store.commit('currentConversation', { groupId: res.synergyGroup.id, relationType: res.synergyGroup.relationType })
+          this.$store.commit('currentConversation', {
+            groupId: res.synergyGroup.id,
+            relationType: res.synergyGroup.relationType
+          })
           getNewsList().then(res => {
             this.$store.dispatch('newsList', res.newsList)
           }).catch(err => {
@@ -121,20 +127,41 @@ export default {
 </script>
 
 <style scoped lang="less">
-.layout{
+.layout {
   position: relative;
   height: 100%;
   font-size: 16px;
   display: flex;
+
   .aside {
     width: 260px;
     height: 100%;
     flex: 0 0 auto;
     background-color: #e6e8eb;
   }
+
   .chat-panel {
     flex: 1;
     height: 100%;
+  }
+
+  .add-user {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 60%;
+
+    .dialog-footer {
+      width: 100%;
+      height: 72px;
+      background-color: white;
+      position: absolute;
+      bottom: 0;
+      z-index: 10;
+      display: flex;
+    }
   }
 
 }
