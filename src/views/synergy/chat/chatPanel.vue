@@ -79,7 +79,7 @@
         <div class="input-area">
           <div class="upload-wrapper">
             <label for="upload">
-              <div class="icon icon-image"></div>
+              <div class="icon icon-image" title="上传图片"></div>
             </label>
             <input
               type="file"
@@ -89,13 +89,12 @@
               accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
               @change="upload"
             />
-            <label for="upload">
-              <div class="icon icon-video"></div>
-            </label>
-            <div class="icon icon-record" @click="showRecordPanel"></div>
+            <!--            <label for="upload">-->
+            <!--              <div class="icon icon-video"></div>-->
+            <!--            </label>-->
+            <div class="icon icon-file" title="上传文件" @click="showRecordPanel"></div>
+            <div class="icon icon-record" title="历史记录" @click="showRecordPanel"></div>
           </div>
-<!--          <textarea ref="text-input" v-model="wordContent" @input="inputChange"-->
-<!--                    @keyup.enter.exact="sendWordMessage"></textarea>-->
           <textarea ref="text-input" v-model="wordContent"
                     @input="inputChange"
                     @keyup.enter.exact="sendWordMessage"
@@ -159,7 +158,7 @@ import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
 import { imgUpload, fileUpload } from '@/api/upload/upload.js'
 import RecordList from '@/views/synergy/chat/recordList'
-import { Notify } from 'vant'
+import { ImagePreview, Notify } from 'vant'
 
 export default {
   directives: { clickoutside },
@@ -224,6 +223,9 @@ export default {
         }
       },
       immediate: true
+    },
+    wordContent (newValue) {
+      // localStorage.setItem('group-message-' + this.groupId, newValue)
     }
   },
   computed: {
@@ -610,9 +612,13 @@ export default {
     },
     // 图片预览
     showImagePreview (url) {
-      this.$createImagePreview({
-        imgs: [url]
-      }).show()
+      ImagePreview({
+        images: [url],
+        closeable: true
+      })
+      // this.$createImagePreview({
+      //   imgs: [url]
+      // }).show()
     },
     // 对群成员的操作
     handleGroupMember (item, event) {
@@ -903,6 +909,7 @@ nav {
           width: 20px;
           height: 20px;
           margin-left: 10px;
+          cursor: pointer;
         }
 
         .icon-image {
@@ -911,6 +918,10 @@ nav {
 
         .icon-video {
           background: url("../../../assets/icon-camera.png") center/cover;
+        }
+
+        .icon-file {
+          background: url("../../../assets/file.png") center/cover;
         }
 
         .icon-record {
