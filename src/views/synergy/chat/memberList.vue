@@ -1,7 +1,7 @@
 <template>
   <div class="member-list-container">
     <div v-for="member in groupMember" :key="member.id" @click="groupAt(member)">
-      <div class="user-name">{{member.nickname || member.nickname}}</div>
+      <div class="user-name">{{member.username}}</div>
     </div>
   </div>
 </template>
