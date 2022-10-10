@@ -94,8 +94,12 @@
             </label>
             <div class="icon icon-record" @click="showRecordPanel"></div>
           </div>
-          <textarea ref="text-input" v-model="wordContent" @input="inputChange"
-                    @keyup.enter.exact="sendWordMessage"></textarea>
+<!--          <textarea ref="text-input" v-model="wordContent" @input="inputChange"-->
+<!--                    @keyup.enter.exact="sendWordMessage"></textarea>-->
+          <textarea ref="text-input" v-model="wordContent"
+                    @input="inputChange"
+                    @keyup.enter.exact="sendWordMessage"
+                    @keyup.ctrl.enter="lineFeed"/>
           <div class="enter-message" @click="sendWordMessage">发送</div>
         </div>
       </div>
@@ -506,8 +510,11 @@ export default {
         this.groupAt = false
       }
     },
+    lineFeed () {
+      this.wordContent += '\n'
+    },
     // 发送文字消息
-    sendWordMessage () {
+    sendWordMessage (e) {
       this.loadRecordTag = ''
       if (this.wordContent.trim() !== '') {
         const currentTime = new Date()
