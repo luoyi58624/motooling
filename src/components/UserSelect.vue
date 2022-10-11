@@ -1,31 +1,30 @@
 <template>
-  <overlay :show="visible" @click="cancel">
-  <div class="add-user"  @click.stop>
-    <cube-scroll class="scroll" :options="options">
-      <div class="_containner" v-show="visible">
-        <div
-          class="select-box"
-          v-for="(listItem, index) in list"
-          :key="index"
-          @click="show(index)"
-        >
-          <div class="select-box-header">
-            <img src="../../static/img/s4.png" class="icon" />
-            <span class="header-text">{{ listItem.name }}</span>
+    <div class="add-user">
+      <cube-scroll class="scroll" :options="options">
+        <div class="_containner" v-show="visible">
+          <div
+            class="select-box"
+            v-for="(listItem, index) in list"
+            :key="index"
+            @click="show(index)"
+          >
+            <div class="select-box-header">
+              <img src="../../static/img/s4.png" class="icon"/>
+              <span class="header-text">{{ listItem.name }}</span>
 
-            <img
-              src="../../static/img/arrow.png"
-              class="arrow icon"
-              :class="{ down: listItem.isShow }"
-            />
-          </div>
-          <div class="select-box-list" v-show="listItem.isShow">
-            <div
-              class="select-box-list-item"
-              v-for="(item, index) in listItem.childrenList"
-              :key="index"
-              @click.stop="pick(item)"
-            >
+              <img
+                src="../../static/img/arrow.png"
+                class="arrow icon"
+                :class="{ down: listItem.isShow }"
+              />
+            </div>
+            <div class="select-box-list" v-show="listItem.isShow">
+              <div
+                class="select-box-list-item"
+                v-for="(item, index) in listItem.childrenList"
+                :key="index"
+                @click.stop="pick(item)"
+              >
             <span
               class="iconfont icon-iconfontxuanzhong4"
               :class="{
@@ -33,26 +32,24 @@
                 disabled:initSelectedList.some(it => it.uid === item.uid)
               }"
             ></span>
-              <img :src="item.avatar" />
-              <span class="text">{{ item.username }}</span>
+                <img :src="item.avatar"/>
+                <span class="text">{{ item.username }}</span>
+              </div>
             </div>
           </div>
         </div>
+      </cube-scroll>
+      <div class="mt-30 dialog-footer">
+        <div @click="cancel" class="btn btn-cancel">取消</div>
+        <div @click="confirm" class="btn btn-confirm" :class="{disabled: selectedList.length===0}">确定</div>
       </div>
-    </cube-scroll>
-    <div class="mt-30 dialog-footer">
-      <div @click="cancel" class="btn btn-cancel">取消</div>
-      <div @click="confirm" class="btn btn-confirm" :class="{disabled: selectedList.length===0}">确定</div>
     </div>
-  </div>
-  </overlay>
 </template>
 
 <script>
-import { Overlay } from 'vant'
 import { depUserList } from '@/api/instore/instore'
+
 export default {
-  components: { Overlay },
   data () {
     return {
       list: [],
@@ -131,9 +128,13 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 500px;
-  //height: 60%;
+  box-shadow:
+    0.8px 1.1px 5.3px rgba(0, 0, 0, 0.113),
+    2.7px 3.6px 17.9px rgba(0, 0, 0, 0.167),
+    12px 16px 80px rgba(0, 0, 0, 0.28)
+;
 
-  .dialog-footer{
+  .dialog-footer {
     width: 100%;
     height: 72px;
     background-color: white;
@@ -159,6 +160,7 @@ export default {
 .mt-30 {
   margin-top: 20px;
 }
+
 .scroll {
   // position: fixed;
   // top: 0;
@@ -168,9 +170,11 @@ export default {
   background: #fff;
   // z-index: 20;
 }
+
 ._containner {
   padding: 15px 15px 90px 15px;
 }
+
 .select-box {
   overflow: hidden;
   padding: 0 15px;
@@ -179,9 +183,11 @@ export default {
   box-shadow: 0px 0px 3px 3px #eee;
   border-radius: 4px;
   margin-top: 15px;
+
   &:first-child {
     margin-top: 0;
   }
+
   .select-box-header {
     height: 60px;
     display: flex;
@@ -189,20 +195,24 @@ export default {
     align-items: center;
     flex: 1;
     color: #303030;
+
     .header-text {
       flex: 1;
     }
+
     img {
       width: 20px;
       display: block;
       margin-right: 20px;
       display: block;
     }
+
     .arrow {
       margin-right: 0;
       transform: rotate(-90deg);
       transition: all 0.3s;
     }
+
     .down {
       transform: rotate(0);
     }
@@ -213,22 +223,26 @@ export default {
     align-items: center;
     height: 60px;
     border-bottom: 1px solid #e9e9e9;
+
     img {
       width: 40px;
       height: 40px;
       margin-left: 24px;
       margin-right: 24px;
     }
+
     .iconfont {
       color: #fff;
       font-size: 20px;
       border: solid;
       background-color: #fff;
-      border:2px solid #eee;
+      border: 2px solid #eee;
       border-radius: 50%;
-      &.disabled.active{
+
+      &.disabled.active {
         color: #eee;
       }
+
       &.active {
         color: #5495ff;
       }
@@ -251,16 +265,20 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
+
 .btn-cancel {
   background: #fcfcfc;
   color: #000;
   border: 1px solid #e6e6e6;
 }
+
 .btn-confirm {
   background: #5898fc;
 }
-.btn-confirm.disabled{
+
+.btn-confirm.disabled {
   background-color: #8db0e7;
   cursor: not-allowed;
 }

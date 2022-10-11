@@ -7,16 +7,14 @@
       <chat-panel @add-user="addGroupMember" :invitedMembers="invitedMembers"
                   :invidedMembersInfo="invidedMembersInfo"></chat-panel>
     </div>
-    <div class="add-user" v-show="show">
-      <UserSelect @confirm="confirm" :visible.sync="show" @cancel="cancel"/>
-    </div>
+    <UserSelect v-show="show" @confirm="confirm" :visible.sync="show" @cancel="cancel"/>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { getOpenSynergy, synergyAddMember, getNewsList } from '@/api/synergy/synergy.js'
-import UserSelect from '@/components/OldUserSelect'
+import UserSelect from '@/components/UserSelect'
 import messageList from './messageList'
 import chatPanel from './chatPanel.vue'
 
@@ -144,26 +142,6 @@ export default {
     flex: 1;
     height: 100%;
   }
-
-  .add-user {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 500px;
-    height: 60%;
-
-    .dialog-footer {
-      width: 100%;
-      height: 72px;
-      background-color: white;
-      position: absolute;
-      bottom: 0;
-      z-index: 10;
-      display: flex;
-    }
-  }
-
 }
 
 </style>
