@@ -22,40 +22,28 @@
       <div class="talk-wrapper">
         <div class="talk-content" ref="talkContent">
           <div v-for="(item, index) in recordList" :key="index">
-            <div
-              :class="uid == item.senderId ? 'my-content' : 'others-content'"
-              v-if="item.contentType !== 5"
-            >
+            <div :class="uid == item.senderId ? 'my-content' : 'others-content'" v-if="item.contentType !== 5">
               <div class="time-name">
-                <span class="time">{{ item.sendTime }}</span
-                ><span class="name">{{ item.username }}</span>
+                <span class="time">{{ item.sendTime }}</span>
+                <span class="name">{{ item.username }}</span>
               </div>
               <div class="message" v-if="item.contentType === 1">
                 <span class="word-message">{{ item.content }}</span>
               </div>
-              <div
-                class="image-message message"
-                v-else-if="item.contentType === 2 || item.contentType === 6"
-                @dblclick="showImagePreview(fileAddressFormatFunc(item.content))"
-              >
+              <div class="image-message message"
+                   v-else-if="item.contentType === 2 || item.contentType === 6"
+                   @click="showImagePreview(fileAddressFormatFunc(item.content))">
                 <img :src="fileAddressFormatFunc(item.content)" @load="handleImgload"/>
               </div>
-              <div
-                class="audio-message message"
-                v-else-if="item.contentType === 3"
-                @click="playAudio(fileAddressFormatFunc(item.content))"
-              >
+              <div class="audio-message message"
+                   v-else-if="item.contentType === 3"
+                   @click="playAudio(fileAddressFormatFunc(item.content))">
                 <img :src="require('@/assets/icon-voice-white.png')" alt=""/>
                 <span>{{ item.duration }}"</span>
               </div>
               <div class="video-message message" v-else-if="item.contentType === 4">
-                <video
-                  preload="meta"
-                  :src="fileAddressFormatFunc(item.content)"
-                  controls="controls"
-                  width="250"
-                  @click="playVideo($event)"
-                ></video>
+                <video preload="meta" :src="fileAddressFormatFunc(item.content)" controls="controls" width="250"
+                       @click="playVideo($event)"/>
               </div>
             </div>
             <div v-if="item.contentType === 5">
@@ -75,32 +63,38 @@
               </div>
             </div>
           </div>
+<!--          <div class="others-content">-->
+<!--            <div class="time-name">-->
+<!--              <span class="time">昨天 16:03</span>-->
+<!--              <span class="name">小王</span>-->
+<!--            </div>-->
+<!--            <div class="file-message" @click="downloadFile('https://res.u-tools.cn/version2/uTools-3.0.3.exe')">-->
+<!--              <div class="file-info">-->
+<!--                <div class="name">员工管理计划.pdf</div>-->
+<!--                <div class="size">18.62M</div>-->
+<!--              </div>-->
+<!--              <img class="file-icon" src="../../../assets/file-icon/pdf.png"/>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="others-content">-->
+<!--            <div class="time-name">-->
+<!--              <span class="time">昨天 16:03</span>-->
+<!--              <span class="name">小王</span>-->
+<!--            </div>-->
+<!--            <div class="file-message">-->
+<!--              <div class="file-info">-->
+<!--                <div class="name">员工管理计划.exe</div>-->
+<!--                <div class="size">18.62M</div>-->
+<!--              </div>-->
+<!--              <img class="file-icon" src="../../../assets/file-icon/exe.png"/>-->
+<!--            </div>-->
+<!--          </div>-->
         </div>
-        <div class="input-area">
-          <div class="upload-wrapper">
-            <label for="upload">
-              <div class="icon icon-image" title="上传图片"></div>
-            </label>
-            <input
-              type="file"
-              id="upload"
-              multiple
-              hidden
-              accept="audio/mpeg,video/mp4,image/jpg,image/png,image/gif"
-              @change="upload"
-            />
-                        <label for="upload">
-                          <div class="icon icon-video"></div>
-                        </label>
-<!--            <div class="icon icon-file" title="上传文件" @click="showRecordPanel"></div>-->
-            <div class="icon icon-record" title="历史记录" @click="showRecordPanel"></div>
-          </div>
-          <textarea ref="text-input" v-model="wordContent"
-                    @input="inputChange"
-                    @keyup.enter.exact="sendWordMessage"
-                    @keyup.ctrl.enter="lineFeed"/>
-          <div class="enter-message" @click="sendWordMessage">发送</div>
-        </div>
+        <chat-editor
+          :value="wordContent"
+          @change="inputChange"
+          @send="sendWordMessage"
+          @handleMessage="handleMessage"/>
       </div>
       <div class="group-members" v-if="chattingTarget.type === 666">
         <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
@@ -139,7 +133,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { fileAddressFormat } from '@/utils/utils.js'
+import { readFile, fileAddressFormat } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -158,11 +152,14 @@ import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
 import { imgUpload, fileUpload } from '@/api/upload/upload.js'
 import RecordList from '@/views/synergy/chat/recordList'
-import { ImagePreview, Notify } from 'vant'
+import { Dialog, ImagePreview, Notify } from 'vant'
+import ChatEditor from '@/components/ChatEditor'
+import eventBus from '@/utils/mitt'
 
 export default {
   directives: { clickoutside },
   components: {
+    ChatEditor,
     RecordList,
     memberList
   },
@@ -248,6 +245,8 @@ export default {
     }
   },
   mounted () {
+    eventBus.on('handleMessage', this.handleMessage)
+    eventBus.on('showRecordPanel', this.showRecordPanel)
     this.$eventBus.$on('beat', this.beat)
     this.$eventBus.$on('quit', this.quitGroup)
     this.$refs.talkContent.addEventListener(
@@ -264,6 +263,8 @@ export default {
   destroyed () {
     this.isClose = true
     this.socket.close()
+    eventBus.off('handleMessage', this.handleMessage)
+    eventBus.off('showRecordPanel', this.showRecordPanel)
   },
   methods: {
     init () {
@@ -505,10 +506,11 @@ export default {
       })
     },
     inputChange (e) {
-      if (this.chattingTarget.type === 666 && e.data === '@') {
+      this.wordContent = e
+      if (this.chattingTarget.type === 666 && e === '@') {
         this.groupAt = true
       }
-      if ((e.data == null || e.data.trim() === '') && this.wordContent.indexOf('@') === -1) {
+      if ((e == null || e.trim() === '') && this.wordContent.indexOf('@') === -1) {
         this.groupAt = false
       }
     },
@@ -765,6 +767,44 @@ export default {
       } else {
         Notify('没有消息记录')
       }
+    },
+    uploadFile () {
+      readFile().then(files => {
+        for (let i = 0; i < files.length; i++) {
+          console.log(files[i])
+          // if (/image/.test(files[i].type)) {
+          //   imgUpload(files[i]).then((res) => {
+          //     let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawUrl }
+          //     this.handleMessage(params)
+          //   })
+          // } else if (/audio/.test(files[i].type)) {
+          //   fileUpload(files[i]).then((res) => {
+          //     let params = { contentType: 3, smallImg: '', content: res.url }
+          //     this.handleMessage(params)
+          //   })
+          // } else if (/video/.test(files[i].type)) {
+          //   fileUpload(files[i]).then((res) => {
+          //     let params = { contentType: 4, smallImg: '', content: res.url }
+          //     this.handleMessage(params)
+          //   })
+          // } else {
+          //   fileUpload(files[i]).then((res) => {
+          //     let params = { contentType: 9, smallImg: '', content: res.url }
+          //     this.handleMessage(params)
+          //   })
+          // }
+        }
+      })
+    },
+    downloadFile (url) {
+      Dialog.confirm({
+        title: '文件下载',
+        message: '确定要下载该文件吗'
+      }).then(() => {
+        const a = document.createElement('a')
+        a.href = url
+        a.click()
+      })
     }
   }
 }
@@ -817,6 +857,8 @@ nav {
       height: calc(100% - 155px);
       background-color: #f2f3f5;
       overflow-y: auto;
+      padding-bottom: 10px;
+      box-sizing: border-box;
 
       .time-name {
         padding-top: 8px;
@@ -881,6 +923,37 @@ nav {
           flex-direction: row-reverse;
           align-items: center;
         }
+
+        & > .file-message {
+          margin-top: 4px;
+          padding: 12px 10px;
+          background-color: white;
+          border: 1px solid #cccccc;
+          border-radius: 6px;
+          display: flex;
+          cursor: pointer;
+
+          & > .file-info {
+            & > .name {
+              height: 50%;
+              display: flex;
+              align-items: center;
+            }
+
+            & > .size {
+              height: 50%;
+              color: #636e72;
+              font-size: 14px;
+              margin-top: 8px;
+              display: flex;
+              align-items: center;
+            }
+          }
+
+          & > .file-icon {
+            margin-left: 8px;
+          }
+        }
       }
 
       .sys-notifacation {
@@ -891,63 +964,6 @@ nav {
           display: inline-block;
           padding: 8px;
           background-color: #e4e7eb;
-        }
-      }
-    }
-
-    .input-area {
-      height: 154px;
-      border-top: 1px solid #dadcdf;
-      position: relative;
-
-      .upload-wrapper {
-        height: 20px;
-        margin-top: 5px;
-
-        .icon {
-          float: left;
-          width: 20px;
-          height: 20px;
-          margin-left: 10px;
-          cursor: pointer;
-        }
-
-        .icon-image {
-          background: url("../../../assets/icon-album.png") center/cover;
-        }
-
-        .icon-video {
-          background: url("../../../assets/icon-camera.png") center/cover;
-        }
-
-        .icon-file {
-          background: url("../../../assets/file.png") center/cover;
-        }
-
-        .icon-record {
-          background: url("../../../assets/icon-record.png") center/cover;
-        }
-      }
-
-      textarea {
-        width: 95%;
-        height: calc(100% - 54px);
-        resize: none;
-        border: 0;
-        padding-left: 10px;
-      }
-
-      .enter-message {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        padding: 10px;
-        font-size: 14px;
-        color: #6e7882;
-        cursor: pointer;
-
-        &:hover {
-          color: #2391f5;
         }
       }
     }
