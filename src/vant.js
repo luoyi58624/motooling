@@ -1,5 +1,5 @@
-import { Popup, Tab, Tabs, Search, Overlay, Image as VanImage } from 'vant'
 import Vue from 'vue'
+import { Popup, Tab, Tabs, Search, Overlay, Image as VanImage } from 'vant'
 
 Vue.use(Popup)
 Vue.use(Tab)

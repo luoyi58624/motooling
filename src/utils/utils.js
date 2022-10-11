@@ -26,6 +26,7 @@ export function getStringQueryString (str, query) {
   }
   return null
 }
+
 // 获取URL中查询参数
 export const WEBURL = () => localStorage.getItem('WEBURL') || ''
 
@@ -72,4 +73,16 @@ export function time (time) {
     processedTime = time.splice(5, -3)
     return processedTime
   }
+}
+
+export function readFile () {
+  return new Promise((resolve) => {
+    const fileInput = document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.accept = '*'
+    fileInput.onchange = function (e) {
+      resolve(this.files)
+    }
+    fileInput.click()
+  })
 }
