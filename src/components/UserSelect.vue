@@ -240,7 +240,7 @@ export default {
       border-radius: 50%;
 
       &.disabled.active {
-        color: #eee;
+        color: #a4b0be;
       }
 
       &.active {
