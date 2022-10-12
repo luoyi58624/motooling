@@ -139,7 +139,8 @@ export default {
     return {
       editor: null,
       toolbarConfig: {
-        toolbarKeys: ['uploadImage', 'uploadVideo', 'uploadFile', 'emotion', 'history', 'fullScreen']
+        // toolbarKeys: ['uploadImage', 'uploadVideo', 'uploadFile', 'emotion', 'history', 'fullScreen']
+        toolbarKeys: ['uploadImage', 'uploadVideo', 'emotion', 'history', 'fullScreen']
       },
       wordContent: '',
       editorConfig,
