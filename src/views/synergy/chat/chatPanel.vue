@@ -63,6 +63,7 @@
               </div>
             </div>
           </div>
+
 <!--          <div class="others-content">-->
 <!--            <div class="time-name">-->
 <!--              <span class="time">昨天 16:03</span>-->
@@ -153,7 +154,7 @@ import debounce from '@/utils/debounce'
 import { imgUpload, fileUpload } from '@/api/upload/upload.js'
 import RecordList from '@/views/synergy/chat/recordList'
 import { Dialog, ImagePreview, Notify } from 'vant'
-import ChatEditor from '@/components/ChatEditor'
+import ChatEditor from '@/views/synergy/chat/ChatEditor'
 import eventBus from '@/utils/mitt'
 
 export default {
@@ -877,6 +878,7 @@ nav {
       .word-message {
         background-color: #dee0e3;
         padding: 8px 10px 6px 10px;
+        line-height: 1.2;
         border-radius: 6px;
         user-select: text;
         word-break: break-all;

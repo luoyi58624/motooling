@@ -24,7 +24,7 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { fileUpload, imgUpload } from '@/api/upload/upload'
 import eventBus from '@/utils/mitt'
 import { readFile } from '@/utils/utils'
-import { Toast } from 'vant'
+import { Dialog } from 'vant'
 
 const editorConfig = {
   MENU_CONF: {}
@@ -74,7 +74,9 @@ class FileMenu {
 
   async exec (editor, value) {
     readFile().then(res => {
-      uploadFile(res)
+      for (let i = 0; i < res.length; i++) {
+        uploadFile(res[i])
+      }
     })
   }
 }
@@ -141,7 +143,7 @@ export default {
       },
       wordContent: '',
       editorConfig,
-      mode: 'default' // or 'simple'
+      mode: 'default'
     }
   },
   methods: {
@@ -170,8 +172,17 @@ export default {
     },
     customPaste (editor, event) {
       event.preventDefault()
-      console.log(event.clipboardData.files)
-      // uploadFile(event.clipboardData.files)
+      if (event.clipboardData.files.length > 0) {
+        const files = event.clipboardData.files
+        Dialog.confirm({
+          title: '提示',
+          message: '检测到您复制了文件，需要上传吗？'
+        }).then(() => {
+          for (let i = 0; i < files.length; i++) {
+            uploadFile(files[i])
+          }
+        })
+      }
     }
   },
   mounted () {
@@ -182,26 +193,29 @@ export default {
   }
 }
 
-function uploadFile (files) {
-  for (let i = 0; i < files.length; i++) {
-    if (/image/.test(files[i].type)) {
-      imgUpload(files[i]).then((res) => {
-        let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawUrl }
-        eventBus.emit('handleMessage', params)
-      })
-    } else if (/audio/.test(files[i].type)) {
-      fileUpload(files[i]).then((res) => {
-        let params = { contentType: 3, smallImg: '', content: res.url }
-        eventBus.emit('handleMessage', params)
-      })
-    } else if (/video/.test(files[i].type)) {
-      fileUpload(files[i]).then((res) => {
-        let params = { contentType: 4, smallImg: '', content: res.url }
-        eventBus.emit('handleMessage', params)
-      })
-    } else {
-      Toast.fail('暂未实现上传文件...')
-    }
+function uploadFile (file) {
+  if (/image/.test(file.type)) {
+    imgUpload(file).then((res) => {
+      let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawUrl }
+      eventBus.emit('handleMessage', params)
+    })
+  } else if (/audio/.test(file.type)) {
+    fileUpload(file).then((res) => {
+      let params = { contentType: 3, smallImg: '', content: res.url }
+      eventBus.emit('handleMessage', params)
+    })
+  } else if (/video/.test(file.type)) {
+    fileUpload(file).then((res) => {
+      let params = { contentType: 4, smallImg: '', content: res.url }
+      eventBus.emit('handleMessage', params)
+    })
+  } else {
+    // Toast.fail('暂未实现上传文件...')
+    fileUpload(file).then((res) => {
+      console.log(res)
+      // let params = { contentType: 9, smallImg: '', content: res.url }
+      // eventBus.emit('handleMessage', params)
+    })
   }
 }
 </script>
@@ -238,6 +252,37 @@ function uploadFile (files) {
 
   &:active {
     transform: scale(0.90);
+  }
+}
+
+.file-message {
+  margin-top: 4px;
+  padding: 12px 10px;
+  background-color: white;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  display: flex;
+  cursor: pointer;
+
+  & > .file-info {
+    & > .name {
+      height: 50%;
+      display: flex;
+      align-items: center;
+    }
+
+    & > .size {
+      height: 50%;
+      color: #636e72;
+      font-size: 14px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  & > .file-icon {
+    margin-left: 8px;
   }
 }
 </style>
