@@ -161,6 +161,7 @@ export default {
       }
     },
     onChange (editor) {
+      this.$store.commit('setDraftMessage', editor.getText())
       this.$emit('change', editor.getText())
     },
     sendMsg () {
@@ -177,7 +178,7 @@ export default {
         const files = event.clipboardData.files
         Dialog.confirm({
           title: '提示',
-          message: '检测到您复制了文件，需要上传吗？'
+          message: '检测到您复制了文件，需要发送吗？'
         }).then(() => {
           for (let i = 0; i < files.length; i++) {
             uploadFile(files[i])
@@ -212,11 +213,11 @@ function uploadFile (file) {
     })
   } else {
     // Toast.fail('暂未实现上传文件...')
-    fileUpload(file).then((res) => {
-      console.log(res)
-      // let params = { contentType: 9, smallImg: '', content: res.url }
-      // eventBus.emit('handleMessage', params)
-    })
+    // fileUpload(file).then((res) => {
+    //   console.log(res)
+    //   let params = { contentType: 9, smallImg: '', content: res.url }
+    //   eventBus.emit('handleMessage', params)
+    // })
   }
 }
 </script>

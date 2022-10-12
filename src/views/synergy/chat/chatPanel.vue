@@ -63,33 +63,32 @@
               </div>
             </div>
           </div>
-
-<!--          <div class="others-content">-->
-<!--            <div class="time-name">-->
-<!--              <span class="time">昨天 16:03</span>-->
-<!--              <span class="name">小王</span>-->
-<!--            </div>-->
-<!--            <div class="file-message" @click="downloadFile('https://res.u-tools.cn/version2/uTools-3.0.3.exe')">-->
-<!--              <div class="file-info">-->
-<!--                <div class="name">员工管理计划.pdf</div>-->
-<!--                <div class="size">18.62M</div>-->
-<!--              </div>-->
-<!--              <img class="file-icon" src="../../../assets/file-icon/pdf.png"/>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="others-content">-->
-<!--            <div class="time-name">-->
-<!--              <span class="time">昨天 16:03</span>-->
-<!--              <span class="name">小王</span>-->
-<!--            </div>-->
-<!--            <div class="file-message">-->
-<!--              <div class="file-info">-->
-<!--                <div class="name">员工管理计划.exe</div>-->
-<!--                <div class="size">18.62M</div>-->
-<!--              </div>-->
-<!--              <img class="file-icon" src="../../../assets/file-icon/exe.png"/>-->
-<!--            </div>-->
-<!--          </div>-->
+          <!--          <div class="others-content">-->
+          <!--            <div class="time-name">-->
+          <!--              <span class="time">昨天 16:03</span>-->
+          <!--              <span class="name">小王</span>-->
+          <!--            </div>-->
+          <!--            <div class="file-message" @click="downloadFile('https://res.u-tools.cn/version2/uTools-3.0.3.exe')">-->
+          <!--              <div class="file-info">-->
+          <!--                <div class="name">员工管理计划.pdf</div>-->
+          <!--                <div class="size">18.62M</div>-->
+          <!--              </div>-->
+          <!--              <img class="file-icon" src="../../../assets/file-icon/pdf.png"/>-->
+          <!--            </div>-->
+          <!--          </div>-->
+          <!--          <div class="others-content">-->
+          <!--            <div class="time-name">-->
+          <!--              <span class="time">昨天 16:03</span>-->
+          <!--              <span class="name">小王</span>-->
+          <!--            </div>-->
+          <!--            <div class="file-message">-->
+          <!--              <div class="file-info">-->
+          <!--                <div class="name">员工管理计划.exe</div>-->
+          <!--                <div class="size">18.62M</div>-->
+          <!--              </div>-->
+          <!--              <img class="file-icon" src="../../../assets/file-icon/exe.png"/>-->
+          <!--            </div>-->
+          <!--          </div>-->
         </div>
         <chat-editor
           :value="wordContent"
@@ -218,12 +217,13 @@ export default {
       handler: function (val) {
         if (val) {
           this.init()
+          this.groupAt = false
+          this.wordContent = this.$store.state.messageDraft.find(item => {
+            return item.groupId === val
+          }).message
         }
       },
       immediate: true
-    },
-    wordContent (newValue) {
-      // localStorage.setItem('group-message-' + this.groupId, newValue)
     }
   },
   computed: {
@@ -514,9 +514,6 @@ export default {
       if ((e == null || e.trim() === '') && this.wordContent.indexOf('@') === -1) {
         this.groupAt = false
       }
-    },
-    lineFeed () {
-      this.wordContent += '\n'
     },
     // 发送文字消息
     sendWordMessage (e) {

@@ -33,7 +33,8 @@ export default new Vuex.Store({
     groupId: null,
     relationType: null,
     activeId: 0,
-    userInfo: {}
+    userInfo: {},
+    messageDraft: [] // 消息草稿
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -90,14 +91,27 @@ export default new Vuex.Store({
     ACTIVE_ID: (state, activeID) => {
       state.activeId = activeID
     },
-
     USER_INFO: (state, data) => {
       state.userInfo = data
     },
-
     currentConversation: (state, { groupId, relationType }) => {
       state.groupId = groupId
       state.relationType = relationType
+    },
+    // 创建草稿消息分租，只创建不存在的草稿组
+    createMessageDraftGroup: (state, data) => {
+      const index = state.messageDraft.findIndex(item => {
+        return item.groupId === data.groupId
+      })
+      if (index === -1) {
+        state.messageDraft.push(data)
+      }
+    },
+    // 设置草稿消息
+    setDraftMessage: (state, message) => {
+      state.messageDraft.forEach(item => {
+        if (item.groupId === state.groupId) item.message = message
+      })
     }
   },
   actions: {

@@ -11,12 +11,14 @@
         <div ref="talkContent" class="talk-content">
           <ul>
             <li v-for="(item, index) in recordList" :key="index">
+              <!--渲染用户名和时间-->
               <h3
                 v-if="item.contentType!==5 && item.contentType!==7"
                 class="username"
                 :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
                 {{ item.username }} {{ item.sendTime }}
               </h3>
+              <!--渲染消息内容-->
               <div class="text-left" v-if="item.contentType === 2 || item.contentType === 6">
                 <van-image
                   fit="contain"
@@ -246,8 +248,9 @@ export default {
 
     & > .content {
       width: 100%;
-      word-wrap: break-word;
-      text-align: justify;
+      text-align: left;
+      //word-wrap: break-word;
+      //text-align: justify;
     }
 
     & > .audio-message {

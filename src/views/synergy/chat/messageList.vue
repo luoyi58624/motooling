@@ -30,8 +30,8 @@
           v-clickoutside="visible"
         >
           <div class="file-picture">
-            <img :src="item.avatar" v-if="item.relationType === 66" />
-            <img :src="require('@/assets/group.png')" v-else />
+            <img :src="item.avatar" v-if="item.relationType === 66"/>
+            <img :src="require('@/assets/group.png')" v-else/>
             <div
               class="no-read-count"
               v-if="item.notReadCount <= 99 && item.notReadCount > 0"
@@ -41,7 +41,7 @@
             <div class="no-read-count" v-else-if="item.notReadCount !== 0">...</div>
           </div>
           <div class="user-name">
-            <p>{{ item.username || item.subject.slice(0, 8) + "..." }}</p>
+            <p>{{ item.username || item.subject.slice(0, 8) + '...' }}</p>
             <p>{{ item.newMsg }}</p>
           </div>
         </div>
@@ -49,7 +49,8 @@
           <p @click.stop="clearChattingRecords(item)">清空聊天记录</p>
           <p @click.stop="signOutGroup(item)">退出群聊</p>
         </div>
-        <div class="popover" v-if="item.groupId == groupId && item.groupId == currentConversation && item.relationType === 66">
+        <div class="popover"
+             v-if="item.groupId == groupId && item.groupId == currentConversation && item.relationType === 66">
           <p @click.stop="handleBeat(item)">找一找</p>
         </div>
       </div>
@@ -64,8 +65,8 @@
         >
           <div class="message-list-item">
             <div class="file-picture">
-              <img :src="item.avatar" v-if="item.relationType === 66" />
-              <img :src="require('@/assets/group.png')" v-else />
+              <img :src="item.avatar" v-if="item.relationType === 66"/>
+              <img :src="require('@/assets/group.png')" v-else/>
             </div>
             <div class="user-name">
               <p>{{ item.username || item.subject }}</p>
@@ -253,7 +254,11 @@ export default {
     // 选择聊天对象，开启聊天
     startChatting (data) {
       this.groupId = data.groupId
-
+      // 初始化草稿
+      this.$store.commit('createMessageDraftGroup', {
+        groupId: data.groupId,
+        message: ''
+      })
       this.$store.commit('currentConversation', {
         groupId: data.groupId,
         relationType: data.relationType
@@ -282,23 +287,28 @@ export default {
 
 <style scoped lang="less">
 @import url("./common.less");
+
 .active {
   background-color: #c3c5c7;
 }
+
 .list {
   position: relative;
   height: 100%;
   overflow: hidden;
   background-color: #e6e8eb;
+
   .search-contacts {
     position: absolute;
     top: 47px;
     left: 12px;
     width: 210px;
     border: 1px solid skyblue;
+
     & > ul {
       background-color: #fff;
     }
+
     .no-result {
       text-align: center;
       color: #ccc;
@@ -306,30 +316,36 @@ export default {
       padding: 10px 0;
     }
   }
+
   .search {
     position: fixed;
     left: 0;
     top: 0;
     margin: 20px 0 0 10px;
     background-color: #e6e8eb;
+
     .enter-keyword {
       display: flex;
       align-items: center;
     }
+
     i {
       margin-left: 8px;
       cursor: pointer;
     }
   }
 }
+
 .message-list {
   margin-top: 60px;
   height: calc(100% - 60px);
   overflow-y: hidden;
 }
+
 .message-list:hover {
   overflow-y: auto;
 }
+
 .message-list-wrapper {
   position: relative;
   height: 64px;
@@ -338,14 +354,18 @@ export default {
   box-sizing: border-box;
   border-bottom: 1px solid #dadcdf;
   cursor: pointer;
+
   &:hover {
     background-color: #d8ecff;
   }
+
   .message-list-item {
     display: flex;
     flex-wrap: nowrap;
+
     .file-picture {
       position: relative;
+
       .no-read-count {
         position: absolute;
         right: -8px;
@@ -359,12 +379,14 @@ export default {
         font-size: 12px;
         color: #fff;
       }
+
       img {
         width: 40px;
         height: 40px;
       }
     }
   }
+
   .user-name {
     padding-left: 10px;
     flex: 0 0 150px;
@@ -372,6 +394,7 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     height: 40px;
+
     p:last-child {
       width: 150px;
       text-overflow: ellipsis;
