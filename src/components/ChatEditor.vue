@@ -169,7 +169,9 @@ export default {
       }
     },
     customPaste (editor, event) {
-      uploadFile(event.clipboardData.files)
+      event.preventDefault()
+      console.log(event.clipboardData.files)
+      // uploadFile(event.clipboardData.files)
     }
   },
   mounted () {

@@ -876,8 +876,8 @@ nav {
 
       .word-message {
         background-color: #dee0e3;
-        padding: 5px;
-        border-radius: 5px;
+        padding: 8px 10px 6px 10px;
+        border-radius: 6px;
         user-select: text;
         word-break: break-all;
         white-space: pre-line;
@@ -973,6 +973,7 @@ nav {
     width: 121px;
     font-size: 12px;
     border-left: 1px solid #dadcdf;
+    border-bottom: 1px solid #dadcdf;
 
     .group-members-title {
       padding: 10px;
