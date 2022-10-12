@@ -91,6 +91,7 @@
           <!--          </div>-->
         </div>
         <chat-editor
+          ref="ChatEditor"
           :value="wordContent"
           @change="inputChange"
           @send="sendWordMessage"
@@ -386,7 +387,10 @@ export default {
       this.wordContent += `${member.username} `
       this.uList.push({ uid: member.uid })
       this.groupAt = false
-      this.$refs['text-input'].focus()
+      // this.$refs['text-input'].focus()
+      setTimeout(() => {
+        this.$refs.ChatEditor.editor.focus(true)
+      }, 300)
     },
     // 滚到底部
     scrolltoButtom () {
@@ -508,12 +512,7 @@ export default {
     },
     inputChange (e) {
       this.wordContent = e
-      if (this.chattingTarget.type === 666 && e === '@') {
-        this.groupAt = true
-      }
-      if ((e == null || e.trim() === '') && this.wordContent.indexOf('@') === -1) {
-        this.groupAt = false
-      }
+      this.groupAt = e.endsWith('@')
     },
     // 发送文字消息
     sendWordMessage (e) {
