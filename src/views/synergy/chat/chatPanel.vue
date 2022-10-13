@@ -51,7 +51,8 @@
                        @click="playVideo($event)"/>
               </div>
               <div class="file-message-container" v-if="item.contentType === 9">
-                <div class="file-message" @click="downloadFile(fileAddressFormatFunc(item.content.url))">
+                <div class="file-message"
+                     @click="downloadFile(fileAddressFormatFunc(item.content.url),item.content.fileName)">
                   <div class="file-info">
                     <div class="name">{{ item.content.fileName }}</div>
                     <div class="size">{{ item.content.fileSize }}</div>
@@ -146,6 +147,7 @@ import RecordList from '@/views/synergy/chat/recordList'
 import { Dialog, ImagePreview, Notify } from 'vant'
 import ChatEditor from '@/views/synergy/chat/ChatEditor'
 import eventBus from '@/utils/mitt'
+import { saveAs } from 'file-saver'
 
 export default {
   directives: { clickoutside },
@@ -680,8 +682,6 @@ export default {
       this.selectedGroupMember = null
     },
     handleMessage ({ contentType, smallImg, content } = {}) {
-      console.log(content)
-
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
       let message = [
@@ -805,14 +805,14 @@ export default {
         }
       })
     },
-    downloadFile (url) {
+    downloadFile (url, fileName) {
+      console.log(fileName)
+
       Dialog.confirm({
         title: '文件下载',
         message: '确定要下载该文件吗'
       }).then(() => {
-        const a = document.createElement('a')
-        a.href = url
-        a.click()
+        saveAs(url, fileName)
       })
     },
     fileIcon (fileName) {
