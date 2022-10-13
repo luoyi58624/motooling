@@ -173,6 +173,11 @@ export default {
     },
     customPaste (editor, event) {
       event.preventDefault()
+      console.log(event.clipboardData.getData('text/plain'))
+      const data = event.clipboardData.getData('text/plain')
+      if (data) {
+        this.$emit('change', editor.getText() + data)
+      }
       if (event.clipboardData.files.length > 0) {
         const files = event.clipboardData.files
         Dialog.confirm({

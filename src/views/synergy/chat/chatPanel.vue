@@ -514,6 +514,9 @@ export default {
     inputChange (e) {
       this.wordContent = e
       this.groupAt = e.endsWith('@')
+      setTimeout(() => {
+        this.$refs.ChatEditor.editor.focus(true)
+      }, 50)
     },
     // 发送文字消息
     sendWordMessage (e) {
