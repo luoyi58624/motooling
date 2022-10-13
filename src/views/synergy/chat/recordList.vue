@@ -153,7 +153,7 @@ export default {
             if (result.length !== 0) {
               let recordList = result.reverse()
               recordList.forEach(item => {
-                if (item.data.contentType === 7) {
+                if (item.data.contentType === 7 || item.data.contentType === 9) {
                   item.data.content = JSON.parse(item.data.content)
                 }
               })

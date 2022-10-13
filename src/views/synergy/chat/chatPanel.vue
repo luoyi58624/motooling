@@ -50,6 +50,17 @@
                        height="140"
                        @click="playVideo($event)"/>
               </div>
+              <div class="file-message-container" v-if="item.contentType === 9">
+                <div class="file-message" @click="downloadFile(fileAddressFormatFunc(item.content.url))">
+                  <div class="file-info">
+                    <div class="name">{{ item.content.fileName }}</div>
+                    <div class="size">{{ item.content.fileSize }}</div>
+                  </div>
+                  <div class="file-icon">
+                    <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
+                  </div>
+                </div>
+              </div>
             </div>
             <div v-if="item.contentType === 5">
               <div class="sys-notifacation">
@@ -68,32 +79,6 @@
               </div>
             </div>
           </div>
-          <!--          <div class="others-content">-->
-          <!--            <div class="time-name">-->
-          <!--              <span class="time">昨天 16:03</span>-->
-          <!--              <span class="name">小王</span>-->
-          <!--            </div>-->
-          <!--            <div class="file-message" @click="downloadFile('https://res.u-tools.cn/version2/uTools-3.0.3.exe')">-->
-          <!--              <div class="file-info">-->
-          <!--                <div class="name">员工管理计划.pdf</div>-->
-          <!--                <div class="size">18.62M</div>-->
-          <!--              </div>-->
-          <!--              <img class="file-icon" src="../../../assets/file-icon/pdf.png"/>-->
-          <!--            </div>-->
-          <!--          </div>-->
-          <!--          <div class="others-content">-->
-          <!--            <div class="time-name">-->
-          <!--              <span class="time">昨天 16:03</span>-->
-          <!--              <span class="name">小王</span>-->
-          <!--            </div>-->
-          <!--            <div class="file-message">-->
-          <!--              <div class="file-info">-->
-          <!--                <div class="name">员工管理计划.exe</div>-->
-          <!--                <div class="size">18.62M</div>-->
-          <!--              </div>-->
-          <!--              <img class="file-icon" src="../../../assets/file-icon/exe.png"/>-->
-          <!--            </div>-->
-          <!--          </div>-->
         </div>
         <chat-editor
           ref="ChatEditor"
@@ -139,7 +124,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { fileAddressFormat, readFile } from '@/utils/utils.js'
+import { fileAddressFormat, getFileSuffix, readFile } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -317,6 +302,13 @@ export default {
           recordList.forEach(item => {
             if (item.data.contentType === 7) {
               item.data.content = JSON.parse(item.data.content)
+            }
+            if (item.data.contentType === 9) {
+              // 测试时插了几条脏数据，纯字符串转对象会报错
+              try {
+                item.data.content = JSON.parse(item.data.content)
+              } catch (e) {
+              }
             }
           })
           this.recordList = time(recordList)
@@ -603,7 +595,7 @@ export default {
               let recordList = result.reverse()
               this.mainKeyId = recordList[0].data.id
               recordList.forEach(item => {
-                if (item.data.contentType === 7) {
+                if (item.data.contentType === 7 || item.data.contentType === 9) {
                   item.data.content = JSON.parse(item.data.content)
                 }
               })
@@ -685,6 +677,8 @@ export default {
       this.selectedGroupMember = null
     },
     handleMessage ({ contentType, smallImg, content } = {}) {
+      console.log(content)
+
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
       let message = [
@@ -702,7 +696,7 @@ export default {
         groupId: this.groupId,
         senderId: this.uid,
         contentType,
-        content,
+        content: JSON.stringify(content),
         smallImg
       }).then(() => {
         getNewsList().then((res) => {
@@ -816,6 +810,25 @@ export default {
         a.href = url
         a.click()
       })
+    },
+    fileIcon (fileName) {
+      const fileSuffix = getFileSuffix(fileName)
+      switch (fileSuffix) {
+        case 'exe':
+          return require('@/assets/file-icon/exe.png')
+        case 'docx':
+          return require('@/assets/file-icon/word.png')
+        case 'xlsx':
+          return require('@/assets/file-icon/excel.png')
+        case 'pptx':
+          return require('@/assets/file-icon/ppt.png')
+        case 'pdf':
+          return require('@/assets/file-icon/pdf.png')
+        case 'apk':
+          return require('@/assets/file-icon/android.png')
+        default:
+          return require('@/assets/file-icon/other.png')
+      }
     }
   }
 }
@@ -922,6 +935,11 @@ nav {
           display: flex;
           align-items: center;
         }
+
+        & > .file-message-container {
+          display: flex;
+          justify-content: right;
+        }
       }
 
       .others-content {
@@ -936,35 +954,9 @@ nav {
           align-items: center;
         }
 
-        & > .file-message {
-          margin-top: 4px;
-          padding: 12px 10px;
-          background-color: white;
-          border: 1px solid #cccccc;
-          border-radius: 6px;
+        & > .file-message-container {
           display: flex;
-          cursor: pointer;
-
-          & > .file-info {
-            & > .name {
-              height: 50%;
-              display: flex;
-              align-items: center;
-            }
-
-            & > .size {
-              height: 50%;
-              color: #636e72;
-              font-size: 14px;
-              margin-top: 8px;
-              display: flex;
-              align-items: center;
-            }
-          }
-
-          & > .file-icon {
-            margin-left: 8px;
-          }
+          justify-content: left;
         }
       }
 
@@ -1016,6 +1008,42 @@ nav {
         background-color: #e6e8eb;
       }
     }
+  }
+}
+
+.file-message {
+  width: 250px;
+  margin-top: 4px;
+  padding: 12px 10px;
+  background-color: white;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+
+  & > .file-info {
+    & > .name {
+      height: 50%;
+      display: flex;
+      align-items: center;
+    }
+
+    & > .size {
+      height: 50%;
+      color: #636e72;
+      font-size: 14px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  & > .file-icon {
+    margin: 0 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 

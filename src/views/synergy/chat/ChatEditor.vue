@@ -139,8 +139,7 @@ export default {
     return {
       editor: null,
       toolbarConfig: {
-        // toolbarKeys: ['uploadImage', 'uploadVideo', 'uploadFile', 'emotion', 'history', 'fullScreen']
-        toolbarKeys: ['uploadImage', 'uploadVideo', 'emotion', 'history', 'fullScreen']
+        toolbarKeys: ['uploadImage', 'uploadVideo', 'uploadFile', 'emotion', 'history', 'fullScreen']
       },
       wordContent: '',
       editorConfig,
@@ -212,12 +211,10 @@ function uploadFile (file) {
       eventBus.emit('handleMessage', params)
     })
   } else {
-    // Toast.fail('暂未实现上传文件...')
-    // fileUpload(file).then((res) => {
-    //   console.log(res)
-    //   let params = { contentType: 9, smallImg: '', content: res.url }
-    //   eventBus.emit('handleMessage', params)
-    // })
+    fileUpload(file).then((res) => {
+      let params = { contentType: 9, smallImg: '', content: res }
+      eventBus.emit('handleMessage', params)
+    })
   }
 }
 </script>
@@ -254,37 +251,6 @@ function uploadFile (file) {
 
   &:active {
     transform: scale(0.90);
-  }
-}
-
-.file-message {
-  margin-top: 4px;
-  padding: 12px 10px;
-  background-color: white;
-  border: 1px solid #cccccc;
-  border-radius: 6px;
-  display: flex;
-  cursor: pointer;
-
-  & > .file-info {
-    & > .name {
-      height: 50%;
-      display: flex;
-      align-items: center;
-    }
-
-    & > .size {
-      height: 50%;
-      color: #636e72;
-      font-size: 14px;
-      margin-top: 8px;
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  & > .file-icon {
-    margin-left: 8px;
   }
 }
 </style>

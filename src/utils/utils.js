@@ -87,3 +87,11 @@ export function readFile () {
     fileInput.click()
   })
 }
+
+export function getFileSuffix (fileName) {
+  let fileSuffix = ''
+  if (fileName == null || fileName === '') return fileSuffix
+  const files = fileName.split('.')
+  if (files.length > 1) fileSuffix = files[files.length - 1]
+  return fileSuffix
+}
