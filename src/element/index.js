@@ -7,7 +7,8 @@ import {
   Input,
   Icon,
   Dialog,
-  Pagination
+  Pagination,
+  Image
 } from 'element-ui'
 const element = {
   install: function (Vue) {
@@ -20,6 +21,7 @@ const element = {
     Vue.use(Icon)
     Vue.use(Dialog)
     Vue.use(Pagination)
+    Vue.use(Image)
   }
 }
 

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import { Popup, Tab, Tabs, Search, Overlay, Loading, Image as VanImage } from 'vant'
+import '@vant/touch-emulator'
 
 Vue.use(Popup)
 Vue.use(Tab)

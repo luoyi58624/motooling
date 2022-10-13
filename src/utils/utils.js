@@ -75,6 +75,7 @@ export function time (time) {
   }
 }
 
+// 读取文件
 export function readFile () {
   return new Promise((resolve) => {
     const fileInput = document.createElement('input')

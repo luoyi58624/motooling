@@ -30,10 +30,11 @@
               <div class="message" v-if="item.contentType === 1">
                 <span class="word-message">{{ item.content }}</span>
               </div>
-              <div class="image-message message"
-                   v-else-if="item.contentType === 2 || item.contentType === 6"
-                   @click="showImagePreview(fileAddressFormatFunc(item.content))">
-                <img :src="fileAddressFormatFunc(item.content)" @load="handleImgload"/>
+              <div class="message" v-else-if="item.contentType === 2 || item.contentType === 6">
+                <el-image style="width: 160px; height: 90px"
+                          fit="scale-down"
+                          :src="fileAddressFormatFunc(item.content)"
+                          :preview-src-list="[fileAddressFormatFunc(item.content)]"/>
               </div>
               <div class="audio-message message"
                    v-else-if="item.contentType === 3"
@@ -134,24 +135,24 @@
 
 <script>
 import { mapState } from 'vuex'
-import { readFile, fileAddressFormat } from '@/utils/utils.js'
+import { fileAddressFormat, readFile } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
-  getOpenSynergy,
-  synergyRecordPage,
-  deleteGroupMember,
-  updateGroupInfo,
-  getNewsList,
-  signOutGroup,
   alreadyRead,
+  at,
+  deleteGroupMember,
+  getNewsList,
+  getOpenSynergy,
   sendMessage,
-  at
+  signOutGroup,
+  synergyRecordPage,
+  updateGroupInfo
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
 import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
-import { imgUpload, fileUpload } from '@/api/upload/upload.js'
+import { fileUpload, imgUpload } from '@/api/upload/upload.js'
 import RecordList from '@/views/synergy/chat/recordList'
 import { Dialog, ImagePreview, Notify } from 'vant'
 import ChatEditor from '@/views/synergy/chat/ChatEditor'
