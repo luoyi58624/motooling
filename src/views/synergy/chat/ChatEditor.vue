@@ -24,7 +24,6 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { fileUpload, imgUpload } from '@/api/upload/upload'
 import eventBus from '@/utils/mitt'
 import { readFile } from '@/utils/utils'
-import { Dialog } from 'vant'
 
 const editorConfig = {
   MENU_CONF: {}
@@ -149,7 +148,6 @@ export default {
   methods: {
     onCreated (editor) {
       this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
-      this.editor.focus()
       const textDom = document.getElementsByClassName('w-e-text-container')
       if (textDom) {
         const buttonDom = document.createElement('div')
@@ -172,22 +170,13 @@ export default {
       }
     },
     customPaste (editor, event) {
-      event.preventDefault()
-      console.log(event.clipboardData.getData('text/plain'))
-      const data = event.clipboardData.getData('text/plain')
-      if (data) {
-        this.$emit('change', editor.getText() + data)
-      }
       if (event.clipboardData.files.length > 0) {
         const files = event.clipboardData.files
-        Dialog.confirm({
-          title: '提示',
-          message: '检测到您复制了文件，需要发送吗？'
-        }).then(() => {
-          for (let i = 0; i < files.length; i++) {
+        for (let i = 0; i < files.length; i++) {
+          if (!/image/.test(files[i].type)) {
             uploadFile(files[i])
           }
-        })
+        }
       }
     }
   },

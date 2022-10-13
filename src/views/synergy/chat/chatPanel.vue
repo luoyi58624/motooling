@@ -390,7 +390,6 @@ export default {
       this.wordContent += `${member.username} `
       this.uList.push({ uid: member.uid })
       this.groupAt = false
-      // this.$refs['text-input'].focus()
       setTimeout(() => {
         this.$refs.ChatEditor.editor.focus(true)
       }, 300)
@@ -516,9 +515,6 @@ export default {
     inputChange (e) {
       this.wordContent = e
       this.groupAt = e.endsWith('@')
-      setTimeout(() => {
-        this.$refs.ChatEditor.editor.focus(true)
-      }, 50)
     },
     // 发送文字消息
     sendWordMessage (e) {
@@ -806,8 +802,6 @@ export default {
       })
     },
     downloadFile (url, fileName) {
-      console.log(fileName)
-
       Dialog.confirm({
         title: '文件下载',
         message: '确定要下载该文件吗'
@@ -907,7 +901,7 @@ nav {
         padding: 8px 10px 6px 10px;
         line-height: 1.2;
         border-radius: 6px;
-        user-select: all;
+        user-select: text;
         word-break: break-all;
         white-space: pre-line;
         display: inline-block;
