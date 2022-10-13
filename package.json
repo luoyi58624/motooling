@@ -19,6 +19,7 @@
     "cube-ui": "^1.12.20",
     "echarts": "^5.0.0",
     "element-ui": "^2.15.0",
+    "file-saver": "^2.0.5",
     "good-storage": "^1.1.0",
     "md5": "^2.2.1",
     "mitt": "^3.0.0",
