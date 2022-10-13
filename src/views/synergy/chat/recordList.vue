@@ -20,7 +20,7 @@
               </h3>
               <!--渲染消息内容-->
               <div class="text-left" v-if="item.contentType === 2 || item.contentType === 6">
-                <el-image style="width: 160px; height: 90px"
+                <el-image style="width: 160px; height: 90px;"
                           fit="scale-down"
                           :z-index="3000"
                           :src="fileAddressFormatFunc(item.content)"
@@ -237,7 +237,7 @@ export default {
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      background-color: #d0cece;
+      background-color: #e5e3e3;
     }
 
     & > .username {
@@ -249,8 +249,9 @@ export default {
     & > .content {
       width: 100%;
       text-align: left;
-      //word-wrap: break-word;
-      //text-align: justify;
+      user-select: text;
+      word-break: break-all;
+      white-space: pre-line;
     }
 
     & > .audio-message {

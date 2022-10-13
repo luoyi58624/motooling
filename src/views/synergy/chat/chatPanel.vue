@@ -31,7 +31,7 @@
                 <span class="word-message">{{ item.content }}</span>
               </div>
               <div class="message" v-else-if="item.contentType === 2 || item.contentType === 6">
-                <el-image style="width: 160px; height: 90px"
+                <el-image style="width: 160px; height: 90px;"
                           fit="scale-down"
                           :src="fileAddressFormatFunc(item.content)"
                           :preview-src-list="[fileAddressFormatFunc(item.content)]"/>
@@ -974,8 +974,10 @@ nav {
 
         span {
           display: inline-block;
-          padding: 8px;
           background-color: #e4e7eb;
+          border-radius: 6px;
+          padding: 8px 10px 6px 10px;
+          line-height: 1.2;
         }
       }
     }
@@ -1015,5 +1017,22 @@ nav {
       }
     }
   }
+}
+
+/deep/ .el-image__inner {
+  width: auto !important;
+}
+
+.my-content {
+
+  /deep/ .el-image {
+    display: flex;
+    justify-content: right;
+  }
+}
+
+.others-content {
+  display: flex;
+  justify-content: left;
 }
 </style>
