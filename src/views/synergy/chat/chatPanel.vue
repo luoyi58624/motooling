@@ -43,7 +43,11 @@
                 <span>{{ item.duration }}"</span>
               </div>
               <div class="video-message message" v-else-if="item.contentType === 4">
-                <video preload="meta" :src="fileAddressFormatFunc(item.content)" controls="controls" width="250"
+                <video preload="meta"
+                       :src="fileAddressFormatFunc(item.content)"
+                       controls="controls"
+                       width="250"
+                       height="140"
                        @click="playVideo($event)"/>
               </div>
             </div>

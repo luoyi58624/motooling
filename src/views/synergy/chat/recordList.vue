@@ -20,12 +20,11 @@
               </h3>
               <!--渲染消息内容-->
               <div class="text-left" v-if="item.contentType === 2 || item.contentType === 6">
-                <van-image
-                  fit="contain"
-                  style="cursor: pointer"
-                  :src="item.content"
-                  @click="reviewImage(item.content)"
-                />
+                <el-image style="width: 160px; height: 90px"
+                          fit="scale-down"
+                          :z-index="3000"
+                          :src="fileAddressFormatFunc(item.content)"
+                          :preview-src-list="[fileAddressFormatFunc(item.content)]"/>
               </div>
               <div class="text-left audio-message" v-else-if="item.contentType === 3">
                 <img style="cursor: pointer"
@@ -39,6 +38,7 @@
                   :src="fileAddressFormatFunc(item.content)"
                   controls="controls"
                   width="250"
+                  height="140"
                   @click="playVideo($event)"
                 ></video>
               </div>
