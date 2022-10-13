@@ -201,7 +201,8 @@ export default {
       loadRecordTag: '',
       groupAt: false,
       uList: [],
-      recordPanel: false
+      recordPanel: false,
+      disableSendMsg: false // 是否禁止发送消息，防止重复发送
     }
   },
   watch: {
@@ -222,6 +223,9 @@ export default {
           this.wordContent = this.$store.state.messageDraft.find(item => {
             return item.groupId === val
           }).message
+          setTimeout(() => {
+            this.$refs.ChatEditor.editor.focus(true)
+          }, 300)
         }
       },
       immediate: true
@@ -516,6 +520,8 @@ export default {
     },
     // 发送文字消息
     sendWordMessage (e) {
+      if (this.disableSendMsg) return
+      this.disableSendMsg = true
       this.loadRecordTag = ''
       if (this.wordContent.trim() !== '') {
         const currentTime = new Date()
@@ -553,9 +559,12 @@ export default {
             txt: err.msg || '发送失败，请检查网络',
             type: 'error'
           }).show()
+        }).finally(() => {
+          this.disableSendMsg = false
         })
         this.wordContent = ''
       } else {
+        this.disableSendMsg = false
         this.$createToast({
           time: 2000,
           txt: '请输入要发送的内容',
