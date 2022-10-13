@@ -695,11 +695,12 @@ export default {
         }
       ]
       this.recordList = this.recordList.concat(message)
+      if (contentType === 9) content = JSON.stringify(content)
       sendMessage({
         groupId: this.groupId,
         senderId: this.uid,
         contentType,
-        content: JSON.stringify(content),
+        content,
         smallImg
       }).then(() => {
         getNewsList().then((res) => {
@@ -906,7 +907,7 @@ nav {
         padding: 8px 10px 6px 10px;
         line-height: 1.2;
         border-radius: 6px;
-        user-select: text;
+        user-select: all;
         word-break: break-all;
         white-space: pre-line;
         display: inline-block;
