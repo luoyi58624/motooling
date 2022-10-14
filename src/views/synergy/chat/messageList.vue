@@ -148,6 +148,7 @@ export default {
           `${prefix}${this.imurl}/MtMsgWebSocket/${this.companyId}/H5/${this.uid * 1}`
         )
         this.socket.onopen = () => {
+          console.log('开启消息列表socket')
           this.interval = setInterval(() => {
             if (this.socket.readyState === 1) {
               this.socket.send(
@@ -166,6 +167,7 @@ export default {
           }
         }
         this.socket.onmessage = async (msg) => {
+          console.log('收到消息：消息列表socket')
           let receivedMessage = JSON.parse(msg.data)
           if (this.socket.readyState === 1) {
             this.socket.send(

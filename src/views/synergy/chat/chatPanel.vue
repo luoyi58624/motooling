@@ -22,19 +22,21 @@
       <div class="talk-wrapper">
         <div class="talk-content" ref="talkContent">
           <div v-for="(item, index) in recordList" :key="index">
-            <div :class="uid == item.senderId ? 'my-content' : 'others-content'" v-if="item.contentType !== 5">
+            <div :class="uid === item.senderId ? 'my-content' : 'others-content'"
+                 v-if="item.contentType !== 5 && item.contentType!==8">
               <div class="time-name">
                 <span class="time">{{ item.sendTime }}</span>
                 <span class="name">{{ item.username }}</span>
               </div>
               <div class="message" v-if="item.contentType === 1">
-                <span class="word-message">{{ item.content }}</span>
+                <span class="word-message" @contextmenu="openContextMenu($event,item)">{{ item.content }}</span>
               </div>
               <div class="message" v-else-if="item.contentType === 2 || item.contentType === 6">
                 <el-image style="width: 160px; height: 90px;"
                           fit="scale-down"
                           :src="fileAddressFormatFunc(item.content)"
-                          :preview-src-list="[fileAddressFormatFunc(item.content)]"/>
+                          :preview-src-list="[fileAddressFormatFunc(item.content)]"
+                          @contextmenu="openContextMenu($event,item)"/>
               </div>
               <div class="audio-message message"
                    v-else-if="item.contentType === 3"
@@ -52,7 +54,7 @@
               </div>
               <div class="file-message-container" v-if="item.contentType === 9">
                 <div class="file-message"
-                     @click="downloadFile(fileAddressFormatFunc(item.content.url),item.content.fileName)">
+                     @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
                   <div class="file-info">
                     <div class="name">{{ item.content.fileName }}</div>
                     <div class="size">{{ item.content.fileSize }}</div>
@@ -65,7 +67,7 @@
             </div>
             <div v-if="item.contentType === 5">
               <div class="sys-notifacation">
-                <span>{{ item.content }}</span>
+                <span class="content">{{ item.content }}</span>
               </div>
             </div>
             <div v-if="item.contentType === 7">
@@ -77,6 +79,16 @@
               </div>
               <div class="sys-notifacation" v-else>
                 <span>{{ item.content.otherContent }}</span>
+              </div>
+            </div>
+            <div v-if="item.contentType === 8">
+              <div class="sys-notifacation">
+                <span v-if="uid === item.senderId" class="content">
+                  你撤回了一条消息，<span class="text-blue" @click="againEdit(item)">重新编辑</span>
+                </span>
+                <span v-else class="content">
+                  {{ `${item.username}撤回了一条消息` }}
+                </span>
               </div>
             </div>
           </div>
@@ -120,12 +132,13 @@
       <member-list @handleAt="handleGroupAt"/>
     </div>
     <record-list :show-panel.sync="recordPanel" :init-date="recordList"/>
+    <context-menu ref="ContextMenu" @revocationMsg="revocationMsg"/>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { fileAddressFormat, getFileSuffix, readFile } from '@/utils/utils.js'
+import { fileAddressFormat, getFileSuffix } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -148,10 +161,12 @@ import { Dialog, ImagePreview, Notify } from 'vant'
 import ChatEditor from '@/views/synergy/chat/ChatEditor'
 import eventBus from '@/utils/mitt'
 import { saveAs } from 'file-saver'
+import ContextMenu from '@/views/synergy/chat/ContextMenu'
 
 export default {
   directives: { clickoutside },
   components: {
+    ContextMenu,
     ChatEditor,
     RecordList,
     memberList
@@ -194,7 +209,8 @@ export default {
       groupAt: false,
       uList: [],
       recordPanel: false,
-      disableSendMsg: false // 是否禁止发送消息，防止重复发送
+      disableSendMsg: false, // 是否禁止发送消息，防止重复发送
+      showContextMenu: false
     }
   },
   watch: {
@@ -341,11 +357,15 @@ export default {
         )
         this.socket.onopen = this.websocketonopen
         this.socket.onerror = this.websocketonerror
-        this.socket.onmessage = this.websocketonmessage
+        this.socket.onmessage = (e) => {
+          console.log('收到消息：聊天记录socket')
+          this.receiveMessage(JSON.parse(e.data))
+        }
         this.socket.onclose = this.websocketclose
       }
     },
     websocketonopen () {
+      console.log('开启聊天记录socket')
       this.interval = setInterval(() => {
         if (this.socket.readyState === 1) {
           this.socket.send(
@@ -365,9 +385,6 @@ export default {
         txt: '网络连接发生错误，请检查网络',
         type: 'warn'
       }).show()
-    },
-    websocketonmessage (e) {
-      this.receiveMessage(JSON.parse(e.data))
     },
     websocketclose () {
       if (this.isClose === false) {
@@ -508,6 +525,14 @@ export default {
         responseServer.requestType = '555555'
         this.socketMessage(3, {}, responseServer)
       }
+      // 处理撤回消息
+      if (message.data.contentType === 8) {
+        this.recordList.forEach(item => {
+          if (item.id === message.data.id) {
+            item.contentType = 8
+          }
+        })
+      }
       this.$nextTick(() => {
         this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
       })
@@ -524,23 +549,15 @@ export default {
       if (this.wordContent.trim() !== '') {
         const currentTime = new Date()
         const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
-        let _message = [
-          {
-            contentType: 1,
-            content: this.wordContent,
-            senderId: this.uid,
-            sendTime,
-            username: this.senderName
-          }
-        ]
-        this.recordList = this.recordList.concat(_message)
         this.scrolltoButtom()
         sendMessage({
           groupId: this.groupId,
           senderId: this.uid,
           contentType: 1,
           content: this.wordContent
-        }).then(() => {
+        }).then((res) => {
+          res.data.sendTime = sendTime
+          this.recordList.push(res.data)
           this.handleDebounce(function () {
             getNewsList().then((res) => {
               this.$store.dispatch('newsList', res.newsList)
@@ -773,34 +790,6 @@ export default {
         Notify('没有消息记录')
       }
     },
-    uploadFile () {
-      readFile().then(files => {
-        for (let i = 0; i < files.length; i++) {
-          console.log(files[i])
-          // if (/image/.test(files[i].type)) {
-          //   imgUpload(files[i]).then((res) => {
-          //     let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawUrl }
-          //     this.handleMessage(params)
-          //   })
-          // } else if (/audio/.test(files[i].type)) {
-          //   fileUpload(files[i]).then((res) => {
-          //     let params = { contentType: 3, smallImg: '', content: res.url }
-          //     this.handleMessage(params)
-          //   })
-          // } else if (/video/.test(files[i].type)) {
-          //   fileUpload(files[i]).then((res) => {
-          //     let params = { contentType: 4, smallImg: '', content: res.url }
-          //     this.handleMessage(params)
-          //   })
-          // } else {
-          //   fileUpload(files[i]).then((res) => {
-          //     let params = { contentType: 9, smallImg: '', content: res.url }
-          //     this.handleMessage(params)
-          //   })
-          // }
-        }
-      })
-    },
     downloadFile (url, fileName) {
       Dialog.confirm({
         title: '文件下载',
@@ -827,6 +816,21 @@ export default {
         default:
           return require('@/assets/file-icon/other.png')
       }
+    },
+    openContextMenu (event, messageItem) {
+      this.$refs.ContextMenu.openContextMenu(event, messageItem)
+    },
+    revocationMsg (res) {
+      this.recordList.forEach(item => {
+        if (item.id === res.data.id) {
+          Object.keys(res.data).forEach(key => {
+            item[key] = res.data[key]
+          })
+        }
+      })
+    },
+    againEdit (msg) {
+      this.wordContent = msg.content
     }
   }
 }
@@ -962,12 +966,12 @@ nav {
         text-align: center;
         margin: 8px 20px;
 
-        span {
+        .content {
           display: inline-block;
+          line-height: 1.2;
+          padding: 8px 10px 6px 10px;
           background-color: #e4e7eb;
           border-radius: 6px;
-          padding: 8px 10px 6px 10px;
-          line-height: 1.2;
         }
       }
     }
@@ -1060,5 +1064,10 @@ nav {
 .others-content {
   display: flex;
   justify-content: left;
+}
+
+.text-blue {
+  color: #0984e3;
+  cursor: pointer;
 }
 </style>

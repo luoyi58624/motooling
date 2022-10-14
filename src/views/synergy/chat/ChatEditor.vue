@@ -206,6 +206,7 @@ function uploadFile (file) {
     })
   } else {
     fileUpload(file).then((res) => {
+      delete res.url
       let params = { contentType: 9, smallImg: '', content: res }
       eventBus.emit('handleMessage', params)
     })
