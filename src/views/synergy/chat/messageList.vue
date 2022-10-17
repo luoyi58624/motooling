@@ -41,8 +41,11 @@
             <div class="no-read-count" v-else-if="item.notReadCount !== 0">...</div>
           </div>
           <div class="user-name">
-            <p class="name">{{ item.username || item.subject }}</p>
-            <p>{{ item.newMsg }}</p>
+            <p class="group-name">{{ item.username || item.subject }}</p>
+            <div class="group-content">
+              <span>{{ item.newMsg }}</span>
+              <span>{{ formatNewMsgTime(item.newsTime) }}</span>
+            </div>
           </div>
         </div>
         <div class="popover" v-if="item.groupId === groupId && item.relationType === 666">
@@ -89,6 +92,7 @@ import {
   getUserInfo
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
+import { formatDate } from '@/utils/time'
 
 export default {
   directives: { clickoutside },
@@ -282,6 +286,15 @@ export default {
         username: receiver.username || receiver.nickname
       })
       this.groupId = null
+    },
+    // 格式化新消息最近时间
+    formatNewMsgTime (time) {
+      const day = formatDate(time, 'YYYY-MM-DD')
+      if (day === formatDate(new Date(), 'YYYY-MM-DD')) {
+        return formatDate(time, 'HH:mm:ss')
+      } else {
+        return day
+      }
     }
   }
 }
@@ -397,19 +410,30 @@ export default {
     justify-content: space-between;
     height: 40px;
 
-    & > .name{
+    & > .group-name {
       width: 160px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    p:last-child {
-      width: 150px;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
+    & > .group-content {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
       color: #8c8d8f;
+      font-size: 12px;
+
+      & > span:nth-child(1) {
+        width: 130px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      & > span:nth-child(2) {
+        width: 64px;
+      }
     }
   }
 }
