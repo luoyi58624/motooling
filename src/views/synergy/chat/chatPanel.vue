@@ -915,7 +915,7 @@ nav {
       .word-message {
         background-color: #dee0e3;
         padding: 8px 10px 6px 10px;
-        line-height: 1.2;
+        line-height: 1.5;
         border-radius: 6px;
         user-select: text;
         word-break: break-all;
