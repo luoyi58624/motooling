@@ -152,7 +152,7 @@ export default {
       if (textDom) {
         const buttonDom = document.createElement('div')
         buttonDom.className = 'chat-editor-button'
-        buttonDom.innerText = '发送（ctrl+enter）'
+        buttonDom.innerText = '发送'
         buttonDom.onclick = this.sendMsg
         textDom[0].appendChild(buttonDom)
       }
@@ -166,6 +166,11 @@ export default {
     },
     keyupSendMsg (e) {
       if (e.ctrlKey && e.code === 'Enter') {
+        this.$emit('change', this.editor.getText() + '\n')
+        this.$nextTick(() => {
+          this.editor.focus(true)
+        })
+      } else if (e.code === 'Enter') {
         this.sendMsg()
       }
     },
@@ -227,10 +232,10 @@ function uploadFile (file) {
   position: absolute;
   bottom: 8px;
   right: 25px;
-  width: 140px;
   height: 36px;
   font-size: 14px;
   border-radius: 6px;
+  padding: 0 24px;
   background-color: #dfe4ea;
   color: #34495e;
   display: flex;
