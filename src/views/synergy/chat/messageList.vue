@@ -41,7 +41,7 @@
             <div class="no-read-count" v-else-if="item.notReadCount !== 0">...</div>
           </div>
           <div class="user-name">
-            <p>{{ item.username || item.subject.slice(0, 8) + '...' }}</p>
+            <p class="name">{{ item.username || item.subject }}</p>
             <p>{{ item.newMsg }}</p>
           </div>
         </div>
@@ -396,6 +396,13 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     height: 40px;
+
+    & > .name{
+      width: 160px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
 
     p:last-child {
       width: 150px;

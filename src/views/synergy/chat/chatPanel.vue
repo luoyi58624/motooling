@@ -2,11 +2,11 @@
   <div class="chat-panel" v-show="groupId">
     <nav>
       <div class="chatting-name">
-        <input
+        <input style="width: 580px"
           type="text"
           v-if="chattingTarget.type == 666"
           :value="chattingTarget.name"
-          maxlength="20"
+          maxlength="50"
           @blur="setGroupName($event.target.value)"
         />
         <span v-else-if="chattingTarget.type == 66">{{ chattingTarget.name }}</span>
