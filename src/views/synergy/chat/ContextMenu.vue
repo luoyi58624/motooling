@@ -3,16 +3,16 @@
     <ul class="chat-message-context-menu"
         v-show="showMenu"
         :style="{left: left+'px',top: top+'px'}">
-      <li class="chat-message-context-menu-copy"
-          data-clipboard-action="copy"
-          :data-clipboard-text="messageItem.content">
-        <img :src="require('@/assets/svg/copy.svg')"/>
-        <span>复制</span>
-      </li>
-      <li>
-        <img :src="require('@/assets/svg/send.svg')"/>
-        <span>转发</span>
-      </li>
+<!--      <li class="chat-message-context-menu-copy"-->
+<!--          data-clipboard-action="copy"-->
+<!--          :data-clipboard-text="messageItem.content">-->
+<!--        <img :src="require('@/assets/svg/copy.svg')"/>-->
+<!--        <span>复制</span>-->
+<!--      </li>-->
+<!--      <li>-->
+<!--        <img :src="require('@/assets/svg/send.svg')"/>-->
+<!--        <span>转发</span>-->
+<!--      </li>-->
       <li @click="revocationMsg">
         <img :src="require('@/assets/svg/return.svg')"/>
         <span>撤回</span>
@@ -94,7 +94,7 @@ export default {
 <style scoped lang="less">
 .chat-message-context-menu {
   width: 180px;
-  padding: 8px 6px;
+  padding: 6px 6px 8px 6px;
   border-radius: 6px;
   position: absolute;
   background: white;

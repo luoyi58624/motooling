@@ -84,7 +84,10 @@
             <div v-if="item.contentType === 8">
               <div class="sys-notifacation">
                 <span v-if="uid === item.senderId" class="content">
-                  你撤回了一条消息，<span class="text-blue" @click="againEdit(item)">重新编辑</span>
+                  你撤回了一条消息
+                  <span v-if="showAgainEdit(item)">
+                    ，<span class="text-blue" @click="againEdit(item)">重新编辑</span>
+                  </span>
                 </span>
                 <span v-else class="content">
                   {{ `${item.username}撤回了一条消息` }}
@@ -162,6 +165,7 @@ import ChatEditor from '@/views/synergy/chat/ChatEditor'
 import eventBus from '@/utils/mitt'
 import { saveAs } from 'file-saver'
 import ContextMenu from '@/views/synergy/chat/ContextMenu'
+import { formatDate } from '@/utils/time'
 
 export default {
   directives: { clickoutside },
@@ -831,6 +835,13 @@ export default {
     },
     againEdit (msg) {
       this.wordContent = msg.content
+    },
+    showAgainEdit (item) {
+      let sendTime = item.sendTime
+      if (item.sendTime.length <= 5) {
+        sendTime = new Date(formatDate(Date.now(), 'YYYY-MM-DD') + item.sendTime)
+      }
+      return new Date(sendTime).getTime() + (5 * 60 * 1000) > Date.now()
     }
   }
 }
