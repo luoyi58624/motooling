@@ -562,6 +562,7 @@ export default {
         }).then((res) => {
           res.data.sendTime = sendTime
           this.recordList.push(res.data)
+          this.scrolltoButtom()
           this.handleDebounce(function () {
             getNewsList().then((res) => {
               this.$store.dispatch('newsList', res.newsList)
