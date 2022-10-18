@@ -1,3 +1,5 @@
+import { Notify } from 'vant'
+
 // 字符串转二进制数据
 export function strToBinary (str) {
   let result = ''
@@ -94,4 +96,15 @@ export function getFileSuffix (fileName) {
   const files = fileName.split('.')
   if (files.length > 1) fileSuffix = files[files.length - 1]
   return fileSuffix
+}
+
+export function requestNotification () {
+  Notification.requestPermission().then(function (result) {
+    if (result === 'denied') {
+      Notify({
+        message: '您拒绝显示通知，IM消息将没有提示',
+        duration: 5000
+      })
+    }
+  })
 }

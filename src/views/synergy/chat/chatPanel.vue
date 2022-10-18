@@ -80,7 +80,7 @@
                     </template>
                   </el-popover>
                 </template>
-                <template v-else>
+                <template v-else-if="uid === item.senderId">
                   <div v-if="item.readMessageUsers.length===0" class="read-mark" slot="reference"
                        @click="setReadMessageUser(item)"></div>
                   <div v-else class="read-mark all-read" slot="reference" @click="setReadMessageUser(item)">
@@ -210,7 +210,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { fileAddressFormat, getFileSuffix } from '@/utils/utils.js'
+import { fileAddressFormat, getFileSuffix, requestNotification } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -227,7 +227,6 @@ import {
 import clickoutside from '@/utils/clickoutside'
 import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
-import { fileUpload, imgUpload } from '@/api/upload/upload.js'
 import RecordList from '@/views/synergy/chat/recordList'
 import { Dialog, ImagePreview, Notify } from 'vant'
 import ChatEditor from '@/views/synergy/chat/ChatEditor'
@@ -341,6 +340,7 @@ export default {
       'scroll',
       debounce(this.loadMoreRecordList, 500)
     )
+    requestNotification()
   },
   beforeDestroy () {
     this.$refs.talkContent.removeEventListener(
@@ -598,6 +598,12 @@ export default {
       }
     },
     receiveMessage (message) {
+      console.log(message)
+      // eslint-disable-next-line no-new
+      new Notification(message.data.username, {
+        body: message.data.content,
+        icon: require('@/assets/logo.png')
+      })
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
       this.recordList.push({ ...message.data, sendTime })
@@ -815,35 +821,6 @@ export default {
           type: 'warn'
         }).show()
       })
-    },
-    // 上传图片或视频
-    upload (e) {
-      this.loadRecordTag = ''
-      const files = e.target.files
-      for (let i = 0; i < files.length; i++) {
-        if (/image/.test(files[i].type)) {
-          imgUpload(files[i]).then((res) => {
-            let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawUrl }
-            this.handleMessage(params)
-          })
-        } else if (/audio/.test(files[i].type)) {
-          fileUpload(files[i]).then((res) => {
-            let params = { contentType: 3, smallImg: '', content: res.url }
-            this.handleMessage(params)
-          })
-        } else if (/video/.test(files[i].type)) {
-          fileUpload(files[i]).then((res) => {
-            let params = { contentType: 4, smallImg: '', content: res.url }
-            this.handleMessage(params)
-          })
-        } else {
-          this.$createToast({
-            time: 2000,
-            txt: '不支持发送该文件',
-            type: 'warn'
-          }).show()
-        }
-      }
     },
     beat (data) {
       const senderName = this.senderName
@@ -1114,6 +1091,7 @@ nav {
 
         .time-name {
           display: flex;
+          flex-direction: row-reverse;
           justify-content: left;
           align-items: center;
         }
