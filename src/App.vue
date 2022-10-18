@@ -191,4 +191,8 @@ body{
   padding:0 20px;
 }
 
+.cursor-pointer{
+  cursor: pointer;
+}
+
 </style>

@@ -29,37 +29,69 @@
                 <span class="name">{{ item.username }}</span>
               </div>
               <div class="message-container">
-                <el-popover v-if="uid === item.senderId" placement="left" width="400" trigger="click">
-                  <div style="width: 400px;height: 360px">
-                    <van-tabs color="#3498db">
-                      <van-tab :title="readMessageUsers.length+'已读'">
-                        <ul class="user-list">
-                          <li v-for="user in readMessageUsers" :key="user.id">
-                            <el-image style="width: 30px; height: 30px;border-radius: 6px;"
-                                      fit="fill" :src="user.avatar"/>
-                            <span style="margin-left: 8px">
+                <!--如果是群聊，自己发送的消息需要知道哪些人已读、未读-->
+                <template v-if="chattingTarget.type === 666">
+                  <el-popover v-if="uid === item.senderId" placement="left" width="400" trigger="click">
+                    <div style="width: 400px;height: 360px">
+                      <van-tabs color="#3498db">
+                        <van-tab :title="readMessageUsers.length+'已读'">
+                          <ul class="user-list">
+                            <li v-for="user in readMessageUsers" :key="user.id"
+                                @click="createPrivateChatting(user.uid)">
+                              <el-image style="width: 30px; height: 30px;border-radius: 6px;"
+                                        fit="fill" :src="user.avatar"/>
+                              <span style="margin-left: 8px">
                              {{ user.username }}
                           </span>
-                          </li>
-                        </ul>
-                      </van-tab>
-                      <van-tab :title="unReadMessageUsers.length+'未读'">
-                        <ul class="user-list">
-                          <li v-for="user in unReadMessageUsers" :key="user.id">
-                            <el-image style="width: 30px; height: 30px;border-radius: 6px;"
-                                      fit="fill" :src="user.avatar"/>
-                            <span style="margin-left: 8px">
+                            </li>
+                          </ul>
+                        </van-tab>
+                        <van-tab :title="unReadMessageUsers.length+'未读'">
+                          <ul class="user-list">
+                            <li v-for="user in unReadMessageUsers" :key="user.id"
+                                @click="createPrivateChatting(user.uid)">
+                              <el-image style="width: 30px; height: 30px;border-radius: 6px;"
+                                        fit="fill" :src="user.avatar"/>
+                              <span style="margin-left: 8px">
                              {{ user.username }}
                           </span>
-                          </li>
-                        </ul>
-                      </van-tab>
-                    </van-tabs>
+                            </li>
+                          </ul>
+                        </van-tab>
+                      </van-tabs>
+                    </div>
+                    <template v-if="item.readMessageUsers.length===0">
+                      <div class="read-mark cursor-pointer" slot="reference" @click="setReadMessageUser(item)"></div>
+                    </template>
+                    <template v-else-if="item.readMessageUsers.length===groupMember.length-1">
+                      <div class="read-mark all-read cursor-pointer" slot="reference" @click="setReadMessageUser(item)">
+                        <svg t="1666074761757" class="icon" viewBox="0 0 1099 1024" version="1.1"
+                             xmlns="http://www.w3.org/2000/svg" p-id="2330" width="200" height="200">
+                          <path
+                            d="M748.16 371.7c10-12.4 10.7-24.4 1.1-31.7-14.3-9.1-23.1-3.1-33.1 9.3L472.86 645.7 352.06 533.4c-13-11.9-24.7-17-36.2-7.2-8.5 10.3-7.2 16.4 3.6 28.7l132.6 123.7c12.9 12.9 30.5 12.7 43.4 1.3C505.56 671.2 748.16 371.7 748.16 371.7z"
+                            p-id="2331"></path>
+                        </svg>
+                      </div>
+                    </template>
+                    <template v-else>
+                      <div class="read-mark cursor-pointer" slot="reference" @click="setReadMessageUser(item)">
+                        {{ item.readMessageUsers.length }}
+                      </div>
+                    </template>
+                  </el-popover>
+                </template>
+                <template v-else>
+                  <div v-if="item.readMessageUsers.length===0" class="read-mark" slot="reference"
+                       @click="setReadMessageUser(item)"></div>
+                  <div v-else class="read-mark all-read" slot="reference" @click="setReadMessageUser(item)">
+                    <svg t="1666074761757" class="icon" viewBox="0 0 1099 1024" version="1.1"
+                         xmlns="http://www.w3.org/2000/svg" p-id="2330" width="200" height="200">
+                      <path
+                        d="M748.16 371.7c10-12.4 10.7-24.4 1.1-31.7-14.3-9.1-23.1-3.1-33.1 9.3L472.86 645.7 352.06 533.4c-13-11.9-24.7-17-36.2-7.2-8.5 10.3-7.2 16.4 3.6 28.7l132.6 123.7c12.9 12.9 30.5 12.7 43.4 1.3C505.56 671.2 748.16 371.7 748.16 371.7z"
+                        p-id="2331"></path>
+                    </svg>
                   </div>
-                  <div class="read-mark" slot="reference" @click="setReadMessageUser(item)">
-                    {{ item.readMessageUsers.length }}
-                  </div>
-                </el-popover>
+                </template>
                 <!--消息内容-->
                 <div class="message-content">
                   <div class="message" v-if="item.contentType === 1">
@@ -269,12 +301,13 @@ export default {
         if (val) {
           this.init()
           this.$store.state.groupAt = false
-          this.$store.state.wordContent = this.$store.state.messageDraft.find(item => {
+          const messageDraft = this.$store.state.messageDraft.find(item => {
             return item.groupId === val
-          }).message
+          })
+          if (messageDraft) this.$store.state.wordContent = messageDraft.message
           setTimeout(() => {
             this.$store.state.editor.focus(true)
-          }, 300)
+          }, 100)
         }
       },
       immediate: true
@@ -918,16 +951,17 @@ export default {
     setReadMessageUser (msg) {
       this.readMessageUsers = []
       this.unReadMessageUsers = []
-      for (let i = 0; i < this.groupMember.length; i++) {
+      const groupMember = this.groupMember.filter(item => item.uid !== this.uid)
+      for (let i = 0; i < groupMember.length; i++) {
         let flag = true
         for (let j = 0; j < msg.readMessageUsers.length; j++) {
-          if (this.groupMember[i].uid === msg.readMessageUsers[j]) {
-            this.readMessageUsers.push(this.groupMember[i])
+          if (groupMember[i].uid === msg.readMessageUsers[j]) {
+            this.readMessageUsers.push(groupMember[i])
             flag = false
           }
         }
         if (flag) {
-          this.unReadMessageUsers.push(this.groupMember[i])
+          this.unReadMessageUsers.push(groupMember[i])
         }
       }
     }
@@ -1046,7 +1080,6 @@ nav {
             border-radius: 50%;
             border: 1px solid #0984e3;
             color: #0984e3;
-            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -1228,7 +1261,7 @@ nav {
   color: #0984e3;
 }
 
-/deep/ .van-tabs__line{
+/deep/ .van-tabs__line {
   transform: translateX(100px) translateX(-50%);
 }
 </style>
