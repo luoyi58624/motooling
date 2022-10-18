@@ -1,6 +1,7 @@
 import request from '@/utils/newRequest'
 import md5 from 'md5'
 import { WEBURL, token } from '@/utils/utils.js'
+
 const timestamp = '1547621396'
 const getMd5String = () => md5(token() + timestamp + 'Motooling')
 
@@ -98,6 +99,7 @@ export function deleteGroupMember (params) {
     data
   })
 }
+
 // 设置已读接口
 export function synergySetUpRead (params) {
   const data = {
@@ -298,5 +300,20 @@ export function getUserInfo () {
       timestamp: timestamp,
       data: {}
     }
+  })
+}
+
+// 获取群聊成员最新已读信息接口
+export function getGroupMemberNewRecord (params) {
+  const data = {
+    token: token(),
+    md5: getMd5String(),
+    timestamp: timestamp,
+    data: params
+  }
+  return request({
+    url: WEBURL() + '/mtH5/synergy/getGroupMemberNewRecord',
+    method: 'post',
+    data
   })
 }

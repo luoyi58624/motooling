@@ -21,48 +21,58 @@
     <div class="chat-content">
       <div class="talk-wrapper">
         <div class="talk-content" ref="talkContent">
-          <div v-for="(item, index) in recordList" :key="index">
+          <div v-for="(item, index) in recordList" :key="index" style="width: 100%">
             <div :class="uid === item.senderId ? 'my-content' : 'others-content'"
                  v-if="item.contentType !== 5 && item.contentType!==8">
               <div class="time-name">
                 <span class="time">{{ item.sendTime }}</span>
                 <span class="name">{{ item.username }}</span>
               </div>
-              <div class="message" v-if="item.contentType === 1">
-                <span class="word-message" @contextmenu="openContextMenu($event,item)">{{ item.content }}</span>
-              </div>
-              <div class="message" v-else-if="item.contentType === 2 || item.contentType === 6">
-                <el-image style="width: 160px; height: 90px;"
-                          fit="scale-down"
-                          :src="fileAddressFormatFunc(item.content)"
-                          :preview-src-list="[fileAddressFormatFunc(item.content)]"
-                          @contextmenu="openContextMenu($event,item)"/>
-              </div>
-              <div class="audio-message message"
-                   v-else-if="item.contentType === 3"
-                   @click="playAudio(fileAddressFormatFunc(item.content))">
-                <img :src="require('@/assets/icon-voice-white.png')" alt=""/>
-                <span>{{ item.duration }}"</span>
-              </div>
-              <div class="video-message message" v-else-if="item.contentType === 4">
-                <video preload="meta"
-                       :src="fileAddressFormatFunc(item.content)"
-                       controls="controls"
-                       width="250"
-                       height="140"
-                       @click="playVideo($event)"/>
-              </div>
-              <div class="file-message-container" v-if="item.contentType === 9">
-                <div class="file-message"
-                     @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
-                  <div class="file-info">
-                    <div class="name">{{ item.content.fileName }}</div>
-                    <div class="size">{{ item.content.fileSize }}</div>
+              <div class="message-container">
+                <!--已读标记-->
+<!--                <div class="read-mark" v-if="uid === item.senderId">-->
+<!--                  6-->
+<!--                </div>-->
+                <!--消息内容-->
+                <div class="message-content">
+                  <div class="message" v-if="item.contentType === 1">
+                    <span class="word-message" @contextmenu="openContextMenu($event,item)">{{ item.content }}</span>
                   </div>
-                  <div class="file-icon">
-                    <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
+                  <div class="message" v-else-if="item.contentType === 2 || item.contentType === 6">
+                    <el-image style="width: 160px; height: 90px;"
+                              fit="scale-down"
+                              :src="fileAddressFormatFunc(item.content)"
+                              :preview-src-list="[fileAddressFormatFunc(item.content)]"
+                              @contextmenu="openContextMenu($event,item)"/>
+                  </div>
+                  <div class="audio-message message"
+                       v-else-if="item.contentType === 3"
+                       @click="playAudio(fileAddressFormatFunc(item.content))">
+                    <img :src="require('@/assets/icon-voice-white.png')" alt=""/>
+                    <span>{{ item.duration }}"</span>
+                  </div>
+                  <div class="video-message message" v-else-if="item.contentType === 4">
+                    <video preload="meta"
+                           :src="fileAddressFormatFunc(item.content)"
+                           controls="controls"
+                           width="250"
+                           height="140"
+                           @click="playVideo($event)"/>
+                  </div>
+                  <div class="file-message-container" v-if="item.contentType === 9">
+                    <div class="file-message"
+                         @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
+                      <div class="file-info">
+                        <div class="name">{{ item.content.fileName }}</div>
+                        <div class="size">{{ item.content.fileSize }}</div>
+                      </div>
+                      <div class="file-icon">
+                        <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
               </div>
             </div>
             <div v-if="item.contentType === 5">
@@ -147,7 +157,7 @@ import shortid from 'shortid'
 import {
   alreadyRead,
   at,
-  deleteGroupMember,
+  deleteGroupMember, getGroupMemberNewRecord,
   getNewsList,
   getOpenSynergy,
   sendMessage,
@@ -284,6 +294,11 @@ export default {
   },
   methods: {
     init () {
+      getGroupMemberNewRecord({
+        groupId: this.groupId
+      }).then(res => {
+        console.log(res)
+      })
       getOpenSynergy({
         relationType: this.relationType,
         groupId: this.groupId
@@ -896,6 +911,7 @@ nav {
     width: calc(100% - 122px);
 
     .talk-content {
+      width: 100%;
       font-size: 14px;
       height: calc(100% - 155px);
       background-color: #f2f3f5;
@@ -911,10 +927,6 @@ nav {
           padding: 0 3px;
           color: #828c99;
         }
-      }
-
-      .message {
-        margin: 8px 0 8px 20px;
       }
 
       .word-message {
@@ -945,38 +957,86 @@ nav {
       }
 
       .my-content {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        margin-right: 18px;
+        width: 100%;
+        padding-right: 8px;
+        box-sizing: border-box;
 
         .time-name {
           display: flex;
+          justify-content: right;
           align-items: center;
         }
 
-        & > .file-message-container {
-          display: flex;
+        .message {
+          margin: 8px 0 8px 8px;
+        }
+
+        .message-container {
           justify-content: right;
+          display: flex;
+          align-items: center;
+
+          & > .read-mark {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid #0984e3;
+            color: #0984e3;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+
+            &.all-read {
+              border: 1px solid #7f8c8d;
+              color: #7f8c8d;
+            }
+          }
+
+          & > .message-content {
+            max-width: 80%;
+
+            & > .file-message-container {
+              margin: 8px 0 8px 8px;
+              display: flex;
+              justify-content: right;
+            }
+          }
         }
       }
 
       .others-content {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-left: 18px;
+        width: 100%;
+        padding-left: 8px;
+        box-sizing: border-box;
+
+        .message {
+          margin: 8px 0 8px 20px;
+        }
 
         .time-name {
           display: flex;
-          flex-direction: row-reverse;
+          justify-content: left;
           align-items: center;
         }
 
-        & > .file-message-container {
+        .message-container {
           display: flex;
           justify-content: left;
+          align-items: center;
+
+          & > .message-content {
+            max-width: 80%;
+
+            & > .file-message-container {
+              margin: 8px 0 8px 20px;
+              display: flex;
+              justify-content: left;
+            }
+          }
         }
+
       }
 
       .sys-notifacation {
@@ -1076,11 +1136,6 @@ nav {
     display: flex;
     justify-content: right;
   }
-}
-
-.others-content {
-  display: flex;
-  justify-content: left;
 }
 
 .text-blue {
