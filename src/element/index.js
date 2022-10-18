@@ -8,7 +8,10 @@ import {
   Icon,
   Dialog,
   Pagination,
-  Image
+  Image,
+  Popover,
+  Tabs,
+  TabPane
 } from 'element-ui'
 const element = {
   install: function (Vue) {
@@ -22,6 +25,9 @@ const element = {
     Vue.use(Dialog)
     Vue.use(Pagination)
     Vue.use(Image)
+    Vue.use(Popover)
+    Vue.use(Tabs)
+    Vue.use(TabPane)
   }
 }
 

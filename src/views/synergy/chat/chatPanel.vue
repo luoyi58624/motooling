@@ -29,10 +29,37 @@
                 <span class="name">{{ item.username }}</span>
               </div>
               <div class="message-container">
-                <!--已读标记-->
-<!--                <div class="read-mark" v-if="uid === item.senderId">-->
-<!--                  6-->
-<!--                </div>-->
+                <el-popover v-if="uid === item.senderId" placement="left" width="400" trigger="click">
+                  <div style="width: 400px;height: 360px">
+                    <van-tabs color="#3498db">
+                      <van-tab :title="readMessageUsers.length+'已读'">
+                        <ul class="user-list">
+                          <li v-for="user in readMessageUsers" :key="user.id">
+                            <el-image style="width: 30px; height: 30px;border-radius: 6px;"
+                                      fit="fill" :src="user.avatar"/>
+                            <span style="margin-left: 8px">
+                             {{ user.username }}
+                          </span>
+                          </li>
+                        </ul>
+                      </van-tab>
+                      <van-tab :title="unReadMessageUsers.length+'未读'">
+                        <ul class="user-list">
+                          <li v-for="user in unReadMessageUsers" :key="user.id">
+                            <el-image style="width: 30px; height: 30px;border-radius: 6px;"
+                                      fit="fill" :src="user.avatar"/>
+                            <span style="margin-left: 8px">
+                             {{ user.username }}
+                          </span>
+                          </li>
+                        </ul>
+                      </van-tab>
+                    </van-tabs>
+                  </div>
+                  <div class="read-mark" slot="reference" @click="setReadMessageUser(item)">
+                    {{ item.readMessageUsers.length }}
+                  </div>
+                </el-popover>
                 <!--消息内容-->
                 <div class="message-content">
                   <div class="message" v-if="item.contentType === 1">
@@ -222,7 +249,9 @@ export default {
       uList: [],
       recordPanel: false,
       disableSendMsg: false, // 是否禁止发送消息，防止重复发送
-      showContextMenu: false
+      showContextMenu: false,
+      readMessageUsers: [], // 已读用户
+      unReadMessageUsers: [] // 未读用户
     }
   },
   watch: {
@@ -294,11 +323,6 @@ export default {
   },
   methods: {
     init () {
-      getGroupMemberNewRecord({
-        groupId: this.groupId
-      }).then(res => {
-        console.log(res)
-      })
       getOpenSynergy({
         relationType: this.relationType,
         groupId: this.groupId
@@ -335,6 +359,8 @@ export default {
           }
 
           recordList.forEach(item => {
+            // 自己发送的消息添加已读用户列表
+            if (item.data.senderId === this.uid) item.data.readMessageUsers = []
             if (item.data.contentType === 7) {
               item.data.content = JSON.parse(item.data.content)
             }
@@ -351,6 +377,7 @@ export default {
 
           this.mainKeyId = recordList[0] && recordList[0].data.id
           this.im()
+          this.getReadMessage()
         })
     },
     im () {
@@ -581,6 +608,7 @@ export default {
           content: this.$store.state.wordContent
         }).then((res) => {
           res.data.sendTime = sendTime
+          res.data.readMessageUsers = []
           this.recordList.push(res.data)
           this.scrolltoButtom()
           this.handleDebounce(function () {
@@ -638,6 +666,7 @@ export default {
               let recordList = result.reverse()
               this.mainKeyId = recordList[0].data.id
               recordList.forEach(item => {
+                if (item.data.senderId === this.uid) item.data.readMessageUsers = []
                 if (item.data.contentType === 7 || item.data.contentType === 9) {
                   item.data.content = JSON.parse(item.data.content)
                 }
@@ -648,6 +677,8 @@ export default {
             if (result.length < 15) {
               this.noMoreRecords = true
             }
+
+            this.getReadMessage()
 
             this.$nextTick(() => {
               this.loadedScrollTop = this.$refs.talkContent.scrollHeight
@@ -863,6 +894,42 @@ export default {
         sendTime = new Date(formatDate(Date.now(), 'YYYY-MM-DD') + item.sendTime)
       }
       return new Date(sendTime).getTime() + (5 * 60 * 1000) > Date.now()
+    },
+    // 获取已读消息用户记录
+    getReadMessage () {
+      getGroupMemberNewRecord({
+        groupId: this.groupId
+      }).then(res => {
+        const msgIndex = this.recordList.length - 1
+        res.memberNewRecordList.filter(item => item.uid !== this.uid).forEach(item => {
+          for (let i = msgIndex; i >= 0; i--) {
+            if (this.recordList[i].id === item.lastRecordId) {
+              for (let j = 0; j <= i; j++) {
+                if (this.recordList[j].senderId === this.uid) {
+                  if (!this.recordList[j].readMessageUsers.includes(item.uid)) this.recordList[j].readMessageUsers.push(item.uid)
+                }
+              }
+            }
+          }
+        })
+      })
+    },
+    // 设置已读、未读用户
+    setReadMessageUser (msg) {
+      this.readMessageUsers = []
+      this.unReadMessageUsers = []
+      for (let i = 0; i < this.groupMember.length; i++) {
+        let flag = true
+        for (let j = 0; j < msg.readMessageUsers.length; j++) {
+          if (this.groupMember[i].uid === msg.readMessageUsers[j]) {
+            this.readMessageUsers.push(this.groupMember[i])
+            flag = false
+          }
+        }
+        if (flag) {
+          this.unReadMessageUsers.push(this.groupMember[i])
+        }
+      }
     }
   }
 }
@@ -941,11 +1008,8 @@ nav {
         overflow: hidden;
       }
 
-      .image-message {
-        img {
-          max-height: 200px;
-          object-fit: contain;
-        }
+      /deep/ .el-image__inner {
+        width: auto !important;
       }
 
       .audio-message {
@@ -976,7 +1040,7 @@ nav {
           display: flex;
           align-items: center;
 
-          & > .read-mark {
+          .read-mark {
             width: 14px;
             height: 14px;
             border-radius: 50%;
@@ -1126,8 +1190,30 @@ nav {
   }
 }
 
-/deep/ .el-image__inner {
-  width: auto !important;
+.text-blue {
+  color: #0984e3;
+  cursor: pointer;
+}
+
+.user-list {
+  height: 300px;
+  padding: 8px;
+  overflow: auto;
+
+  & > li {
+    width: 100%;
+    height: 48px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #edeeef;
+    }
+  }
 }
 
 .my-content {
@@ -1138,8 +1224,11 @@ nav {
   }
 }
 
-.text-blue {
+/deep/ .van-tab--active > .van-tab__text {
   color: #0984e3;
-  cursor: pointer;
+}
+
+/deep/ .van-tabs__line{
+  transform: translateX(100px) translateX(-50%);
 }
 </style>

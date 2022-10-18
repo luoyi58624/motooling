@@ -41,6 +41,10 @@ body {
   background: #fff;
 }
 
+body{
+  overflow: hidden;
+}
+
 #app {
   height: 100%;
   color: #2c3e50;
