@@ -1,20 +1,21 @@
 <template>
   <Teleport to="body">
-    <ul class="chat-message-context-menu"
-        v-show="showMenu"
-        :style="{left: left+'px',top: top+'px'}">
-<!--      <li class="chat-message-context-menu-copy"-->
-<!--          data-clipboard-action="copy"-->
-<!--          :data-clipboard-text="messageItem.content">-->
-<!--        <img :src="require('@/assets/svg/copy.svg')"/>-->
-<!--        <span>复制</span>-->
-<!--      </li>-->
-<!--      <li>-->
-<!--        <img :src="require('@/assets/svg/send.svg')"/>-->
-<!--        <span>转发</span>-->
-<!--      </li>-->
-      <li @click="revocationMsg">
-        <img :src="require('@/assets/svg/return.svg')"/>
+    <ul class="chat-message-context-menu" v-show="showMenu" :style="{left: left+'px',top: top+'px'}">
+      <li class="chat-message-context-menu-copy"
+          data-clipboard-action="copy" :data-clipboard-text="messageItem.content">
+        <img :src="require('@/assets/svg/copy.svg')" alt=""/>
+        <span>复制</span>
+      </li>
+      <li @click="sendMsg">
+        <img :src="require('@/assets/svg/send.svg')" alt=""/>
+        <span>转发</span>
+      </li>
+      <li v-if="messageItem.senderId!==$store.state.userInfo.uid" @click="replyMsg">
+        <img :src="require('@/assets/svg/reply.svg')" alt=""/>
+        <span>回复</span>
+      </li>
+      <li @click="revocationMsg" v-if="messageItem.senderId===$store.state.userInfo.uid">
+        <img :src="require('@/assets/svg/return.svg')" alt=""/>
         <span>撤回</span>
       </li>
     </ul>
@@ -25,6 +26,7 @@
 import Teleport from 'vue2-teleport'
 import ClipboardJS from 'clipboard'
 import { sendMessage } from '@/api/synergy/synergy'
+import { Toast } from 'vant'
 
 export default {
   name: 'ContextMenu',
@@ -70,6 +72,12 @@ export default {
     closeContextMenu () {
       this.showMenu = false
       document.removeEventListener('click', this.closeContextMenu)
+    },
+    sendMsg () {
+      Toast('暂未实现此功能')
+    },
+    replyMsg () {
+      Toast('暂未实现此功能')
     },
     // 撤回消息
     revocationMsg () {

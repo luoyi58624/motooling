@@ -131,7 +131,6 @@
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
             <div v-if="item.contentType === 5">
