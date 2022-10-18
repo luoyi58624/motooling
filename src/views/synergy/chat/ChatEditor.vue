@@ -1,8 +1,8 @@
 <template>
-  <div style="border: 1px solid #ccc;">
+  <div id="chat-editor-container" style="border: 1px solid #ccc;">
     <Toolbar
       style="border-bottom: 1px solid #ccc"
-      :editor="editor"
+      :editor="$store.state.editor"
       :defaultConfig="toolbarConfig"
       :mode="mode"
     />
@@ -24,6 +24,7 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { fileUpload, imgUpload } from '@/api/upload/upload'
 import eventBus from '@/utils/mitt'
 import { readFile } from '@/utils/utils'
+import { globalVar } from '@/store'
 
 const editorConfig = {
   MENU_CONF: {}
@@ -51,6 +52,15 @@ editorConfig.MENU_CONF['uploadVideo'] = {
         eventBus.emit('handleMessage', params)
       })
     }
+  }
+}
+
+// 隐藏选中文字弹出的菜单控件
+editorConfig.hoverbarKeys = {
+  'text': {
+    match: () => {
+    },
+    menuKeys: []
   }
 }
 
@@ -136,7 +146,6 @@ export default {
   },
   data () {
     return {
-      editor: null,
       toolbarConfig: {
         toolbarKeys: ['uploadImage', 'uploadVideo', 'uploadFile', 'emotion', 'history', 'fullScreen']
       },
@@ -147,7 +156,7 @@ export default {
   },
   methods: {
     onCreated (editor) {
-      this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
+      this.$store.state.editor = Object.seal(editor)
       const textDom = document.getElementsByClassName('w-e-text-container')
       if (textDom) {
         const buttonDom = document.createElement('div')
@@ -166,12 +175,18 @@ export default {
     },
     keyupSendMsg (e) {
       if (e.ctrlKey && e.code === 'Enter') {
-        this.$emit('change', this.editor.getText() + '\n')
+        this.$emit('change', this.$store.state.editor.getText() + '\n')
         this.$nextTick(() => {
-          this.editor.focus(true)
+          this.$store.state.editor.focus(true)
         })
       } else if (e.code === 'Enter') {
-        this.sendMsg()
+        if (!globalVar.disableEditorEvent) {
+          console.log('ChatEditor 回车事件')
+          this.sendMsg()
+        } else {
+          e.preventDefault()
+          return false
+        }
       }
     },
     customPaste (editor, event) {
@@ -186,10 +201,11 @@ export default {
     }
   },
   mounted () {
-    document.addEventListener('keyup', this.keyupSendMsg)
+    document.getElementById('chat-editor-container').addEventListener('keyup', this.keyupSendMsg)
   },
   destroyed () {
-    document.removeEventListener('keyup', this.keyupSendMsg)
+    document.getElementById('chat-editor-container').removeEventListener('keyup', this.keyupSendMsg)
+    this.$store.state.editor.destroy()
   }
 }
 

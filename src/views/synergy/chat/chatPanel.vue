@@ -3,11 +3,11 @@
     <nav>
       <div class="chatting-name">
         <input style="width: 580px"
-          type="text"
-          v-if="chattingTarget.type == 666"
-          :value="chattingTarget.name"
-          maxlength="50"
-          @blur="setGroupName($event.target.value)"
+               type="text"
+               v-if="chattingTarget.type == 666"
+               :value="chattingTarget.name"
+               maxlength="50"
+               @blur="setGroupName($event.target.value)"
         />
         <span v-else-if="chattingTarget.type == 66">{{ chattingTarget.name }}</span>
         <span v-else>{{ talkMember }}</span>
@@ -98,7 +98,7 @@
         </div>
         <chat-editor
           ref="ChatEditor"
-          :value="wordContent"
+          :value="$store.state.wordContent"
           @change="inputChange"
           @send="sendWordMessage"
           @handleMessage="handleMessage"/>
@@ -131,8 +131,8 @@
       </div>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
-    <div class="member-list" v-if="groupAt">
-      <member-list @handleAt="handleGroupAt"/>
+    <div class="member-list" v-if="$store.state.groupAt">
+      <member-list @handleAt="handleGroupAt" @selectUser="setSelectUser"/>
     </div>
     <record-list :show-panel.sync="recordPanel" :init-date="recordList"/>
     <context-menu ref="ContextMenu" @revocationMsg="revocationMsg"/>
@@ -196,7 +196,6 @@ export default {
       socket: {},
       synergyGroup: {},
       mainKeyId: '',
-      wordContent: '',
       recordList: [],
       value: '',
       interval: null,
@@ -210,7 +209,6 @@ export default {
       loadedScrollTop: 0,
       beforeLoadedScrollTop: 0,
       loadRecordTag: '',
-      groupAt: false,
       uList: [],
       recordPanel: false,
       disableSendMsg: false, // 是否禁止发送消息，防止重复发送
@@ -231,12 +229,12 @@ export default {
       handler: function (val) {
         if (val) {
           this.init()
-          this.groupAt = false
-          this.wordContent = this.$store.state.messageDraft.find(item => {
+          this.$store.state.groupAt = false
+          this.$store.state.wordContent = this.$store.state.messageDraft.find(item => {
             return item.groupId === val
           }).message
           setTimeout(() => {
-            this.$refs.ChatEditor.editor.focus(true)
+            this.$store.state.editor.focus(true)
           }, 300)
         }
       },
@@ -408,12 +406,19 @@ export default {
       }
     },
     handleGroupAt (member) {
-      this.wordContent += `${member.username} `
+      this.$store.state.wordContent += `${member.username} `
       this.uList.push({ uid: member.uid })
-      this.groupAt = false
+      this.$store.state.groupAt = false
       setTimeout(() => {
-        this.$refs.ChatEditor.editor.focus(true)
+        this.$store.state.editor.focus(true)
       }, 300)
+    },
+    setSelectUser (username) {
+      console.log('xasxsa')
+      this.$store.state.wordContent += username + ' '
+      this.$nextTick(() => {
+        this.$store.state.editor.focus(true)
+      })
     },
     // 滚到底部
     scrolltoButtom () {
@@ -542,15 +547,15 @@ export default {
       })
     },
     inputChange (e) {
-      this.wordContent = e
-      this.groupAt = e.endsWith('@')
+      this.$store.state.wordContent = e
+      this.$store.state.groupAt = this.chattingTarget.type === 666 && e.endsWith('@')
     },
     // 发送文字消息
     sendWordMessage (e) {
       if (this.disableSendMsg) return
       this.disableSendMsg = true
       this.loadRecordTag = ''
-      if (this.wordContent.trim() !== '') {
+      if (this.$store.state.wordContent.trim() !== '') {
         const currentTime = new Date()
         const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
         this.scrolltoButtom()
@@ -558,7 +563,7 @@ export default {
           groupId: this.groupId,
           senderId: this.uid,
           contentType: 1,
-          content: this.wordContent
+          content: this.$store.state.wordContent
         }).then((res) => {
           res.data.sendTime = sendTime
           this.recordList.push(res.data)
@@ -582,7 +587,7 @@ export default {
         }).finally(() => {
           this.disableSendMsg = false
         })
-        this.wordContent = ''
+        this.$store.state.wordContent = ''
       } else {
         this.disableSendMsg = false
         this.$createToast({
@@ -835,7 +840,7 @@ export default {
       })
     },
     againEdit (msg) {
-      this.wordContent = msg.content
+      this.$store.state.wordContent = msg.content
     },
     showAgainEdit (item) {
       let sendTime = item.sendTime

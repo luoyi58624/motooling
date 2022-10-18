@@ -32,6 +32,9 @@ export default new Vuex.Store({
     value: null,
     groupId: null,
     relationType: null,
+    groupAt: false, // 输入@后是否显示用户列表
+    wordContent: '', // 聊天编辑器输入的内容
+    editor: null, // 编辑器对象
     activeId: 0,
     userInfo: {},
     messageDraft: [] // 消息草稿
@@ -135,3 +138,7 @@ export default new Vuex.Store({
     getWechatSignUrl: state => state.wxSignUrl
   }
 })
+
+export const globalVar = {
+  disableEditorEvent: false
+}
