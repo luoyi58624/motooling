@@ -1,4 +1,4 @@
-import { Notify } from 'vant'
+// import { Notify } from 'vant'
 
 // 字符串转二进制数据
 export function strToBinary (str) {
@@ -101,10 +101,10 @@ export function getFileSuffix (fileName) {
 export function requestNotification () {
   Notification.requestPermission().then(function (result) {
     if (result === 'denied') {
-      Notify({
-        message: '您拒绝显示通知，IM消息将没有提示',
-        duration: 5000
-      })
+      // Notify({
+      //   message: '您拒绝显示通知，IM消息将没有提示',
+      //   duration: 5000
+      // })
     }
   })
 }
