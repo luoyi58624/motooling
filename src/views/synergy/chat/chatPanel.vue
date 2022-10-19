@@ -234,6 +234,9 @@ import { saveAs } from 'file-saver'
 import ContextMenu from '@/views/synergy/chat/ContextMenu'
 import { formatDate } from '@/utils/time'
 
+let debounceLoadMoreMessage
+let clearReaderMessage
+
 export default {
   directives: { clickoutside },
   components: {
@@ -335,21 +338,23 @@ export default {
     eventBus.on('showRecordPanel', this.showRecordPanel)
     this.$eventBus.$on('beat', this.beat)
     this.$eventBus.$on('quit', this.quitGroup)
-    this.$refs.talkContent.addEventListener(
-      'scroll',
-      debounce(this.loadMoreRecordList, 500)
-    )
+    debounceLoadMoreMessage = debounce(this.loadMoreRecordList, 500)
+    this.$refs.talkContent.addEventListener('scroll', debounceLoadMoreMessage)
     requestNotification()
+    clearReaderMessage = setInterval(() => {
+      this.getReadMessage()
+    }, 3000)
   },
   beforeDestroy () {
     this.$refs.talkContent.removeEventListener(
       'scroll',
-      debounce(this.loadMoreRecordList, 500)
+      debounceLoadMoreMessage
     )
   },
   destroyed () {
     this.isClose = true
-    this.socket.close()
+    clearInterval(clearReaderMessage)
+    if (Object.keys(this.socket).length > 0) this.socket.close()
     eventBus.off('handleMessage', this.handleMessage)
     eventBus.off('showRecordPanel', this.showRecordPanel)
   },
@@ -622,6 +627,10 @@ export default {
           }
         })
       }
+      alreadyRead({
+        lastRecordId: message.data.id,
+        groupId: this.$store.state.groupId
+      })
       this.$nextTick(() => {
         this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
       })
@@ -695,7 +704,7 @@ export default {
       if (this.noMoreRecords) {
         return false
       } else {
-        if (this.$refs.talkContent.scrollTop === 0) {
+        if (this.$refs.talkContent && this.$refs.talkContent.scrollTop === 0) {
           this.loadRecordTag = 'load'
           this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
           synergyRecordPage({ id: this.mainKeyId, groupId: this.groupId }).then((res) => {

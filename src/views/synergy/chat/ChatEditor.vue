@@ -1,5 +1,5 @@
 <template>
-  <div id="chat-editor-container" style="border: 1px solid #ccc;">
+  <div ref="charEditorContainer" style="border: 1px solid #ccc;">
     <Toolbar
       style="border-bottom: 1px solid #ccc"
       :editor="$store.state.editor"
@@ -201,10 +201,10 @@ export default {
     }
   },
   mounted () {
-    document.getElementById('chat-editor-container').addEventListener('keyup', this.keyupSendMsg)
+    this.$refs.charEditorContainer.addEventListener('keyup', this.keyupSendMsg)
   },
-  destroyed () {
-    document.getElementById('chat-editor-container').removeEventListener('keyup', this.keyupSendMsg)
+  beforeDestroy () {
+    this.$refs.charEditorContainer.removeEventListener('keyup', this.keyupSendMsg)
     this.$store.state.editor.destroy()
   }
 }

@@ -4,8 +4,10 @@
       <message-list @add-user="createNewChatting"/>
     </div>
     <div class="chat-panel">
-      <chat-panel @add-user="addGroupMember" :invitedMembers="invitedMembers"
-                  :invidedMembersInfo="invidedMembersInfo"></chat-panel>
+      <chat-panel v-if="resetChatPanel"
+                  :invitedMembers="invitedMembers"
+                  :invidedMembersInfo="invidedMembersInfo"
+                  @add-user="addGroupMember"></chat-panel>
     </div>
     <UserSelect v-show="show" @confirm="confirm" :visible.sync="show" @cancel="cancel"/>
   </div>
@@ -28,6 +30,7 @@ export default {
     return {
       show: false,
       isGroup: false,
+      resetChatPanel: true,
       addedMembers: [],
       invitedMembers: '',
       initMembers: [],
@@ -39,6 +42,18 @@ export default {
       groupId: state => state.groupId,
       userSelectedList: state => state.userSelectedList
     })
+  },
+  watch: {
+    groupId (newValue, oldValue) {
+      console.log(newValue)
+      console.log(oldValue)
+      if (oldValue != null) {
+        this.resetChatPanel = false
+        this.$nextTick(() => {
+          this.resetChatPanel = true
+        })
+      }
+    }
   },
   methods: {
     // 创建新的聊天
