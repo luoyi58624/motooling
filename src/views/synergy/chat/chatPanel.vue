@@ -227,7 +227,7 @@ import clickoutside from '@/utils/clickoutside'
 import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
 import RecordList from '@/views/synergy/chat/recordList'
-import { Dialog, ImagePreview, Notify } from 'vant'
+import { Dialog, Notify } from 'vant'
 import ChatEditor from '@/views/synergy/chat/ChatEditor'
 import eventBus from '@/utils/mitt'
 import { saveAs } from 'file-saver'
@@ -727,16 +727,6 @@ export default {
         }
       }
     },
-    // 图片预览
-    showImagePreview (url) {
-      ImagePreview({
-        images: [url],
-        closeable: true
-      })
-      // this.$createImagePreview({
-      //   imgs: [url]
-      // }).show()
-    },
     // 对群成员的操作
     handleGroupMember (item, event) {
       if (event) {
@@ -798,10 +788,12 @@ export default {
           content,
           sendTime,
           username: this.senderName,
-          senderId: this.uid
+          senderId: this.uid,
+          readMessageUsers: []
         }
       ]
       this.recordList = this.recordList.concat(message)
+      delete message.readMessageUsers
       if (contentType === 9) content = JSON.stringify(content)
       sendMessage({
         groupId: this.groupId,
@@ -810,6 +802,7 @@ export default {
         content,
         smallImg
       }).then(() => {
+        this.scrolltoButtom()
         getNewsList().then((res) => {
           this.$store.dispatch('newsList', res.newsList)
         })
