@@ -29,8 +29,9 @@
                 <span class="name">{{ item.username }}</span>
               </div>
               <div class="message-container">
+                <div v-if="item.loading">...</div>
                 <!--如果是群聊，自己发送的消息需要知道哪些人已读、未读-->
-                <template v-if="chattingTarget.type === 666">
+                <template v-else-if="chattingTarget.type === 666">
                   <el-popover v-if="uid === item.senderId" placement="left" width="400" trigger="click">
                     <div style="width: 400px;height: 360px">
                       <van-tabs color="#3498db">
@@ -338,7 +339,7 @@ export default {
     eventBus.on('showRecordPanel', this.showRecordPanel)
     this.$eventBus.$on('beat', this.beat)
     this.$eventBus.$on('quit', this.quitGroup)
-    debounceLoadMoreMessage = debounce(this.loadMoreRecordList, 500)
+    debounceLoadMoreMessage = debounce(this.loadMoreRecordList, 100)
     this.$refs.talkContent.addEventListener('scroll', debounceLoadMoreMessage)
     requestNotification()
     clearReaderMessage = setInterval(() => {
@@ -647,6 +648,17 @@ export default {
       if (this.$store.state.wordContent.trim() !== '') {
         const currentTime = new Date()
         const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
+        let _message = {
+          contentType: 1,
+          content: this.$store.state.wordContent,
+          senderId: this.uid,
+          sendTime,
+          username: this.senderName,
+          readMessageUsers: [],
+          loading: true,
+          currentTime
+        }
+        this.recordList.push(_message)
         this.scrolltoButtom()
         sendMessage({
           groupId: this.groupId,
@@ -654,10 +666,15 @@ export default {
           contentType: 1,
           content: this.$store.state.wordContent
         }).then((res) => {
-          res.data.sendTime = sendTime
-          res.data.readMessageUsers = []
-          this.recordList.push(res.data)
-          this.scrolltoButtom()
+          this.recordList.forEach(item => {
+            if (item.currentTime === currentTime) {
+              delete res.data.sendTime
+              Object.keys(res.data).forEach(key => {
+                item[key] = res.data[key]
+                item.loading = false
+              })
+            }
+          })
           this.handleDebounce(function () {
             getNewsList().then((res) => {
               this.$store.dispatch('newsList', res.newsList)
