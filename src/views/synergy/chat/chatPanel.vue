@@ -912,6 +912,8 @@ export default {
         case 'zip':
         case 'rar':
           return require('@/assets/file-icon/compress.png')
+        case 'txt':
+          return require('@/assets/file-icon/txt.png')
         default:
           return require('@/assets/file-icon/other.png')
       }
