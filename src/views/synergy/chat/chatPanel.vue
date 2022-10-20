@@ -2,28 +2,19 @@
   <div class="chat-panel" v-show="groupId">
     <nav>
       <div class="chatting-name">
-        <input style="width: 580px"
-               type="text"
-               v-if="chattingTarget.type == 666"
-               :value="chattingTarget.name"
-               maxlength="50"
-               @blur="setGroupName($event.target.value)"
-        />
+        <input style="width: 580px" type="text" v-if="chattingTarget.type == 666" :value="chattingTarget.name"
+               maxlength="50" @blur="setGroupName($event.target.value)"/>
         <span v-else-if="chattingTarget.type == 66">{{ chattingTarget.name }}</span>
         <span v-else>{{ talkMember }}</span>
       </div>
-      <div
-        class="add-member"
-        v-if="chattingTarget.type == 666"
-        @click="$emit('add-user', true)"
-      ></div>
+      <div class="add-member" v-if="chattingTarget.type == 666" @click="$emit('add-user', true)"></div>
     </nav>
     <div class="chat-content">
-      <div class="talk-wrapper">
+      <div class="talk-wrapper" :style="[chatContainerWidth]">
         <div class="talk-content" ref="talkContent">
           <div v-for="(item, index) in recordList" :key="index" style="width: 100%">
             <div :class="uid === item.senderId ? 'my-content' : 'others-content'"
-                 v-if="item.contentType !== 5 && item.contentType!==8">
+                 v-if="item.contentType !== 5 && item.contentType!==7 && item.contentType!==8">
               <div class="time-name">
                 <span class="time">{{ item.sendTime }}</span>
                 <span class="name">{{ item.username }}</span>
@@ -33,7 +24,7 @@
                 <!--如果是群聊，自己发送的消息需要知道哪些人已读、未读-->
                 <template v-else-if="chattingTarget.type === 666">
                   <el-popover v-if="uid === item.senderId" placement="left" width="400" trigger="click">
-                    <div style="width: 400px;height: 360px">
+                    <div class="read-popover" style="width: 400px;height: 360px">
                       <van-tabs color="#3498db">
                         <van-tab :title="readMessageUsers.length+'已读'">
                           <ul class="user-list">
@@ -140,14 +131,14 @@
               </div>
             </div>
             <div v-if="item.contentType === 7">
-              <div class="sys-notifacation" v-if="item.content.senderId == uid">
-                <span>{{ item.content.sendeContent }}</span>
+              <div class="sys-notifacation" v-if="item.content.senderId === uid">
+                <span class="content">{{ item.content.sendeContent }}</span>
               </div>
-              <div class="sys-notifacation" v-else-if="item.content.receiverId == uid">
-                <span>{{ item.content.receiverContent }}</span>
+              <div class="sys-notifacation" v-else-if="item.content.receiverId === uid">
+                <span class="content">{{ item.content.receiverContent }}</span>
               </div>
               <div class="sys-notifacation" v-else>
-                <span>{{ item.content.otherContent }}</span>
+                <span class="content">{{ item.content.otherContent }}</span>
               </div>
             </div>
             <div v-if="item.contentType === 8">
@@ -172,32 +163,39 @@
           @send="sendWordMessage"
           @handleMessage="handleMessage"/>
       </div>
-      <div class="group-members" v-if="chattingTarget.type === 666">
-        <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
-        <div class="group-members-wrapper">
-          <div
-            class="group-members-item"
-            v-for="item in groupMember"
-            :key="item.uid"
-            @click.right="handleGroupMember(item, $event)"
-          >
-            <img :src="item.avatar" alt=""/>
-            <span v-if="item.memberType === 1">{{ item.username }} · 群主</span>
-            <span v-else>{{ item.username }}</span>
+      <template v-if="!$store.state.showChatHistory">
+        <div class="group-members" v-if="chattingTarget.type === 666">
+          <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
+          <div class="group-members-wrapper">
             <div
-              class="popover"
-              v-if="item.uid === selectedGroupMember"
-              v-clickoutside="hidden"
+              class="group-members-item"
+              v-for="item in groupMember"
+              :key="item.uid"
+              @click.right="handleGroupMember(item, $event)"
             >
-              <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
-              <p @click.stop="beat(item)" v-if="item.uid != uid">找一找</p>
-              <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">
-                移出群聊
-              </p>
+              <img :src="item.avatar" alt=""/>
+              <span v-if="item.memberType === 1">{{ item.username }} · 群主</span>
+              <span v-else>{{ item.username }}</span>
+              <div
+                class="popover"
+                v-if="item.uid === selectedGroupMember"
+                v-clickoutside="hidden"
+              >
+                <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
+                <p @click.stop="beat(item)" v-if="item.uid != uid">找一找</p>
+                <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">
+                  移出群聊
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <div class="chat-history">
+          <chat-history/>
+        </div>
+      </template>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
     <div class="member-list" v-if="$store.state.groupAt">
@@ -228,12 +226,13 @@ import clickoutside from '@/utils/clickoutside'
 import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
 import RecordList from '@/views/synergy/chat/recordList'
-import { Dialog, Notify } from 'vant'
+import { Dialog } from 'vant'
 import ChatEditor from '@/views/synergy/chat/ChatEditor'
 import eventBus from '@/utils/mitt'
 import { saveAs } from 'file-saver'
 import ContextMenu from '@/views/synergy/chat/ContextMenu'
 import { formatDate } from '@/utils/time'
+import ChatHistory from '@/views/synergy/chat/ChatHistory'
 
 let debounceLoadMoreMessage
 let clearReaderMessage
@@ -241,6 +240,7 @@ let clearReaderMessage
 export default {
   directives: { clickoutside },
   components: {
+    ChatHistory,
     ContextMenu,
     ChatEditor,
     RecordList,
@@ -301,18 +301,35 @@ export default {
     groupId: {
       handler: function (val) {
         if (val) {
+          console.log('进入聊天')
           this.init()
           this.$store.state.groupAt = false
           const messageDraft = this.$store.state.messageDraft.find(item => {
             return item.groupId === val
           })
+          clearReaderMessage = setInterval(() => {
+            this.getReadMessage()
+          }, 3000)
+          debounceLoadMoreMessage = debounce(this.loadMoreRecordList, 100)
           if (messageDraft) this.$store.state.wordContent = messageDraft.message
           setTimeout(() => {
+            this.$refs.talkContent.addEventListener('scroll', debounceLoadMoreMessage)
             this.$store.state.editor.focus(true)
           }, 100)
         }
       },
       immediate: true
+    },
+    showChatHistory (newValue) {
+      if (newValue) {
+        // synergyRecordPage({
+        //   id: this.recordList[this.recordList.length - 1].id,
+        //   groupId: this.groupId,
+        //   pageSize: 10000
+        // }).then(res => {
+        //   console.log(res)
+        // })
+      }
     }
   },
   computed: {
@@ -323,10 +340,14 @@ export default {
       chatTargetInfo: (state) => state.chatTargetInfo,
       companyId: (state) => state.userInfo.companyId,
       uid: (state) => state.userInfo.uid,
-      senderName: (state) => state.userInfo.username
+      senderName: (state) => state.userInfo.username,
+      showChatHistory: (state) => state.showChatHistory
     }),
     relationId () {
       return this.$route.query.relationId * 1
+    },
+    chatContainerWidth () {
+      return this.showChatHistory ? { width: `calc(100% - 360px)` } : { width: 'calc(100% - 122px)' }
     }
   },
   created () {
@@ -339,12 +360,7 @@ export default {
     eventBus.on('showRecordPanel', this.showRecordPanel)
     this.$eventBus.$on('beat', this.beat)
     this.$eventBus.$on('quit', this.quitGroup)
-    debounceLoadMoreMessage = debounce(this.loadMoreRecordList, 100)
-    this.$refs.talkContent.addEventListener('scroll', debounceLoadMoreMessage)
     requestNotification()
-    clearReaderMessage = setInterval(() => {
-      this.getReadMessage()
-    }, 3000)
   },
   beforeDestroy () {
     this.$refs.talkContent.removeEventListener(
@@ -473,16 +489,6 @@ export default {
         this.im()
       } else {
         clearInterval(this.interval)
-      }
-    },
-    handleImgload () {
-      if (this.loadRecordTag === 'load') {
-        this.loadedScrollTop = this.$refs.talkContent.scrollHeight
-        this.$refs.talkContent.scrollTop =
-          this.loadedScrollTop - this.beforeLoadedScrollTop
-      } else {
-        let ele = this.$refs.talkContent
-        ele.scrollTop = ele.scrollHeight
       }
     },
     handleGroupAt (member) {
@@ -819,6 +825,7 @@ export default {
         }
       ]
       this.recordList = this.recordList.concat(message)
+      this.scrolltoButtom()
       delete message.readMessageUsers
       if (contentType === 9) content = JSON.stringify(content)
       sendMessage({
@@ -828,7 +835,6 @@ export default {
         content,
         smallImg
       }).then(() => {
-        this.scrolltoButtom()
         getNewsList().then((res) => {
           this.$store.dispatch('newsList', res.newsList)
         })
@@ -868,11 +874,12 @@ export default {
       this.selectedGroupMember = null
     },
     showRecordPanel () {
-      if (this.recordList.length > 0) {
-        this.recordPanel = true
-      } else {
-        Notify('没有消息记录')
-      }
+      this.$store.state.showChatHistory = !this.$store.state.showChatHistory
+      // if (this.recordList.length > 0) {
+      //   this.recordPanel = true
+      // } else {
+      //   Notify('没有消息记录')
+      // }
     },
     downloadFile (url, fileName) {
       Dialog.confirm({
@@ -1004,7 +1011,6 @@ nav {
   .talk-wrapper {
     flex: auto;
     height: 100%;
-    width: calc(100% - 122px);
 
     .talk-content {
       width: 100%;
@@ -1181,6 +1187,11 @@ nav {
       }
     }
   }
+
+  .chat-history {
+    width: 300px;
+    height: 100%;
+  }
 }
 
 .file-message {
@@ -1253,11 +1264,13 @@ nav {
   }
 }
 
-/deep/ .van-tab--active > .van-tab__text {
-  color: #0984e3;
-}
+.read-popover {
+  /deep/ .van-tab--active > .van-tab__text {
+    color: #0984e3;
+  }
 
-/deep/ .van-tabs__line {
-  transform: translateX(100px) translateX(-50%);
+  /deep/ .van-tabs__line {
+    transform: translateX(100px) translateX(-50%);
+  }
 }
 </style>

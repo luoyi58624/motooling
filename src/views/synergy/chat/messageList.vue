@@ -131,14 +131,14 @@ export default {
         this.newList = res.newList
         this.$store.dispatch('newsList', res.newsList)
       })
-      .catch((err) => {
-        this.$createToast({
-          time: 2000,
-          txt: err.msg || '获取消息列表失败',
-          type: 'error'
-        }).show()
-      })
-    this.im()
+    setInterval(() => {
+      getNewsList()
+        .then((res) => {
+          this.newList = res.newList
+          this.$store.dispatch('newsList', res.newsList)
+        })
+    }, 5000)
+    // this.im()
   },
   beforeDestroy () {
     this.isClose = true
@@ -172,6 +172,7 @@ export default {
         }
         this.socket.onmessage = async (msg) => {
           console.log('收到消息：消息列表socket')
+          console.log(msg)
           let receivedMessage = JSON.parse(msg.data)
           if (this.socket.readyState === 1) {
             this.socket.send(
