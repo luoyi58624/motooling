@@ -123,6 +123,7 @@ export default {
   created () {
     getUserInfo().then((res) => {
       this.$store.commit('USER_INFO', res)
+      localStorage.setItem('fileServerUrl', res.fileServerUrl)
     })
   },
   mounted () {
