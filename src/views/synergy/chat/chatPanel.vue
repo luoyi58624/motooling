@@ -93,7 +93,7 @@
                     <el-image style="width: 160px; height: 90px;"
                               fit="scale-down"
                               :src="fileAddressFormatFunc(item.content)"
-                              :preview-src-list="[fileAddressFormatFunc(item.content)]"
+                              :preview-src-list="allImages"
                               @contextmenu="openContextMenu($event,item)"/>
                   </div>
                   <div class="audio-message message"
@@ -301,7 +301,6 @@ export default {
     groupId: {
       handler: function (val) {
         if (val) {
-          console.log('进入聊天')
           this.init()
           this.$store.state.groupAt = false
           const messageDraft = this.$store.state.messageDraft.find(item => {
@@ -348,6 +347,11 @@ export default {
     },
     chatContainerWidth () {
       return this.showChatHistory ? { width: `calc(100% - 360px)` } : { width: 'calc(100% - 122px)' }
+    },
+    allImages () {
+      return this.recordList
+        .filter(item => item.contentType === 2 || item.constructor === 6)
+        .map(item => this.fileAddressFormatFunc(item.content))
     }
   },
   created () {
@@ -463,7 +467,6 @@ export default {
       }
     },
     websocketonopen () {
-      console.log('开启聊天记录socket')
       this.interval = setInterval(() => {
         if (this.socket.readyState === 1) {
           this.socket.send(
@@ -611,10 +614,10 @@ export default {
     receiveMessage (message) {
       console.log(message)
       // eslint-disable-next-line no-new
-      new Notification(message.data.username, {
-        body: message.data.content,
-        icon: require('@/assets/logo.png')
-      })
+      // new Notification(message.data.username, {
+      //   body: message.data.content,
+      //   icon: require('@/assets/logo.png')
+      // })
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
       this.recordList.push({ ...message.data, sendTime })

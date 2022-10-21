@@ -45,8 +45,6 @@ export default {
   },
   watch: {
     groupId (newValue, oldValue) {
-      console.log(newValue)
-      console.log(oldValue)
       if (oldValue != null) {
         this.resetChatPanel = false
         this.$nextTick(() => {

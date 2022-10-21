@@ -49,18 +49,20 @@ export default {
       deep: true,
       immediate: true,
       handler: function (newValue) {
-        if (newValue < 10) {
-          this.$refs.memberListContainer.scrollTo({
-            top: 0
-          })
-        } else if (newValue >= 10) {
-          this.$refs.memberListContainer.scrollTo({
-            top: 26 * (newValue - 9)
-          })
-        } else if (newValue >= this.groupMember.length) {
-          this.$refs.memberListContainer.scrollTo({
-            top: this.$refs.memberListContainer.scrollHeight
-          })
+        if (this.$store.state.groupAt) {
+          if (newValue < 10) {
+            this.$refs.memberListContainer.scrollTo({
+              top: 0
+            })
+          } else if (newValue >= 10) {
+            this.$refs.memberListContainer.scrollTo({
+              top: 26 * (newValue - 9)
+            })
+          } else if (newValue >= this.groupMember.length) {
+            this.$refs.memberListContainer.scrollTo({
+              top: this.$refs.memberListContainer.scrollHeight
+            })
+          }
         }
       }
     }
