@@ -1,5 +1,5 @@
 <template>
-  <div class="member-list-container">
+  <div ref="memberListContainer" class="member-list-container">
     <div v-for="(member,index) in groupMember" :key="member.id" @click="groupAt(member)">
       <div class="user-name" :class="{active: index===selectUser.index}">{{ member.username }}</div>
     </div>
@@ -8,7 +8,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { globalVar } from '@/store'
 
 export default {
   data () {
@@ -26,7 +25,7 @@ export default {
           {
             username: '所有人'
           },
-          ...state.userSelectedList
+          ...state.userSelectedList.filter(item => item.uid !== state.userInfo.uid)
         ]
       }
     })
@@ -37,7 +36,31 @@ export default {
       immediate: true,
       handler: function (newValue) {
         if (newValue) {
-          document.addEventListener('click', this.closePanel)
+          document.addEventListener('keydown', this.keydownEvent)
+          setTimeout(() => {
+            this.$store.state.editor.blur()
+          })
+        } else {
+          document.removeEventListener('keydown', this.keydownEvent)
+        }
+      }
+    },
+    'selectUser.index': {
+      deep: true,
+      immediate: true,
+      handler: function (newValue) {
+        if (newValue < 10) {
+          this.$refs.memberListContainer.scrollTo({
+            top: 0
+          })
+        } else if (newValue >= 10) {
+          this.$refs.memberListContainer.scrollTo({
+            top: 26 * (newValue - 9)
+          })
+        } else if (newValue >= this.groupMember.length) {
+          this.$refs.memberListContainer.scrollTo({
+            top: this.$refs.memberListContainer.scrollHeight
+          })
         }
       }
     }
@@ -46,46 +69,39 @@ export default {
     groupAt (member) {
       this.$emit('handleAt', member)
     },
-    keyupEvent (e) {
-      // e.stopPropagation()
-      // e.preventDefault()
-      if (e.code === 'ArrowDown') {
-        if (this.selectUser.index + 1 >= this.groupMember.length) {
-          this.selectUser.index = 0
-          this.selectUser.name = this.groupMember[this.selectUser.index].username
-        } else {
-          this.selectUser.index++
-          this.selectUser.name = this.groupMember[this.selectUser.index].username
+    keydownEvent (e) {
+      this.$store.state.editor.blur()
+      setTimeout(() => {
+        if (e.code === 'ArrowDown') {
+          if (this.selectUser.index + 1 >= this.groupMember.length) {
+            this.selectUser.index = 0
+            this.selectUser.name = this.groupMember[this.selectUser.index].username
+          } else {
+            this.selectUser.index++
+            this.selectUser.name = this.groupMember[this.selectUser.index].username
+          }
+        } else if (e.code === 'ArrowUp') {
+          if (this.selectUser.index - 1 < 0) {
+            this.selectUser.index = this.groupMember.length - 1
+            this.selectUser.name = this.groupMember[this.selectUser.index].username
+          } else {
+            this.selectUser.index--
+            this.selectUser.name = this.groupMember[this.selectUser.index].username
+          }
+        } else if (e.code === 'Enter') {
+          this.$store.state.wordContent += this.selectUser.name + ' '
+          setTimeout(() => {
+            this.$store.state.editor.focus(true)
+          }, 200)
+        } else if (e.code === 'Backspace' || e.code === 'Delete') {
+          this.$store.state.wordContent = this.$store.state.wordContent.slice(0, -1)
+          setTimeout(() => {
+            this.$store.state.editor.focus(true)
+          })
         }
-      } else if (e.code === 'ArrowUp') {
-        if (this.selectUser.index - 1 < 0) {
-          this.selectUser.index = this.groupMember.length - 1
-          this.selectUser.name = this.groupMember[this.selectUser.index].username
-        } else {
-          this.selectUser.index--
-          this.selectUser.name = this.groupMember[this.selectUser.index].username
-        }
-      } else if (e.code === 'Enter') {
-        this.closePanel()
-        globalVar.disableEditorEvent = true
-        console.log(this.$store.state.editor)
-        this.$store.state.wordContent.splice(this.$store.state.wordContent.length - 2, 2)
-        // this.$store.state.editor.blur()
-        this.$store.state.wordContent += this.selectUser.name + ' '
-        // this.$emit('selectUser', this.selectUser.name)
-      }
-    },
-    closePanel () {
-      document.removeEventListener('click', this.closePanel)
-      this.$store.state.groupAt = false
+      }, 10)
     }
   }
-  // mounted () {
-  //   document.addEventListener('keyup', this.keyupEvent, true)
-  // },
-  // destroyed () {
-  //   document.removeEventListener('keyup', this.keyupEvent)
-  // }
 }
 </script>
 

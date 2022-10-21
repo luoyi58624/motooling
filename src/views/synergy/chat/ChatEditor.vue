@@ -24,7 +24,6 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { fileUpload, imgUpload } from '@/api/upload/upload'
 import eventBus from '@/utils/mitt'
 import { readFile } from '@/utils/utils'
-import { globalVar } from '@/store'
 
 const editorConfig = {
   MENU_CONF: {}
@@ -181,13 +180,7 @@ export default {
           this.$store.state.editor.focus(true)
         })
       } else if (e.code === 'Enter') {
-        if (!globalVar.disableEditorEvent) {
-          console.log('ChatEditor 回车事件')
-          this.sendMsg()
-        } else {
-          e.preventDefault()
-          return false
-        }
+        this.sendMsg()
       }
     },
     customPaste (editor, event) {

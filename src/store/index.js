@@ -140,7 +140,3 @@ export default new Vuex.Store({
     getWechatSignUrl: state => state.wxSignUrl
   }
 })
-
-export const globalVar = {
-  disableEditorEvent: false
-}

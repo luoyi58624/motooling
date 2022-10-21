@@ -198,7 +198,7 @@
       </template>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
-    <div class="member-list" v-if="$store.state.groupAt">
+    <div class="member-list" v-show="$store.state.groupAt">
       <member-list @handleAt="handleGroupAt" @selectUser="setSelectUser"/>
     </div>
     <record-list :show-panel.sync="recordPanel" :init-date="recordList"/>
