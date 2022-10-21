@@ -156,59 +156,42 @@
             </div>
           </div>
         </div>
-        <chat-editor
-          ref="ChatEditor"
-          :value="$store.state.wordContent"
-          @change="inputChange"
-          @send="sendWordMessage"
-          @handleMessage="handleMessage"/>
+        <chat-editor ref="ChatEditor" :value="$store.state.wordContent"
+                     @change="inputChange" @send="sendWordMessage" @handleMessage="handleMessage"/>
       </div>
-      <template v-if="!$store.state.showChatHistory">
-        <div class="group-members" v-if="chattingTarget.type === 666">
-          <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
-          <div class="group-members-wrapper">
-            <div
-              class="group-members-item"
-              v-for="item in groupMember"
-              :key="item.uid"
-              @click.right="handleGroupMember(item, $event)"
-            >
-              <img :src="item.avatar" alt=""/>
-              <span v-if="item.memberType === 1">{{ item.username }} · 群主</span>
-              <span v-else>{{ item.username }}</span>
-              <div
-                class="popover"
-                v-if="item.uid === selectedGroupMember"
-                v-clickoutside="hidden"
-              >
-                <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
-                <p @click.stop="beat(item)" v-if="item.uid != uid">找一找</p>
-                <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">
-                  移出群聊
-                </p>
-              </div>
+      <div class="group-members" v-if="!recordPanel && chattingTarget.type === 666">
+        <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
+        <div class="group-members-wrapper">
+          <div class="group-members-item" v-for="item in groupMember" :key="item.uid"
+               @click.right="handleGroupMember(item, $event)">
+            <img :src="item.avatar" alt=""/>
+            <span v-if="item.memberType === 1">{{ item.username }} · 群主</span>
+            <span v-else>{{ item.username }}</span>
+            <div class="popover" v-if="item.uid === selectedGroupMember" v-clickoutside="hidden">
+              <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
+              <p @click.stop="beat(item)" v-if="item.uid != uid">找一找</p>
+              <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">
+                移出群聊
+              </p>
             </div>
           </div>
         </div>
-      </template>
-      <template v-else>
-        <div class="chat-history">
-          <chat-history/>
-        </div>
-      </template>
+      </div>
+      <div class="chat-history" v-show="recordPanel">
+        <chat-history ref="ChatHistory" :init-date="recordList"/>
+      </div>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
     <div class="member-list" v-show="$store.state.groupAt">
       <member-list @handleAt="handleGroupAt" @selectUser="setSelectUser"/>
     </div>
-    <record-list :show-panel.sync="recordPanel" :init-date="recordList"/>
     <context-menu ref="ContextMenu" @revocationMsg="revocationMsg"/>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { fileAddressFormat, getFileSuffix, requestNotification } from '@/utils/utils.js'
+import { fileAddressFormat, loadFileIcon, requestNotification } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -225,8 +208,7 @@ import {
 import clickoutside from '@/utils/clickoutside'
 import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
-import RecordList from '@/views/synergy/chat/recordList'
-import { Dialog } from 'vant'
+import { Dialog, Notify } from 'vant'
 import ChatEditor from '@/views/synergy/chat/ChatEditor'
 import eventBus from '@/utils/mitt'
 import { saveAs } from 'file-saver'
@@ -243,7 +225,6 @@ export default {
     ChatHistory,
     ContextMenu,
     ChatEditor,
-    RecordList,
     memberList
   },
   props: {
@@ -318,17 +299,6 @@ export default {
         }
       },
       immediate: true
-    },
-    showChatHistory (newValue) {
-      if (newValue) {
-        // synergyRecordPage({
-        //   id: this.recordList[this.recordList.length - 1].id,
-        //   groupId: this.groupId,
-        //   pageSize: 10000
-        // }).then(res => {
-        //   console.log(res)
-        // })
-      }
     }
   },
   computed: {
@@ -503,7 +473,6 @@ export default {
       }, 300)
     },
     setSelectUser (username) {
-      console.log('xasxsa')
       this.$store.state.wordContent += username + ' '
       this.$nextTick(() => {
         this.$store.state.editor.focus(true)
@@ -620,6 +589,10 @@ export default {
       // })
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
+
+      if (message.data.contentType === 9) {
+        message.data.content = JSON.parse(message.data.content)
+      }
       this.recordList.push({ ...message.data, sendTime })
 
       if (message.responseType === '666666') {
@@ -879,12 +852,14 @@ export default {
       this.selectedGroupMember = null
     },
     showRecordPanel () {
-      this.$store.state.showChatHistory = !this.$store.state.showChatHistory
-      // if (this.recordList.length > 0) {
-      //   this.recordPanel = true
-      // } else {
-      //   Notify('没有消息记录')
-      // }
+      if (this.recordList.length > 0) {
+        this.recordPanel = !this.recordPanel
+        this.$nextTick(() => {
+          this.recordPanel ? this.$refs.ChatHistory.openPanel() : this.$refs.ChatHistory.closePanel()
+        })
+      } else {
+        Notify('没有消息')
+      }
     },
     downloadFile (url, fileName) {
       Dialog.confirm({
@@ -895,31 +870,7 @@ export default {
       })
     },
     fileIcon (fileName) {
-      const fileSuffix = getFileSuffix(fileName)
-      switch (fileSuffix) {
-        case 'exe':
-          return require('@/assets/file-icon/exe.png')
-        case 'doc':
-        case 'docx':
-          return require('@/assets/file-icon/word.png')
-        case 'xls':
-        case 'xlsx':
-          return require('@/assets/file-icon/excel.png')
-        case 'ppt':
-        case 'pptx':
-          return require('@/assets/file-icon/ppt.png')
-        case 'pdf':
-          return require('@/assets/file-icon/pdf.png')
-        case 'apk':
-          return require('@/assets/file-icon/android.png')
-        case 'zip':
-        case 'rar':
-          return require('@/assets/file-icon/compress.png')
-        case 'txt':
-          return require('@/assets/file-icon/txt.png')
-        default:
-          return require('@/assets/file-icon/other.png')
-      }
+      return loadFileIcon(fileName)
     },
     openContextMenu (event, messageItem) {
       this.$refs.ContextMenu.openContextMenu(event, messageItem)
@@ -1228,7 +1179,6 @@ nav {
     & > .size {
       height: 50%;
       color: #636e72;
-      font-size: 14px;
       margin-top: 8px;
       display: flex;
       align-items: center;

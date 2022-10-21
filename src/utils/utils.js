@@ -108,3 +108,31 @@ export function requestNotification () {
     }
   })
 }
+
+export function loadFileIcon (fileName) {
+  const fileSuffix = getFileSuffix(fileName)
+  switch (fileSuffix) {
+    case 'exe':
+      return require('@/assets/file-icon/exe.png')
+    case 'doc':
+    case 'docx':
+      return require('@/assets/file-icon/word.png')
+    case 'xls':
+    case 'xlsx':
+      return require('@/assets/file-icon/excel.png')
+    case 'ppt':
+    case 'pptx':
+      return require('@/assets/file-icon/ppt.png')
+    case 'pdf':
+      return require('@/assets/file-icon/pdf.png')
+    case 'apk':
+      return require('@/assets/file-icon/android.png')
+    case 'zip':
+    case 'rar':
+      return require('@/assets/file-icon/compress.png')
+    case 'txt':
+      return require('@/assets/file-icon/txt.png')
+    default:
+      return require('@/assets/file-icon/other.png')
+  }
+}

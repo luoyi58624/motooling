@@ -1,6 +1,6 @@
 <!--聊天历史-->
 <template>
-  <div>
+  <div class="chat-history-container">
     <h2 class="title">历史记录</h2>
     <van-tabs v-model="active" type="card" color="#3498db">
       <van-tab title="聊天记录">
@@ -9,10 +9,8 @@
           <ul>
             <li v-for="(item, index) in recordList" :key="index">
               <!--渲染用户名和时间-->
-              <h3
-                v-if="item.contentType!==5 && item.contentType!==7"
-                class="username"
-                :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
+              <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8"
+                  class="username" :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
                 {{ item.username }} {{ item.sendTime }}
               </h3>
               <!--渲染消息内容-->
@@ -30,18 +28,10 @@
                 <span>{{ item.duration }}"</span>
               </div>
               <div class="text-left" v-else-if="item.contentType === 4">
-                <video
-                  preload="meta"
-                  :src="fileAddressFormatFunc(item.content)"
-                  controls="controls"
-                  width="250"
-                  height="140"
-                  @click="playVideo($event)"
-                ></video>
+                <video preload="meta" :src="fileAddressFormatFunc(item.content)" controls="controls"
+                  width="250" height="140" @click="playVideo($event)"></video>
               </div>
-              <template v-else-if="item.contentType === 5">
-                <div class="system-message">{{ item.content }}</div>
-              </template>
+              <div v-else-if="item.contentType === 5" class="system-message">{{ item.content }}</div>
               <template v-else-if="item.contentType === 7">
                 <div class="system-message" v-if="item.content.senderId == uid">
                   {{ item.content.sendeContent }}
@@ -53,6 +43,21 @@
                   {{ item.content.otherContent }}
                 </div>
               </template>
+              <template v-else-if="item.contentType === 8">
+                <div class="system-message" v-if="uid === item.senderId">你撤回了一条消息</div>
+                <div v-else class="system-message">{{ `${item.username}撤回了一条消息` }}</div>
+              </template>
+              <div class="file-message-container" v-else-if="item.contentType === 9">
+                <div class="file-message">
+                  <div class="file-info">
+                    <div class="name">{{ item.content.fileName }}</div>
+                    <div class="size">{{ item.content.fileSize }}</div>
+                  </div>
+                  <div class="file-icon">
+                    <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
+                  </div>
+                </div>
+              </div>
               <template v-else>
                 <p class="content">{{ item.content }}</p>
               </template>
@@ -77,19 +82,13 @@
 
 <script>
 import { mapState } from 'vuex'
-import debounce from '@/utils/debounce'
 import { synergyRecordPage } from '@/api/synergy/synergy'
-import { time } from '@/utils/time'
 import { ImagePreview } from 'vant'
-import { fileAddressFormat } from '@/utils/utils'
+import { fileAddressFormat, loadFileIcon } from '@/utils/utils'
 
 export default {
   name: 'ChatHistory',
   props: {
-    showPanel: {
-      type: Boolean,
-      default: false
-    },
     initDate: {
       type: Array,
       default: () => []
@@ -97,14 +96,11 @@ export default {
   },
   data () {
     return {
+      currentGroupId: '',
       active: 0,
       searchValue: '',
       recordList: [],
-      noMoreRecords: false,
-      currentAudio: '',
-      loadedScrollTop: 0,
-      beforeLoadedScrollTop: 0,
-      loading: false // 数据是否加载中
+      currentAudio: ''
     }
   },
   computed: {
@@ -114,66 +110,35 @@ export default {
     })
   },
   methods: {
-    openHandler () {
-      this.$emit('update:showPanel', true)
-      this.recordList = this.initDate
-      this.$nextTick(() => {
-        this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
-        this.$refs.talkContent.addEventListener(
-          'scroll',
-          debounce(this.loadMoreRecordList, 500)
-        )
-      })
-    },
-    closeHandler () {
-      this.$emit('update:showPanel', false)
-      this.searchValue = ''
-      this.noMoreRecords = false
-      this.$refs.talkContent.removeEventListener(
-        'scroll',
-        debounce(this.loadMoreRecordList, 500)
-      )
-    },
-    loadMoreRecordList () {
-      // 如果没有更多数据或者数据数据还在加载中，则禁止发送请求
-      if (this.noMoreRecords || this.loading) {
-        return false
-      } else {
-        if (this.$refs.talkContent.scrollTop === 0) {
-          this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
-          this.loading = true
-          synergyRecordPage({
-            id: this.recordList[0].id,
-            groupId: this.groupId
-          }).then((res) => {
-            const result = res.recordList
-            if (result.length !== 0) {
-              let recordList = result.reverse()
-              recordList.forEach(item => {
-                if (item.data.contentType === 7 || item.data.contentType === 9) {
-                  item.data.content = JSON.parse(item.data.content)
-                }
-              })
-              let _recordList = time(recordList)
-              this.recordList = _recordList.concat(this.recordList)
+    openPanel () {
+      if (this.currentGroupId === '' || this.currentGroupId !== this.$store.state.groupId) {
+        this.currentGroupId = this.$store.state.groupId
+        synergyRecordPage({
+          id: this.initDate[this.initDate.length - 1].id,
+          groupId: this.currentGroupId,
+          pageSize: 1000000
+        }).then(res => {
+          this.recordList = res.recordList.map(item => {
+            if (item.data.contentType === 7 || item.data.contentType === 9) {
+              item.data.content = JSON.parse(item.data.content)
             }
-            if (result.length < 15) {
-              this.noMoreRecords = true
-            }
-
-            this.$nextTick(() => {
-              this.loadedScrollTop = this.$refs.talkContent.scrollHeight
-              this.$refs.talkContent.scrollTop =
-                this.loadedScrollTop - this.beforeLoadedScrollTop
-            })
-          }).finally(() => {
-            this.loading = false
+            return item.data
+          }).reverse()
+          this.recordList.push(this.initDate[this.initDate.length - 1])
+          this.$nextTick(() => {
+            this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
           })
-        }
+        })
       }
+    },
+    closePanel () {
+      this.searchValue = ''
     },
     fileAddressFormatFunc (url) {
       return fileAddressFormat(url)
+    },
+    fileIcon (fileName) {
+      return loadFileIcon(fileName)
     },
     reviewImage (img) {
       ImagePreview({
@@ -199,13 +164,9 @@ export default {
 </script>
 
 <style scoped lang="less">
-.custom-popup {
+.chat-history-container {
   height: 100%;
-  width: 360px;
-  border-left: 1px solid #cccccc;
-  box-shadow: 0 2px 5.3px rgba(0, 0, 0, 0.2),
-  0 6.7px 17.9px rgba(0, 0, 0, 0.087),
-  0 30px 80px rgba(0, 0, 0, 0.062);
+  width: 100%;
 }
 
 .title {
@@ -219,7 +180,7 @@ export default {
 }
 
 .talk-content {
-  height: calc(100vh - 180px);
+  height: calc(100vh - 230px);
   overflow-y: auto;
   padding: 16px;
 
@@ -263,5 +224,41 @@ export default {
 
 .text-left {
   text-align: left;
+}
+
+.file-message {
+  width: 200px;
+  margin-top: 4px;
+  padding: 10px 8px;
+  background-color: white;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+
+  & > .file-info {
+    & > .name {
+      height: 50%;
+      display: flex;
+      align-items: center;
+    }
+
+    & > .size {
+      height: 50%;
+      color: #636e72;
+      font-size: 12px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  & > .file-icon {
+    margin: 0 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 </style>

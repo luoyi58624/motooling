@@ -32,8 +32,6 @@ export default new Vuex.Store({
     value: null,
     groupId: null,
     relationType: null,
-    showChatHistory: false, // 是否显示历史聊天记录面板
-    allChatHistoryMessage: [], // 单个群聊所有历史消息
     groupAt: false, // 输入@后是否显示用户列表
     wordContent: '', // 聊天编辑器输入的内容
     editor: null, // 编辑器对象

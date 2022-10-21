@@ -146,7 +146,7 @@ export default {
   data () {
     return {
       toolbarConfig: {
-        toolbarKeys: ['uploadImage', 'uploadVideo', 'uploadFile', 'emotion']
+        toolbarKeys: ['uploadImage', 'uploadVideo', 'uploadFile', 'emotion', 'history']
       },
       wordContent: '',
       editorConfig,
