@@ -107,7 +107,7 @@ class HistoryMenu {
   }
 
   async exec (editor, value) {
-    eventBus.emit('showRecordPanel')
+    eventBus.emit('showChatHistoryPanel')
   }
 }
 

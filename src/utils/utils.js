@@ -109,6 +109,21 @@ export function requestNotification () {
   })
 }
 
+// 聊天数据处理
+export function chatDataHandler (datas) {
+  return datas.map(item => {
+    // 如果数据类型是拍一拍、文件，则需要转换json字符串
+    if (item.data.contentType === 7 || item.data.contentType === 9) {
+      // 测试时插了几条脏数据，纯字符串转对象会报错
+      try {
+        item.data.content = JSON.parse(item.data.content)
+      } catch (e) {
+      }
+    }
+    return item.data
+  }).reverse() // 反转数据
+}
+
 export function loadFileIcon (fileName) {
   const fileSuffix = getFileSuffix(fileName)
   switch (fileSuffix) {

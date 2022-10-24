@@ -3,11 +3,12 @@
   <div class="chat-history-container">
     <h2 class="title">历史记录</h2>
     <van-tabs v-model="active" type="card" color="#3498db">
-      <van-tab title="聊天记录">
+      <van-tab title="全部">
         <van-search v-model="searchValue" placeholder="搜索聊天记录"/>
         <div ref="talkContent" class="talk-content">
           <ul>
-            <li v-for="(item, index) in recordList" :key="index">
+            <li v-for="(item, index) in recordList" :key="index"
+                @click="$emit('skip-target-message',item)">
               <!--渲染用户名和时间-->
               <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8"
                   class="username" :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
@@ -29,7 +30,7 @@
               </div>
               <div class="text-left" v-else-if="item.contentType === 4">
                 <video preload="meta" :src="fileAddressFormatFunc(item.content)" controls="controls"
-                  width="250" height="140" @click="playVideo($event)"></video>
+                       width="200" height="112" @click="playVideo($event)"></video>
               </div>
               <div v-else-if="item.contentType === 5" class="system-message">{{ item.content }}</div>
               <template v-else-if="item.contentType === 7">
@@ -66,14 +67,45 @@
         </div>
       </van-tab>
       <van-tab title="文件">
-        <div class="tag-container">
-          待开发。。。
+        <ul class="file-container">
+          <li v-for="item in allFiles" :key="item.id">
+            <div class="file-icon">
+              <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
+            </div>
+            <div style="width:100%; display: flex;justify-content: space-between;padding-left:8px;font-size: 12px;">
+              <div style="display: flex;flex-direction: column">
+                <div style="margin-bottom: 4px">{{ item.content.fileName }}</div>
+                <div style="display: flex;color: #7f8c8d">
+                  <div>{{ item.content.fileSize }}</div>
+                  <div style="margin-left: 4px">{{ item.username }}</div>
+                </div>
+              </div>
+              <div style="width: 60px;display: flex;flex-direction: column;justify-content: space-between">
+                <div style="margin-bottom: 4px;text-align: right">{{ item.sendTime }}</div>
+                <div class="show-source-message">查看原消息</div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </van-tab>
+      <van-tab title="图片">
+        <div class="image-container">
+          <div v-for="(image,index) in allImage" :key="index">
+            <div style="text-align: center">----- {{ image.time }} -----</div>
+            <div class="images-array">
+              <div v-for="item in image.datas" :key="item.id" class="image-item">
+                <el-image style="width: 100%; height: 100%"
+                          fit="contain"
+                          :z-index="3000"
+                          :src="fileAddressFormatFunc(item.content)"
+                          :preview-src-list="[fileAddressFormatFunc(item.content)]"/>
+              </div>
+            </div>
+          </div>
         </div>
       </van-tab>
-      <van-tab title="图片/视频">
-        <div class="tag-container">
-          待开发。。。
-        </div>
+      <van-tab title="视频">
+        <div style="padding: 16px">待开发...</div>
       </van-tab>
     </van-tabs>
     <audio :src="currentAudio" ref="audio"></audio>
@@ -84,7 +116,8 @@
 import { mapState } from 'vuex'
 import { synergyRecordPage } from '@/api/synergy/synergy'
 import { ImagePreview } from 'vant'
-import { fileAddressFormat, loadFileIcon } from '@/utils/utils'
+import { chatDataHandler, fileAddressFormat, loadFileIcon } from '@/utils/utils'
+import { formatDate } from '@/utils/time'
 
 export default {
   name: 'ChatHistory',
@@ -100,6 +133,7 @@ export default {
       active: 0,
       searchValue: '',
       recordList: [],
+      defaultData: [],
       currentAudio: ''
     }
   },
@@ -107,9 +141,65 @@ export default {
     ...mapState({
       uid: (state) => state.userInfo.uid,
       groupId: (state) => state.groupId
-    })
+    }),
+    allFiles () {
+      return this.defaultData.filter(item => item.contentType === 9).map(item => {
+        if (item.sendTime.length > 5) {
+          if (new Date(item.sendTime).getFullYear() < new Date().getFullYear()) {
+            item.sendTime = formatDate(item.sendTime, 'YYYY/MM/DD')
+          } else {
+            item.sendTime = formatDate(item.sendTime, 'MM/DD')
+          }
+        }
+        return item
+      })
+    },
+    /**
+     * 返回所有的图片
+     * @returns {*[]|void} [{time: '',datas: []}]
+     */
+    allImage () {
+      const medias = []
+      this.defaultData
+        .filter(item => item.contentType === 2 || item.contentType === 6)
+        .forEach(item => {
+          let flag = false
+          let index = -1
+          const time = formatDate(item.sendTime, 'YYYY-MM-DD')
+          // 提取相同日期的图片
+          for (let i = 0; i < medias.length; i++) {
+            if (time === formatDate(medias[i].time, 'YYYY-MM-DD')) {
+              flag = true
+              index = i
+              break
+            }
+          }
+          if (flag) {
+            medias[index].datas.push(item)
+          } else {
+            medias.push({
+              time,
+              datas: [item]
+            })
+          }
+        })
+      return medias
+    }
+  },
+  watch: {
+    searchValue (newValue) {
+      if (newValue === '') {
+        this.recordList = this.defaultData
+      } else {
+        this.recordList = this.defaultData.filter(item => item.contentType === 1 && item.content.indexOf(newValue) !== -1)
+        this.$nextTick(() => {
+          this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
+        })
+      }
+    }
   },
   methods: {
+    // 获取全部数据
     openPanel () {
       if (this.currentGroupId === '' || this.currentGroupId !== this.$store.state.groupId) {
         this.currentGroupId = this.$store.state.groupId
@@ -118,13 +208,10 @@ export default {
           groupId: this.currentGroupId,
           pageSize: 1000000
         }).then(res => {
-          this.recordList = res.recordList.map(item => {
-            if (item.data.contentType === 7 || item.data.contentType === 9) {
-              item.data.content = JSON.parse(item.data.content)
-            }
-            return item.data
-          }).reverse()
-          this.recordList.push(this.initDate[this.initDate.length - 1])
+          const data = chatDataHandler(res.recordList)
+          data.push(this.initDate[this.initDate.length - 1])
+          this.recordList = data
+          this.defaultData = data
           this.$nextTick(() => {
             this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
           })
@@ -164,6 +251,8 @@ export default {
 </script>
 
 <style scoped lang="less">
+@import url("./common.less");
+
 .chat-history-container {
   height: 100%;
   width: 100%;
@@ -175,19 +264,21 @@ export default {
   font-weight: bold;
 }
 
-.tag-container {
-  padding: 12px 16px;
-}
-
 .talk-content {
-  height: calc(100vh - 230px);
+  height: calc(100vh - 195px);
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px;
 
   & > ul > li {
-    margin: 16px 0;
     font-size: 12px;
     text-align: center;
+    padding: 8px 6px;
+    border-radius: 6px;
+
+    &:hover {
+      background-color: #f1f2f6;
+    }
 
     & > .system-message {
       padding: 6px;
@@ -222,6 +313,59 @@ export default {
   }
 }
 
+.file-container {
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 10px;
+  padding: 0 8px;
+
+  & > li {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+
+    .show-source-message {
+      color: #3498db;
+      opacity: 0;
+      cursor: pointer;
+      transition: opacity 0.28s;
+      white-space: nowrap;
+    }
+
+    &:hover {
+      background-color: #f1f2f6;
+
+      .show-source-message {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.image-container {
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 10px;
+  padding: 8px;
+
+  .images-array {
+    display: flex;
+    flex-wrap: wrap;
+
+    & > .image-item {
+      width: 48%;
+      aspect-ratio: 1/1;
+      margin: 1%;
+      padding: 4px;
+      border: 1px solid #b7b7b7;
+    }
+  }
+
+}
+
 .text-left {
   text-align: left;
 }
@@ -229,13 +373,12 @@ export default {
 .file-message {
   width: 200px;
   margin-top: 4px;
-  padding: 10px 8px;
+  padding: 6px 8px;
   background-color: white;
   border: 1px solid #cccccc;
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
-  cursor: pointer;
 
   & > .file-info {
     & > .name {
@@ -248,7 +391,6 @@ export default {
       height: 50%;
       color: #636e72;
       font-size: 12px;
-      margin-top: 4px;
       display: flex;
       align-items: center;
     }

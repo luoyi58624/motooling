@@ -138,7 +138,7 @@ export default {
           this.newList = res.newList
           this.$store.dispatch('newsList', res.newsList)
         })
-    }, 5000)
+    }, 3000)
     // this.im()
   },
   beforeDestroy () {

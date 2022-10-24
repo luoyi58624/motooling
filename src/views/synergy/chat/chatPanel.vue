@@ -24,7 +24,7 @@
                 <!--如果是群聊，自己发送的消息需要知道哪些人已读、未读-->
                 <template v-else-if="chattingTarget.type === 666">
                   <el-popover v-if="uid === item.senderId" placement="left" width="400" trigger="click">
-                    <div class="read-popover" style="width: 400px;height: 360px">
+                    <div class="read-popover" style="width: 380px;height: 360px">
                       <van-tabs color="#3498db">
                         <van-tab :title="readMessageUsers.length+'已读'">
                           <ul class="user-list">
@@ -178,7 +178,8 @@
         </div>
       </div>
       <div class="chat-history" v-show="recordPanel">
-        <chat-history ref="ChatHistory" :init-date="recordList"/>
+        <chat-history ref="ChatHistory" :init-date="recordList"
+                      @skip-target-message="skipTargetMessage"/>
       </div>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
@@ -191,7 +192,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { fileAddressFormat, loadFileIcon, requestNotification } from '@/utils/utils.js'
+import { chatDataHandler, fileAddressFormat, loadFileIcon, requestNotification } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -331,7 +332,7 @@ export default {
   },
   mounted () {
     eventBus.on('handleMessage', this.handleMessage)
-    eventBus.on('showRecordPanel', this.showRecordPanel)
+    eventBus.on('showChatHistoryPanel', this.showChatHistoryPanel)
     this.$eventBus.$on('beat', this.beat)
     this.$eventBus.$on('quit', this.quitGroup)
     requestNotification()
@@ -347,7 +348,7 @@ export default {
     clearInterval(clearReaderMessage)
     if (Object.keys(this.socket).length > 0) this.socket.close()
     eventBus.off('handleMessage', this.handleMessage)
-    eventBus.off('showRecordPanel', this.showRecordPanel)
+    eventBus.off('showChatHistoryPanel', this.showChatHistoryPanel)
   },
   methods: {
     init () {
@@ -389,11 +390,7 @@ export default {
           recordList.forEach(item => {
             // 自己发送的消息添加已读用户列表
             if (item.data.senderId === this.uid) item.data.readMessageUsers = []
-            if (item.data.contentType === 7) {
-              item.data.content = JSON.parse(item.data.content)
-            }
-            if (item.data.contentType === 9) {
-              // 测试时插了几条脏数据，纯字符串转对象会报错
+            if (item.data.contentType === 7 || item.data.contentType === 9) {
               try {
                 item.data.content = JSON.parse(item.data.content)
               } catch (e) {
@@ -582,11 +579,30 @@ export default {
     },
     receiveMessage (message) {
       console.log(message)
+
+      let messageContent
+      switch (message.data.contentType) {
+        case 2:
+        case 6:
+          messageContent = '[ 图片 ]'
+          break
+        case 3:
+          messageContent = '[ 录音 ]'
+          break
+        case 4:
+          messageContent = '[ 视频 ]'
+          break
+        case 9:
+          messageContent = '[ 文件 ]'
+          break
+        default:
+          messageContent = message.data.content
+      }
       // eslint-disable-next-line no-new
-      // new Notification(message.data.username, {
-      //   body: message.data.content,
-      //   icon: require('@/assets/logo.png')
-      // })
+      new Notification(message.data.username, {
+        body: messageContent,
+        icon: require('@/assets/logo.png')
+      })
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
 
@@ -851,7 +867,7 @@ export default {
       })
       this.selectedGroupMember = null
     },
-    showRecordPanel () {
+    showChatHistoryPanel () {
       if (this.recordList.length > 0) {
         this.recordPanel = !this.recordPanel
         this.$nextTick(() => {
@@ -867,6 +883,10 @@ export default {
         message: '确定要下载该文件吗'
       }).then(() => {
         saveAs(url, fileName)
+        // const a = document.createElement('a')
+        // a.href = url
+        // a.download = fileName
+        // a.click()
       })
     },
     fileIcon (fileName) {
@@ -930,6 +950,43 @@ export default {
           this.unReadMessageUsers.push(groupMember[i])
         }
       }
+    },
+    // 跳转到目标消息
+    skipTargetMessage (item) {
+      synergyRecordPage({
+        maxId: item.id,
+        groupId: this.groupId
+      }).then(res => {
+        const datas = [item].concat(chatDataHandler(res.recordList))
+        datas.forEach(item => {
+          if (item.senderId === this.uid) item.readMessageUsers = []
+        })
+        this.recordList = datas
+        this.$nextTick(() => {
+          this.$refs.talkContent.scrollTo({
+            top: 5
+          })
+        })
+      })
+
+      // 废弃
+      // const prev = synergyRecordPage({
+      //   id: item.id,
+      //   groupId: this.groupId
+      // })
+      // const next = synergyRecordPage({
+      //   maxId: item.id,
+      //   groupId: this.groupId
+      // })
+      // axios.all([prev, next]).then(([prevData, nextData]) => {
+      //   const datas = chatDataHandler(prevData.recordList)
+      //     .concat([item])
+      //     .concat(chatDataHandler(nextData.recordList))
+      //   datas.forEach(item => {
+      //     if (item.senderId === this.uid) item.readMessageUsers = []
+      //   })
+      //   this.recordList = datas
+      // })
     }
   }
 }
