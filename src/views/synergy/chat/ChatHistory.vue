@@ -8,7 +8,7 @@
         <div ref="talkContent" class="talk-content">
           <ul>
             <li v-for="(item, index) in recordList" :key="index"
-                @click="$emit('skip-target-message',item)">
+                @click="emitSkipEvent(item)">
               <!--渲染用户名和时间-->
               <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8"
                   class="username" :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
@@ -68,8 +68,8 @@
       </van-tab>
       <van-tab title="文件">
         <ul class="file-container">
-          <li v-for="item in allFiles" :key="item.id">
-            <div class="file-icon">
+          <li v-for="item in allFiles" :key="item.id" @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
+            <div>
               <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
             </div>
             <div style="width:100%; display: flex;justify-content: space-between;padding-left:8px;font-size: 12px;">
@@ -82,7 +82,7 @@
               </div>
               <div style="width: 60px;display: flex;flex-direction: column;justify-content: space-between">
                 <div style="margin-bottom: 4px;text-align: right">{{ item.sendTime }}</div>
-                <div class="show-source-message">查看原消息</div>
+                <div class="show-source-message" @click.self.stop="emitSkipEvent(item)">查看原消息</div>
               </div>
             </div>
           </li>
@@ -91,7 +91,7 @@
       <van-tab title="图片">
         <div class="image-container">
           <div v-for="(image,index) in allImage" :key="index">
-            <div style="text-align: center">----- {{ image.time }} -----</div>
+            <div style="text-align: center;margin: 8px 0">----- {{ image.time }} -----</div>
             <div class="images-array">
               <div v-for="item in image.datas" :key="item.id" class="image-item">
                 <el-image style="width: 100%; height: 100%"
@@ -99,6 +99,7 @@
                           :z-index="3000"
                           :src="fileAddressFormatFunc(item.content)"
                           :preview-src-list="[fileAddressFormatFunc(item.content)]"/>
+                <div class="show-source-message" @click="emitSkipEvent(item)">查看原消息</div>
               </div>
             </div>
           </div>
@@ -115,9 +116,10 @@
 <script>
 import { mapState } from 'vuex'
 import { synergyRecordPage } from '@/api/synergy/synergy'
-import { ImagePreview } from 'vant'
+import { Dialog, ImagePreview } from 'vant'
 import { chatDataHandler, fileAddressFormat, loadFileIcon } from '@/utils/utils'
 import { formatDate } from '@/utils/time'
+import { saveAs } from 'file-saver'
 
 export default {
   name: 'ChatHistory',
@@ -152,38 +154,33 @@ export default {
           }
         }
         return item
-      })
+      }).reverse()
     },
-    /**
-     * 返回所有的图片
-     * @returns {*[]|void} [{time: '',datas: []}]
-     */
     allImage () {
-      const medias = []
+      const images = []
       this.defaultData
         .filter(item => item.contentType === 2 || item.contentType === 6)
         .forEach(item => {
           let flag = false
           let index = -1
           const time = formatDate(item.sendTime, 'YYYY-MM-DD')
-          // 提取相同日期的图片
-          for (let i = 0; i < medias.length; i++) {
-            if (time === formatDate(medias[i].time, 'YYYY-MM-DD')) {
+          for (let i = 0; i < images.length; i++) {
+            if (time === formatDate(images[i].time, 'YYYY-MM-DD')) {
               flag = true
               index = i
               break
             }
           }
           if (flag) {
-            medias[index].datas.push(item)
+            images[index].datas.push(item)
           } else {
-            medias.push({
+            images.push({
               time,
               datas: [item]
             })
           }
         })
-      return medias
+      return images.reverse()
     }
   },
   watch: {
@@ -208,7 +205,7 @@ export default {
           groupId: this.currentGroupId,
           pageSize: 1000000
         }).then(res => {
-          const data = chatDataHandler(res.recordList)
+          const data = chatDataHandler(res.recordList).reverse()
           data.push(this.initDate[this.initDate.length - 1])
           this.recordList = data
           this.defaultData = data
@@ -245,6 +242,17 @@ export default {
       } else {
         e.target.pause()
       }
+    },
+    emitSkipEvent (item) {
+      this.$emit('skip-target-message', item)
+    },
+    downloadFile (url, fileName) {
+      Dialog.confirm({
+        title: '文件下载',
+        message: '确定要下载该文件吗'
+      }).then(() => {
+        saveAs(url, fileName)
+      })
     }
   }
 }
@@ -361,6 +369,28 @@ export default {
       margin: 1%;
       padding: 4px;
       border: 1px solid #b7b7b7;
+      position: relative;
+
+      & > .show-source-message {
+        width: 100%;
+        height: 24px;
+        font-size: 12px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        color: white;
+      }
+
+      &:hover{
+        .show-source-message{
+          opacity: 1;
+        }
+      }
     }
   }
 

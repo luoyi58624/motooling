@@ -2,12 +2,12 @@
   <div class="chat-panel" v-show="groupId">
     <nav>
       <div class="chatting-name">
-        <input style="width: 580px" type="text" v-if="chattingTarget.type == 666" :value="chattingTarget.name"
+        <input style="width: 580px" type="text" v-if="chattingTarget.type === 666" :value="chattingTarget.name"
                maxlength="50" @blur="setGroupName($event.target.value)"/>
-        <span v-else-if="chattingTarget.type == 66">{{ chattingTarget.name }}</span>
+        <span v-else-if="chattingTarget.type === 66">{{ chattingTarget.name }}</span>
         <span v-else>{{ talkMember }}</span>
       </div>
-      <div class="add-member" v-if="chattingTarget.type == 666" @click="$emit('add-user', true)"></div>
+      <div class="add-member" v-if="chattingTarget.type === 666" @click="$emit('add-user', true)"></div>
     </nav>
     <div class="chat-content">
       <div class="talk-wrapper" :style="[chatContainerWidth]">
@@ -257,11 +257,11 @@ export default {
       timeout: null,
       chattingTarget: {},
       groupMember: [],
-      noMoreRecords: false,
       currentAudio: '',
       loadedScrollTop: 0,
       beforeLoadedScrollTop: 0,
-      loadRecordTag: '',
+      noMorePullUpRecords: false, // 聊天数据是否已到顶
+      noMorePullDownRecords: false, // 聊天数据是否已到底
       uList: [],
       recordPanel: false,
       disableSendMsg: false, // 是否禁止发送消息，防止重复发送
@@ -592,6 +592,9 @@ export default {
         case 4:
           messageContent = '[ 视频 ]'
           break
+        case 7:
+          messageContent = ' 拍一拍 '
+          break
         case 9:
           messageContent = '[ 文件 ]'
           break
@@ -606,7 +609,7 @@ export default {
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
 
-      if (message.data.contentType === 9) {
+      if (message.data.contentType === 7 || message.data.contentType === 9) {
         message.data.content = JSON.parse(message.data.content)
       }
       this.recordList.push({ ...message.data, sendTime })
@@ -644,7 +647,6 @@ export default {
     sendWordMessage (e) {
       if (this.disableSendMsg) return
       this.disableSendMsg = true
-      this.loadRecordTag = ''
       if (this.$store.state.wordContent.trim() !== '') {
         const currentTime = new Date()
         const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
@@ -718,39 +720,53 @@ export default {
     },
     // 获取聊天记录
     loadMoreRecordList () {
-      if (this.noMoreRecords) {
-        return false
-      } else {
-        if (this.$refs.talkContent && this.$refs.talkContent.scrollTop === 0) {
-          this.loadRecordTag = 'load'
-          this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
-          synergyRecordPage({ id: this.mainKeyId, groupId: this.groupId }).then((res) => {
-            const result = res.recordList
-            if (result.length !== 0) {
-              let recordList = result.reverse()
-              this.mainKeyId = recordList[0].data.id
-              recordList.forEach(item => {
-                if (item.data.senderId === this.uid) item.data.readMessageUsers = []
-                if (item.data.contentType === 7 || item.data.contentType === 9) {
-                  item.data.content = JSON.parse(item.data.content)
-                }
-              })
-              let _recordList = time(recordList)
-              this.recordList = _recordList.concat(this.recordList)
-            }
-            if (result.length < 15) {
-              this.noMoreRecords = true
-            }
-
-            this.getReadMessage()
-
-            this.$nextTick(() => {
-              this.loadedScrollTop = this.$refs.talkContent.scrollHeight
-              this.$refs.talkContent.scrollTop =
-                this.loadedScrollTop - this.beforeLoadedScrollTop
+      if (this.$refs.talkContent == null) return
+      // 如果滚动条距离底部小于50px则加载底部数据
+      if ((this.$refs.talkContent.scrollTop + this.$refs.talkContent.clientHeight + 50) >= this.$refs.talkContent.scrollHeight) {
+        synergyRecordPage({
+          maxId: this.recordList[this.recordList.length - 1].id,
+          groupId: this.groupId
+        }).then((res) => {
+          if (res.recordList && res.recordList.length > 0) {
+            let recordList = res.recordList
+            recordList.forEach(item => {
+              if (item.data.senderId === this.uid) item.data.readMessageUsers = []
+              if (item.data.contentType === 7 || item.data.contentType === 9) {
+                item.data.content = JSON.parse(item.data.content)
+              }
             })
+            this.recordList = this.recordList.concat(time(recordList))
+            this.getReadMessage()
+          }
+        })
+        // 如果滚动条到顶，则加载上面的数据
+      } else if (this.$refs.talkContent.scrollTop === 0) {
+        if (this.noMorePullUpRecords) return
+        this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
+        synergyRecordPage({ id: this.mainKeyId, groupId: this.groupId }).then((res) => {
+          const result = res.recordList
+          if (result.length !== 0) {
+            let recordList = result.reverse()
+            this.mainKeyId = recordList[0].data.id
+            recordList.forEach(item => {
+              if (item.data.senderId === this.uid) item.data.readMessageUsers = []
+              if (item.data.contentType === 7 || item.data.contentType === 9) {
+                item.data.content = JSON.parse(item.data.content)
+              }
+            })
+            let _recordList = time(recordList)
+            this.recordList = _recordList.concat(this.recordList)
+          }
+          if (result.length < 15) {
+            this.noMorePullUpRecords = true
+          }
+          this.getReadMessage()
+          this.$nextTick(() => {
+            this.loadedScrollTop = this.$refs.talkContent.scrollHeight
+            this.$refs.talkContent.scrollTop =
+              this.loadedScrollTop - this.beforeLoadedScrollTop
           })
-        }
+        })
       }
     },
     // 对群成员的操作
@@ -957,6 +973,8 @@ export default {
         maxId: item.id,
         groupId: this.groupId
       }).then(res => {
+        console.log(res)
+
         const datas = [item].concat(chatDataHandler(res.recordList))
         datas.forEach(item => {
           if (item.senderId === this.uid) item.readMessageUsers = []
@@ -964,29 +982,10 @@ export default {
         this.recordList = datas
         this.$nextTick(() => {
           this.$refs.talkContent.scrollTo({
-            top: 5
+            top: 2
           })
         })
       })
-
-      // 废弃
-      // const prev = synergyRecordPage({
-      //   id: item.id,
-      //   groupId: this.groupId
-      // })
-      // const next = synergyRecordPage({
-      //   maxId: item.id,
-      //   groupId: this.groupId
-      // })
-      // axios.all([prev, next]).then(([prevData, nextData]) => {
-      //   const datas = chatDataHandler(prevData.recordList)
-      //     .concat([item])
-      //     .concat(chatDataHandler(nextData.recordList))
-      //   datas.forEach(item => {
-      //     if (item.senderId === this.uid) item.readMessageUsers = []
-      //   })
-      //   this.recordList = datas
-      // })
     }
   }
 }
@@ -999,6 +998,14 @@ export default {
   position: relative;
   height: 100%;
   background-color: #fff;
+
+  .pull-refresh-loading {
+    position: absolute;
+    z-index: 100;
+    left: 50%;
+    top: 10px;
+    transform: translateX(-50%);
+  }
 }
 
 .member-list {

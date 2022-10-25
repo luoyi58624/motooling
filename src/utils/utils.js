@@ -31,7 +31,13 @@ export function getStringQueryString (str, query) {
 
 // 获取URL中查询参数
 // export const WEBURL = () => localStorage.getItem('WEBURL') || ''
-export const WEBURL = () => sessionStorage.getItem('WEBURL') || ''
+export const WEBURL = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return localStorage.getItem('WEBURL') || ''
+  } else {
+    return sessionStorage.getItem('WEBURL') || ''
+  }
+}
 
 export const BASEURL = () => localStorage.getItem('WEBURL') || ''
 
@@ -122,7 +128,7 @@ export function chatDataHandler (datas) {
       }
     }
     return item.data
-  }).reverse() // 反转数据
+  }) // 反转数据
 }
 
 export function loadFileIcon (fileName) {

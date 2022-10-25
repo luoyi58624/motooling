@@ -275,15 +275,14 @@ export default {
     },
     // 拍一拍
     handleBeat ({ memberList }) {
+      console.log(memberList)
       const receiver = memberList.find((item) => {
         return item.uid !== +this.uid
       })
-      const sender = memberList.find((item) => {
-        return item.uid === +this.uid
-      })
+
       this.$eventBus.$emit('beat', {
         senterID: +this.uid,
-        senderName: sender.username || sender.nickname,
+        senderName: this.$store.state.userInfo.username || this.$store.state.userInfo.nickname,
         receiverID: receiver.uid,
         username: receiver.username || receiver.nickname
       })
