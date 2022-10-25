@@ -158,3 +158,19 @@ export function loadFileIcon (fileName) {
       return require('@/assets/file-icon/other.png')
   }
 }
+
+// 判断文件是否是office类型
+export function isOffice (fileName) {
+  const fileSuffix = getFileSuffix(fileName)
+  switch (fileSuffix) {
+    case 'doc':
+    case 'docx':
+    case 'xls':
+    case 'xlsx':
+    case 'ppt':
+    case 'pptx':
+      return true
+    default:
+      return false
+  }
+}

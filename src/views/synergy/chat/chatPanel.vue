@@ -111,14 +111,34 @@
                            @click="playVideo($event)"/>
                   </div>
                   <div class="file-message-container" v-if="item.contentType === 9">
-                    <div class="file-message"
-                         @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
+                    <div class="file-message">
                       <div class="file-info">
                         <div class="name">{{ item.content.fileName }}</div>
                         <div class="size">{{ item.content.fileSize }}</div>
                       </div>
                       <div class="file-icon">
                         <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
+                      </div>
+                      <div class="file-operate">
+                        <div class="file-download"
+                             @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
+                          <svg t="1666682407933" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                               xmlns="http://www.w3.org/2000/svg" p-id="19604" width="32" height="32">
+                            <path
+                              d="M828.975746 894.125047 190.189132 894.125047c-70.550823 0-127.753639-57.18542-127.753639-127.752616L62.435493 606.674243c0-17.634636 14.308891-31.933293 31.93227-31.933293l63.889099 0c17.634636 0 31.93227 14.298658 31.93227 31.933293l0 95.821369c0 35.282574 28.596292 63.877843 63.87682 63.877843L765.098927 766.373455c35.281551 0 63.87682-28.595268 63.87682-63.877843l0-95.821369c0-17.634636 14.298658-31.933293 31.943526-31.933293l63.877843 0c17.634636 0 31.933293 14.298658 31.933293 31.933293l0 159.699212C956.729385 836.939627 899.538849 894.125047 828.975746 894.125047L828.975746 894.125047zM249.938957 267.509636c12.921287-12.919241 33.884738-12.919241 46.807049 0l148.97087 148.971893L445.716876 94.89323c0-17.634636 14.300704-31.94762 31.933293-31.94762l63.875796 0c17.637706 0 31.945573 14.312984 31.945573 31.94762l0 321.588299 148.97087-148.971893c12.921287-12.919241 33.875528-12.919241 46.796816 0l46.814212 46.818305c12.921287 12.922311 12.921287 33.874505 0 46.807049L552.261471 624.930025c-1.140986 1.137916-21.664416 13.68365-42.315758 13.69286-20.87647 0.010233-41.878806-12.541641-43.020816-13.69286L203.121676 361.13499c-12.922311-12.933567-12.922311-33.884738 0-46.807049L249.938957 267.509636 249.938957 267.509636z"
+                              p-id="19605" fill="#ffffff"></path>
+                          </svg>
+                        </div>
+                        <a class="file-preview" v-if="officeFile(item.content.fileName)"
+                           :href="'https://view.officeapps.live.com/op/view.aspx?src='+fileAddressFormatFunc(item.content.fileUrl)"
+                           target="_blank">
+                          <svg t="1666681918099" class="icon" viewBox="0 0 1331 1024" version="1.1"
+                               xmlns="http://www.w3.org/2000/svg" p-id="18329" width="32" height="32">
+                            <path
+                              d="M665.6 1023.0784C298.2912 1023.0784 37.5808 694.5792 0.6144 512 37.4784 329.5232 298.2912 0.9216 665.6 0.9216c367.3088 0 628.0192 328.6016 664.9856 511.0784-36.864 182.5792-297.6768 511.0784-664.9856 511.0784z m0-912.5888C375.6032 110.4896 159.744 363.8272 114.688 512c45.056 148.1728 260.9152 401.6128 550.912 401.6128S1171.456 660.1728 1216.512 512c-45.056-148.1728-260.9152-401.5104-550.912-401.5104z m0 620.544C543.1296 731.136 443.904 633.0368 443.904 512s99.328-219.0336 221.696-219.0336c122.4704 0 221.696 97.9968 221.696 219.0336S787.968 731.136 665.6 731.136z m0-328.6016c-61.1328 0-110.7968 49.152-110.7968 109.568 0 60.416 49.664 109.568 110.7968 109.568 61.1328 0 110.7968-49.152 110.7968-109.568 0-60.416-49.664-109.568-110.7968-109.568z"
+                              p-id="18330" fill="#ffffff"></path>
+                          </svg>
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -192,7 +212,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { chatDataHandler, fileAddressFormat, loadFileIcon, requestNotification } from '@/utils/utils.js'
+import { chatDataHandler, fileAddressFormat, isOffice, loadFileIcon, requestNotification } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -908,6 +928,9 @@ export default {
     fileIcon (fileName) {
       return loadFileIcon(fileName)
     },
+    officeFile (fileName) {
+      return isOffice(fileName)
+    },
     openContextMenu (event, messageItem) {
       this.$refs.ContextMenu.openContextMenu(event, messageItem)
     },
@@ -1231,7 +1254,7 @@ nav {
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
-  cursor: pointer;
+  position: relative;
 
   & > .file-info {
     & > .name {
@@ -1254,6 +1277,47 @@ nav {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  & > .file-operate {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+
+    & > .file-download {
+      cursor: pointer;
+
+      &:hover {
+        & > svg {
+          fill: #3498db;
+        }
+      }
+    }
+
+    & > .file-preview {
+      cursor: pointer;
+
+      &:hover {
+        & > svg {
+          fill: #3498db;
+        }
+      }
+    }
+  }
+
+  &:hover {
+    & > .file-operate {
+      opacity: 1;
+    }
   }
 }
 
