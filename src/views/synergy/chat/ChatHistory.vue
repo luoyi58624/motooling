@@ -7,7 +7,7 @@
         <van-search v-model="searchValue" placeholder="搜索聊天记录"/>
         <div ref="talkContent" class="talk-content">
           <ul>
-            <li v-for="(item, index) in recordList" :key="index"
+            <li v-for="(item, index) in showMessage" :key="index"
                 @click="emitSkipEvent(item)">
               <!--渲染用户名和时间-->
               <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8"
@@ -68,7 +68,8 @@
       </van-tab>
       <van-tab title="文件">
         <ul class="file-container">
-          <li v-for="item in allFiles" :key="item.id" @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
+          <li v-for="item in allFiles" :key="item.id"
+              @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
             <div>
               <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
             </div>
@@ -116,7 +117,7 @@
 <script>
 import { mapState } from 'vuex'
 import { synergyRecordPage } from '@/api/synergy/synergy'
-import { Dialog, ImagePreview } from 'vant'
+import { Dialog } from 'vant'
 import { chatDataHandler, fileAddressFormat, loadFileIcon } from '@/utils/utils'
 import { formatDate } from '@/utils/time'
 import { saveAs } from 'file-saver'
@@ -134,8 +135,8 @@ export default {
       currentGroupId: '',
       active: 0,
       searchValue: '',
-      recordList: [],
-      defaultData: [],
+      showMessage: [], // 需要展示的聊天记录
+      allMessage: [], // 所有的聊天记录
       currentAudio: ''
     }
   },
@@ -145,7 +146,7 @@ export default {
       groupId: (state) => state.groupId
     }),
     allFiles () {
-      return this.defaultData.filter(item => item.contentType === 9).map(item => {
+      return this.allMessage.filter(item => item.contentType === 9).map(item => {
         if (item.sendTime.length > 5) {
           if (new Date(item.sendTime).getFullYear() < new Date().getFullYear()) {
             item.sendTime = formatDate(item.sendTime, 'YYYY/MM/DD')
@@ -158,7 +159,7 @@ export default {
     },
     allImage () {
       const images = []
-      this.defaultData
+      this.allMessage
         .filter(item => item.contentType === 2 || item.contentType === 6)
         .forEach(item => {
           let flag = false
@@ -186,9 +187,9 @@ export default {
   watch: {
     searchValue (newValue) {
       if (newValue === '') {
-        this.recordList = this.defaultData
+        this.showMessage = this.allMessage
       } else {
-        this.recordList = this.defaultData.filter(item => item.contentType === 1 && item.content.indexOf(newValue) !== -1)
+        this.showMessage = this.allMessage.filter(item => item.contentType === 1 && item.content.indexOf(newValue) !== -1)
         this.$nextTick(() => {
           this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
         })
@@ -207,8 +208,8 @@ export default {
         }).then(res => {
           const data = chatDataHandler(res.recordList).reverse()
           data.push(this.initDate[this.initDate.length - 1])
-          this.recordList = data
-          this.defaultData = data
+          this.showMessage = data
+          this.allMessage = data
           this.$nextTick(() => {
             this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
           })
@@ -224,12 +225,6 @@ export default {
     fileIcon (fileName) {
       return loadFileIcon(fileName)
     },
-    reviewImage (img) {
-      ImagePreview({
-        images: [img],
-        closeable: true
-      })
-    },
     // 播放音频
     playAudio (src) {
       this.$refs.audio.src = src
@@ -244,7 +239,15 @@ export default {
       }
     },
     emitSkipEvent (item) {
-      this.$emit('skip-target-message', item)
+      let index
+      for (let i = 0; i < this.allMessage.length; i++) {
+        if (item.id === this.allMessage[i].id) {
+          index = i
+          break
+        }
+      }
+      if (index + 15 > this.allMessage.length) index = this.allMessage.length - 15
+      this.$emit('skip-target-message', item, this.allMessage.slice(index, this.allMessage.length))
     },
     downloadFile (url, fileName) {
       Dialog.confirm({
@@ -386,8 +389,8 @@ export default {
         color: white;
       }
 
-      &:hover{
-        .show-source-message{
+      &:hover {
+        .show-source-message {
           opacity: 1;
         }
       }

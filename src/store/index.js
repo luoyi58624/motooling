@@ -24,20 +24,29 @@ export default new Vuex.Store({
     // 对部门发料
     wuliaoList: [],
     wxSignUrl: '', // 调用微信jssdk接口所需要的url地址
-    // 当前聊天对象
-    chatTargetInfo: {},
+    chatTargetInfo: {}, // 当前聊天对象
     newsList: [],
+    userInfo: {},
     latestMessageId: null,
     notReadCount: null,
     value: null,
-    groupId: null,
     relationType: null,
     groupAt: false, // 输入@后是否显示用户列表
     wordContent: '', // 聊天编辑器输入的内容
     editor: null, // 编辑器对象
-    activeId: 0,
-    userInfo: {},
-    messageDraft: [] // 消息草稿
+    groupId: null, // 当前群组ID
+    messageDraft: [], // 消息草稿
+    /**
+     * 保存所有群聊消息
+     * messageRecord: [
+     *   {
+     *     groupId: Number  // 群组ID
+     *     messages: []     // 当前群聊所有消息
+     *     historyMessages: []
+     *   }
+     * ]
+     */
+    messageRecord: []
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -90,9 +99,6 @@ export default new Vuex.Store({
     },
     VALUE: (state, value) => {
       state.value = value
-    },
-    ACTIVE_ID: (state, activeID) => {
-      state.activeId = activeID
     },
     USER_INFO: (state, data) => {
       state.userInfo = data
