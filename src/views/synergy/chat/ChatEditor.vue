@@ -19,11 +19,13 @@
 </template>
 
 <script>
+import eventBus from '@/utils/mitt'
 import { Boot } from '@wangeditor/editor'
+import ctrlEnterModule from '@wangeditor/plugin-ctrl-enter'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { fileUpload, imgUpload } from '@/api/upload/upload'
-import eventBus from '@/utils/mitt'
 import { readFile } from '@/utils/utils'
+import { execUploadFile } from '@/utils/projectUtils'
 
 const ChatEditor = {
   name: 'ChatEditor',
@@ -53,18 +55,10 @@ const ChatEditor = {
     onChange (editor) {
       this.$store.commit('setDraftMessage', editor.getText())
       this.$emit('change', editor.getText())
-      // this.$store.commit('setDraftMessage', editor.getHtml())
-      // this.$emit('change', editor.getHtml())
     },
     keyupSendMsg (e) {
-      if (e.ctrlKey && e.key === 'Enter') {
-        this.$emit('change', this.$store.state.editor.getText() + '\n')
-        this.$nextTick(() => {
-          this.$store.state.editor.focus(true)
-        })
-      } else if (e.key === 'Enter') {
+      if (!e.ctrlKey && e.key === 'Enter') {
         eventBus.emit('sendWordMessage')
-        // console.log(this.$store.state.editor.getHtml())
       }
     },
     customPaste (editor, event) {
@@ -72,7 +66,7 @@ const ChatEditor = {
         const files = event.clipboardData.files
         for (let i = 0; i < files.length; i++) {
           if (!/image/.test(files[i].type)) {
-            uploadFile(files[i])
+            execUploadFile(files[i])
           }
         }
       }
@@ -84,31 +78,6 @@ const ChatEditor = {
   beforeDestroy () {
     this.$refs.charEditorContainer.removeEventListener('keyup', this.keyupSendMsg)
     this.$store.state.editor.destroy()
-  }
-}
-
-function uploadFile (file) {
-  if (/image/.test(file.type)) {
-    imgUpload(file).then((res) => {
-      let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawUrl }
-      eventBus.emit('handleMessage', params)
-    })
-  } else if (/audio/.test(file.type)) {
-    fileUpload(file).then((res) => {
-      let params = { contentType: 3, smallImg: '', content: res.url }
-      eventBus.emit('handleMessage', params)
-    })
-  } else if (/video/.test(file.type)) {
-    fileUpload(file).then((res) => {
-      let params = { contentType: 4, smallImg: '', content: res.url }
-      eventBus.emit('handleMessage', params)
-    })
-  } else {
-    fileUpload(file).then((res) => {
-      delete res.url
-      let params = { contentType: 9, smallImg: '', content: res }
-      eventBus.emit('handleMessage', params)
-    })
   }
 }
 
@@ -175,7 +144,7 @@ class FileMenu {
   async exec (editor, value) {
     readFile().then(res => {
       for (let i = 0; i < res.length; i++) {
-        uploadFile(res[i])
+        execUploadFile(res[i])
       }
     })
   }
@@ -253,7 +222,7 @@ const module = {
 }
 
 Boot.registerModule(module)
-
+Boot.registerModule(ctrlEnterModule)
 export default ChatEditor
 </script>
 

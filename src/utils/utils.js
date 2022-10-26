@@ -1,5 +1,3 @@
-// import { Notify } from 'vant'
-
 // 字符串转二进制数据
 export function strToBinary (str) {
   let result = ''
