@@ -10,6 +10,7 @@ import element from './element'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'vant/lib/index.css'
 import '@wangeditor/editor/dist/css/style.css'
+import '@/plugins/wangEditor'
 import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
 
 import wx from 'weixin-js-sdk'
