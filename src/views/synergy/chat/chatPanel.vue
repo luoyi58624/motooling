@@ -87,7 +87,7 @@
                 <!--消息内容-->
                 <div class="message-content">
                   <div class="message" v-if="item.contentType === 1">
-                    <span class="word-message" @contextmenu="openContextMenu($event,item)">{{ item.content }}</span>
+                    <span class="word-message" @contextmenu="openContextMenu($event,item)" v-html="item.content"></span>
                   </div>
                   <div class="message" v-else-if="item.contentType === 2 || item.contentType === 6">
                     <el-image style="width: 160px; height: 90px;"
@@ -353,6 +353,7 @@ export default {
   mounted () {
     eventBus.on('handleMessage', this.handleMessage)
     eventBus.on('showChatHistoryPanel', this.showChatHistoryPanel)
+    eventBus.on('sendWordMessage', this.sendWordMessage)
     this.$eventBus.$on('beat', this.beat)
     this.$eventBus.$on('quit', this.quitGroup)
     requestNotification()
@@ -369,6 +370,7 @@ export default {
     if (Object.keys(this.socket).length > 0) this.socket.close()
     eventBus.off('handleMessage', this.handleMessage)
     eventBus.off('showChatHistoryPanel', this.showChatHistoryPanel)
+    eventBus.off('sendWordMessage', this.sendWordMessage)
   },
   methods: {
     init () {

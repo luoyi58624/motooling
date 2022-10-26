@@ -19,8 +19,7 @@
                 <el-image style="width: 160px; height: 90px;"
                           fit="scale-down"
                           :z-index="3000"
-                          :src="fileAddressFormatFunc(item.content)"
-                          :preview-src-list="[fileAddressFormatFunc(item.content)]"/>
+                          :src="fileAddressFormatFunc(item.content)"/>
               </div>
               <div class="text-left audio-message" v-else-if="item.contentType === 3">
                 <img style="cursor: pointer"
@@ -95,9 +94,7 @@
             <div style="text-align: center;margin: 8px 0">----- {{ image.time }} -----</div>
             <div class="images-array">
               <div v-for="item in image.datas" :key="item.id" class="image-item">
-                <el-image style="width: 100%; height: 100%"
-                          fit="contain"
-                          :z-index="3000"
+                <el-image style="width: 100%; height: 100%" fit="contain" :z-index="3000"
                           :src="fileAddressFormatFunc(item.content)"
                           :preview-src-list="[fileAddressFormatFunc(item.content)]"/>
                 <div class="show-source-message" @click="emitSkipEvent(item)">查看原消息</div>
