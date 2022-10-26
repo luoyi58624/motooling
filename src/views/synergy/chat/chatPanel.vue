@@ -177,7 +177,7 @@
           </div>
         </div>
         <chat-editor ref="ChatEditor" :value="$store.state.wordContent"
-                     @change="inputChange" @send="sendWordMessage" @handleMessage="handleMessage"/>
+                     @change="inputChange" @handleMessage="handleMessage"/>
       </div>
       <div class="group-members" v-if="!recordPanel && chattingTarget.type === 666">
         <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
@@ -1289,14 +1289,22 @@ nav {
   position: relative;
 
   & > .file-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
     & > .name {
-      height: 50%;
+      width: 100%;
       display: flex;
       align-items: center;
+      // 文字超出换行
+      word-wrap: break-word;
+      word-break: break-all;
+      overflow: hidden;
     }
 
     & > .size {
-      height: 50%;
       color: #636e72;
       margin-top: 8px;
       display: flex;

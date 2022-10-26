@@ -7,27 +7,23 @@
         <van-search v-model="searchValue" placeholder="搜索聊天记录"/>
         <div ref="talkContent" class="talk-content">
           <ul>
-            <li v-for="(item, index) in showMessage" :key="index"
-                @click="emitSkipEvent(item)">
+            <li v-for="(item, index) in showMessage" :key="index" @click="emitSkipEvent(item)">
               <!--渲染用户名和时间-->
-              <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8"
-                  class="username" :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
+              <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8" class="username"
+                  :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
                 {{ item.username }} {{ item.sendTime }}
               </h3>
               <!--渲染消息内容-->
-              <div class="text-left" v-if="item.contentType === 2 || item.contentType === 6">
-                <el-image style="width: 160px; height: 90px;"
-                          fit="scale-down"
-                          :z-index="3000"
+              <div v-if="item.contentType === 2 || item.contentType === 6" style="text-align: left;">
+                <el-image style="width: 160px; height: 90px;" fit="scale-down" :z-index="3000"
                           :src="fileAddressFormatFunc(item.content)"/>
               </div>
-              <div class="text-left audio-message" v-else-if="item.contentType === 3">
-                <img style="cursor: pointer"
-                     :src="require('@/assets/icon-voice-white.png')" alt=""
+              <div v-else-if="item.contentType === 3" class="audio-message" style="text-align: left;">
+                <img style="cursor: pointer" :src="require('@/assets/icon-voice-white.png')" alt=""
                      @click="playAudio(fileAddressFormatFunc(item.content))">
                 <span>{{ item.duration }}"</span>
               </div>
-              <div class="text-left" v-else-if="item.contentType === 4">
+              <div v-else-if="item.contentType === 4" style="text-align: left;">
                 <video preload="meta" :src="fileAddressFormatFunc(item.content)" controls="controls"
                        width="200" height="112" @click="playVideo($event)"></video>
               </div>
@@ -47,15 +43,13 @@
                 <div class="system-message" v-if="uid === item.senderId">你撤回了一条消息</div>
                 <div v-else class="system-message">{{ `${item.username}撤回了一条消息` }}</div>
               </template>
-              <div class="file-message-container" v-else-if="item.contentType === 9">
-                <div class="file-message">
-                  <div class="file-info">
-                    <div class="name">{{ item.content.fileName }}</div>
-                    <div class="size">{{ item.content.fileSize }}</div>
-                  </div>
-                  <div class="file-icon">
-                    <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
-                  </div>
+              <div class="file-message" v-else-if="item.contentType === 9">
+                <div class="file-info">
+                  <div class="name">{{ item.content.fileName }}</div>
+                  <div class="size">{{ item.content.fileSize }}</div>
+                </div>
+                <div class="file-icon">
+                  <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
                 </div>
               </div>
               <template v-else>
@@ -318,6 +312,50 @@ export default {
         vertical-align: middle;
       }
     }
+
+    & > .file-message {
+      width: 200px;
+      margin-top: 4px;
+      padding: 6px 8px;
+      background-color: white;
+      border: 1px solid #cccccc;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+
+      & > .file-info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        & > .name {
+          text-align: left;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          // 文字超出换行
+          word-wrap: break-word;
+          word-break: break-all;
+          overflow: hidden;
+        }
+
+        & > .size {
+          color: #636e72;
+          font-size: 12px;
+          margin-top: 2px;
+          display: flex;
+          align-items: center;
+        }
+      }
+
+      & > .file-icon {
+        margin: 0 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
   }
 }
 
@@ -394,43 +432,5 @@ export default {
     }
   }
 
-}
-
-.text-left {
-  text-align: left;
-}
-
-.file-message {
-  width: 200px;
-  margin-top: 4px;
-  padding: 6px 8px;
-  background-color: white;
-  border: 1px solid #cccccc;
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-
-  & > .file-info {
-    & > .name {
-      height: 50%;
-      display: flex;
-      align-items: center;
-    }
-
-    & > .size {
-      height: 50%;
-      color: #636e72;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  & > .file-icon {
-    margin: 0 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
 }
 </style>

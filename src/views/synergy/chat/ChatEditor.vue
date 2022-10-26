@@ -42,7 +42,6 @@ const ChatEditor = {
       toolbarConfig: {
         toolbarKeys: ['uploadImage', 'uploadVideo', 'uploadFile', 'emotion', 'history', 'sendMsg']
       },
-      wordContent: '',
       editorConfig,
       mode: 'default'
     }
@@ -54,10 +53,8 @@ const ChatEditor = {
     onChange (editor) {
       this.$store.commit('setDraftMessage', editor.getText())
       this.$emit('change', editor.getText())
-    },
-    sendMsg () {
-      console.log(this)
-      this.$emit('send')
+      // this.$store.commit('setDraftMessage', editor.getHtml())
+      // this.$emit('change', editor.getHtml())
     },
     keyupSendMsg (e) {
       if (e.ctrlKey && e.key === 'Enter') {
@@ -66,7 +63,7 @@ const ChatEditor = {
           this.$store.state.editor.focus(true)
         })
       } else if (e.key === 'Enter') {
-        this.sendMsg()
+        eventBus.emit('sendWordMessage')
         // console.log(this.$store.state.editor.getHtml())
       }
     },
