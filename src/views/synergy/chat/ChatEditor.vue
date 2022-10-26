@@ -173,12 +173,13 @@ export default {
       this.$emit('send')
     },
     keyupSendMsg (e) {
-      if (e.ctrlKey && e.code === 'Enter') {
+      console.log(e)
+      if (e.ctrlKey && e.key === 'Enter') {
         this.$emit('change', this.$store.state.editor.getText() + '\n')
         this.$nextTick(() => {
           this.$store.state.editor.focus(true)
         })
-      } else if (e.code === 'Enter') {
+      } else if (e.key === 'Enter') {
         this.sendMsg()
       }
     },
