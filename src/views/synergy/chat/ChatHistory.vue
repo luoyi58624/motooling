@@ -6,9 +6,7 @@
       <van-tab title="全部">
         <van-search v-model="searchValue" placeholder="搜索聊天记录"/>
         <div ref="talkContent" class="talk-content">
-          <van-loading size="24px" v-if="loading">加载中...</van-loading>
-          <ul v-else>
-            <div v-if="allMessage.length===0">聊天记录为空</div>
+          <ul>
             <li v-for="(item, index) in showMessage" :key="index" @click="emitSkipEvent(item)">
               <!--渲染用户名和时间-->
               <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8" class="username"
@@ -79,8 +77,8 @@
       </van-tab>
       <van-tab title="视频">
         <div class="media-container">
-          <div class="empty-data" v-if="allImage.length===0">没有视频</div>
-          <div v-for="(video,index) in allImage" :key="index">
+          <div class="empty-data" v-if="allVideo.length===0">没有视频</div>
+          <div v-for="(video,index) in allVideo" :key="index">
             <div class="media-time">----- {{ video.time }} -----</div>
             <ul>
               <li v-for="item in video.datas" :key="item.id" @click="emitSkipEvent(item)">
@@ -105,9 +103,9 @@
                   {{ item.username }} {{ item.sendTime }}
                 </h3>
                 <div class="audio-message" style="text-align: left;">
-                  <img style="cursor: pointer" :src="require('@/assets/icon-voice-white.png')" alt=""
-                       @click.self.stop="playAudio(fileAddressFormatFunc(item.content))">
-                  <span>{{ item.duration }}"</span>
+                  <audio :src="fileAddressFormatFunc(item.content)" controls="controls">
+                    Your browser does not support the audio element.
+                  </audio>
                 </div>
               </li>
             </ul>
@@ -162,7 +160,6 @@ export default {
   },
   data () {
     return {
-      loading: false,
       currentGroupId: '',
       active: 0,
       searchValue: '',
@@ -298,7 +295,6 @@ export default {
     openPanel () {
       if (this.currentGroupId === '' || this.currentGroupId !== this.$store.state.groupId) {
         this.currentGroupId = this.$store.state.groupId
-        this.loading = true
         synergyRecordPage({
           id: this.initDate[this.initDate.length - 1].id,
           groupId: this.currentGroupId,
@@ -313,8 +309,6 @@ export default {
           this.$nextTick(() => {
             this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
           })
-        }).finally(() => {
-          this.loading = false
         })
       }
     },
@@ -546,10 +540,9 @@ export default {
       margin-top: 4px;
       padding: 8px;
       position: relative;
-      cursor: pointer;
 
       &:hover {
-        background-color: #f1f2f6;
+        background-color: #dfe4ea;
       }
     }
   }

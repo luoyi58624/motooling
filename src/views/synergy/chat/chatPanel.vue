@@ -666,7 +666,8 @@ export default {
     },
     inputChange (e) {
       this.$store.state.wordContent = e
-      this.$store.state.groupAt = this.chattingTarget.type === 666 && e.endsWith('@')
+      this.$store.state.groupAt = this.chattingTarget.type === 666 &&
+        this.$store.state.editor.getText().endsWith('@')
     },
     // 发送文字消息
     sendWordMessage (text) {
