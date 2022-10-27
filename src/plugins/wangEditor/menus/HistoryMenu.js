@@ -24,7 +24,7 @@ class HistoryMenu {
 }
 
 export const HistoryConf = {
-  key: 'history',
+  key: 'myHistory',
   factory () {
     return new HistoryMenu()
   }

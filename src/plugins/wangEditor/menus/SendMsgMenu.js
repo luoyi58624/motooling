@@ -19,12 +19,12 @@ class SendMsgMenu {
   }
 
   async exec (editor, value) {
-    eventBus.emit('sendWordMessage')
+    eventBus.emit('sendMsg')
   }
 }
 
 export const SendMsgConf = {
-  key: 'sendMsg',
+  key: 'mySendMsg',
   factory () {
     return new SendMsgMenu()
   }

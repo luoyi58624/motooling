@@ -212,7 +212,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { fileAddressFormat, isOffice, loadFileIcon, requestNotification } from '@/utils/utils.js'
+import { fileAddressFormat, isOffice, loadFileIcon, requestNotification, uuid } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -284,7 +284,6 @@ export default {
       noMorePullDownRecords: false, // 聊天数据是否已到底
       uList: [],
       recordPanel: false,
-      disableSendMsg: false, // 是否禁止发送消息，防止重复发送
       showContextMenu: false,
       readMessageUsers: [], // 已读用户
       unReadMessageUsers: [] // 未读用户
@@ -600,8 +599,6 @@ export default {
       }
     },
     receiveMessage (message) {
-      console.log(message)
-
       let messageContent
       switch (message.data.contentType) {
         case 2:
@@ -617,17 +614,22 @@ export default {
         case 7:
           messageContent = ' 拍一拍 '
           break
+        case 8:
+          messageContent = ''
+          break
         case 9:
           messageContent = '[ 文件 ]'
           break
         default:
           messageContent = message.data.content
       }
-      // eslint-disable-next-line no-new
-      new Notification(message.data.username, {
-        body: messageContent,
-        icon: require('@/assets/logo.png')
-      })
+      if (messageContent === '') {
+        // eslint-disable-next-line no-new
+        // new Notification(message.data.username, {
+        //   body: messageContent,
+        //   icon: require('@/assets/logo.png')
+        // })
+      }
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
 
@@ -651,8 +653,11 @@ export default {
           }
         })
       }
+      console.log(this.recordList)
+      console.log('=========最大id============')
+      console.log(Math.max.apply(Math, this.recordList.map(item => +item.id)))
       alreadyRead({
-        lastRecordId: message.data.id,
+        lastRecordId: Math.max.apply(Math, this.recordList.map(item => +item.id)),
         groupId: this.$store.state.groupId
       })
       this.$nextTick(() => {
@@ -666,67 +671,54 @@ export default {
       this.$store.state.groupAt = this.chattingTarget.type === 666 && e.endsWith('@')
     },
     // 发送文字消息
-    sendWordMessage (e) {
-      if (this.disableSendMsg) return
-      this.disableSendMsg = true
-      if (this.$store.state.wordContent.trim() !== '') {
-        const currentTime = new Date()
-        const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
-        let _message = {
-          contentType: 1,
-          content: this.$store.state.wordContent,
-          senderId: this.uid,
-          sendTime,
-          username: this.senderName,
-          readMessageUsers: [],
-          loading: true,
-          currentTime
-        }
-        this.recordList.push(_message)
-        this.scrolltoButtom()
-        sendMessage({
-          groupId: this.groupId,
-          senderId: this.uid,
-          contentType: 1,
-          content: this.$store.state.wordContent
-        }).then((res) => {
-          this.recordList.forEach(item => {
-            if (item.currentTime === currentTime) {
-              delete res.data.sendTime
-              Object.keys(res.data).forEach(key => {
-                item[key] = res.data[key]
-                item.loading = false
-              })
-            }
-          })
-          this.handleDebounce(function () {
-            getNewsList().then((res) => {
-              this.$store.dispatch('newsList', res.newsList)
+    sendWordMessage (text) {
+      const msgUUID = uuid()
+      const currentTime = new Date()
+      const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
+      let _message = {
+        contentType: 1,
+        content: text,
+        senderId: this.uid,
+        sendTime,
+        username: this.senderName,
+        readMessageUsers: [],
+        loading: true,
+        msgUUID
+      }
+      this.recordList.push(_message)
+      this.scrolltoButtom()
+      sendMessage({
+        groupId: this.groupId,
+        senderId: this.uid,
+        contentType: 1,
+        content: text
+      }).then((res) => {
+        this.recordList.forEach(item => {
+          if (item.msgUUID === msgUUID) {
+            delete res.data.sendTime
+            Object.keys(res.data).forEach(key => {
+              item[key] = res.data[key]
+              item.loading = false
             })
-          }, 1000)
-          at({ groupId: this.groupId, imUrl: this.imurl, uList: this.uList }).then(() => {
-            this.uList = []
-          }).catch(() => {
-            this.uList = []
-          })
-        }).catch((err) => {
-          this.$createToast({
-            time: 2000,
-            txt: err.msg || '发送失败，请检查网络',
-            type: 'error'
-          }).show()
-        }).finally(() => {
-          this.disableSendMsg = false
+          }
         })
-        this.$store.state.wordContent = ''
-      } else {
-        this.disableSendMsg = false
+        this.handleDebounce(function () {
+          getNewsList().then((res) => {
+            this.$store.dispatch('newsList', res.newsList)
+          })
+        }, 1000)
+        at({ groupId: this.groupId, imUrl: this.imurl, uList: this.uList }).then(() => {
+          this.uList = []
+        }).catch(() => {
+          this.uList = []
+        })
+      }).catch((err) => {
         this.$createToast({
           time: 2000,
-          txt: '请输入要发送的内容',
+          txt: err.msg || '发送失败，请检查网络',
           type: 'error'
         }).show()
-      }
+      })
     },
     // 防抖
     handleDebounce (func, wait) {
@@ -870,6 +862,7 @@ export default {
     handleMessage ({ contentType, smallImg, content } = {}) {
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
+      const msgUUID = uuid()
       let message = [
         {
           contentType,
@@ -878,7 +871,9 @@ export default {
           sendTime,
           username: this.senderName,
           senderId: this.uid,
-          readMessageUsers: []
+          readMessageUsers: [],
+          loading: true,
+          msgUUID
         }
       ]
       this.recordList = this.recordList.concat(message)
@@ -891,7 +886,16 @@ export default {
         contentType,
         content,
         smallImg
-      }).then(() => {
+      }).then((res) => {
+        this.recordList.forEach(item => {
+          if (item.msgUUID === msgUUID) {
+            delete res.data.sendTime
+            Object.keys(res.data).forEach(key => {
+              item[key] = res.data[key]
+              item.loading = false
+            })
+          }
+        })
         getNewsList().then((res) => {
           this.$store.dispatch('newsList', res.newsList)
         })

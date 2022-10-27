@@ -83,11 +83,11 @@ export function time (time) {
 }
 
 // 读取文件
-export function readFile () {
+export function readFile (accept = '*') {
   return new Promise((resolve) => {
     const fileInput = document.createElement('input')
     fileInput.type = 'file'
-    fileInput.accept = '*'
+    fileInput.accept = accept
     fileInput.onchange = function (e) {
       resolve(this.files)
     }
@@ -171,4 +171,51 @@ export function isOffice (fileName) {
     default:
       return false
   }
+}
+
+// blob地址转file
+export function blobToFile (src) {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest()
+    xhr.open('GET', src, true)
+    xhr.responseType = 'blob'
+    xhr.onload = function (e) {
+      if (this.status === 200) {
+        let myBlob = this.response
+        let files = new window.File([myBlob], myBlob.type, { type: myBlob.type }) // myBlob.type 自定义文件名
+        resolve(files)
+      } else {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject(false)
+      }
+    }
+    xhr.send()
+  })
+}
+
+/**
+ * 获取html里的所有资源路径
+ * @param html
+ */
+export function parseResourceUrl (html) {
+  const frag = document.createElement('div')
+  frag.innerHTML = html
+  return [].map.call(frag.querySelectorAll('img'), function (img) {
+    return img.src
+  })
+  // eslint-disable-next-line no-useless-escape
+  // const imgReg = /<img [^>]*src=['"]([^'"]+)[^>]*>/gi
+  // return html.match(imgReg)
+}
+
+export function uuid () {
+  const s = []
+  const hexDigits = '0123456789abcdef'
+  for (let i = 0; i < 36; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+  }
+  s[14] = '4'
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1)
+  s[8] = s[13] = s[18] = s[23] = '-'
+  return s.join('')
 }

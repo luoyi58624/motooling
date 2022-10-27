@@ -39,7 +39,7 @@ export default {
   data () {
     return {
       toolbarConfig: {
-        toolbarKeys: ['uploadImage', 'uploadVideo', 'uploadFile', 'emotion', 'history', 'sendMsg']
+        toolbarKeys: ['myUploadImage', 'myUploadVideo', 'myUploadFile', 'emotion', 'myHistory', 'mySendMsg']
       },
       editorConfig: getChatEditorConfig(),
       mode: 'default'
@@ -50,13 +50,35 @@ export default {
       this.$store.state.editor = Object.seal(editor)
     },
     onChange (editor) {
-      this.$store.commit('setDraftMessage', editor.getText())
-      this.$emit('change', editor.getText())
+      this.$store.commit('setDraftMessage', editor.getHtml())
+      this.$emit('change', editor.getHtml())
+    },
+    sendMsg () {
+      const images = this.$store.state.editor.getElemsByType('image')
+      const text = this.$store.state.editor.getText().trim()
+      // 当编辑器没有图片和文字时，弹窗提示框
+      if ((images == null || images.length === 0) && text === '') {
+        this.$createToast({
+          time: 2000,
+          txt: '请输入要发送的内容',
+          type: 'error'
+        }).show()
+        return
+      }
+      // 当存在图片，触发发送文件事件
+      if (images && images.length > 0) {
+        images.forEach(image => {
+          let params = { contentType: 2, smallImg: image.alt, content: image.src }
+          eventBus.emit('handleMessage', params)
+        })
+      }
+      // 当包含文字消息，触发发送文字事件
+      if (text !== '') eventBus.emit('sendWordMessage', text)
+      // 清空编辑器
+      this.$store.state.wordContent = ''
     },
     keyupSendMsg (e) {
-      if (!e.ctrlKey && e.key === 'Enter') {
-        eventBus.emit('sendWordMessage')
-      }
+      if (!e.ctrlKey && e.key === 'Enter') this.sendMsg()
     },
     customPaste (editor, event) {
       if (event.clipboardData.files.length > 0) {
@@ -70,9 +92,11 @@ export default {
     }
   },
   mounted () {
+    eventBus.on('sendMsg', this.sendMsg)
     this.$refs.charEditorContainer.addEventListener('keyup', this.keyupSendMsg)
   },
   beforeDestroy () {
+    eventBus.off('sendMsg', this.sendMsg)
     this.$refs.charEditorContainer.removeEventListener('keyup', this.keyupSendMsg)
     this.$store.state.editor.destroy()
   }

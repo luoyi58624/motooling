@@ -29,7 +29,7 @@ class UploadFileMenu {
 }
 
 export const UploadFileConf = {
-  key: 'uploadFile', // 定义 menu key ：要保证唯一、不重复（重要）
+  key: 'myUploadFile', // 定义 menu key ：要保证唯一、不重复（重要）
   factory () {
     return new UploadFileMenu() // 把 `YourMenuClass` 替换为你菜单的 class
   }

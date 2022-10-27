@@ -1,5 +1,6 @@
 import { fileUpload, imgUpload } from '@/api/upload/upload'
 import eventBus from '@/utils/mitt'
+import store from '@/store'
 
 // 返回聊天编辑器配置
 export function getChatEditorConfig () {
@@ -8,10 +9,9 @@ export function getChatEditorConfig () {
   }
 
   editorConfig.MENU_CONF['uploadImage'] = {
-    async customUpload (file) {
+    async customUpload (file, insertFn) {
       imgUpload(file).then((res) => {
-        let params = { contentType: 2, smallImg: res.imgUrl, content: res.rawUrl }
-        eventBus.emit('handleMessage', params)
+        store.state.editor.dangerouslyInsertHtml(`<p><img src="${res.rawUrl}" alt='${res.imgUrl}' style='width: 50px;height: 50px;'></p>`)
       })
     }
   }
@@ -35,6 +35,11 @@ export function getChatEditorConfig () {
   // 隐藏选中文字弹出的菜单控件
   editorConfig.hoverbarKeys = {
     'text': {
+      match: () => {
+      },
+      menuKeys: []
+    },
+    'image': {
       match: () => {
       },
       menuKeys: []
