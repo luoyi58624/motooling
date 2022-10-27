@@ -890,6 +890,7 @@ export default {
         this.recordList.forEach(item => {
           if (item.msgUUID === msgUUID) {
             delete res.data.sendTime
+            delete res.data.content
             Object.keys(res.data).forEach(key => {
               item[key] = res.data[key]
               item.loading = false
