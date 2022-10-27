@@ -96,11 +96,10 @@
                               :preview-src-list="allImages"
                               @contextmenu="openContextMenu($event,item)"/>
                   </div>
-                  <div class="audio-message message"
-                       v-else-if="item.contentType === 3"
-                       @click="playAudio(fileAddressFormatFunc(item.content))">
-                    <img :src="require('@/assets/icon-voice-white.png')" alt=""/>
-                    <span>{{ item.duration }}"</span>
+                  <div class="audio-message message" v-else-if="item.contentType === 3">
+                    <audio :src="fileAddressFormatFunc(item.content)" controls="controls">
+                      Your browser does not support the audio element.
+                    </audio>
                   </div>
                   <div class="video-message message" v-else-if="item.contentType === 4">
                     <video preload="meta"
@@ -1064,7 +1063,7 @@ nav {
       width: 100%;
       font-size: 14px;
       height: calc(100% - 155px);
-      background-color: #f2f3f5;
+      background-color: #faf9f9;
       overflow-y: auto;
       padding-bottom: 10px;
       box-sizing: border-box;

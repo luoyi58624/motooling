@@ -539,10 +539,11 @@ export default {
       width: 100%;
       margin-top: 4px;
       padding: 8px;
+      border-radius: 6px;
       position: relative;
 
       &:hover {
-        background-color: #dfe4ea;
+        background-color: #faf9f9;
       }
     }
   }
