@@ -116,9 +116,9 @@ export default {
   position: absolute;
   background: white;
   color: #2c3e50;
-  box-shadow: 6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
-  22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
-  100px 100px 80px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 0 1.1px rgba(0, 0, 0, 0.065),
+  0 0 3.6px rgba(0, 0, 0, 0.095),
+  0 0 16px rgba(0, 0, 0, 0.16);
 
   & > li {
     width: 100%;

@@ -187,13 +187,6 @@
             <img :src="item.avatar" alt=""/>
             <span v-if="item.memberType === 1">{{ item.username }} · 群主</span>
             <span v-else>{{ item.username }}</span>
-            <div class="popover" v-if="item.uid === selectedGroupMember" v-clickoutside="hidden">
-              <p @click.stop="createPrivateChatting(item.uid)">发送消息</p>
-              <p @click.stop="beat(item)" v-if="item.uid != uid">找一找</p>
-              <p @click.stop="removeFromGroup(item)" v-if="groupOwnerUid == uid">
-                移出群聊
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -207,6 +200,12 @@
       <member-list @handleAt="handleGroupAt" @selectUser="setSelectUser"/>
     </div>
     <context-menu ref="ContextMenu" @revocationMsg="revocationMsg"/>
+    <ul v-if="selectedGroupUser.uid" v-clickoutside="hidden" ref="GroupUserContextMenu"
+        class="group-user-context-menu" :style="{left: groupUserContext.left+'px',top: groupUserContext.top+'px'}">
+      <li @click.stop="createPrivateChatting(selectedGroupUser.uid)">发送消息</li>
+      <li @click.stop="beat(selectedGroupUser)" v-if="selectedGroupUser.uid !== uid">找一找</li>
+      <li @click.stop="removeFromGroup(selectedGroupUser)" v-if="groupOwnerUid === uid">移出群聊</li>
+    </ul>
   </div>
 </template>
 
@@ -271,7 +270,11 @@ export default {
       recordList: [],
       value: '',
       interval: null,
-      selectedGroupMember: 0,
+      selectedGroupUser: {},
+      groupUserContext: {
+        top: 0,
+        left: 0
+      },
       groupOwnerUid: '',
       timeout: null,
       chattingTarget: {},
@@ -546,7 +549,7 @@ export default {
       })
     },
     hidden () {
-      this.selectedGroupMember = null
+      this.selectedGroupUser = {}
     },
     socketMessage (type, { contentType, content, smallImg, duration } = {}, data) {
       let message = {
@@ -758,7 +761,12 @@ export default {
       if (event) {
         event.preventDefault()
       }
-      this.selectedGroupMember = item.uid
+      this.selectedGroupUser = item
+      this.$nextTick(() => {
+        this.groupUserContext.left = window.innerWidth - 370
+        this.groupUserContext.top = event.clientY + 80 > window.innerHeight
+          ? event.clientY - (this.$refs.GroupUserContextMenu.offsetHeight + 10) : event.clientY + 10
+      })
     },
     // 移除群聊
     removeFromGroup (member) {
@@ -777,7 +785,7 @@ export default {
 
         this.groupMember = groupMembers
         this.$store.dispatch('getNewGroupMember', groupMembers)
-        this.selectedGroupMember = null
+        this.selectedGroupUser = {}
       })
     },
     // 选择群组中的某人创建聊天
@@ -787,7 +795,7 @@ export default {
         relationType: 66
       })
         .then(async (res) => {
-          this.selectedGroupMember = null
+          this.selectedGroupUser = {}
           const { newsList } = await getNewsList()
           this.$store.dispatch('newsList', newsList)
           this.$store.commit('currentConversation', {
@@ -802,7 +810,7 @@ export default {
             type: 'error'
           }).show()
         })
-      this.selectedGroupMember = null
+      this.selectedGroupUser = {}
     },
     handleMessage ({ contentType, smallImg, content } = {}) {
       const currentTime = new Date()
@@ -878,7 +886,7 @@ export default {
           type: 'error'
         }).show()
       })
-      this.selectedGroupMember = null
+      this.selectedGroupUser = {}
     },
     showChatHistoryPanel () {
       if (this.recordList.length > 0) {
@@ -1346,4 +1354,37 @@ nav {
     transform: translateX(100px) translateX(-50%);
   }
 }
+
+.group-user-context-menu {
+  width: 100px;
+  padding: 6px 6px 8px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  position: absolute;
+  background: white;
+  color: #2c3e50;
+  box-shadow: 0 0 1.1px rgba(0, 0, 0, 0.065),
+  0 0 3.6px rgba(0, 0, 0, 0.095),
+  0 0 16px rgba(0, 0, 0, 0.16);
+
+  & > li {
+    width: 100%;
+    height: 30px;
+    border-radius: 4px;
+    padding-left: 10px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      background-color: #f1f2f6;
+    }
+
+    & > span {
+      margin-left: 8px;
+    }
+  }
+}
+
 </style>
