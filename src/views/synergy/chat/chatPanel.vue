@@ -268,7 +268,6 @@ export default {
       imurl: localStorage.imurl,
       socket: {},
       synergyGroup: {},
-      mainKeyId: '',
       recordList: [],
       value: '',
       interval: null,
@@ -396,18 +395,6 @@ export default {
           this.synergyGroup = res.synergyGroup
           let recordList = res.recordList.reverse()
 
-          if (this.notReadCount !== 0) {
-            let recordLen = recordList.length - 1
-            alreadyRead({
-              lastRecordId: recordList[recordLen].data.id,
-              groupId: this.groupId
-            }).then(() => {
-              getNewsList().then((res) => {
-                this.$store.dispatch('newsList', res.newsList)
-              })
-            })
-          }
-
           recordList.forEach(item => {
             // 自己发送的消息添加已读用户列表
             if (item.data.senderId === this.uid) item.data.readMessageUsers = []
@@ -421,7 +408,17 @@ export default {
           this.recordList = time(recordList)
           this.scrolltoButtom()
 
-          this.mainKeyId = recordList[0] && recordList[0].data.id
+          if (this.notReadCount !== 0) {
+            alreadyRead({
+              lastRecordId: Math.max.apply(Math, this.recordList.map(item => +item.id)),
+              groupId: this.groupId
+            }).then(() => {
+              getNewsList().then((res) => {
+                this.$store.dispatch('newsList', res.newsList)
+              })
+            })
+          }
+
           this.im()
           this.getReadMessage()
         })
@@ -653,9 +650,6 @@ export default {
           }
         })
       }
-      console.log(this.recordList)
-      console.log('=========最大id============')
-      console.log(Math.max.apply(Math, this.recordList.map(item => +item.id)))
       alreadyRead({
         lastRecordId: Math.max.apply(Math, this.recordList.map(item => +item.id)),
         groupId: this.$store.state.groupId
@@ -741,7 +735,6 @@ export default {
           const result = res.recordList
           if (result.length !== 0) {
             let recordList = result.reverse()
-            this.mainKeyId = recordList[0].data.id
             recordList.forEach(item => {
               if (item.data.senderId === this.uid) item.data.readMessageUsers = []
               if (item.data.contentType === 7 || item.data.contentType === 9) {
@@ -759,54 +752,6 @@ export default {
           }
         })
       }
-
-      // 如果滚动条距离底部小于50px则加载底部数据
-      // if ((this.$refs.talkContent.scrollTop + this.$refs.talkContent.clientHeight + 50) >= this.$refs.talkContent.scrollHeight) {
-      //   synergyRecordPage({
-      //     maxId: this.recordList[this.recordList.length - 1].id,
-      //     groupId: this.groupId
-      //   }).then((res) => {
-      //     if (res.recordList && res.recordList.length > 0) {
-      //       let recordList = res.recordList
-      //       recordList.forEach(item => {
-      //         if (item.data.senderId === this.uid) item.data.readMessageUsers = []
-      //         if (item.data.contentType === 7 || item.data.contentType === 9) {
-      //           item.data.content = JSON.parse(item.data.content)
-      //         }
-      //       })
-      //       this.recordList = this.recordList.concat(time(recordList))
-      //       this.getReadMessage()
-      //     }
-      //   })
-      //   // 如果滚动条到顶，则加载上面的数据
-      // } else if (this.$refs.talkContent.scrollTop === 0) {
-      //   if (this.noMorePullUpRecords) return
-      //   this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
-      //   synergyRecordPage({ id: this.mainKeyId, groupId: this.groupId }).then((res) => {
-      //     const result = res.recordList
-      //     if (result.length !== 0) {
-      //       let recordList = result.reverse()
-      //       this.mainKeyId = recordList[0].data.id
-      //       recordList.forEach(item => {
-      //         if (item.data.senderId === this.uid) item.data.readMessageUsers = []
-      //         if (item.data.contentType === 7 || item.data.contentType === 9) {
-      //           item.data.content = JSON.parse(item.data.content)
-      //         }
-      //       })
-      //       let _recordList = time(recordList)
-      //       this.recordList = _recordList.concat(this.recordList)
-      //     }
-      //     if (result.length < 15) {
-      //       this.noMorePullUpRecords = true
-      //     }
-      //     this.getReadMessage()
-      //     this.$nextTick(() => {
-      //       this.loadedScrollTop = this.$refs.talkContent.scrollHeight
-      //       this.$refs.talkContent.scrollTop =
-      //         this.loadedScrollTop - this.beforeLoadedScrollTop
-      //     })
-      //   })
-      // }
     },
     // 对群成员的操作
     handleGroupMember (item, event) {
