@@ -102,12 +102,8 @@
                     </audio>
                   </div>
                   <div class="video-message message" v-else-if="item.contentType === 4">
-                    <video preload="meta"
-                           :src="fileAddressFormatFunc(item.content)"
-                           controls="controls"
-                           width="250"
-                           height="140"
-                           @click="playVideo($event)"/>
+                    <video preload="meta" :src="fileAddressFormatFunc(item.content)"
+                           controls="controls" width="250" height="140"/>
                   </div>
                   <div class="file-message-container" v-if="item.contentType === 9">
                     <div class="file-message">
@@ -190,8 +186,7 @@
         </div>
       </div>
       <div class="chat-history" v-show="recordPanel">
-        <chat-history ref="ChatHistory" :init-date="recordList"
-                      @skip-target-message="skipTargetMessage"/>
+        <chat-history ref="ChatHistory" :init-date="recordList" @skip-target-message="skipTargetMessage"/>
       </div>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
@@ -585,19 +580,6 @@ export default {
     fileAddressFormatFunc (url) {
       return fileAddressFormat(url)
     },
-    // 播放音频
-    playAudio (src) {
-      this.$refs.audio.src = src
-      this.$refs.audio.play()
-    },
-    // 播放视频
-    playVideo (e) {
-      if (e.target.paused) {
-        e.target.play()
-      } else {
-        e.target.pause()
-      }
-    },
     receiveMessage (message) {
       let messageContent
       switch (message.data.contentType) {
@@ -665,8 +647,8 @@ export default {
     },
     inputChange (e) {
       this.$store.state.wordContent = e
-      this.$store.state.groupAt = this.chattingTarget.type === 666 &&
-        this.$store.state.editor.getText().endsWith('@')
+      // this.$store.state.groupAt = this.chattingTarget.type === 666 &&
+      //   this.$store.state.editor.getText().endsWith('@')
     },
     // 发送文字消息
     sendWordMessage (text) {
