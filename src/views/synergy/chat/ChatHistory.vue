@@ -6,7 +6,9 @@
       <van-tab title="全部">
         <van-search v-model="searchValue" placeholder="搜索聊天记录"/>
         <div ref="talkContent" class="talk-content">
-          <ul>
+          <van-loading size="24px" v-if="loading">加载中...</van-loading>
+          <ul v-else>
+            <div v-if="allMessage.length===0">聊天记录为空</div>
             <li v-for="(item, index) in showMessage" :key="index" @click="emitSkipEvent(item)">
               <!--渲染用户名和时间-->
               <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8" class="username"
@@ -61,8 +63,9 @@
       </van-tab>
       <van-tab title="图片">
         <div class="image-container">
+          <div v-if="allImage.length===0">没有图片</div>
           <div v-for="(image,index) in allImage" :key="index">
-            <div style="text-align: center;margin: 8px 0">----- {{ image.time }} -----</div>
+            <div class="media-time">----- {{ image.time }} -----</div>
             <div class="images-array">
               <div v-for="item in image.datas" :key="item.id" class="image-item">
                 <el-image style="width: 100%; height: 100%" fit="contain" :z-index="3000"
@@ -75,13 +78,45 @@
         </div>
       </van-tab>
       <van-tab title="视频">
-        <div style="padding: 16px">待开发...</div>
+        <div class="media-container">
+          <div class="empty-data" v-if="allImage.length===0">没有视频</div>
+          <div v-for="(video,index) in allImage" :key="index">
+            <div class="media-time">----- {{ video.time }} -----</div>
+            <ul>
+              <li v-for="item in video.datas" :key="item.id" @click="emitSkipEvent(item)">
+                <h3 class="username" :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
+                  {{ item.username }} {{ item.sendTime }}
+                </h3>
+                <video preload="meta" :src="fileAddressFormatFunc(item.content)"
+                       width="200" height="112" controls="controls"></video>
+              </li>
+            </ul>
+          </div>
+        </div>
       </van-tab>
       <van-tab title="语音">
-        <div style="padding: 16px">待开发...</div>
+        <div class="media-container">
+          <div v-if="allAudio.length===0">没有语音</div>
+          <div v-for="(audio,index) in allAudio" :key="index">
+            <div class="media-time">----- {{ audio.time }} -----</div>
+            <ul>
+              <li v-for="item in audio.datas" :key="item.id" @click="emitSkipEvent(item)">
+                <h3 class="username" :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
+                  {{ item.username }} {{ item.sendTime }}
+                </h3>
+                <div class="audio-message" style="text-align: left;">
+                  <img style="cursor: pointer" :src="require('@/assets/icon-voice-white.png')" alt=""
+                       @click.self.stop="playAudio(fileAddressFormatFunc(item.content))">
+                  <span>{{ item.duration }}"</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
       </van-tab>
       <van-tab title="文件">
         <ul class="file-container">
+          <div v-if="allFiles.length===0">没有文件</div>
           <li v-for="item in allFiles" :key="item.id"
               @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
             <div>
@@ -113,8 +148,9 @@ import { mapState } from 'vuex'
 import { synergyRecordPage } from '@/api/synergy/synergy'
 import { Dialog } from 'vant'
 import { chatDataHandler, fileAddressFormat, loadFileIcon } from '@/utils/utils'
-import { formatDate } from '@/utils/time'
+import { formatDate, timeToFullTime } from '@/utils/time'
 import { saveAs } from 'file-saver'
+import { cloneDeep } from 'lodash'
 
 export default {
   name: 'ChatHistory',
@@ -126,6 +162,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       currentGroupId: '',
       active: 0,
       searchValue: '',
@@ -140,7 +177,7 @@ export default {
       groupId: (state) => state.groupId
     }),
     allFiles () {
-      return this.allMessage.filter(item => item.contentType === 9).map(item => {
+      return cloneDeep(this.allMessage).filter(item => item.contentType === 9).map(item => {
         if (item.sendTime.length > 5) {
           if (new Date(item.sendTime).getFullYear() < new Date().getFullYear()) {
             item.sendTime = formatDate(item.sendTime, 'YYYY/MM/DD')
@@ -184,6 +221,64 @@ export default {
       return this.allMessage
         .filter(item => item.contentType === 2 || item.contentType === 6)
         .map(item => this.fileAddressFormatFunc(item.content)).reverse()
+    },
+    allVideo () {
+      const videos = []
+      this.allMessage
+        .filter(item => item.contentType === 4)
+        .forEach(item => {
+          let flag = false
+          let index = -1
+          const time = formatDate(item.sendTime, 'YYYY-MM-DD')
+          for (let i = 0; i < videos.length; i++) {
+            if (time === formatDate(videos[i].time, 'YYYY-MM-DD')) {
+              flag = true
+              index = i
+              break
+            }
+          }
+          if (flag) {
+            videos[index].datas.push(item)
+          } else {
+            videos.push({
+              time,
+              datas: [item]
+            })
+          }
+        })
+      videos.forEach(item => {
+        item.datas.reverse()
+      })
+      return videos.reverse()
+    },
+    allAudio () {
+      const audios = []
+      this.allMessage
+        .filter(item => item.contentType === 3)
+        .forEach(item => {
+          let flag = false
+          let index = -1
+          const time = formatDate(item.sendTime, 'YYYY-MM-DD')
+          for (let i = 0; i < audios.length; i++) {
+            if (time === formatDate(audios[i].time, 'YYYY-MM-DD')) {
+              flag = true
+              index = i
+              break
+            }
+          }
+          if (flag) {
+            audios[index].datas.push(item)
+          } else {
+            audios.push({
+              time,
+              datas: [item]
+            })
+          }
+        })
+      audios.forEach(item => {
+        item.datas.reverse()
+      })
+      return audios.reverse()
     }
   },
   watch: {
@@ -203,18 +298,23 @@ export default {
     openPanel () {
       if (this.currentGroupId === '' || this.currentGroupId !== this.$store.state.groupId) {
         this.currentGroupId = this.$store.state.groupId
+        this.loading = true
         synergyRecordPage({
           id: this.initDate[this.initDate.length - 1].id,
           groupId: this.currentGroupId,
           pageSize: 1000000
         }).then(res => {
           const data = chatDataHandler(res.recordList).reverse()
-          data.push(this.initDate[this.initDate.length - 1])
+          const lastData = cloneDeep(this.initDate[this.initDate.length - 1])
+          lastData.sendTime = timeToFullTime(lastData.sendTime)
+          data.push(lastData)
           this.showMessage = data
           this.allMessage = data
           this.$nextTick(() => {
             this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
           })
+        }).finally(() => {
+          this.loading = false
         })
       }
     },
@@ -302,26 +402,12 @@ export default {
       background-color: #e5e3e3;
     }
 
-    & > .username {
-      font-weight: bold;
-      text-align: left;
-      margin: 4px 0;
-    }
-
     & > .content {
       width: 100%;
       text-align: left;
       user-select: text;
       word-break: break-all;
       white-space: pre-line;
-    }
-
-    & > .audio-message {
-      & > img {
-        width: 30px;
-        height: 30px;
-        vertical-align: middle;
-      }
     }
 
     & > .file-message {
@@ -376,7 +462,7 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 10px;
-  padding: 0 8px;
+  padding: 8px;
 
   & > li {
     min-height: 50px;
@@ -443,6 +529,49 @@ export default {
       }
     }
   }
+}
 
+.media-container {
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 10px;
+  padding: 8px;
+
+  ul {
+    font-size: 12px;
+
+    & > li {
+      width: 100%;
+      margin-top: 4px;
+      padding: 8px;
+      position: relative;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #f1f2f6;
+      }
+    }
+  }
+}
+
+.username {
+  font-weight: bold;
+  text-align: left;
+  margin: 4px 0;
+}
+
+.audio-message {
+  & > img {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+  }
+}
+
+.media-time {
+  text-align: center;
+  margin: 8px 0;
+  font-weight: bold;
 }
 </style>

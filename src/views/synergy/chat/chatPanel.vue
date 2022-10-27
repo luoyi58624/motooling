@@ -235,6 +235,7 @@ import { saveAs } from 'file-saver'
 import ContextMenu from '@/views/synergy/chat/ContextMenu'
 import { formatDate } from '@/utils/time'
 import ChatHistory from '@/views/synergy/chat/ChatHistory'
+import { cloneDeep } from 'lodash'
 
 let debounceLoadMoreMessage
 let clearReaderMessage
@@ -977,13 +978,18 @@ export default {
     },
     // 跳转到目标消息
     skipTargetMessage (item, messages) {
-      messages.forEach(item => {
+      const $message = cloneDeep(messages)
+      $message.forEach(item => {
         if (item.senderId === this.uid) item.readMessageUsers = []
       })
-      this.recordList = messages
+      this.recordList = time($message.map(item => {
+        return {
+          data: item
+        }
+      }))
 
       this.$nextTick(() => {
-        if (messages.length <= 15) {
+        if ($message.length <= 15) {
           const talkItems = document.getElementsByClassName('talk-item')
           for (let i = 0; i < talkItems.length; i++) {
             if (+item.id === +talkItems[i].dataset.id) {

@@ -9,6 +9,15 @@ export function formatDate (date, format = 'YYYY-MM-DD HH:mm:ss') {
   return dayjs(date).format(format)
 }
 
+// 将时间转化为完整的日期时间  HH:mm -> YYYY-MM-DD HH:mm:ss
+export function timeToFullTime (time) {
+  if (time.length <= 8) {
+    return formatDate(formatDate(new Date(), 'YYYY-MM-DD') + ' ' + time)
+  } else {
+    return undefined
+  }
+}
+
 export function time (record) {
   // let messageTime = record
   const currentTime = new Date()

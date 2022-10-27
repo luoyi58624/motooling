@@ -24,6 +24,7 @@
     "element-ui": "^2.15.0",
     "file-saver": "^2.0.5",
     "good-storage": "^1.1.0",
+    "lodash": "^4.17.21",
     "md5": "^2.2.1",
     "mitt": "^3.0.0",
     "resize-detector": "^0.2.2",
