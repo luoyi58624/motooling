@@ -343,7 +343,7 @@ export default {
     allImages () {
       return this.recordList
         .filter(item => item.contentType === 2 || item.constructor === 6)
-        .map(item => this.fileAddressFormatFunc(item.content))
+        .map(item => this.fileAddressFormatFunc(item.content)).reverse()
     }
   },
   created () {
@@ -1254,6 +1254,7 @@ nav {
 
     & > .name {
       width: 100%;
+      padding: 2px 0;
       display: flex;
       align-items: center;
       // 文字超出换行

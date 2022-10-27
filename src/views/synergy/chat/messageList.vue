@@ -3,39 +3,21 @@
     <div class="search">
       <div class="enter-keyword">
         <div>
-          <el-input
-            placeholder="搜索"
-            prefix-icon="el-icon-search"
-            size="mini"
-            v-model="value"
-            :clearable="true"
-            @input="search"
-          >
-          </el-input>
+          <el-input placeholder="搜索" prefix-icon="el-icon-search" size="mini" v-model="value" :clearable="true"
+                    @input="search"></el-input>
         </div>
         <i class="el-icon-plus" @click="$emit('add-user')"></i>
       </div>
     </div>
     <div class="message-list">
-      <div
-        class="message-list-wrapper"
-        :class="{ active: item.groupId == currentConversation }"
-        v-for="item in newsList"
-        :key="item.groupId"
-      >
-        <div
-          class="message-list-item"
-          @click.left="startChatting(item)"
-          @click.right="handleGroup(item, $event)"
-          v-clickoutside="visible"
-        >
+      <div class="message-list-wrapper" :class="{ active: item.groupId == currentConversation }"
+           v-for="item in newsList" :key="item.groupId">
+        <div class="message-list-item" v-clickoutside="visible"
+             @click.left="startChatting(item)" @click.right="handleGroup(item, $event)">
           <div class="file-picture">
             <img :src="item.avatar" v-if="item.relationType === 66"/>
             <img :src="require('@/assets/group.png')" v-else/>
-            <div
-              class="no-read-count"
-              v-if="item.notReadCount <= 99 && item.notReadCount > 0"
-            >
+            <div class="no-read-count" v-if="item.notReadCount <= 99 && item.notReadCount > 0">
               {{ item.notReadCount }}
             </div>
             <div class="no-read-count" v-else-if="item.notReadCount !== 0">...</div>
@@ -60,12 +42,7 @@
     </div>
     <div class="search-contacts" v-if="value" v-clickoutside="showSearch">
       <ul v-if="contacts.length">
-        <li
-          class="message-list-wrapper"
-          v-for="item in contacts"
-          :key="item.groupId"
-          @click="enterChatting(item)"
-        >
+        <li class="message-list-wrapper" v-for="item in contacts" :key="item.groupId" @click="enterChatting(item)">
           <div class="message-list-item">
             <div class="file-picture">
               <img :src="item.avatar" v-if="item.relationType === 66"/>
@@ -250,7 +227,7 @@ export default {
         getNewsList({ queryValues: e }).then((res) => {
           this.contacts = res.newsList
         })
-      }, 500)
+      }, 200)
     },
     enterChatting (data) {
       this.$store.commit('currentConversation', {

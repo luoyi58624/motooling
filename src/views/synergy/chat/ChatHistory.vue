@@ -59,6 +59,27 @@
           </ul>
         </div>
       </van-tab>
+      <van-tab title="图片">
+        <div class="image-container">
+          <div v-for="(image,index) in allImage" :key="index">
+            <div style="text-align: center;margin: 8px 0">----- {{ image.time }} -----</div>
+            <div class="images-array">
+              <div v-for="item in image.datas" :key="item.id" class="image-item">
+                <el-image style="width: 100%; height: 100%" fit="contain" :z-index="3000"
+                          :src="fileAddressFormatFunc(item.content)"
+                          :preview-src-list="imagePreviews"/>
+                <div class="show-source-message" @click="emitSkipEvent(item)">查看原消息</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </van-tab>
+      <van-tab title="视频">
+        <div style="padding: 16px">待开发...</div>
+      </van-tab>
+      <van-tab title="语音">
+        <div style="padding: 16px">待开发...</div>
+      </van-tab>
       <van-tab title="文件">
         <ul class="file-container">
           <li v-for="item in allFiles" :key="item.id"
@@ -81,24 +102,6 @@
             </div>
           </li>
         </ul>
-      </van-tab>
-      <van-tab title="图片">
-        <div class="image-container">
-          <div v-for="(image,index) in allImage" :key="index">
-            <div style="text-align: center;margin: 8px 0">----- {{ image.time }} -----</div>
-            <div class="images-array">
-              <div v-for="item in image.datas" :key="item.id" class="image-item">
-                <el-image style="width: 100%; height: 100%" fit="contain" :z-index="3000"
-                          :src="fileAddressFormatFunc(item.content)"
-                          :preview-src-list="[fileAddressFormatFunc(item.content)]"/>
-                <div class="show-source-message" @click="emitSkipEvent(item)">查看原消息</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </van-tab>
-      <van-tab title="视频">
-        <div style="padding: 16px">待开发...</div>
       </van-tab>
     </van-tabs>
     <audio :src="currentAudio" ref="audio"></audio>
@@ -126,8 +129,8 @@ export default {
       currentGroupId: '',
       active: 0,
       searchValue: '',
-      showMessage: [], // 需要展示的聊天记录
       allMessage: [], // 所有的聊天记录
+      showMessage: [], // 需要展示的聊天记录
       currentAudio: ''
     }
   },
@@ -172,7 +175,15 @@ export default {
             })
           }
         })
+      images.forEach(item => {
+        item.datas.reverse()
+      })
       return images.reverse()
+    },
+    imagePreviews () {
+      return this.allMessage
+        .filter(item => item.contentType === 2 || item.contentType === 6)
+        .map(item => this.fileAddressFormatFunc(item.content)).reverse()
     }
   },
   watch: {
@@ -332,6 +343,7 @@ export default {
         & > .name {
           text-align: left;
           width: 100%;
+          padding: 2px 0;
           display: flex;
           align-items: center;
           // 文字超出换行
