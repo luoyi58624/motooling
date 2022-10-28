@@ -230,3 +230,12 @@ export function fillHtmlBlank (str) {
   }
   return strArr.join('')
 }
+
+// html搜索的字符高亮展示
+// str 要传入的字符串  key 代表要高亮的字符串
+export const heightLight = (str, key) => {
+  const reg = new RegExp(key, 'ig')
+  return str.replace(reg, (val) => {
+    return `<span style="color:red">${val}</span>`
+  })
+}

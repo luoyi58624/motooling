@@ -11,7 +11,7 @@
               <!--渲染用户名和时间-->
               <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8" class="username"
                   :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
-                {{ item.username }} {{ item.sendTime }}
+                <span v-html="item.username"/> {{ item.sendTime }}
               </h3>
               <!--渲染消息内容-->
               <p v-if="item.contentType === 1" class="content" v-html="item.content"></p>
@@ -143,7 +143,7 @@
 import { mapState } from 'vuex'
 import { synergyRecordPage } from '@/api/synergy/synergy'
 import { Dialog } from 'vant'
-import { chatDataHandler, fileAddressFormat, loadFileIcon } from '@/utils/utils'
+import { chatDataHandler, fileAddressFormat, heightLight, loadFileIcon } from '@/utils/utils'
 import { formatDate, timeToFullTime } from '@/utils/time'
 import { saveAs } from 'file-saver'
 import { cloneDeep } from 'lodash'
@@ -281,7 +281,16 @@ export default {
       if (newValue === '') {
         this.showMessage = this.allMessage
       } else {
-        this.showMessage = this.allMessage.filter(item => item.contentType === 1 && item.content.indexOf(newValue) !== -1)
+        this.showMessage = cloneDeep(this.allMessage)
+          .filter(item =>
+            (item.contentType === 1 && item.content.indexOf(newValue) !== -1) ||
+            (item.username && item.username.indexOf(newValue) !== -1)
+          )
+          .map(item => {
+            if (item.contentType === 1) item.content = heightLight(item.content, newValue)
+            if (item.username) item.username = heightLight(item.username, newValue)
+            return item
+          })
         this.$nextTick(() => {
           this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
         })
