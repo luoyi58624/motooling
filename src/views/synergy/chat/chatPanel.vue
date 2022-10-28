@@ -191,7 +191,7 @@
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
     <div class="member-list" v-show="$store.state.groupAt">
-      <member-list @handleAt="handleGroupAt" @selectUser="setSelectUser"/>
+      <member-list/>
     </div>
     <context-menu ref="ContextMenu" @revocationMsg="revocationMsg"/>
     <ul v-if="selectedGroupUser.uid" v-clickoutside="hidden" ref="GroupUserContextMenu"
@@ -476,20 +476,6 @@ export default {
       } else {
         clearInterval(this.interval)
       }
-    },
-    handleGroupAt (member) {
-      this.$store.state.wordContent += `${member.username} `
-      this.uList.push({ uid: member.uid })
-      this.$store.state.groupAt = false
-      setTimeout(() => {
-        this.$store.state.editor.focus(true)
-      }, 300)
-    },
-    setSelectUser (username) {
-      this.$store.state.wordContent += username + ' '
-      this.$nextTick(() => {
-        this.$store.state.editor.focus(true)
-      })
     },
     // 滚到底部
     scrolltoButtom () {
@@ -888,10 +874,6 @@ export default {
         message: '确定要下载该文件吗'
       }).then(() => {
         saveAs(url, fileName)
-        // const a = document.createElement('a')
-        // a.href = url
-        // a.download = fileName
-        // a.click()
       })
     },
     fileIcon (fileName) {
