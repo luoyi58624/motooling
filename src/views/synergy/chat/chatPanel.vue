@@ -272,7 +272,6 @@ export default {
       },
       groupOwnerUid: '',
       timeout: null,
-      chattingTarget: {},
       groupMember: [],
       currentAudio: '',
       loadedScrollTop: 0,
@@ -326,8 +325,8 @@ export default {
       chatTargetInfo: (state) => state.chatTargetInfo,
       companyId: (state) => state.userInfo.companyId,
       uid: (state) => state.userInfo.uid,
-      senderName: (state) => state.userInfo.username
-      // chattingTarget: (state) => state.chattingTarget
+      senderName: (state) => state.userInfo.username,
+      chattingTarget: (state) => state.chattingTarget
     }),
     relationId () {
       return this.$route.query.relationId * 1
@@ -377,11 +376,11 @@ export default {
         .then((res) => {
           this.isClose = false
           if (res.synergyGroup.relationType === 666) {
-            this.chattingTarget = { name: res.synergyGroup.subject, type: 666 }
+            this.$store.state.chattingTarget = { name: res.synergyGroup.subject, type: 666 }
           } else {
             res.memberList.forEach((member) => {
               if (member.uid !== this.uid * 1) {
-                this.chattingTarget = { name: member.username, type: 66 }
+                this.$store.state.chattingTarget = { name: member.username, type: 66 }
               }
             })
           }
@@ -633,8 +632,6 @@ export default {
     },
     inputChange (e) {
       this.$store.state.wordContent = e
-      this.$store.state.groupAt = this.chattingTarget.type === 666 &&
-        this.$store.state.editor.getText().endsWith('@')
     },
     // 发送文字消息
     sendWordMessage ({ text, userIds }) {

@@ -11,7 +11,7 @@ export function getChatEditorConfig () {
       mentionConfig: {
         // 显示群聊组员列表
         showModal: () => {
-          store.state.groupAt = true
+          if (store.state.chattingTarget.type === 666) store.state.groupAt = true
         },
         // 隐藏群聊组员列表
         hideModal: () => {
