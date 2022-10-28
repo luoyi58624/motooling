@@ -14,6 +14,7 @@
                 {{ item.username }} {{ item.sendTime }}
               </h3>
               <!--渲染消息内容-->
+              <p v-if="item.contentType === 1" class="content" v-html="item.content"></p>
               <div v-if="item.contentType === 2 || item.contentType === 6" style="text-align: left;">
                 <el-image style="width: 160px; height: 90px;" fit="scale-down" :z-index="3000"
                           :src="fileAddressFormatFunc(item.content)"/>
@@ -52,9 +53,6 @@
                   <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
                 </div>
               </div>
-              <template v-else>
-                <p class="content">{{ item.content }}</p>
-              </template>
             </li>
           </ul>
         </div>

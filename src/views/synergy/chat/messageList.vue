@@ -25,7 +25,7 @@
           <div class="user-name">
             <p class="group-name">{{ item.username || item.subject }}</p>
             <div class="group-content">
-              <span>{{ item.newMsg }}</span>
+              <span v-html="item.newMsg"></span>
               <span>{{ formatNewMsgTime(item.newsTime) }}</span>
             </div>
           </div>
