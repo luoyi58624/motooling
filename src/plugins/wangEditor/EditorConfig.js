@@ -5,7 +5,20 @@ import store from '@/store'
 // 返回聊天编辑器配置
 export function getChatEditorConfig () {
   const editorConfig = {
-    MENU_CONF: {}
+    MENU_CONF: {},
+    EXTEND_CONF: {
+      // @提及配置
+      mentionConfig: {
+        // 显示群聊组员列表
+        showModal: () => {
+          store.state.groupAt = true
+        },
+        // 隐藏群聊组员列表
+        hideModal: () => {
+          store.state.groupAt = false
+        }
+      }
+    }
   }
 
   editorConfig.MENU_CONF['uploadImage'] = {

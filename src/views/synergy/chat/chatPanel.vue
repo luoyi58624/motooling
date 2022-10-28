@@ -651,7 +651,7 @@ export default {
       //   this.$store.state.editor.getText().endsWith('@')
     },
     // 发送文字消息
-    sendWordMessage (text) {
+    sendWordMessage ({ text, userIds }) {
       const msgUUID = uuid()
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
@@ -671,7 +671,8 @@ export default {
         groupId: this.groupId,
         senderId: this.uid,
         contentType: 1,
-        content: text
+        content: text,
+        smallImg: userIds || undefined
       }).then((res) => {
         this.recordList.forEach(item => {
           if (item.msgUUID === msgUUID) {

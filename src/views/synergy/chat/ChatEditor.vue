@@ -23,6 +23,7 @@ import eventBus from '@/utils/mitt'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { execUploadFile } from '@/utils/projectUtils'
 import { getChatEditorConfig } from '@/plugins/wangEditor/EditorConfig'
+import { fillHtmlBlank } from '@/utils/utils'
 
 export default {
   name: 'ChatEditor',
@@ -55,7 +56,23 @@ export default {
     },
     sendMsg () {
       const images = this.$store.state.editor.getElemsByType('image')
-      const text = this.$store.state.editor.getText().trim()
+      let text = ''
+      const userIds = [] // @用户id集合，如果是所有则是
+      this.$store.state.editor.children.forEach(paragraph => {
+        paragraph.children.forEach((item, index) => {
+          if (item.type == null) {
+            text += fillHtmlBlank(item.text)
+          } else if (item.type === 'mention') {
+            text += ('@' + item.value + ' ')
+            userIds.push(item.info.id)
+          }
+
+          if (index === paragraph.children.length - 1) {
+            text += '\n'
+          }
+        })
+      })
+      text = text.trim()
       // 当编辑器没有图片和文字时，弹窗提示框
       if ((images == null || images.length === 0) && text === '') {
         this.$createToast({
@@ -65,6 +82,7 @@ export default {
         }).show()
         return
       }
+
       // 当存在图片，触发发送文件事件
       if (images && images.length > 0) {
         images.forEach(image => {
@@ -73,17 +91,24 @@ export default {
         })
       }
       // 当包含文字消息，触发发送文字事件
-      if (text !== '') eventBus.emit('sendWordMessage', text)
+      if (text !== '') {
+        eventBus.emit('sendWordMessage', {
+          text,
+          userIds: userIds.join(',')
+        })
+      }
       // 清空编辑器
       this.$store.state.wordContent = ''
     },
     keyupSendMsg (e) {
       if (!e.ctrlKey && e.key === 'Enter') this.sendMsg()
     },
+    // 如果粘贴的是视频、音频、文件，则直接发送
     customPaste (editor, event) {
       if (event.clipboardData.files.length > 0) {
         const files = event.clipboardData.files
         for (let i = 0; i < files.length; i++) {
+          // 排除图片，图片要先在编辑框显示，不能直接发送到聊天框
           if (!/image/.test(files[i].type)) {
             execUploadFile(files[i])
           }

@@ -91,10 +91,21 @@ export default {
             this.selectUser.name = this.groupMember[this.selectUser.index].username
           }
         } else if (e.code === 'Enter') {
-          this.$store.state.wordContent += this.selectUser.name + ' '
-          setTimeout(() => {
-            this.$store.state.editor.focus(true)
-          }, 200)
+          const mentionNode = {
+            type: 'mention', // 必须是 'mention'
+            value: this.selectUser.name,
+            info: { id: this.selectUser.index === 0 ? 'AT_ALL' : this.groupMember[this.selectUser.index].uid },
+            children: [{ text: '' }] // 必须有一个空 text 作为 children
+          }
+          const editor = this.$store.state.editor
+          if (editor) {
+            setTimeout(() => {
+              editor.restoreSelection() // 恢复选区
+              editor.deleteBackward('character') // 删除 '@'
+              editor.insertNode(mentionNode) // 插入 mention
+              editor.move(1) // 移动光标
+            }, 200)
+          }
         } else if (e.code === 'Backspace' || e.code === 'Delete') {
           this.$store.state.wordContent = this.$store.state.wordContent.slice(0, -1)
           setTimeout(() => {

@@ -219,3 +219,14 @@ export function uuid () {
   s[8] = s[13] = s[18] = s[23] = '-'
   return s.join('')
 }
+
+// 填充html字符串空格 '' -> '&nbsp;'
+export function fillHtmlBlank (str) {
+  const strArr = str.split('')
+  for (let i = 0; i < strArr.length; i++) {
+    if (!strArr[i].trim()) {
+      strArr[i] = '&nbsp;'
+    }
+  }
+  return strArr.join('')
+}

@@ -13,6 +13,7 @@
     "@wangeditor/editor": "^5.1.21",
     "@wangeditor/editor-for-vue": "^1.0.2",
     "@wangeditor/plugin-ctrl-enter": "^1.1.2",
+    "@wangeditor/plugin-mention": "^1.0.0",
     "amfe-flexible": "^2.2.1",
     "axios": "^0.18.1",
     "babel-plugin-component": "^1.1.1",
