@@ -36,6 +36,7 @@ export default new Vuex.Store({
     editor: null, // 编辑器对象
     groupId: null, // 当前群组ID
     messageDraft: [], // 消息草稿
+    chattingTarget: {}, // 聊天目标
     /**
      * 保存所有群聊消息
      * messageRecord: [

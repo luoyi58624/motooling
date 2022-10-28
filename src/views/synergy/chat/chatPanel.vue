@@ -280,7 +280,7 @@ export default {
       noMorePullUpRecords: false, // 聊天数据是否已到顶
       noMorePullDownRecords: false, // 聊天数据是否已到底
       uList: [],
-      recordPanel: false,
+      recordPanel: false, // 是否显示聊天历史记录面板，如果为true -> 隐藏群成员，显示聊天历史
       showContextMenu: false,
       readMessageUsers: [], // 已读用户
       unReadMessageUsers: [] // 未读用户
@@ -326,14 +326,14 @@ export default {
       chatTargetInfo: (state) => state.chatTargetInfo,
       companyId: (state) => state.userInfo.companyId,
       uid: (state) => state.userInfo.uid,
-      senderName: (state) => state.userInfo.username,
-      showChatHistory: (state) => state.showChatHistory
+      senderName: (state) => state.userInfo.username
+      // chattingTarget: (state) => state.chattingTarget
     }),
     relationId () {
       return this.$route.query.relationId * 1
     },
     chatContainerWidth () {
-      return this.showChatHistory ? { width: `calc(100% - 360px)` } : { width: 'calc(100% - 122px)' }
+      return this.recordPanel ? { width: `calc(100% - 250px)` } : { width: 'calc(100% - 122px)' }
     },
     allImages () {
       return this.recordList
@@ -633,8 +633,8 @@ export default {
     },
     inputChange (e) {
       this.$store.state.wordContent = e
-      // this.$store.state.groupAt = this.chattingTarget.type === 666 &&
-      //   this.$store.state.editor.getText().endsWith('@')
+      this.$store.state.groupAt = this.chattingTarget.type === 666 &&
+        this.$store.state.editor.getText().endsWith('@')
     },
     // 发送文字消息
     sendWordMessage ({ text, userIds }) {
@@ -1030,6 +1030,7 @@ nav {
       height: calc(100% - 155px);
       background-color: #faf9f9;
       overflow-y: auto;
+      overflow-x: hidden;
       padding-bottom: 10px;
       box-sizing: border-box;
 
@@ -1357,6 +1358,11 @@ nav {
       margin-left: 8px;
     }
   }
+}
+
+audio {
+  width: 250px;
+  height: 48px;
 }
 
 </style>

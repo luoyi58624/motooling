@@ -19,9 +19,9 @@
                           :src="fileAddressFormatFunc(item.content)"/>
               </div>
               <div v-else-if="item.contentType === 3" class="audio-message" style="text-align: left;">
-                <img style="cursor: pointer" :src="require('@/assets/icon-voice-white.png')" alt=""
-                     @click="playAudio(fileAddressFormatFunc(item.content))">
-                <span>{{ item.duration }}"</span>
+                <audio :src="fileAddressFormatFunc(item.content)" controls="controls">
+                  Your browser does not support the audio element.
+                </audio>
               </div>
               <div v-else-if="item.contentType === 4" style="text-align: left;">
                 <video preload="meta" :src="fileAddressFormatFunc(item.content)" controls="controls"
@@ -361,6 +361,7 @@ export default {
 @import url("./common.less");
 
 .chat-history-container {
+  --hover-bg: #faf9f9;
   height: 100%;
   width: 100%;
 }
@@ -384,7 +385,7 @@ export default {
     border-radius: 6px;
 
     &:hover {
-      background-color: #f1f2f6;
+      background-color: var(--hover-bg);
     }
 
     & > .system-message {
@@ -473,7 +474,7 @@ export default {
     }
 
     &:hover {
-      background-color: #f1f2f6;
+      background-color: var(--hover-bg);
 
       .show-source-message {
         opacity: 1;
@@ -543,7 +544,7 @@ export default {
       position: relative;
 
       &:hover {
-        background-color: #faf9f9;
+        background-color: var(--hover-bg);
       }
     }
   }
@@ -567,5 +568,10 @@ export default {
   text-align: center;
   margin: 8px 0;
   font-weight: bold;
+}
+
+audio {
+  width: 230px;
+  height: 48px;
 }
 </style>
