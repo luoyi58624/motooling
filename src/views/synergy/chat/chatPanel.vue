@@ -19,9 +19,13 @@
           <div v-for="(item, index) in recordList" :key="index" class="talk-item" :data-id="item.id">
             <div :class="uid == item.senderId ? 'my-content' : 'others-content'"
                  v-if="item.contentType !== 5 && item.contentType!==7 && item.contentType!==8">
-              <div class="time-name">
+              <div class="time-name" v-if="uid == item.senderId">
                 <span class="time">{{ item.sendTime }}</span>
                 <span class="name">{{ item.username }}</span>
+              </div>
+              <div class="time-name" v-else>
+                <span class="name">{{ item.username }}</span>
+                <span class="time">{{ item.sendTime }}</span>
               </div>
               <div class="message-container">
                 <div v-if="item.loading">...</div>
@@ -1076,9 +1080,7 @@ nav {
         box-sizing: border-box;
 
         .time-name {
-          display: flex;
-          justify-content: right;
-          align-items: center;
+          text-align: right;
         }
 
         .message {
@@ -1086,8 +1088,9 @@ nav {
         }
 
         .message-container {
-          justify-content: right;
+          width: 100%;
           display: flex;
+          justify-content: flex-end;
           align-items: center;
 
           .read-mark {
@@ -1113,7 +1116,7 @@ nav {
             & > .file-message-container {
               margin: 8px 0 8px 8px;
               display: flex;
-              justify-content: right;
+              justify-content: flex-end;
             }
           }
         }
@@ -1130,7 +1133,6 @@ nav {
 
         .time-name {
           display: flex;
-          flex-direction: row-reverse;
           justify-content: left;
           align-items: center;
         }
@@ -1316,7 +1318,7 @@ nav {
 
   /deep/ .el-image {
     display: flex;
-    justify-content: right;
+    justify-content: flex-end;
   }
 }
 
