@@ -56,8 +56,8 @@ export default {
     },
     sendMsg () {
       const images = this.$store.state.editor.getElemsByType('image')
-      const text = this.$store.state.editor.getText().trim()
-      let sendText = ''
+      const text = this.$store.state.editor.getText().trim() // 纯文字
+      let sendText = '' // 发送的文字消息
       const userIds = [] // @用户id集合，如果是所有则是
 
       // 当编辑器没有图片和文字时，弹窗提示框

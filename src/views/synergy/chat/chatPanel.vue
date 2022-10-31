@@ -2,12 +2,12 @@
   <div class="chat-panel" v-show="groupId">
     <nav>
       <div class="chatting-name">
-        <input style="width: 580px" type="text" v-if="chattingTarget.type === 666" :value="chattingTarget.name"
+        <input style="width: 580px" type="text" v-if="chattingTarget.type == 666" :value="chattingTarget.name"
                maxlength="50" @blur="setGroupName($event.target.value)"/>
-        <span v-else-if="chattingTarget.type === 66">{{ chattingTarget.name }}</span>
+        <span v-else-if="chattingTarget.type == 66">{{ chattingTarget.name }}</span>
         <span v-else>{{ talkMember }}</span>
       </div>
-      <div class="add-member" v-if="chattingTarget.type === 666" @click="$emit('add-user', true)"></div>
+      <div class="add-member" v-if="chattingTarget.type == 666" @click="$emit('add-user', true)"></div>
     </nav>
     <div class="chat-content">
       <div class="talk-wrapper" :style="[chatContainerWidth]">
@@ -17,7 +17,7 @@
           <!--            回到最新位置-->
           <!--          </div>-->
           <div v-for="(item, index) in recordList" :key="index" class="talk-item" :data-id="item.id">
-            <div :class="uid === item.senderId ? 'my-content' : 'others-content'"
+            <div :class="uid == item.senderId ? 'my-content' : 'others-content'"
                  v-if="item.contentType !== 5 && item.contentType!==7 && item.contentType!==8">
               <div class="time-name">
                 <span class="time">{{ item.sendTime }}</span>
@@ -26,8 +26,8 @@
               <div class="message-container">
                 <div v-if="item.loading">...</div>
                 <!--如果是群聊，自己发送的消息需要知道哪些人已读、未读-->
-                <template v-else-if="chattingTarget.type === 666">
-                  <el-popover v-if="uid === item.senderId" placement="left" width="400" trigger="click">
+                <template v-else-if="chattingTarget.type == 666">
+                  <el-popover v-if="uid == item.senderId" placement="left" width="400" trigger="click">
                     <div class="read-popover" style="width: 380px;height: 360px">
                       <van-tabs color="#3498db">
                         <van-tab :title="readMessageUsers.length+'已读'">
@@ -56,10 +56,10 @@
                         </van-tab>
                       </van-tabs>
                     </div>
-                    <template v-if="item.readMessageUsers.length===0">
+                    <template v-if="item.readMessageUsers.length==0">
                       <div class="read-mark cursor-pointer" slot="reference" @click="setReadMessageUser(item)"></div>
                     </template>
-                    <template v-else-if="item.readMessageUsers.length===groupMember.length-1">
+                    <template v-else-if="item.readMessageUsers.length==groupMember.length-1">
                       <div class="read-mark all-read cursor-pointer" slot="reference" @click="setReadMessageUser(item)">
                         <svg t="1666074761757" class="icon" viewBox="0 0 1099 1024" version="1.1"
                              xmlns="http://www.w3.org/2000/svg" p-id="2330" width="200" height="200">
@@ -76,8 +76,8 @@
                     </template>
                   </el-popover>
                 </template>
-                <template v-else-if="uid === item.senderId">
-                  <div v-if="item.readMessageUsers.length===0" class="read-mark" slot="reference"
+                <template v-else-if="uid == item.senderId">
+                  <div v-if="item.readMessageUsers.length==0" class="read-mark" slot="reference"
                        @click="setReadMessageUser(item)"></div>
                   <div v-else class="read-mark all-read" slot="reference" @click="setReadMessageUser(item)">
                     <svg t="1666074761757" class="icon" viewBox="0 0 1099 1024" version="1.1"
@@ -90,26 +90,23 @@
                 </template>
                 <!--消息内容-->
                 <div class="message-content">
-                  <div class="message" v-if="item.contentType === 1">
+                  <div class="message" v-if="item.contentType == 1">
                     <span class="word-message" @contextmenu="openContextMenu($event,item)" v-html="item.content"></span>
                   </div>
-                  <div class="message" v-else-if="item.contentType === 2 || item.contentType === 6">
+                  <div class="message" v-else-if="item.contentType == 2 || item.contentType == 6">
                     <el-image style="width: 160px; height: 90px;"
                               fit="scale-down"
                               :src="fileAddressFormatFunc(item.content)"
                               :preview-src-list="allImages"
                               @contextmenu="openContextMenu($event,item)"/>
                   </div>
-                  <div class="audio-message message" v-else-if="item.contentType === 3">
-                    <audio :src="fileAddressFormatFunc(item.content)" controls="controls">
-                      Your browser does not support the audio element.
-                    </audio>
+                  <div class="audio-message message" v-else-if="item.contentType == 3">
+                    <audio :src="fileAddressFormatFunc(item.content)" controls="controls"/>
                   </div>
-                  <div class="video-message message" v-else-if="item.contentType === 4">
-                    <video preload="meta" :src="fileAddressFormatFunc(item.content)"
-                           controls="controls" width="250" height="140"/>
+                  <div class="video-message message" v-else-if="item.contentType == 4">
+                    <video :src="fileAddressFormatFunc(item.content)" controls="controls" width="250" height="140"/>
                   </div>
-                  <div class="file-message-container" v-if="item.contentType === 9">
+                  <div class="file-message-container" v-if="item.contentType == 9">
                     <div class="file-message">
                       <div class="file-info">
                         <div class="name">{{ item.content.fileName }}</div>
@@ -144,25 +141,25 @@
                 </div>
               </div>
             </div>
-            <div v-if="item.contentType === 5">
+            <div v-if="item.contentType == 5">
               <div class="sys-notifacation">
                 <span class="content">{{ item.content }}</span>
               </div>
             </div>
-            <div v-if="item.contentType === 7">
-              <div class="sys-notifacation" v-if="item.content.senderId === uid">
+            <div v-if="item.contentType == 7">
+              <div class="sys-notifacation" v-if="item.content.senderId == uid">
                 <span class="content">{{ item.content.sendeContent }}</span>
               </div>
-              <div class="sys-notifacation" v-else-if="item.content.receiverId === uid">
+              <div class="sys-notifacation" v-else-if="item.content.receiverId == uid">
                 <span class="content">{{ item.content.receiverContent }}</span>
               </div>
               <div class="sys-notifacation" v-else>
                 <span class="content">{{ item.content.otherContent }}</span>
               </div>
             </div>
-            <div v-if="item.contentType === 8">
+            <div v-if="item.contentType == 8">
               <div class="sys-notifacation">
-                <span v-if="uid === item.senderId" class="content">
+                <span v-if="uid == item.senderId" class="content">
                   你撤回了一条消息
                   <span v-if="showAgainEdit(item)">
                     ，<span class="text-blue" @click="againEdit(item)">重新编辑</span>
@@ -178,13 +175,13 @@
         <chat-editor ref="ChatEditor" :value="$store.state.wordContent"
                      @change="inputChange" @handleMessage="handleMessage"/>
       </div>
-      <div class="group-members" v-if="!recordPanel && chattingTarget.type === 666">
+      <div class="group-members" v-if="!recordPanel && chattingTarget.type == 666">
         <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
         <div class="group-members-wrapper">
           <div class="group-members-item" v-for="item in groupMember" :key="item.uid"
                @click.right="handleGroupMember(item, $event)">
             <img :src="item.avatar" alt=""/>
-            <span v-if="item.memberType === 1">{{ item.username }} · 群主</span>
+            <span v-if="item.memberType == 1">{{ item.username }} · 群主</span>
             <span v-else>{{ item.username }}</span>
           </div>
         </div>
@@ -202,7 +199,7 @@
         class="group-user-context-menu" :style="{left: groupUserContext.left+'px',top: groupUserContext.top+'px'}">
       <li @click.stop="createPrivateChatting(selectedGroupUser.uid)">发送消息</li>
       <li @click.stop="beat(selectedGroupUser)" v-if="selectedGroupUser.uid !== uid">找一找</li>
-      <li @click.stop="removeFromGroup(selectedGroupUser)" v-if="groupOwnerUid === uid">移出群聊</li>
+      <li @click.stop="removeFromGroup(selectedGroupUser)" v-if="groupOwnerUid == uid">移出群聊</li>
     </ul>
   </div>
 </template>
@@ -305,7 +302,7 @@ export default {
           this.init()
           this.$store.state.groupAt = false
           const messageDraft = this.$store.state.messageDraft.find(item => {
-            return item.groupId === val
+            return item.groupId == val
           })
           clearReaderMessage = setInterval(() => {
             this.getReadMessage()
@@ -340,7 +337,7 @@ export default {
     },
     allImages () {
       return this.recordList
-        .filter(item => item.contentType === 2 || item.constructor === 6)
+        .filter(item => item.contentType == 2 || item.constructor == 6)
         .map(item => this.fileAddressFormatFunc(item.content)).reverse()
     }
   },
@@ -379,7 +376,7 @@ export default {
       })
         .then((res) => {
           this.isClose = false
-          if (res.synergyGroup.relationType === 666) {
+          if (res.synergyGroup.relationType == 666) {
             this.$store.state.chattingTarget = { name: res.synergyGroup.subject, type: 666 }
           } else {
             res.memberList.forEach((member) => {
@@ -398,8 +395,8 @@ export default {
 
           recordList.forEach(item => {
             // 自己发送的消息添加已读用户列表
-            if (item.data.senderId === this.uid) item.data.readMessageUsers = []
-            if (item.data.contentType === 7 || item.data.contentType === 9) {
+            if (item.data.senderId == this.uid) item.data.readMessageUsers = []
+            if (item.data.contentType == 7 || item.data.contentType == 9) {
               try {
                 item.data.content = JSON.parse(item.data.content)
               } catch (e) {
@@ -425,11 +422,11 @@ export default {
         })
     },
     im () {
-      let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
+      let prefix = location.protocol == 'https:' ? 'wss://' : 'ws://'
       if (
-        this.isClose === false &&
-        (Object.keys(this.socket).length === 0 ||
-          (this.socket && this.socket.readyState === 3))
+        this.isClose == false &&
+        (Object.keys(this.socket).length == 0 ||
+          (this.socket && this.socket.readyState == 3))
       ) {
         this.socket = new WebSocket(
           prefix +
@@ -454,7 +451,7 @@ export default {
     },
     websocketonopen () {
       this.interval = setInterval(() => {
-        if (this.socket.readyState === 1) {
+        if (this.socket.readyState == 1) {
           this.socket.send(
             JSON.stringify({
               requestType: 'ping',
@@ -474,7 +471,7 @@ export default {
       }).show()
     },
     websocketclose () {
-      if (this.isClose === false) {
+      if (this.isClose == false) {
         this.im()
       } else {
         clearInterval(this.interval)
@@ -492,7 +489,7 @@ export default {
     },
     // 设置群名称
     setGroupName (name) {
-      if (name === '') {
+      if (name == '') {
         this.$createToast({
           time: 2000,
           txt: '群名不能为空',
@@ -544,23 +541,23 @@ export default {
           senderId: this.uid
         }
       }
-      if (type === 1) {
+      if (type == 1) {
         message = {
           requestType: 'ping',
           serialNumber: null,
           data: {}
         }
       }
-      if (type === 2) {
+      if (type == 2) {
         message.data.contentType = contentType
         if (content) {
           message.data.content = content
         }
       }
-      if (type === 3) {
+      if (type == 3) {
         message = data
       }
-      if (this.socket.readyState === 1) {
+      if (this.socket.readyState == 1) {
         this.socket.send(JSON.stringify(message))
       } else {
         this.im()
@@ -594,7 +591,7 @@ export default {
         default:
           messageContent = message.data.content
       }
-      if (messageContent === '') {
+      if (messageContent == '') {
         // eslint-disable-next-line no-new
         // new Notification(message.data.username, {
         //   body: messageContent,
@@ -604,12 +601,12 @@ export default {
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
 
-      if (message.data.contentType === 7 || message.data.contentType === 9) {
+      if (message.data.contentType == 7 || message.data.contentType == 9) {
         message.data.content = JSON.parse(message.data.content)
       }
       this.recordList.push({ ...message.data, sendTime })
 
-      if (message.responseType === '666666') {
+      if (message.responseType == '666666') {
         // 服务器主动推送
         this.$store.dispatch('latestMessageId', message.data.id)
         let responseServer = Object.assign({}, message)
@@ -617,9 +614,9 @@ export default {
         this.socketMessage(3, {}, responseServer)
       }
       // 处理撤回消息
-      if (message.data.contentType === 8) {
+      if (message.data.contentType == 8) {
         this.recordList.forEach(item => {
-          if (item.id === message.data.id) {
+          if (item.id == message.data.id) {
             item.contentType = 8
           }
         })
@@ -666,7 +663,7 @@ export default {
         smallImg: userIds || undefined
       }).then((res) => {
         this.recordList.forEach(item => {
-          if (item.msgUUID === msgUUID) {
+          if (item.msgUUID == msgUUID) {
             delete res.data.sendTime
             Object.keys(res.data).forEach(key => {
               item[key] = res.data[key]
@@ -707,15 +704,15 @@ export default {
     // 获取聊天记录
     loadMoreRecordList () {
       if (this.$refs.talkContent == null) return
-      if (this.$refs.talkContent.scrollTop === 0) {
+      if (this.$refs.talkContent.scrollTop == 0) {
         this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
         synergyRecordPage({ id: this.recordList[0].id, groupId: this.groupId }).then((res) => {
           const result = res.recordList
           if (result.length !== 0) {
             let recordList = result.reverse()
             recordList.forEach(item => {
-              if (item.data.senderId === this.uid) item.data.readMessageUsers = []
-              if (item.data.contentType === 7 || item.data.contentType === 9) {
+              if (item.data.senderId == this.uid) item.data.readMessageUsers = []
+              if (item.data.contentType == 7 || item.data.contentType == 9) {
                 item.data.content = JSON.parse(item.data.content)
               }
             })
@@ -807,7 +804,7 @@ export default {
       this.recordList = this.recordList.concat(message)
       this.scrolltoButtom()
       delete message.readMessageUsers
-      if (contentType === 9) content = JSON.stringify(content)
+      if (contentType == 9) content = JSON.stringify(content)
       sendMessage({
         groupId: this.groupId,
         senderId: this.uid,
@@ -816,7 +813,7 @@ export default {
         smallImg
       }).then((res) => {
         this.recordList.forEach(item => {
-          if (item.msgUUID === msgUUID) {
+          if (item.msgUUID == msgUUID) {
             delete res.data.sendTime
             delete res.data.content
             Object.keys(res.data).forEach(key => {
@@ -892,7 +889,7 @@ export default {
     },
     revocationMsg (res) {
       this.recordList.forEach(item => {
-        if (item.id === res.data.id) {
+        if (item.id == res.data.id) {
           Object.keys(res.data).forEach(key => {
             item[key] = res.data[key]
           })
@@ -917,9 +914,9 @@ export default {
         const msgIndex = this.recordList.length - 1
         res.memberNewRecordList.filter(item => item.uid !== this.uid).forEach(item => {
           for (let i = msgIndex; i >= 0; i--) {
-            if (this.recordList[i].id === item.lastRecordId) {
+            if (this.recordList[i].id == item.lastRecordId) {
               for (let j = 0; j <= i; j++) {
-                if (this.recordList[j].senderId === this.uid) {
+                if (this.recordList[j].senderId == this.uid) {
                   if (!this.recordList[j].readMessageUsers.includes(item.uid)) this.recordList[j].readMessageUsers.push(item.uid)
                 }
               }
@@ -936,7 +933,7 @@ export default {
       for (let i = 0; i < groupMember.length; i++) {
         let flag = true
         for (let j = 0; j < msg.readMessageUsers.length; j++) {
-          if (groupMember[i].uid === msg.readMessageUsers[j]) {
+          if (groupMember[i].uid == msg.readMessageUsers[j]) {
             this.readMessageUsers.push(groupMember[i])
             flag = false
           }
@@ -950,7 +947,7 @@ export default {
     skipTargetMessage (item, messages) {
       const $message = cloneDeep(messages)
       $message.forEach(item => {
-        if (item.senderId === this.uid) item.readMessageUsers = []
+        if (item.senderId == this.uid) item.readMessageUsers = []
       })
       this.recordList = time($message.map(item => {
         return {
@@ -962,7 +959,7 @@ export default {
         if ($message.length <= 15) {
           const talkItems = document.getElementsByClassName('talk-item')
           for (let i = 0; i < talkItems.length; i++) {
-            if (+item.id === +talkItems[i].dataset.id) {
+            if (+item.id == +talkItems[i].dataset.id) {
               this.$refs.talkContent.scrollTo({
                 top: talkItems[i].offsetTop - 67
               })

@@ -26,7 +26,7 @@
               </div>
               <div v-else-if="item.contentType === 4" style="text-align: left;">
                 <video preload="meta" :src="fileAddressFormatFunc(item.content)" controls="controls"
-                       width="200" height="112" @click="playVideo($event)"></video>
+                       width="200" height="112"></video>
               </div>
               <div v-else-if="item.contentType === 5" class="system-message">{{ item.content }}</div>
               <template v-else-if="item.contentType === 7">
@@ -171,6 +171,17 @@ export default {
       uid: (state) => state.userInfo.uid,
       groupId: (state) => state.groupId
     }),
+    allImage () {
+      return this.mediaDataHandler(
+        this.allMessage.filter(item => item.contentType === 2 || item.contentType === 6)
+      )
+    },
+    allVideo () {
+      return this.mediaDataHandler(this.allMessage.filter(item => item.contentType === 4))
+    },
+    allAudio () {
+      return this.mediaDataHandler(this.allMessage.filter(item => item.contentType === 3))
+    },
     allFiles () {
       return cloneDeep(this.allMessage)
         .filter(item => item.contentType === 9)
@@ -185,97 +196,10 @@ export default {
           return item
         }).reverse()
     },
-    allImage () {
-      const images = []
-      this.allMessage
-        .filter(item => item.contentType === 2 || item.contentType === 6)
-        .forEach(item => {
-          let flag = false
-          let index = -1
-          const time = formatDate(item.sendTime, 'YYYY-MM-DD')
-          for (let i = 0; i < images.length; i++) {
-            if (time === formatDate(images[i].time, 'YYYY-MM-DD')) {
-              flag = true
-              index = i
-              break
-            }
-          }
-          if (flag) {
-            images[index].datas.push(item)
-          } else {
-            images.push({
-              time,
-              datas: [item]
-            })
-          }
-        })
-      images.forEach(item => {
-        item.datas.reverse()
-      })
-      return images.reverse()
-    },
     imagePreviews () {
       return this.allMessage
         .filter(item => item.contentType === 2 || item.contentType === 6)
         .map(item => this.fileAddressFormatFunc(item.content)).reverse()
-    },
-    allVideo () {
-      const videos = []
-      this.allMessage
-        .filter(item => item.contentType === 4)
-        .forEach(item => {
-          let flag = false
-          let index = -1
-          const time = formatDate(item.sendTime, 'YYYY-MM-DD')
-          for (let i = 0; i < videos.length; i++) {
-            if (time === formatDate(videos[i].time, 'YYYY-MM-DD')) {
-              flag = true
-              index = i
-              break
-            }
-          }
-          if (flag) {
-            videos[index].datas.push(item)
-          } else {
-            videos.push({
-              time,
-              datas: [item]
-            })
-          }
-        })
-      videos.forEach(item => {
-        item.datas.reverse()
-      })
-      return videos.reverse()
-    },
-    allAudio () {
-      const audios = []
-      this.allMessage
-        .filter(item => item.contentType === 3)
-        .forEach(item => {
-          let flag = false
-          let index = -1
-          const time = formatDate(item.sendTime, 'YYYY-MM-DD')
-          for (let i = 0; i < audios.length; i++) {
-            if (time === formatDate(audios[i].time, 'YYYY-MM-DD')) {
-              flag = true
-              index = i
-              break
-            }
-          }
-          if (flag) {
-            audios[index].datas.push(item)
-          } else {
-            audios.push({
-              time,
-              datas: [item]
-            })
-          }
-        })
-      audios.forEach(item => {
-        item.datas.reverse()
-      })
-      return audios.reverse()
     }
   },
   watch: {
@@ -283,6 +207,7 @@ export default {
       if (newValue === '') {
         this.showMessage = this.allMessage
       } else {
+        // 过滤出搜索关键字内容，同时对关键字进行高亮处理
         this.showMessage = cloneDeep(this.allMessage)
           .filter(item =>
             (item.contentType === 1 && item.content.indexOf(newValue) !== -1) ||
@@ -321,6 +246,34 @@ export default {
         })
       }
     },
+    // 媒体类型数据处理
+    mediaDataHandler (datas) {
+      const newDatas = []
+      datas.forEach(item => {
+        let flag = false
+        let index = -1
+        const time = formatDate(item.sendTime, 'YYYY-MM-DD')
+        for (let i = 0; i < newDatas.length; i++) {
+          if (time === formatDate(newDatas[i].time, 'YYYY-MM-DD')) {
+            flag = true
+            index = i
+            break
+          }
+        }
+        if (flag) {
+          newDatas[index].datas.push(item)
+        } else {
+          newDatas.push({
+            time,
+            datas: [item]
+          })
+        }
+      })
+      newDatas.forEach(item => {
+        item.datas.reverse()
+      })
+      return newDatas.reverse()
+    },
     closePanel () {
       this.searchValue = ''
     },
@@ -329,19 +282,6 @@ export default {
     },
     fileIcon (fileName) {
       return loadFileIcon(fileName)
-    },
-    // 播放音频
-    playAudio (src) {
-      this.$refs.audio.src = src
-      this.$refs.audio.play()
-    },
-    // 播放视频
-    playVideo (e) {
-      if (e.target.paused) {
-        e.target.play()
-      } else {
-        e.target.pause()
-      }
     },
     emitSkipEvent (item) {
       let index

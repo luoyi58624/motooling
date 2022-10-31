@@ -202,7 +202,7 @@ export default {
         })
         .then((key) => {
           clearChatRecords({ groupId: data.groupId, lastRecordId: `${key}` }).then(
-            (item) => {
+            () => {
               this.groupId = null
               getNewsList().then((res) => {
                 this.$store.dispatch('newsList', res.newsList)
