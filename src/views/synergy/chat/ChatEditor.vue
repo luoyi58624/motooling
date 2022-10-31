@@ -56,23 +56,10 @@ export default {
     },
     sendMsg () {
       const images = this.$store.state.editor.getElemsByType('image')
-      let text = ''
+      const text = this.$store.state.editor.getText().trim()
+      let sendText = ''
       const userIds = [] // @用户id集合，如果是所有则是
-      this.$store.state.editor.children.forEach(paragraph => {
-        paragraph.children.forEach((item, index) => {
-          if (item.type == null) {
-            text += fillHtmlBlank(item.text)
-          } else if (item.type === 'mention') {
-            text += ('@' + item.value + ' ')
-            userIds.push(item.info.id)
-          }
 
-          if (index === paragraph.children.length - 1) {
-            text += '\n'
-          }
-        })
-      })
-      text = text.trim()
       // 当编辑器没有图片和文字时，弹窗提示框
       if ((images == null || images.length === 0) && text === '') {
         this.$createToast({
@@ -90,10 +77,24 @@ export default {
           eventBus.emit('handleMessage', params)
         })
       }
-      // 当包含文字消息，触发发送文字事件
+      // 有文字消息，触发发送文字事件
       if (text !== '') {
+        this.$store.state.editor.children.forEach(paragraph => {
+          paragraph.children.forEach((item, index) => {
+            if (item.type == null) {
+              sendText += fillHtmlBlank(item.text)
+            } else if (item.type === 'mention') {
+              sendText += ('@' + item.value + ' ')
+              userIds.push(item.info.id)
+            }
+
+            if (index === paragraph.children.length - 1) {
+              sendText += '\n'
+            }
+          })
+        })
         eventBus.emit('sendWordMessage', {
-          text,
+          text: sendText,
           userIds: userIds.join(',')
         })
       }
