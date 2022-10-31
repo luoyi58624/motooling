@@ -172,16 +172,18 @@ export default {
       groupId: (state) => state.groupId
     }),
     allFiles () {
-      return cloneDeep(this.allMessage).filter(item => item.contentType === 9).map(item => {
-        if (item.sendTime.length > 5) {
-          if (new Date(item.sendTime).getFullYear() < new Date().getFullYear()) {
-            item.sendTime = formatDate(item.sendTime, 'YYYY/MM/DD')
-          } else {
-            item.sendTime = formatDate(item.sendTime, 'MM/DD')
+      return cloneDeep(this.allMessage)
+        .filter(item => item.contentType === 9)
+        .map(item => {
+          if (item.sendTime && item.sendTime.length > 5) {
+            if (new Date(item.sendTime).getFullYear() < new Date().getFullYear()) {
+              item.sendTime = formatDate(item.sendTime, 'YYYY/MM/DD')
+            } else {
+              item.sendTime = formatDate(item.sendTime, 'MM/DD')
+            }
           }
-        }
-        return item
-      }).reverse()
+          return item
+        }).reverse()
     },
     allImage () {
       const images = []

@@ -1,4 +1,6 @@
 import {
+  Button,
+  Tree,
   Select,
   Table,
   Progress,
@@ -15,6 +17,8 @@ import {
 } from 'element-ui'
 const element = {
   install: function (Vue) {
+    Vue.use(Button)
+    Vue.use(Tree)
     Vue.use(Table)
     Vue.use(Select)
     Vue.use(Progress)

@@ -332,11 +332,8 @@ export default {
 .message-list {
   margin-top: 60px;
   height: calc(100% - 60px);
-  overflow-y: hidden;
-}
-
-.message-list:hover {
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .message-list-wrapper {

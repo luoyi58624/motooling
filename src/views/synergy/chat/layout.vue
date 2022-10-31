@@ -9,7 +9,7 @@
                   :invidedMembersInfo="invidedMembersInfo"
                   @add-user="addGroupMember"></chat-panel>
     </div>
-    <UserSelect v-show="show" @confirm="confirm" :visible.sync="show" @cancel="cancel"/>
+    <UserSelect @confirm="confirm" @cancel="cancel"/>
   </div>
 </template>
 
@@ -19,6 +19,7 @@ import { getOpenSynergy, synergyAddMember, getNewsList } from '@/api/synergy/syn
 import UserSelect from '@/components/UserSelect'
 import messageList from './messageList'
 import chatPanel from './chatPanel.vue'
+import { depUserList } from '@/api/instore/instore'
 
 export default {
   components: {
@@ -28,7 +29,6 @@ export default {
   },
   data () {
     return {
-      show: false,
       isGroup: false,
       resetChatPanel: true,
       addedMembers: [],
@@ -56,12 +56,11 @@ export default {
   methods: {
     // 创建新的聊天
     createNewChatting () {
-      this.show = true
+      this.$store.state.showUserSelectPanel = true
       this.initMembers = JSON.parse(JSON.stringify(this.userSelectedList))
-      this.$store.dispatch('getNewGroupMember', [])
     },
     confirm () {
-      this.show = false
+      this.$store.state.showUserSelectPanel = false
       if (this.isGroup) {
         this.isGroup = false
         let data = {
@@ -102,7 +101,7 @@ export default {
       }
     },
     cancel () {
-      this.show = false
+      this.$store.state.showUserSelectPanel = false
       if (!this.isGroup) {
         this.$store.dispatch('getNewGroupMember', this.initMembers)
       }
@@ -130,9 +129,28 @@ export default {
     },
     // 添加群成员处理
     addGroupMember (isGroup) {
-      this.show = true
+      this.$store.state.showUserSelectPanel = true
+      this.$store.state.isChatAddUser = true
       this.isGroup = isGroup
+    },
+    // 获取所有部门用户
+    getAllDepUser () {
+      depUserList().then(res => {
+        const depList = res.list || []
+        // 对数据做 el-tree 兼容处理 -> UserSelect.vue
+        this.$store.state.allDepUser = depList.map(item => {
+          item.id = item.depId // el-tree -> row-id
+          item.childrenList.forEach(user => {
+            user.id = user.uid // el-tree -> row-id
+            user.name = user.username // el-tree -> prop展示名字
+          })
+          return item
+        })
+      })
     }
+  },
+  created () {
+    this.getAllDepUser()
   }
 }
 </script>

@@ -12,6 +12,10 @@
     <div class="chat-content">
       <div class="talk-wrapper" :style="[chatContainerWidth]">
         <div class="talk-content" ref="talkContent">
+          <!--          <div>-->
+          <!--            <svg t="1666936950881" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2153" width="32" height="32"><path d="M862 465.3h-81c-4.6 0-9 2-12.1 5.5L550 723.1V160c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8v563.1L255.1 470.8c-3-3.5-7.4-5.5-12.1-5.5h-81c-6.8 0-10.5 8.1-6 13.2L487.9 861c12.7 14.7 35.5 14.7 48.3 0L868 478.5c4.5-5.2 0.8-13.2-6-13.2z" p-id="2154"></path></svg>-->
+          <!--            回到最新位置-->
+          <!--          </div>-->
           <div v-for="(item, index) in recordList" :key="index" class="talk-item" :data-id="item.id">
             <div :class="uid === item.senderId ? 'my-content' : 'others-content'"
                  v-if="item.contentType !== 5 && item.contentType!==7 && item.contentType!==8">
@@ -620,10 +624,14 @@ export default {
           }
         })
       }
-      alreadyRead({
-        lastRecordId: Math.max.apply(Math, this.recordList.map(item => +item.id)),
-        groupId: this.$store.state.groupId
-      })
+      const lastRecordId = Math.max.apply(Math, this.recordList.map(item => +item.id))
+      if (lastRecordId != null && !isNaN(lastRecordId)) {
+        alreadyRead({
+          lastRecordId,
+          groupId: this.$store.state.groupId
+        })
+      }
+
       this.$nextTick(() => {
         if (this.$refs.talkContent) {
           this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight

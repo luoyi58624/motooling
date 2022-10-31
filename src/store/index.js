@@ -11,18 +11,18 @@ const isiOS = function () {
 
 export default new Vuex.Store({
   state: {
-    // 用户选择组件选中的值
-    userSelectedList: [],
+    showUserSelectPanel: false, // 是否显示用户选择弹窗
+    isChatAddUser: false, // 是否从群聊里拉人，如果true，UserSelect.vue将进行初始化群员
+    allDepUser: [], // 所有部门用户 -> 部门数组嵌套用户
+    userSelectedList: [], // 用户选择组件选中的值 - 群聊所有群成员
     founderList: [],
     founderManagerList: [],
     verifyerList: [],
     verifyerManagerList: [], // 检查通知list
     ratifyerList: [], // 特采人员list
     ratifyerManagerList: [],
-    // 协同成员
-    synergyMemberList: [],
-    // 对部门发料
-    wuliaoList: [],
+    synergyMemberList: [], // 协同成员
+    wuliaoList: [], // 对部门发料
     wxSignUrl: '', // 调用微信jssdk接口所需要的url地址
     chatTargetInfo: {}, // 当前聊天对象
     newsList: [],
@@ -48,6 +48,19 @@ export default new Vuex.Store({
      * ]
      */
     messageRecord: []
+  },
+  getters: {
+    getWechatSignUrl: state => state.wxSignUrl,
+    // 根据部门成员返回成员列表
+    allUser: state => {
+      const users = []
+      state.allDepUser.forEach(dep => {
+        dep.childrenList.forEach(item => {
+          users.push(item)
+        })
+      })
+      return users
+    }
   },
   mutations: {
     changeUserSelectedList (state, newArr) {
@@ -140,8 +153,5 @@ export default new Vuex.Store({
     value ({ commit }, value) {
       commit('VALUE', value)
     }
-  },
-  getters: {
-    getWechatSignUrl: state => state.wxSignUrl
   }
 })

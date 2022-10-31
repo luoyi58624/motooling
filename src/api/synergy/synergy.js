@@ -100,22 +100,6 @@ export function deleteGroupMember (params) {
   })
 }
 
-// 设置已读接口
-export function synergySetUpRead (params) {
-  const data = {
-    token: token(),
-    md5: getMd5String(),
-    timestamp: timestamp,
-    data: params
-  }
-
-  return request({
-    url: WEBURL() + '/mtH5/synergy/setUpRead',
-    method: 'post',
-    data
-  })
-}
-
 // 生成纪要获取信息接口
 export function generateSummaryInfo (params) {
   const data = {

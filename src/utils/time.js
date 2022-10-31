@@ -14,7 +14,7 @@ export function timeToFullTime (time) {
   if (time.length <= 8) {
     return formatDate(formatDate(new Date(), 'YYYY-MM-DD') + ' ' + time)
   } else {
-    return undefined
+    return time
   }
 }
 
