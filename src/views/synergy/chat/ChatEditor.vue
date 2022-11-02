@@ -1,5 +1,5 @@
 <template>
-  <div ref="charEditorContainer" style="border: 1px solid #ccc;">
+  <div ref="chatEditorContainer" class="chat-editor-container">
     <Toolbar
       style="border-bottom: 1px solid #ccc"
       :editor="$store.state.editor"
@@ -15,6 +15,7 @@
       @onChange="onChange"
       @customPaste="customPaste"
     />
+    <emotion-panel/>
   </div>
 </template>
 
@@ -23,11 +24,12 @@ import eventBus from '@/utils/mitt'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { execUploadFile } from '@/utils/projectUtils'
 import { getChatEditorConfig } from '@/plugins/wangEditor/EditorConfig'
-import { fillHtmlBlank } from '@/utils/utils'
+import EmotionPanel from '@/views/synergy/chat/EmotionPanel'
 
 export default {
   name: 'ChatEditor',
   components: {
+    EmotionPanel,
     Editor,
     Toolbar
   },
@@ -40,7 +42,7 @@ export default {
   data () {
     return {
       toolbarConfig: {
-        toolbarKeys: ['myUploadImage', 'myUploadVideo', 'myUploadFile', 'emotion', 'myHistory', 'mySendMsg']
+        toolbarKeys: ['myUploadImage', 'myUploadVideo', 'myUploadFile', 'myEmotions', 'myHistory', 'mySendMsg']
       },
       editorConfig: getChatEditorConfig(),
       mode: 'default'
@@ -57,45 +59,48 @@ export default {
     sendMsg () {
       const images = this.$store.state.editor.getElemsByType('image')
       const text = this.$store.state.editor.getText().trim() // 纯文字
-      let sendText = '' // 发送的文字消息
-      const userIds = [] // @用户id集合，如果是所有则是
+      // let sendText = '' // 发送的文字消息
+      // const userIds = [] // @用户id集合，如果是所有则是
 
       // 当编辑器没有图片和文字时，弹窗提示框
       if ((images == null || images.length === 0) && text === '') {
         this.$createToast({
           time: 2000,
-          txt: '请输入要发送的内容',
-          type: 'error'
+          txt: '请输入要发送的内容'
         }).show()
         return
       }
 
       // 当存在图片，触发发送文件事件
-      if (images && images.length > 0) {
-        images.forEach(image => {
-          let params = { contentType: 2, smallImg: image.alt, content: image.src }
-          eventBus.emit('handleMessage', params)
-        })
-      }
+      // if (images && images.length > 0) {
+      //   images.forEach(image => {
+      //     let params = { contentType: 2, smallImg: image.alt, content: image.src }
+      //     eventBus.emit('handleMessage', params)
+      //   })
+      // }
       // 有文字消息，触发发送文字事件
       if (text !== '') {
-        this.$store.state.editor.children.forEach(paragraph => {
-          paragraph.children.forEach((item, index) => {
-            if (item.type == null) {
-              sendText += fillHtmlBlank(item.text)
-            } else if (item.type === 'mention') {
-              sendText += ('@' + item.value + ' ')
-              userIds.push(item.info.id)
-            }
-
-            if (index === paragraph.children.length - 1) {
-              sendText += '\n'
-            }
-          })
-        })
+        // this.$store.state.editor.children.forEach(paragraph => {
+        //   paragraph.children.forEach((item, index) => {
+        //     if (item.type == null) {
+        //       sendText += fillHtmlBlank(item.text)
+        //     } else if (item.type === 'mention') {
+        //       sendText += ('@' + item.value + ' ')
+        //       userIds.push(item.info.id)
+        //     }
+        //
+        //     if (index === paragraph.children.length - 1) {
+        //       sendText += '\n'
+        //     }
+        //   })
+        // })
+        // eventBus.emit('sendWordMessage', {
+        //   text: sendText,
+        //   userIds: userIds.join(',')
+        // })
         eventBus.emit('sendWordMessage', {
-          text: sendText,
-          userIds: userIds.join(',')
+          text: this.$store.state.editor.getHtml()
+          // userIds: userIds.join(',')
         })
       }
       // 清空编辑器
@@ -119,17 +124,22 @@ export default {
   },
   mounted () {
     eventBus.on('sendMsg', this.sendMsg)
-    this.$refs.charEditorContainer.addEventListener('keyup', this.keyupSendMsg)
+    this.$refs.chatEditorContainer.addEventListener('keyup', this.keyupSendMsg)
   },
   beforeDestroy () {
     eventBus.off('sendMsg', this.sendMsg)
-    this.$refs.charEditorContainer.removeEventListener('keyup', this.keyupSendMsg)
+    this.$refs.chatEditorContainer.removeEventListener('keyup', this.keyupSendMsg)
     this.$store.state.editor.destroy()
   }
 }
 </script>
 
 <style lang="less">
+.chat-editor-container {
+  border: 1px solid #ccc;
+  position: relative;
+}
+
 .w-e-drop-panel {
   top: -430px !important;
 }
@@ -156,5 +166,9 @@ export default {
   & > .w-e-bar-item:nth-last-child(1) {
     margin-left: auto;
   }
+}
+
+.w-e-image-container {
+  //transform: translateY(4px);
 }
 </style>

@@ -900,8 +900,8 @@ export default {
         }
       })
     },
-    againEdit (msg) {
-      this.$store.state.wordContent = msg.content
+    againEdit (item) {
+      this.$store.state.wordContent = item.content
     },
     showAgainEdit (item) {
       let sendTime = item.sendTime
@@ -920,8 +920,8 @@ export default {
           for (let i = msgIndex; i >= 0; i--) {
             if (this.recordList[i].id == item.lastRecordId) {
               for (let j = 0; j <= i; j++) {
-                if (this.recordList[j].senderId == this.uid) {
-                  if (!this.recordList[j].readMessageUsers.includes(item.uid)) this.recordList[j].readMessageUsers.push(item.uid)
+                if (this.recordList[j].senderId == this.uid && !this.recordList[j].readMessageUsers.includes(item.uid)) {
+                  this.recordList[j].readMessageUsers.push(item.uid)
                 }
               }
             }
@@ -981,8 +981,14 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 @import url("./common.less");
+
+.word-message{
+  img {
+    transform: translateY(4px);
+  }
+}
 
 .chat-panel {
   position: relative;

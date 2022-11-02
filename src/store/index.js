@@ -31,6 +31,7 @@ export default new Vuex.Store({
     notReadCount: null,
     value: null,
     relationType: null,
+    showChatEmotionPanel: false, // 是否显示聊天表情面板
     groupAt: false, // 输入@后是否显示用户列表
     wordContent: '', // 聊天编辑器输入的内容
     editor: null, // 编辑器对象

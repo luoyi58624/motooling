@@ -6,9 +6,10 @@ import { HistoryConf } from '@/plugins/wangEditor/menus/HistoryMenu'
 import { UploadFileConf } from '@/plugins/wangEditor/menus/UploadFileMenu'
 import { UploadImageConf } from '@/plugins/wangEditor/menus/UploadImageMenu'
 import { UploadVideoConf } from '@/plugins/wangEditor/menus/UploadVideoMenu'
+import { EmotionConf } from '@/plugins/wangEditor/menus/EmotionMenu'
 
 const module = {
-  menus: [SendMsgConf, HistoryConf, UploadFileConf, UploadImageConf, UploadVideoConf]
+  menus: [SendMsgConf, HistoryConf, UploadFileConf, UploadImageConf, UploadVideoConf, EmotionConf]
 }
 
 Boot.registerModule(module)

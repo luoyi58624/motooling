@@ -239,3 +239,8 @@ export const heightLight = (str, key) => {
     return `<span style="color:red">${val}</span>`
   })
 }
+
+// const reg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~\/])+$/
+// function verifyHttpLink (link) {
+//   return reg.test(link)
+// }
