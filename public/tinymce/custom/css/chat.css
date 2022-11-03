@@ -1,0 +1,44 @@
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: rgba(159, 162, 169, 0.7);
+}
+
+.file-wrapper {
+    width: 300px;
+    height: 80px;
+    margin-top: 4px;
+    background-color: white;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    position: relative;
+}
+
+.file-wrapper img {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    width: 36px;
+    height: 36px;
+}
+
+.file-wrapper::before {
+    width: 200px;
+    content: attr(data-name);
+    position: absolute;
+    left: 20px;
+    top: 12px;
+}
+
+.file-wrapper::after {
+    width: 100%;
+    content: attr(data-size);
+    position: absolute;
+    left: 20px;
+    bottom: 12px;
+}
+

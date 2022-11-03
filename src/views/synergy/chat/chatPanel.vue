@@ -100,15 +100,15 @@
                   <div class="message" v-else-if="item.contentType == 2 || item.contentType == 6">
                     <el-image style="width: 160px; height: 90px;"
                               fit="scale-down"
-                              :src="fileAddressFormatFunc(item.content)"
+                              :src="fileAddressFormatFunc(item)"
                               :preview-src-list="allImages"
                               @contextmenu="openContextMenu($event,item)"/>
                   </div>
                   <div class="audio-message message" v-else-if="item.contentType == 3">
-                    <audio :src="fileAddressFormatFunc(item.content)" controls="controls"/>
+                    <audio :src="fileAddressFormatFunc(item)" controls="controls"/>
                   </div>
                   <div class="video-message message" v-else-if="item.contentType == 4">
-                    <video :src="fileAddressFormatFunc(item.content)" controls="controls" width="250" height="140"/>
+                    <video :src="fileAddressFormatFunc(item)" controls="controls" width="250" height="140"/>
                   </div>
                   <div class="file-message-container" v-if="item.contentType == 9">
                     <div class="file-message">
@@ -121,7 +121,7 @@
                       </div>
                       <div class="file-operate">
                         <div class="file-download"
-                             @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
+                             @click="downloadFile(fileAddressFormatFunc(item),item.content.fileName)">
                           <svg t="1666683819263" class="icon" viewBox="0 0 1024 1024" version="1.1"
                                xmlns="http://www.w3.org/2000/svg" p-id="19951" width="32" height="32">
                             <path
@@ -130,7 +130,7 @@
                           </svg>
                         </div>
                         <a class="file-preview" v-if="officeFile(item.content.fileName)"
-                           :href="'https://view.officeapps.live.com/op/view.aspx?src='+fileAddressFormatFunc(item.content.fileUrl)"
+                           :href="'https://view.officeapps.live.com/op/view.aspx?src='+fileAddressFormatFunc(item)"
                            target="_blank">
                           <svg t="1666683919758" class="icon" viewBox="0 0 1331 1024" version="1.1"
                                xmlns="http://www.w3.org/2000/svg" p-id="1430" width="32" height="32">
@@ -176,8 +176,9 @@
             </div>
           </div>
         </div>
-        <chat-editor ref="ChatEditor" :value="$store.state.wordContent"
-                     @change="inputChange" @handleMessage="handleMessage"/>
+        <!--        <chat-editor ref="ChatEditor" :value="$store.state.wordContent"-->
+        <!--                     @change="inputChange" @handleMessage="handleMessage"/>-->
+        <tiny-editor/>
       </div>
       <div class="group-members" v-if="!recordPanel && chattingTarget.type == 666">
         <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
@@ -228,13 +229,14 @@ import clickoutside from '@/utils/clickoutside'
 import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
 import { Dialog, Notify } from 'vant'
-import ChatEditor from '@/views/synergy/chat/ChatEditor'
 import eventBus from '@/utils/mitt'
 import { saveAs } from 'file-saver'
 import ContextMenu from '@/views/synergy/chat/ContextMenu'
 import { formatDate } from '@/utils/time'
 import ChatHistory from '@/views/synergy/chat/ChatHistory'
 import { cloneDeep } from 'lodash'
+import TinyEditor from '@/views/synergy/chat/TinyEditor'
+import { fileUpload, imgUpload } from '@/api/upload/upload'
 
 let debounceLoadMoreMessage
 let clearReaderMessage
@@ -242,9 +244,9 @@ let clearReaderMessage
 export default {
   directives: { clickoutside },
   components: {
+    TinyEditor,
     ChatHistory,
     ContextMenu,
-    ChatEditor,
     memberList
   },
   props: {
@@ -315,7 +317,7 @@ export default {
           if (messageDraft) this.$store.state.wordContent = messageDraft.message
           setTimeout(() => {
             this.$refs.talkContent.addEventListener('scroll', debounceLoadMoreMessage)
-            this.$store.state.editor.focus(true)
+            // this.$store.state.editor.focus(true)
           }, 100)
         }
       },
@@ -342,7 +344,7 @@ export default {
     allImages () {
       return this.recordList
         .filter(item => item.contentType == 2 || item.constructor == 6)
-        .map(item => this.fileAddressFormatFunc(item.content)).reverse()
+        .map(item => this.fileAddressFormatFunc(item)).reverse()
     }
   },
   created () {
@@ -354,6 +356,7 @@ export default {
     eventBus.on('handleMessage', this.handleMessage)
     eventBus.on('showChatHistoryPanel', this.showChatHistoryPanel)
     eventBus.on('sendWordMessage', this.sendWordMessage)
+    eventBus.on('sendMediaMessage', this.sendMediaMessage)
     this.$eventBus.$on('beat', this.beat)
     this.$eventBus.$on('quit', this.quitGroup)
     requestNotification()
@@ -371,6 +374,7 @@ export default {
     eventBus.off('handleMessage', this.handleMessage)
     eventBus.off('showChatHistoryPanel', this.showChatHistoryPanel)
     eventBus.off('sendWordMessage', this.sendWordMessage)
+    eventBus.off('sendMediaMessage', this.sendMediaMessage)
   },
   methods: {
     init () {
@@ -567,8 +571,16 @@ export default {
         this.im()
       }
     },
-    fileAddressFormatFunc (url) {
-      return fileAddressFormat(url)
+    fileAddressFormatFunc (item) {
+      if (item.isTemp) {
+        return item.content
+      } else {
+        if (item.contentType === 9) {
+          return fileAddressFormat(item.content.fileUrl)
+        } else {
+          return fileAddressFormat(item.content)
+        }
+      }
     },
     receiveMessage (message) {
       let messageContent
@@ -693,6 +705,51 @@ export default {
         }).show()
       })
     },
+    /**
+     * 发送媒体消息
+     * @param contentType      对应后端接口的消息类型：图片-2、音频-3、视频-4、其他文件-9
+     * @param content          文件内容
+     * @param file             文件数据
+     */
+    sendMediaMessage ({ contentType, content, file } = {}) {
+      const currentTime = new Date()
+      const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
+      const msgUUID = uuid()
+      let message = [
+        {
+          contentType,
+          content,
+          sendTime,
+          username: this.senderName,
+          senderId: this.uid,
+          readMessageUsers: [],
+          loading: true,
+          isTemp: true,
+          msgUUID
+        }
+      ]
+      this.recordList = this.recordList.concat(message)
+      this.scrolltoButtom()
+      delete message.readMessageUsers
+      if (/image/.test(file.type)) {
+        imgUpload(file).then((res) => {
+          this.handleMessage({ msgUUID, contentType: 2, smallImg: res.imgUrl, content: res.rawUrl })
+        })
+      } else if (/audio/.test(file.type)) {
+        fileUpload(file).then((res) => {
+          this.handleMessage({ msgUUID, contentType: 3, smallImg: '', content: res.url })
+        })
+      } else if (/video/.test(file.type)) {
+        fileUpload(file).then((res) => {
+          this.handleMessage({ msgUUID, contentType: 4, smallImg: '', content: res.url })
+        })
+      } else {
+        fileUpload(file).then((res) => {
+          delete res.url
+          this.handleMessage({ msgUUID, contentType: 9, smallImg: '', content: res })
+        })
+      }
+    },
     // 防抖
     handleDebounce (func, wait) {
       let args = arguments
@@ -788,27 +845,8 @@ export default {
         })
       this.selectedGroupUser = {}
     },
-    handleMessage ({ contentType, smallImg, content } = {}) {
-      const currentTime = new Date()
-      const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
-      const msgUUID = uuid()
-      let message = [
-        {
-          contentType,
-          smallImg,
-          content,
-          sendTime,
-          username: this.senderName,
-          senderId: this.uid,
-          readMessageUsers: [],
-          loading: true,
-          msgUUID
-        }
-      ]
-      this.recordList = this.recordList.concat(message)
-      this.scrolltoButtom()
-      delete message.readMessageUsers
-      if (contentType == 9) content = JSON.stringify(content)
+    handleMessage ({ msgUUID, contentType, smallImg, content } = {}) {
+      if (contentType === 9) content = JSON.stringify(content)
       sendMessage({
         groupId: this.groupId,
         senderId: this.uid,
@@ -819,7 +857,9 @@ export default {
         this.recordList.forEach(item => {
           if (item.msgUUID == msgUUID) {
             delete res.data.sendTime
-            delete res.data.content
+            if (res.data.contentType === 7 || res.data.contentType === 9) {
+              res.data.content = JSON.parse(res.data.content)
+            }
             Object.keys(res.data).forEach(key => {
               item[key] = res.data[key]
               item.loading = false
@@ -984,12 +1024,6 @@ export default {
 <style lang="less">
 @import url("./common.less");
 
-.word-message{
-  img {
-    transform: translateY(4px);
-  }
-}
-
 .chat-panel {
   position: relative;
   height: 100%;
@@ -1039,7 +1073,7 @@ nav {
     .talk-content {
       width: 100%;
       font-size: 14px;
-      height: calc(100% - 155px);
+      height: calc(100% - 180px);
       background-color: #faf9f9;
       overflow-y: auto;
       overflow-x: hidden;
@@ -1070,14 +1104,6 @@ nav {
 
       /deep/ .el-image__inner {
         width: auto !important;
-      }
-
-      .audio-message {
-        img {
-          height: 30px;
-          width: 30px;
-          vertical-align: middle;
-        }
       }
 
       .my-content {

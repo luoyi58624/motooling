@@ -114,6 +114,7 @@ export default {
   padding: 6px 6px 8px 6px;
   border-radius: 6px;
   position: absolute;
+  z-index: 1000000;
   background: white;
   color: #2c3e50;
   box-shadow: 0 0 1.1px rgba(0, 0, 0, 0.065),

@@ -240,6 +240,73 @@ export const heightLight = (str, key) => {
   })
 }
 
+// 获取字符串长度，中文为2，英文为1
+export function getStringLength (str) {
+  let len = 0
+  for (let i = 0; i < str.length; i++) {
+    if (str.charCodeAt(i) > 127 || str.charCodeAt(i) == 94) {
+      len += 2
+    } else {
+      len++
+    }
+  }
+  return len
+}
+
+// 获取中文数量
+export function getChinaTextNum (str) {
+  let num = 0
+  for (let i = 0; i < str.length; i++) {
+    if (str.charCodeAt(i) > 127 || str.charCodeAt(i) == 94) {
+      num++
+    }
+  }
+  return num
+}
+
+/**
+ * 隐藏过长的文本
+ * @param str            字符串
+ * @param maxLength      最大文字长度
+ * @param mode           从哪个位置隐藏，可选：first、center、last
+ */
+export function hideLongText (str, maxLength = 16, mode = 'last') {
+  const strLength = getStringLength(str)
+  const chinaTextNum = getChinaTextNum(str)
+  if (chinaTextNum > maxLength / 2) maxLength = Math.floor(maxLength / 3 * 2)
+  if (strLength > maxLength) {
+    let newStr
+    switch (mode) {
+      case 'first':
+        newStr = '...' + str.slice(str.length - maxLength, str.length)
+        break
+      case 'center':
+        newStr = str.slice(0, Math.floor(maxLength / 2)) + '...' +
+          str.slice((str.length - Math.floor(maxLength / 2)), str.length)
+        break
+      case 'last':
+        newStr = str.slice(0, maxLength) + '...'
+        break
+    }
+    return newStr
+  } else {
+    return str
+  }
+}
+
+export function renderSize (filesize) {
+  if (filesize == null || filesize == '') {
+    return '0 Bytes'
+  }
+  const unitArr = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+  let index = 0
+  const srcsize = parseFloat(filesize)
+  index = Math.floor(Math.log(srcsize) / Math.log(1024))
+  let size = srcsize / Math.pow(1024, index)
+  size = size.toFixed(2)// 保留的小数位数
+  return size + unitArr[index]
+}
+
 // const reg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~\/])+$/
 // function verifyHttpLink (link) {
 //   return reg.test(link)
