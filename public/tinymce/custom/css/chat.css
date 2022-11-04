@@ -18,7 +18,7 @@ p {
 }
 
 blockquote {
-    margin: 0;
+    margin: 4px 0;
     padding: 4px 12px;
     border-left: 2px solid #ccc;
     background-color: rgb(242, 243, 245);

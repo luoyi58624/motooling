@@ -11,8 +11,6 @@ import tinymce from 'tinymce'
 import 'tinymce/themes/silver/theme' // 主题文件
 import 'tinymce/icons/default'
 import 'tinymce/models/dom'
-import 'tinymce/plugins/code'
-import 'tinymce/plugins/preview'
 import 'tinymce/plugins/fullscreen'
 
 import eventBus from '@/utils/mitt'
@@ -36,16 +34,18 @@ export default {
     return {
       showEmotionPanel: false,
       showMemberListPanel: false,
-      groupId: ''
+      groupId: '',
+      replyData: null
     }
   },
   methods: {
     insertReplyMsg (msg) {
+      this.replyData = msg
       const text = msg.content.replace(/<p>/gi, '').replace(/<\/p>/gi, '')
       const html = `<blockquote class="mceNonEditable" data-id="${msg.id}"><h4>${msg.username}</h4><p style="font-size: 14px">${text}</p></blockquote><p>&nbsp;</p>`
       editorInstance.setContent(html)
     },
-    setEmotion ({ url, index }) {
+    setEmotion (url) {
       editorInstance.insertContent(`<img src="${url}" alt="" style="width: 20px;height: 20px;vertical-align: middle;">`)
     },
     insertSelectUser (selectUser) {
@@ -60,6 +60,15 @@ export default {
       const nodes = frag.children
       let sendHtml = false // 是否拼接html文字消息,如果为false，则发送文字消息
       let textMessage = ''
+      // let replyId = null
+      //
+      // const blockquoteDoms = frag.querySelectorAll('blockquote')
+      // for (let i = 0; i < blockquoteDoms.length; i++) {
+      //   if (blockquoteDoms[i].dataset.id) {
+      //     replyId = +blockquoteDoms[i].dataset.id
+      //     break
+      //   }
+      // }
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i]
         if (node.localName === 'p') {
@@ -73,6 +82,13 @@ export default {
                   file: imageMap.get(node.children[0].dataset.id)
                 })
                 break
+              case 'audio':
+                eventBus.emit('sendMediaMessage', {
+                  contentType: 3,
+                  content: node.children[0].src,
+                  file: audioMap.get(node.children[0].dataset.id)
+                })
+                break
               case 'video':
                 eventBus.emit('sendMediaMessage', {
                   contentType: 4,
@@ -82,8 +98,8 @@ export default {
                 break
             }
             sendHtml = false
-            // 处理文字消息
           } else {
+            // 处理文字消息
             textMessage += node.outerHTML
             // 如果已经是最后一条消息或者下一条消息是媒体类型消息，则发送文字消息
             if (i === nodes.length - 1 || isMediaNode(nodes[i + 1])) {
@@ -96,8 +112,10 @@ export default {
                 textMessage = ''
                 eventBus.emit('sendWordMessage', {
                   text: text,
-                  userIds: uids.join(',')
+                  userIds: uids.join(','),
+                  replyData: this.replyData
                 })
+                this.replyData = null
               }
             }
           }
@@ -129,8 +147,8 @@ export default {
       menubar: false,
       statusbar: false,
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
-      plugins: 'code preview fullscreen',
-      toolbar: 'myImage myVideo myFile myEmoticons myHistory code preview fullscreen mySendMessage',
+      plugins: 'fullscreen',
+      toolbar: 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage',
       setup: (editor) => {
         editor.on('click', () => {
           this.showEmotionPanel = false

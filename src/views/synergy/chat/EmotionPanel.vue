@@ -1,6 +1,6 @@
 <template>
   <div ref="containerRef" class="chat-editor-emotion-panel" v-show="modelValue">
-    <div v-for="(item,index) in emotions" :key="item" class="emotion-item" @click="setEmotion(item,index)">
+    <div v-for="item in emotions" :key="item" class="emotion-item" @click="setEmotion(item)">
       <img :src="item"/>
     </div>
   </div>
@@ -34,8 +34,8 @@ export default {
     }
   },
   methods: {
-    setEmotion (item, index) {
-      this.$emit('change', { url: item, index })
+    setEmotion (item) {
+      this.$emit('change', item)
       this.$emit('update:modelValue', false)
     },
     closePanel (e) {

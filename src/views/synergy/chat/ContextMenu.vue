@@ -68,7 +68,6 @@ export default {
   },
   methods: {
     openContextMenu (event, messageItem) {
-      // console.log(messageItem)
       this.event = event
       event.preventDefault()
       this.showMenu = true
@@ -84,8 +83,7 @@ export default {
       Toast('暂未实现此功能')
     },
     replyMsg () {
-      Toast('暂未实现此功能')
-      // this.$emit('replyMsg', this.messageItem)
+      this.$emit('replyMsg', this.messageItem)
     },
     // 撤回消息
     revocationMsg () {

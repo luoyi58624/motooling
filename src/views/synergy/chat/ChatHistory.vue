@@ -14,7 +14,17 @@
                 <span v-html="item.username"/> {{ item.sendTime }}
               </h3>
               <!--渲染消息内容-->
-              <p v-if="item.contentType === 1" class="content" v-html="item.content"></p>
+              <template v-if="item.contentType === 1">
+                <div v-if="item.replyData" class="reply-message">
+                  <blockquote>
+                    <p style="font-weight: bold;margin-bottom: 6px">{{item.replyData.username}}:</p>
+                    <p v-html="item.replyData.content"></p>
+                  </blockquote>
+                  <span class="word-message" v-html="item.content"></span>
+                </div>
+                <p v-else class="content" v-html="item.content"></p>
+              </template>
+
               <div v-if="item.contentType === 2 || item.contentType === 6" style="text-align: left;">
                 <el-image style="width: 160px; height: 90px;" fit="scale-down" :z-index="3000"
                           :src="fileAddressFormatFunc(item.content)"/>
@@ -344,6 +354,27 @@ export default {
       justify-content: center;
       align-items: center;
       background-color: #e5e3e3;
+    }
+
+    .reply-message {
+      text-align: left;
+      margin: 4px 0;
+      padding: 8px 10px 6px 10px;
+      background-color: rgb(242, 243, 245);
+
+      blockquote{
+        padding: 4px 4px 4px 8px;
+        border-left: 2px solid #ccc;
+        font-size: 12px;
+        color: #57606f;
+      }
+
+      .word-message{
+        background-color: transparent;
+        padding: 0;
+        color: black;
+        border-radius: 0;
+      }
     }
 
     & > .content {

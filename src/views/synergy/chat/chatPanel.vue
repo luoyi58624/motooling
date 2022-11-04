@@ -95,7 +95,16 @@
                 <!--消息内容-->
                 <div class="message-content">
                   <div class="message" v-if="item.contentType == 1">
-                    <span class="word-message" @contextmenu="openContextMenu($event,item)" v-html="item.content"></span>
+                    <div v-if="item.replyData" class="reply-message">
+                      <blockquote>
+                        <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
+                        <p v-html="item.replyData.content"></p>
+                      </blockquote>
+                      <span class="word-message" @contextmenu="openContextMenu($event,item)"
+                            v-html="item.content"></span>
+                    </div>
+                    <span v-else class="word-message" @contextmenu="openContextMenu($event,item)"
+                          v-html="item.content"></span>
                   </div>
                   <div class="message" v-else-if="item.contentType == 2 || item.contentType == 6">
                     <el-image style="width: 160px; height: 90px;"
@@ -570,6 +579,7 @@ export default {
       }
     },
     receiveMessage (message) {
+      console.log(message)
       let messageContent
       switch (message.data.contentType) {
         case 2:
@@ -639,7 +649,7 @@ export default {
       })
     },
     // 发送文字消息
-    sendWordMessage ({ text, userIds }) {
+    sendWordMessage ({ text, userIds, replyData }) {
       const msgUUID = uuid()
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
@@ -651,16 +661,20 @@ export default {
         username: this.senderName,
         readMessageUsers: [],
         loading: true,
-        msgUUID
+        msgUUID,
+        replyData
       }
       this.recordList.push(_message)
       this.scrolltoButtom()
+      let replyId = null
+      if (replyData) replyId = replyData.id
       sendMessage({
         groupId: this.groupId,
         senderId: this.uid,
         contentType: 1,
         content: text,
-        smallImg: userIds || undefined
+        smallImg: userIds || undefined,
+        replyId: replyId || undefined
       }).then((res) => {
         this.recordList.forEach(item => {
           if (item.msgUUID == msgUUID) {
@@ -1075,6 +1089,31 @@ nav {
           font-size: 12px;
           padding: 0 3px;
           color: #828c99;
+        }
+      }
+
+      .reply-message {
+        margin: 4px 0;
+        padding: 8px 10px 6px 10px;
+        background-color: rgb(242, 243, 245);
+
+        blockquote {
+          padding: 4px 4px 4px 8px;
+          border-left: 2px solid #ccc;
+          font-size: 12px;
+          color: #57606f;
+          cursor: pointer;
+
+          &:hover {
+            color: #3498db;
+          }
+        }
+
+        .word-message {
+          background-color: transparent;
+          padding: 0;
+          color: black;
+          border-radius: 0;
         }
       }
 

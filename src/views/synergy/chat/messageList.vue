@@ -25,7 +25,7 @@
           <div class="user-name">
             <p class="group-name">{{ item.username || item.subject }}</p>
             <div class="group-content">
-              <span>{{item.newMsg | filterHtmlTag}}</span>
+              <span v-html="filterHtmlTag(item.newMsg)"></span>
               <span>{{ formatNewMsgTime(item.newsTime) }}</span>
             </div>
           </div>
@@ -97,11 +97,6 @@ export default {
       companyId: (state) => state.userInfo.companyId,
       uid: (state) => state.userInfo.uid
     })
-  },
-  filters: {
-    filterHtmlTag (val) {
-      return htmlToText(val)
-    }
   },
   created () {
     getUserInfo().then((res) => {
@@ -279,6 +274,9 @@ export default {
       } else {
         return day
       }
+    },
+    filterHtmlTag (val) {
+      return val.replace(/<p>/gi, '').replace(/<\/p>/gi, '')
     }
   }
 }
