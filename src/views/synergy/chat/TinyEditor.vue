@@ -201,7 +201,7 @@ export default {
           icon: 'embed',
           tooltip: '上传视频',
           onAction: () => {
-            readFile('video/*').then((files) => {
+            readFile('audio/*,video/*').then((files) => {
               insertFile(editor, files)
             })
           }
