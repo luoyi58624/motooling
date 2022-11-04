@@ -1,6 +1,6 @@
 <template>
-  <div class="my-emotion" v-show="$store.state.showChatEmotionPanel">
-    <div v-for="item in emotions" :key="item" class="emotion-item" @click="setEmotion(item)">
+  <div ref="containerRef" class="chat-editor-emotion-panel" v-show="modelValue">
+    <div v-for="(item,index) in emotions" :key="item" class="emotion-item" @click="setEmotion(item,index)">
       <img :src="item"/>
     </div>
   </div>
@@ -9,20 +9,42 @@
 <script>
 export default {
   name: 'EmotionPanel',
+  props: {
+    modelValue: {
+      type: Boolean,
+      defalut: false
+    }
+  },
+  model: {
+    prop: 'modelValue',
+    event: 'update:modelValue'
+  },
   data () {
     return {
       emotions: []
     }
   },
+  watch: {
+    modelValue (newValue) {
+      if (newValue) {
+        document.addEventListener('click', this.closePanel)
+      } else {
+        document.removeEventListener('click', this.closePanel)
+      }
+    }
+  },
   methods: {
-    setEmotion (item) {
-      this.$store.state.editor.dangerouslyInsertHtml(
-        `<img class="emotion-image" src="${item}" alt='${item}' style='width: 20px;height: 20px; '>`
-      )
-      this.$store.state.showChatEmotionPanel = false
-      this.$nextTick(() => {
-        this.$store.state.editor.focus(true)
-      })
+    setEmotion (item, index) {
+      this.$emit('change', { url: item, index })
+      this.$emit('update:modelValue', false)
+    },
+    closePanel (e) {
+      if (this.$refs.containerRef) {
+        let isSelf = this.$refs.containerRef.contains(e.target)
+        if (!isSelf) {
+          this.$emit('update:modelValue', false)
+        }
+      }
     }
   },
   created () {
@@ -36,11 +58,20 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
-.my-emotion {
+<style lang="less">
+html.tox-fullscreen {
+  .chat-editor-emotion-panel {
+    position: fixed;
+    top: 50px;
+    left: 120px;
+    z-index: 10000;
+  }
+}
+
+.chat-editor-emotion-panel {
   position: absolute;
-  bottom: 160px;
-  left: 130px;
+  bottom: 765px;
+  left: 125px;
   width: 290px;
   height: 405px;
   padding: 4px 4px 4px 4px;
@@ -48,26 +79,26 @@ export default {
   box-shadow: 0 0 1.1px rgba(0, 0, 0, 0.065),
   0 0 3.6px rgba(0, 0, 0, 0.095),
   0 0 16px rgba(0, 0, 0, 0.16);
-}
 
-.emotion-item {
-  width: 32px;
-  height: 32px;
-  margin: 4px;
-  border-radius: 6px;
-  float: left;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+  .emotion-item {
+    width: 32px;
+    height: 32px;
+    margin: 4px;
+    border-radius: 6px;
+    float: left;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 
-  &:hover {
-    background-color: rgb(245, 242, 240);
-  }
+    &:hover {
+      background-color: rgb(245, 242, 240);
+    }
 
-  & > img {
-    width: 24px;
-    height: 24px;
+    & > img {
+      width: 24px;
+      height: 24px;
+    }
   }
 }
 </style>

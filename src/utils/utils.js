@@ -88,6 +88,7 @@ export function readFile (accept = '*') {
     const fileInput = document.createElement('input')
     fileInput.type = 'file'
     fileInput.accept = accept
+    fileInput.multiple = true
     fileInput.onchange = function (e) {
       resolve(this.files)
     }

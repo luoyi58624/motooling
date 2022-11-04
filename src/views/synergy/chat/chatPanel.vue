@@ -176,8 +176,6 @@
             </div>
           </div>
         </div>
-        <!--        <chat-editor ref="ChatEditor" :value="$store.state.wordContent"-->
-        <!--                     @change="inputChange" @handleMessage="handleMessage"/>-->
         <tiny-editor/>
       </div>
       <div class="group-members" v-if="!recordPanel && chattingTarget.type == 666">
@@ -196,9 +194,6 @@
       </div>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
-    <div class="member-list" v-show="$store.state.groupAt">
-      <member-list/>
-    </div>
     <context-menu ref="ContextMenu" @revocationMsg="revocationMsg"/>
     <ul v-if="selectedGroupUser.uid" v-clickoutside="hidden" ref="GroupUserContextMenu"
         class="group-user-context-menu" :style="{left: groupUserContext.left+'px',top: groupUserContext.top+'px'}">
@@ -226,7 +221,6 @@ import {
   updateGroupInfo
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
-import memberList from '@/views/synergy/chat/memberList.vue'
 import debounce from '@/utils/debounce'
 import { Dialog, Notify } from 'vant'
 import eventBus from '@/utils/mitt'
@@ -246,8 +240,7 @@ export default {
   components: {
     TinyEditor,
     ChatHistory,
-    ContextMenu,
-    memberList
+    ContextMenu
   },
   props: {
     invitedMembers: {
@@ -306,15 +299,13 @@ export default {
       handler: function (val) {
         if (val) {
           this.init()
-          this.$store.state.groupAt = false
-          const messageDraft = this.$store.state.messageDraft.find(item => {
-            return item.groupId == val
-          })
+          // const messageDraft = this.$store.state.messageDraft.find(item => {
+          //   return item.groupId == val
+          // })
           clearReaderMessage = setInterval(() => {
             this.getReadMessage()
           }, 3000)
           debounceLoadMoreMessage = debounce(this.loadMoreRecordList, 100)
-          if (messageDraft) this.$store.state.wordContent = messageDraft.message
           setTimeout(() => {
             this.$refs.talkContent.addEventListener('scroll', debounceLoadMoreMessage)
             // this.$store.state.editor.focus(true)
@@ -651,9 +642,6 @@ export default {
         }
       })
     },
-    inputChange (e) {
-      this.$store.state.wordContent = e
-    },
     // 发送文字消息
     sendWordMessage ({ text, userIds }) {
       const msgUUID = uuid()
@@ -941,7 +929,7 @@ export default {
       })
     },
     againEdit (item) {
-      this.$store.state.wordContent = item.content
+      // this.$store.state.wordContent = item.content
     },
     showAgainEdit (item) {
       let sendTime = item.sendTime
@@ -1040,8 +1028,9 @@ export default {
 
 .member-list {
   position: absolute;
-  bottom: 160px;
-  left: 110px;
+  bottom: 190px;
+  left: 20px;
+  z-index: 10000;
 }
 
 nav {

@@ -2,6 +2,7 @@
   <div class="my-editor-container">
     <div id="default"></div>
     <EmotionPanel v-model="showEmotionPanel" @change="setEmotion"/>
+    <MemberList ref="memberListRef" v-model="showMemberListPanel" @change="insertSelectUser"/>
   </div>
 </template>
 
@@ -10,29 +11,101 @@ import tinymce from 'tinymce'
 import 'tinymce/themes/silver/theme' // 主题文件
 import 'tinymce/icons/default'
 import 'tinymce/models/dom'
+import 'tinymce/plugins/code'
+import 'tinymce/plugins/preview'
 import 'tinymce/plugins/fullscreen'
 
 import eventBus from '@/utils/mitt'
-import EmotionPanel from './EmotionPanel2.vue'
+import EmotionPanel from './EmotionPanel.vue'
+import MemberList from '@/views/synergy/chat/memberList'
 import { hideLongText, loadFileIcon, readFile, renderSize, uuid } from '@/utils/utils'
 
 const imageMap = new Map() // 存放图片文件
+const audioMap = new Map() // 存放音频文件
 const videoMap = new Map() // 存放视频文件
 const fileMap = new Map() // 存放其他类型文件
 let editorInstance // 编辑器实例
 
 export default {
   components: {
-    EmotionPanel
+    EmotionPanel,
+    MemberList
   },
   data () {
     return {
-      showEmotionPanel: false
+      showEmotionPanel: false,
+      showMemberListPanel: false
     }
   },
   methods: {
     setEmotion ({ url, index }) {
       editorInstance.insertContent(`<img src="${url}" alt="" style="width: 20px;height: 20px;vertical-align: middle;">`)
+    },
+    insertSelectUser (selectUser) {
+      this.showMemberListPanel = false
+      tinymce.activeEditor.execCommand('Delete')
+      editorInstance.insertContent(`<span class="mceNonEditable" data-uid="${selectUser.uid}">@${selectUser.name} </span>`)
+    },
+    sendMsg () {
+      const html = editorInstance.getContent()
+      const frag = document.createElement('div')
+      frag.innerHTML = html
+      const nodes = frag.children
+      let sendHtml = false // 是否拼接html文字消息,如果为false，则发送文字消息
+      let textMessage = ''
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i]
+        if (node.localName === 'p') {
+          // 如果当前节点只包含一个子节点同时有data-id属性，则判定为图片、视频、音频
+          if (isMediaNode(node)) {
+            switch (node.children[0].localName) {
+              case 'img':
+                eventBus.emit('sendMediaMessage', {
+                  contentType: 2,
+                  content: node.children[0].src,
+                  file: imageMap.get(node.children[0].dataset.id)
+                })
+                break
+              case 'video':
+                eventBus.emit('sendMediaMessage', {
+                  contentType: 4,
+                  content: node.children[0].src,
+                  file: videoMap.get(node.children[0].dataset.id)
+                })
+                break
+            }
+            sendHtml = false
+            // 处理文字消息
+          } else {
+            textMessage += node.outerHTML
+            // 如果已经是最后一条消息或者下一条消息是媒体类型消息，则发送文字消息
+            if (i === nodes.length - 1 || isMediaNode(nodes[i + 1])) {
+              sendHtml = true
+            }
+            if (sendHtml) {
+              const text = filterBlankMessage(textMessage)
+              const uids = getAllMentionUid(text)
+              if (text !== '') {
+                textMessage = ''
+                eventBus.emit('sendWordMessage', {
+                  text: text,
+                  userIds: uids.join(',')
+                })
+              }
+            }
+          }
+        } else if (node.localName === 'div' && node.className.indexOf('file-wrapper') !== -1) {
+          eventBus.emit('sendMediaMessage', {
+            contentType: 9,
+            content: {
+              fileName: node.dataset.name,
+              fileSize: node.dataset.size
+            },
+            file: fileMap.get(node.dataset.id)
+          })
+        }
+      }
+      editorInstance.setContent('')
     }
   },
   mounted () {
@@ -49,8 +122,8 @@ export default {
       menubar: false,
       statusbar: false,
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
-      plugins: 'fullscreen',
-      toolbar: 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage',
+      plugins: 'code preview fullscreen',
+      toolbar: 'myImage myVideo myFile myEmoticons myHistory code preview fullscreen mySendMessage',
       setup: (editor) => {
         editor.on('click', () => {
           this.showEmotionPanel = false
@@ -60,6 +133,30 @@ export default {
         })
         editor.on('drop', event => {
           if (event.dataTransfer && event.dataTransfer.files.length > 0) insertFile(editor, event.dataTransfer.files)
+        })
+        editor.on('input', (event) => {
+          // console.log(event)
+          if (event.data === '@') {
+            this.showMemberListPanel = true
+          }
+        })
+        editor.on('keydown', event => {
+          // console.log(event)
+          if (event.code === 'Backspace') {
+            this.showMemberListPanel = false
+          } else if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
+            event.preventDefault()
+            this.$refs.memberListRef.keydownEvent(event)
+          } else if ((!event.ctrlKey && !event.altKey) && event.code === 'Enter') {
+            event.preventDefault()
+            if (this.showMemberListPanel) {
+              this.$refs.memberListRef.keydownEvent(event)
+            } else {
+              this.sendMsg()
+            }
+          } else if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
+            if (this.showMemberListPanel) event.preventDefault()
+          }
         })
         editor.ui.registry.addButton('myImage', {
           icon: 'image',
@@ -105,85 +202,7 @@ export default {
         editor.ui.registry.addButton('mySendMessage', {
           text: '发送（Enter）',
           onAction: () => {
-            const html = editor.getContent()
-            const frag = document.createElement('div')
-            frag.innerHTML = html
-            console.log(frag.children)
-            const nodes = frag.children
-            let sendHtml = false // 是否拼接html文字消息,如果为false，则发送文字消息
-            let textMessage = ''
-            for (let i = 0; i < nodes.length; i++) {
-              const node = nodes[i]
-              if (node.localName === 'p') {
-                // 如果当前节点只包含一个子节点同时有data-id属性，则判定为图片、视频、音频
-                if (isMediaNode(node)) {
-                  switch (node.children[0].localName) {
-                    case 'img':
-                      eventBus.emit('sendMediaMessage', {
-                        contentType: 2,
-                        content: node.children[0].src,
-                        file: imageMap.get(node.children[0].dataset.id)
-                      })
-                      break
-                    case 'video':
-                      eventBus.emit('sendMediaMessage', {
-                        contentType: 4,
-                        content: node.children[0].src,
-                        file: videoMap.get(node.children[0].dataset.id)
-                      })
-                      break
-                  }
-                  sendHtml = false
-                  // 处理文字消息
-                } else {
-                  textMessage += node.outerHTML
-                  // 如果已经是最后一条消息或者下一条消息是媒体类型消息，则发送文字消息
-                  if (i === nodes.length - 1 || isMediaNode(nodes[i + 1])) {
-                    sendHtml = true
-                  }
-                  if (sendHtml) {
-                    const text = filterBlankMessage(textMessage)
-                    if (text !== '') {
-                      textMessage = ''
-                      eventBus.emit('sendWordMessage', {
-                        text: text
-                        // userIds: userIds.join(',')
-                      })
-                    }
-                  }
-                }
-              } else if (node.localName === 'div' && node.className.indexOf('file-wrapper') !== -1) {
-                console.log(node)
-                console.log(fileMap.get(node.dataset.id))
-                eventBus.emit('sendMediaMessage', {
-                  contentType: 9,
-                  content: {
-                    fileName: node.dataset.name,
-                    fileSize: node.dataset.size
-                  },
-                  file: fileMap.get(node.dataset.id)
-                })
-              }
-            }
-            editor.setContent('')
-            // const imageDoms = frag.querySelectorAll('img')
-            // for (let i = 0; i < imageDoms.length; i++) {
-            //   if (imageDoms[i].dataset.id) images.push(imageMap.get(imageDoms[i].dataset.id))
-            // }
-            //
-            // const videoDoms = frag.querySelectorAll('video')
-            // for (let i = 0; i < videoDoms.length; i++) {
-            //   if (videoDoms[i].dataset.id) videos.push(videoMap.get(videoDoms[i].dataset.id))
-            // }
-            //
-            // const fileDoms = frag.getElementsByClassName('file-wrapper')
-            // for (let i = 0; i < fileDoms.length; i++) {
-            //   if (fileDoms[i].dataset.id) files.push(fileMap.get(fileDoms[i].dataset.id))
-            // }
-            //
-            // console.log(images)
-            // console.log(videos)
-            // console.log(files)
+            this.sendMsg()
           }
         })
         editorInstance = editor
@@ -237,6 +256,19 @@ function filterBlankMessage (html) {
   return newHtml
 }
 
+// 获取所有@用户的id
+function getAllMentionUid (html) {
+  const uids = []
+  const frag = document.createElement('div')
+  frag.innerHTML = html
+  const doms = frag.querySelectorAll('span')
+  for (let i = 0; i < doms.length; i++) {
+    if (doms[i].dataset.uid) uids.push(doms[i].dataset.uid)
+  }
+  console.log(uids)
+  return uids
+}
+
 // 插入各种文件
 function insertFile (editor, files) {
   for (let i = 0; i < files.length; i++) {
@@ -247,7 +279,9 @@ function insertFile (editor, files) {
       const blobUrl = window.URL.createObjectURL(files[i])
       editor.insertContent(`<p><img src="${blobUrl}" alt="" data-id="${id}" style="width: 64px;object-fit: contain"></p>`)
     } else if (/audio/.test(file.type)) {
-
+      audioMap.set(id, files[i])
+      const blobUrl = window.URL.createObjectURL(files[i])
+      editor.insertContent(`<p><audio src="${blobUrl}" controls data-id="${id}"></p>`)
     } else if (/video/.test(file.type)) {
       videoMap.set(id, files[i])
       const blobUrl = window.URL.createObjectURL(files[i])

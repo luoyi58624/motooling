@@ -1,5 +1,5 @@
 <template>
-  <div ref="memberListContainer" class="member-list-container">
+  <div ref="memberListContainer" class="member-list-container" v-show="modelValue">
     <div v-for="(member,index) in groupMember" :key="member.id" @click="groupAt(index)">
       <div class="user-name" :class="{active: index===selectUser.index}">{{ member.username }}</div>
     </div>
@@ -10,10 +10,21 @@
 import { mapState } from 'vuex'
 
 export default {
+  props: {
+    modelValue: {
+      type: Boolean,
+      defalut: false
+    }
+  },
+  model: {
+    prop: 'modelValue',
+    event: 'update:modelValue'
+  },
   data () {
     return {
       selectUser: {
         index: 0,
+        uid: 'AT_ALL',
         name: '所有人'
       }
     }
@@ -31,25 +42,11 @@ export default {
     })
   },
   watch: {
-    '$store.state.groupAt': {
-      deep: true,
-      immediate: true,
-      handler: function (newValue) {
-        if (newValue) {
-          document.addEventListener('keydown', this.keydownEvent)
-          setTimeout(() => {
-            this.$store.state.editor.blur()
-          })
-        } else {
-          document.removeEventListener('keydown', this.keydownEvent)
-        }
-      }
-    },
     'selectUser.index': {
       deep: true,
       immediate: true,
       handler: function (newValue) {
-        if (this.$store.state.groupAt) {
+        if (this.modelValue) {
           if (newValue < 10) {
             this.$refs.memberListContainer.scrollTo({
               top: 0
@@ -70,55 +67,39 @@ export default {
   methods: {
     // 将@用户填充到聊天编辑器
     setEditorContent () {
-      const mentionNode = {
-        type: 'mention', // 必须是 'mention'
-        value: this.selectUser.name,
-        info: { id: this.selectUser.index === 0 ? 'AT_ALL' : this.groupMember[this.selectUser.index].uid },
-        children: [{ text: '' }] // 必须有一个空 text 作为 children
-      }
-      const editor = this.$store.state.editor
-      if (editor) {
-        setTimeout(() => {
-          editor.restoreSelection() // 恢复选区
-          editor.deleteBackward('character') // 删除 '@'
-          editor.insertNode(mentionNode) // 插入 mention
-          editor.move(1) // 移动光标
-        }, 200)
-      }
+      console.log(this.groupMember)
+      this.$emit('change', this.selectUser)
     },
     groupAt (index) {
       this.selectUser.index = index
+      this.selectUser.uid = this.groupMember[index].uid
       this.selectUser.name = this.groupMember[index].username
       this.setEditorContent()
     },
     keydownEvent (e) {
-      this.$store.state.editor.blur()
-      setTimeout(() => {
-        if (e.code === 'ArrowDown') {
-          if (this.selectUser.index + 1 >= this.groupMember.length) {
-            this.selectUser.index = 0
-            this.selectUser.name = this.groupMember[this.selectUser.index].username
-          } else {
-            this.selectUser.index++
-            this.selectUser.name = this.groupMember[this.selectUser.index].username
-          }
-        } else if (e.code === 'ArrowUp') {
-          if (this.selectUser.index - 1 < 0) {
-            this.selectUser.index = this.groupMember.length - 1
-            this.selectUser.name = this.groupMember[this.selectUser.index].username
-          } else {
-            this.selectUser.index--
-            this.selectUser.name = this.groupMember[this.selectUser.index].username
-          }
-        } else if (e.code === 'Enter') {
-          this.setEditorContent()
-        } else if (e.code === 'Backspace' || e.code === 'Delete') {
-          this.$store.state.wordContent = this.$store.state.wordContent.slice(0, -1)
-          setTimeout(() => {
-            this.$store.state.editor.focus(true)
-          })
+      if (e.code === 'ArrowDown') {
+        if (this.selectUser.index + 1 >= this.groupMember.length) {
+          this.selectUser.index = 0
+          this.selectUser.uid = this.groupMember[this.selectUser.index].uid
+          this.selectUser.name = this.groupMember[this.selectUser.index].username
+        } else {
+          this.selectUser.index++
+          this.selectUser.uid = this.groupMember[this.selectUser.index].uid
+          this.selectUser.name = this.groupMember[this.selectUser.index].username
         }
-      }, 10)
+      } else if (e.code === 'ArrowUp') {
+        if (this.selectUser.index - 1 < 0) {
+          this.selectUser.index = this.groupMember.length - 1
+          this.selectUser.uid = this.groupMember[this.selectUser.index].uid
+          this.selectUser.name = this.groupMember[this.selectUser.index].username
+        } else {
+          this.selectUser.index--
+          this.selectUser.uid = this.groupMember[this.selectUser.index].uid
+          this.selectUser.name = this.groupMember[this.selectUser.index].username
+        }
+      } else if (e.code === 'Enter') {
+        this.setEditorContent()
+      }
     }
   }
 }
@@ -126,12 +107,18 @@ export default {
 
 <style scoped lang="less">
 .member-list-container {
+  position: absolute;
+  bottom: 765px;
+  left: 8px;
+  z-index: 10000;
+
   width: 160px;
   border: 1px solid #ccc;
   height: 280px;
   padding: 4px 0;
   overflow: auto;
   background-color: #ffffff;
+  border-radius: 6px;
   box-shadow: 0 0 1.1px rgba(0, 0, 0, 0.065),
   0 0 3.6px rgba(0, 0, 0, 0.095),
   0 0 16px rgba(0, 0, 0, 0.16);
