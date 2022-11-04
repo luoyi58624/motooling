@@ -70,7 +70,7 @@ html.tox-fullscreen {
 
 .chat-editor-emotion-panel {
   position: absolute;
-  bottom: 765px;
+  bottom: 190px;
   left: 125px;
   width: 290px;
   height: 405px;

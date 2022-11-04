@@ -107,7 +107,7 @@ export default {
 <style scoped lang="less">
 .member-list-container {
   position: absolute;
-  bottom: 765px;
+  bottom: 190px;
   left: 8px;
   z-index: 10000;
 
