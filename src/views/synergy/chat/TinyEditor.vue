@@ -121,7 +121,7 @@ export default {
       base_url: '/mthtml/tinymce',
       // skin_url: '/tinymce/skins/ui/oxide',
       // language_url: '/tinymce/langs/zh-Hans.js',
-      content_css: '/tinymce/custom/css/chat.css',
+      content_css: '/mthtml/tinymce/custom/css/chat.css',
       noneditable_class: 'mceNonEditable', // 设置不可编辑元素class
       language: 'zh-Hans',
       height: 180,
