@@ -226,16 +226,64 @@ export default {
       }
       this.timeout = setTimeout(() => {
         getNewsList({ queryValues: e }).then((res) => {
-          this.contacts = res.newsList
+          const users = []
+          let depName = ''
+          // 过滤出部门用户-IS221193
+          console.log(res)
+          console.log(this.$store.state.userInfo.username)
+          this.$store.state.allDepUser.forEach(dep => {
+            depName = dep.name
+            dep.childrenList.forEach(user => {
+              if (user.username != this.$store.state.userInfo.username && user.username.indexOf(e) !== -1) {
+                let flag = true
+                for (let i = 0; i < res.newsList.length; i++) {
+                  if (res.newsList[i].username == user.username) {
+                    flag = false
+                  }
+                }
+                if (flag) {
+                  users.push({
+                    ...user,
+                    depName,
+                    noChat: true // 没有开启聊天，点击此用户将创建新的聊天
+                  })
+                }
+              }
+            })
+          })
+          this.contacts = res.newsList.concat(users)
         })
       }, 200)
     },
     enterChatting (data) {
-      this.$store.commit('currentConversation', {
-        groupId: data.groupId,
-        relationType: data.relationType
-      })
-      this.value = ''
+      if (data.noChat) {
+        getOpenSynergy(
+          {
+            relationType: '66',
+            relationId: data.uid
+          }
+        ).then(res => {
+          this.$store.commit('currentConversation', {
+            groupId: res.synergyGroup.id,
+            relationType: res.synergyGroup.relationType
+          })
+          getNewsList().then(res => {
+            this.$store.dispatch('newsList', res.newsList)
+          }).catch(err => {
+            this.$createToast({
+              time: 2000,
+              txt: err.msg || '互动消息开启失败,请检查网络',
+              type: 'error'
+            }).show()
+          })
+        })
+      } else {
+        this.$store.commit('currentConversation', {
+          groupId: data.groupId,
+          relationType: data.relationType
+        })
+        this.value = ''
+      }
     },
     // 选择聊天对象，开启聊天
     startChatting (data) {

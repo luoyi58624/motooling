@@ -153,7 +153,7 @@
 import { mapState } from 'vuex'
 import { synergyRecordPage } from '@/api/synergy/synergy'
 import { Dialog } from 'vant'
-import { chatDataHandler, fileAddressFormat, heightLight, loadFileIcon } from '@/utils/utils'
+import { chatDataHandler, fileAddressFormat, heightLight, htmlToText, loadFileIcon } from '@/utils/utils'
 import { formatDate, timeToFullTime } from '@/utils/time'
 import { saveAs } from 'file-saver'
 import { cloneDeep } from 'lodash'
@@ -220,7 +220,7 @@ export default {
         // 过滤出搜索关键字内容，同时对关键字进行高亮处理
         this.showMessage = cloneDeep(this.allMessage)
           .filter(item =>
-            (item.contentType === 1 && item.content.indexOf(newValue) !== -1) ||
+            (item.contentType === 1 && htmlToText(item.content).indexOf(newValue) !== -1) ||
             (item.username && item.username.indexOf(newValue) !== -1)
           )
           .map(item => {
