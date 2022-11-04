@@ -85,6 +85,7 @@ export default {
     },
     replyMsg () {
       Toast('暂未实现此功能')
+      // this.$emit('replyMsg', this.messageItem)
     },
     // 撤回消息
     revocationMsg () {

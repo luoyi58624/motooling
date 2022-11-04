@@ -128,9 +128,9 @@ export default new Vuex.Store({
       }
     },
     // 设置草稿消息
-    setDraftMessage: (state, message) => {
+    setDraftMessage: (state, { groupId, message }) => {
       state.messageDraft.forEach(item => {
-        if (item.groupId === state.groupId) item.message = message
+        if (item.groupId == groupId) item.message = message
       })
     }
   },

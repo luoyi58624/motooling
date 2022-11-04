@@ -4,7 +4,7 @@
       <message-list @add-user="createNewChatting"/>
     </div>
     <div class="chat-panel">
-      <chat-panel v-if="resetChatPanel"
+      <chat-panel v-if="groupId!==null && resetChatPanel"
                   :invitedMembers="invitedMembers"
                   :invidedMembersInfo="invidedMembersInfo"
                   @add-user="addGroupMember"></chat-panel>

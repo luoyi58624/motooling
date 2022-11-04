@@ -19,6 +19,7 @@ import eventBus from '@/utils/mitt'
 import EmotionPanel from './EmotionPanel.vue'
 import MemberList from '@/views/synergy/chat/memberList'
 import { hideLongText, loadFileIcon, readFile, renderSize, uuid } from '@/utils/utils'
+import { cloneDeep } from 'lodash'
 
 const imageMap = new Map() // 存放图片文件
 const audioMap = new Map() // 存放音频文件
@@ -34,10 +35,16 @@ export default {
   data () {
     return {
       showEmotionPanel: false,
-      showMemberListPanel: false
+      showMemberListPanel: false,
+      groupId: ''
     }
   },
   methods: {
+    insertReplyMsg (msg) {
+      const text = msg.content.replace(/<p>/gi, '').replace(/<\/p>/gi, '')
+      const html = `<blockquote class="mceNonEditable" data-id="${msg.id}"><h4>${msg.username}</h4><p style="font-size: 14px">${text}</p></blockquote><p>&nbsp;</p>`
+      editorInstance.setContent(html)
+    },
     setEmotion ({ url, index }) {
       editorInstance.insertContent(`<img src="${url}" alt="" style="width: 20px;height: 20px;vertical-align: middle;">`)
     },
@@ -111,9 +118,9 @@ export default {
   mounted () {
     tinymce.init({
       selector: 'div#default',
-      base_url: '/tinymce',
-      skin_url: '/tinymce/skins/ui/oxide',
-      language_url: '/tinymce/langs/zh-Hans.js',
+      base_url: '/mthtml/tinymce',
+      // skin_url: '/tinymce/skins/ui/oxide',
+      // language_url: '/tinymce/langs/zh-Hans.js',
       content_css: '/tinymce/custom/css/chat.css',
       noneditable_class: 'mceNonEditable', // 设置不可编辑元素class
       language: 'zh-Hans',
@@ -134,14 +141,19 @@ export default {
         editor.on('drop', event => {
           if (event.dataTransfer && event.dataTransfer.files.length > 0) insertFile(editor, event.dataTransfer.files)
         })
+        editor.on('change', () => {
+          // 保存草稿
+          this.$store.commit('setDraftMessage', {
+            groupId: this.groupId,
+            message: editorInstance.getContent()
+          })
+        })
         editor.on('input', (event) => {
-          // console.log(event)
-          if (event.data === '@') {
+          if (event.data === '@' && this.$store.state.chattingTarget.type == 666) {
             this.showMemberListPanel = true
           }
         })
         editor.on('keydown', event => {
-          // console.log(event)
           if (event.code === 'Backspace') {
             this.showMemberListPanel = false
           } else if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
@@ -205,7 +217,20 @@ export default {
             this.sendMsg()
           }
         })
+      },
+      init_instance_callback: (editor) => {
         editorInstance = editor
+        // 插入草稿信息
+        this.$nextTick(() => {
+          // 拷贝当前群聊分组id，防止点击其他分组触发change事件设置草稿时插入的是新groupId
+          this.groupId = cloneDeep(this.$store.state.groupId)
+          const messageDraft = this.$store.state.messageDraft.find(item => {
+            return item.groupId == this.groupId
+          })
+          if (messageDraft) {
+            editor.setContent(messageDraft.message)
+          }
+        })
       }
     })
   },
@@ -265,7 +290,6 @@ function getAllMentionUid (html) {
   for (let i = 0; i < doms.length; i++) {
     if (doms[i].dataset.uid) uids.push(doms[i].dataset.uid)
   }
-  console.log(uids)
   return uids
 }
 

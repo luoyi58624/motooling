@@ -176,7 +176,7 @@
             </div>
           </div>
         </div>
-        <tiny-editor/>
+        <tiny-editor ref="TinymceEditorRef"/>
       </div>
       <div class="group-members" v-if="!recordPanel && chattingTarget.type == 666">
         <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
@@ -194,7 +194,7 @@
       </div>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
-    <context-menu ref="ContextMenu" @revocationMsg="revocationMsg"/>
+    <context-menu ref="ContextMenu" @revocationMsg="revocationMsg" @replyMsg="insertReplyMsg"/>
     <ul v-if="selectedGroupUser.uid" v-clickoutside="hidden" ref="GroupUserContextMenu"
         class="group-user-context-menu" :style="{left: groupUserContext.left+'px',top: groupUserContext.top+'px'}">
       <li @click.stop="createPrivateChatting(selectedGroupUser.uid)">发送消息</li>
@@ -206,7 +206,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { fileAddressFormat, isOffice, loadFileIcon, requestNotification, uuid } from '@/utils/utils.js'
+import { fileAddressFormat, htmlToText, isOffice, loadFileIcon, requestNotification, uuid } from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -299,17 +299,13 @@ export default {
       handler: function (val) {
         if (val) {
           this.init()
-          // const messageDraft = this.$store.state.messageDraft.find(item => {
-          //   return item.groupId == val
-          // })
           clearReaderMessage = setInterval(() => {
             this.getReadMessage()
           }, 3000)
           debounceLoadMoreMessage = debounce(this.loadMoreRecordList, 100)
-          setTimeout(() => {
+          this.$nextTick(() => {
             this.$refs.talkContent.addEventListener('scroll', debounceLoadMoreMessage)
-            // this.$store.state.editor.focus(true)
-          }, 100)
+          })
         }
       },
       immediate: true
@@ -927,6 +923,9 @@ export default {
           })
         }
       })
+    },
+    insertReplyMsg (item) {
+      this.$refs.TinymceEditorRef.insertReplyMsg(item)
     },
     againEdit (item) {
       // this.$store.state.wordContent = item.content

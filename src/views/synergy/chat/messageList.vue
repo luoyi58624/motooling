@@ -70,6 +70,7 @@ import {
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
 import { formatDate } from '@/utils/time'
+import { htmlToText } from '@/utils/utils'
 
 export default {
   directives: { clickoutside },
@@ -99,7 +100,7 @@ export default {
   },
   filters: {
     filterHtmlTag (val) {
-      return val.replace(/<.*?>/g, '')
+      return htmlToText(val)
     }
   },
   created () {

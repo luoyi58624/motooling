@@ -67,7 +67,6 @@ export default {
   methods: {
     // 将@用户填充到聊天编辑器
     setEditorContent () {
-      console.log(this.groupMember)
       this.$emit('change', this.selectUser)
     },
     groupAt (index) {

@@ -71,6 +71,10 @@ export function urlToPath (url) {
   }
 }
 
+export function htmlToText (html) {
+  return html.replace(/<.*?>/g, '')
+}
+
 // 聊天界面消息发送的时间处理
 export function time (time) {
   const currentYear = new Date().getFullYear()
