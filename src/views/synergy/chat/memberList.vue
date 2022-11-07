@@ -45,9 +45,16 @@ export default {
   computed: {
     domStyle () {
       if (this.$store.state.editorFullScreen) {
-        return {
-          left: this.position.left + 'px',
-          top: (this.position.bottom + 40) + 'px'
+        if (this.position.bottom + 280 < window.document.body.clientHeight) {
+          return {
+            left: this.position.left + 'px',
+            top: (this.position.bottom + 40) + 'px'
+          }
+        } else {
+          return {
+            left: this.position.left + 'px',
+            top: (this.position.bottom - 265) + 'px'
+          }
         }
       } else {
         return {

@@ -231,11 +231,9 @@ export default {
         editor.on('keydown', event => {
           if (event.code === 'Backspace') {
             const text = editorInstance.getContent({ format: 'text' }).replace(/\n/g, '')
-            console.log(text)
             if (text.endsWith('@')) {
               this.showMemberListPanel = false
             } else if (text.substring(0, text.length - 1).endsWith('@') && this.showMemberListPanel === false) {
-              console.log('删除了@前一个字符')
               this.showMemberListPanel = true
             }
           } else if (event.code === 'Escape') {
