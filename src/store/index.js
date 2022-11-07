@@ -34,6 +34,7 @@ export default new Vuex.Store({
     groupId: null, // 当前群组ID
     messageDraft: [], // 消息草稿
     chattingTarget: {}, // 聊天目标
+    editorFullScreen: false, // 编辑器是否进入全屏
     /**
      * 保存所有群聊消息
      * messageRecord: [

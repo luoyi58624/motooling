@@ -1,5 +1,5 @@
 <template>
-  <div ref="memberListContainer" class="member-list-container" v-show="modelValue">
+  <div ref="memberListContainer" class="member-list-container" :style="domStyle" v-show="modelValue">
     <div v-for="(member,index) in groupMember" :key="member.uid" @click="groupAt(index)">
       <div class="username" :class="{active: index===selectUser.index}">{{ member.username }}</div>
     </div>
@@ -22,6 +22,11 @@ export default {
     filterValue: {
       type: String,
       defalut: ''
+    },
+    position: {
+      defalut: () => {
+        return {}
+      }
     }
   },
   model: {
@@ -34,6 +39,21 @@ export default {
         index: 0,
         uid: 'AT_ALL',
         username: '所有人'
+      }
+    }
+  },
+  computed: {
+    domStyle () {
+      if (this.$store.state.editorFullScreen) {
+        return {
+          left: this.position.left + 'px',
+          top: (this.position.bottom + 40) + 'px'
+        }
+      } else {
+        return {
+          left: this.position.left + 'px',
+          bottom: (165 - this.position.bottom) + 'px'
+        }
       }
     }
   },
@@ -115,18 +135,13 @@ export default {
 html.tox-fullscreen {
   .member-list-container {
     position: fixed;
-    top: 50px;
-    left: 10px;
     z-index: 10000;
   }
 }
 
 .member-list-container {
   position: absolute;
-  bottom: 190px;
-  left: 8px;
   z-index: 10000;
-
   width: 160px;
   border: 1px solid #ccc;
   height: 280px;

@@ -6,6 +6,7 @@
                 v-model="showMemberListPanel"
                 :group-member="groupMember"
                 :filter-value="usernamePinyin"
+                :position="memberListPostion"
                 @change="insertSelectUser"/>
   </div>
 </template>
@@ -41,7 +42,8 @@ export default {
       showMemberListPanel: false,
       groupId: '', // 当前聊天分组id
       replyData: null, // 回复的消息
-      usernamePinyin: '' // 用户名字拼音搜索过滤
+      usernamePinyin: '', // 用户名字拼音搜索过滤
+      memberListPostion: {}
     }
   },
   computed: {
@@ -80,10 +82,6 @@ export default {
     },
     // 插入选中的用户
     insertSelectUser (selectUser) {
-      // const domSelection = document.getSelection();
-      // console.log(domSelection)
-      // const domRange = domSelection.getRangeAt(0);
-      // console.log(domRange)
       for (let i = 0; i <= this.usernamePinyin.length; i++) {
         tinymce.activeEditor.execCommand('Delete')
       }
@@ -207,6 +205,9 @@ export default {
         editor.on('drop', event => {
           if (event.dataTransfer && event.dataTransfer.files.length > 0) insertFile(editor, event.dataTransfer.files)
         })
+        editor.on('FullscreenStateChanged', value => {
+          this.$store.state.editorFullScreen = value.state
+        })
         editor.on('change', () => {
           // 保存草稿
           this.$store.commit('setDraftMessage', {
@@ -219,8 +220,10 @@ export default {
             const text = editorInstance.getContent({ format: 'text' })
             const index = text.lastIndexOf('@') + 1
             this.usernamePinyin = text.substring(index, text.length)
+            this.memberListPostion = editor.selection.getRng().getBoundingClientRect()
           } else if (event.data === '@' && this.$store.state.chattingTarget.type == 666) {
             this.showMemberListPanel = true
+            this.memberListPostion = editor.selection.getRng().getBoundingClientRect()
           }
         })
         // 编辑器键盘事件处理
