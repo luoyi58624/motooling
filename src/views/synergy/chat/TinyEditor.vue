@@ -192,6 +192,7 @@ export default {
       branding: false,
       menubar: false,
       statusbar: false,
+      object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
       plugins: 'fullscreen',
       toolbar: 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage',
@@ -219,7 +220,6 @@ export default {
           if (this.showMemberListPanel) {
             const text = editorInstance.getContent({ format: 'text' })
             const index = text.lastIndexOf('@') + 1
-            console.log('@-index-' + index)
             this.usernamePinyin = text.substring(index, text.length)
             this.memberListPostion = editor.selection.getRng().getBoundingClientRect()
           } else if (event.data === '@' && this.$store.state.chattingTarget.type == 666) {

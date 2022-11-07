@@ -1,12 +1,14 @@
 <template>
   <div ref="containerRef" class="chat-editor-emotion-panel" v-show="modelValue">
-    <div v-for="item in emotions" :key="item" class="emotion-item" @click="setEmotion(item)">
-      <img :src="item"/>
+    <div v-for="item in 67" :key="item" class="emotion-item" @click="setEmotion(item)">
+      <img :src="imgUrl(`/static/emotions/bibi/${item}.png`)"/>
     </div>
   </div>
 </template>
 
 <script>
+import { WEBURL } from '@/utils/utils'
+
 export default {
   name: 'EmotionPanel',
   props: {
@@ -34,8 +36,11 @@ export default {
     }
   },
   methods: {
+    imgUrl (img) {
+      return WEBURL() + img
+    },
     setEmotion (item) {
-      this.$emit('change', item)
+      this.$emit('change', this.imgUrl(`/static/emotions/bibi/${item}.png`))
       this.$emit('update:modelValue', false)
     },
     closePanel (e) {
