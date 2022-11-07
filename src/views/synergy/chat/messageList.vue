@@ -121,7 +121,7 @@ export default {
   },
   beforeDestroy () {
     this.isClose = true
-    this.socket.close()
+    // this.socket.close()
   },
   methods: {
     im () {
@@ -228,9 +228,7 @@ export default {
         getNewsList({ queryValues: e }).then((res) => {
           const users = []
           let depName = ''
-          // 过滤出部门用户-IS221193
-          console.log(res)
-          console.log(this.$store.state.userInfo.username)
+          // 过滤出部门用户
           this.$store.state.allDepUser.forEach(dep => {
             depName = dep.name
             dep.childrenList.forEach(user => {
@@ -345,10 +343,13 @@ export default {
 
   .search-contacts {
     position: absolute;
-    top: 47px;
-    left: 12px;
+    top: 50px;
+    left: 9px;
     width: 210px;
-    border: 1px solid skyblue;
+    max-height: 80%;
+    border-radius: 6px;
+    overflow-y: auto;
+    background-color: white;
 
     & > ul {
       background-color: #fff;

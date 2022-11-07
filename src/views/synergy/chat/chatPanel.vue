@@ -411,14 +411,17 @@ export default {
           this.scrolltoButtom()
 
           if (this.notReadCount !== 0) {
-            alreadyRead({
-              lastRecordId: Math.max.apply(Math, this.recordList.map(item => +item.id)),
-              groupId: this.groupId
-            }).then(() => {
-              getNewsList().then((res) => {
-                this.$store.dispatch('newsList', res.newsList)
+            const lastRecordId = Math.max.apply(Math, this.recordList.map(item => +item.id))
+            if (lastRecordId != null && !isNaN(lastRecordId)) {
+              alreadyRead({
+                lastRecordId: lastRecordId,
+                groupId: this.groupId
+              }).then(() => {
+                getNewsList().then((res) => {
+                  this.$store.dispatch('newsList', res.newsList)
+                })
               })
-            })
+            }
           }
 
           this.im()
