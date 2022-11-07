@@ -74,25 +74,32 @@ export default {
     }
   },
   methods: {
-    // 插入回复消息，设置引用样式
-    insertReplyMsg (msg) {
-      this.replyData = msg
-      const text = msg.content.replace(/<p>/gi, '').replace(/<\/p>/gi, '')
-      const html = `<blockquote class="mceNonEditable" data-id="${msg.id}"><h4>${msg.username}</h4><p style="font-size: 14px">${text}</p></blockquote><p>&nbsp;</p>`
-      editorInstance.setContent(html)
-    },
     // 插入表情
     insertEmotion (url) {
       editorInstance.insertContent(`<img src="${url}" alt="" style="width: 20px;height: 20px;vertical-align: middle;">`)
     },
     // 插入选中的用户
     insertSelectUser (selectUser) {
+      // const domSelection = document.getSelection();
+      // console.log(domSelection)
+      // const domRange = domSelection.getRangeAt(0);
+      // console.log(domRange)
       for (let i = 0; i <= this.usernamePinyin.length; i++) {
         tinymce.activeEditor.execCommand('Delete')
       }
       this.usernamePinyin = ''
       this.showMemberListPanel = false
       editorInstance.insertContent(`<span class="mceNonEditable" data-uid="${selectUser.uid}">@${selectUser.username} </span>`)
+    },
+    // 插入回复消息，设置引用样式
+    insertReplyMsg (msg) {
+      this.replyData = msg
+      const text = msg.content.replace(/<p>/gi, '').replace(/<\/p>/gi, '')
+      const html = `<blockquote class="mceNonEditable" data-id="${msg.id}"><h4>${msg.username}</h4><p style="font-size: 14px">${text}</p></blockquote><p>&nbsp;</p>`
+      editorInstance.setContent(html)
+      editorInstance.execCommand('selectAll')
+      editorInstance.selection.getRng().collapse(false)
+      editorInstance.focus()
     },
     sendMsg () {
       const html = editorInstance.getContent()
