@@ -24,6 +24,7 @@
     "lodash": "^4.17.21",
     "md5": "^2.2.1",
     "mitt": "^3.0.0",
+    "pinyin-match": "^1.2.2",
     "resize-detector": "^0.2.2",
     "shortid": "^2.2.14",
     "tinymce": "^6.2.0",
