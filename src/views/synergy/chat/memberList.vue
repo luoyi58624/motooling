@@ -111,7 +111,16 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
+html.tox-fullscreen {
+  .member-list-container {
+    position: fixed;
+    top: 50px;
+    left: 10px;
+    z-index: 10000;
+  }
+}
+
 .member-list-container {
   position: absolute;
   bottom: 190px;

@@ -72,10 +72,11 @@ html.tox-fullscreen {
   position: absolute;
   bottom: 190px;
   left: 125px;
-  width: 290px;
-  height: 405px;
+  width: 300px;
+  height: 300px;
   padding: 4px 4px 4px 4px;
   background-color: white;
+  overflow-y: auto;
   box-shadow: 0 0 1.1px rgba(0, 0, 0, 0.065),
   0 0 3.6px rgba(0, 0, 0, 0.095),
   0 0 16px rgba(0, 0, 0, 0.16);
