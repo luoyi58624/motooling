@@ -1,8 +1,12 @@
 <template>
   <div class="my-editor-container">
     <div id="default"></div>
-    <EmotionPanel v-model="showEmotionPanel" @change="setEmotion"/>
-    <MemberList ref="memberListRef" v-model="showMemberListPanel" @change="insertSelectUser"/>
+    <EmotionPanel v-model="showEmotionPanel" @change="insertEmotion"/>
+    <MemberList ref="memberListRef"
+                v-model="showMemberListPanel"
+                :group-member="groupMember"
+                :filter-value="usernamePinyin"
+                @change="insertSelectUser"/>
   </div>
 </template>
 
@@ -15,6 +19,7 @@ import 'tinymce/plugins/fullscreen'
 
 import eventBus from '@/utils/mitt'
 import EmotionPanel from './EmotionPanel.vue'
+import PinyinMatch from 'pinyin-match'
 import MemberList from '@/views/synergy/chat/memberList'
 import { hideLongText, loadFileIcon, readFile, renderSize, uuid } from '@/utils/utils'
 import { cloneDeep } from 'lodash'
@@ -34,24 +39,60 @@ export default {
     return {
       showEmotionPanel: false,
       showMemberListPanel: false,
-      groupId: '',
-      replyData: null
+      groupId: '', // 当前聊天分组id
+      replyData: null, // 回复的消息
+      usernamePinyin: '' // 用户名字拼音搜索过滤
+    }
+  },
+  computed: {
+    groupMember () {
+      const datas = [
+        {
+          uid: 'AT_ALL',
+          username: '所有人'
+        },
+        ...this.$store.state.userSelectedList.filter(item => item.uid !== this.$store.state.userInfo.uid)
+      ]
+      if (this.usernamePinyin === '') {
+        return datas.map((item, index) => {
+          return {
+            ...item,
+            index
+          }
+        })
+      } else {
+        return datas.filter(item => {
+          return PinyinMatch.match(item.username, this.usernamePinyin) !== false ||
+            item.username.indexOf(this.usernamePinyin) !== -1
+        }).map((item, index) => {
+          return {
+            ...item,
+            index
+          }
+        })
+      }
     }
   },
   methods: {
+    // 插入回复消息，设置引用样式
     insertReplyMsg (msg) {
       this.replyData = msg
       const text = msg.content.replace(/<p>/gi, '').replace(/<\/p>/gi, '')
       const html = `<blockquote class="mceNonEditable" data-id="${msg.id}"><h4>${msg.username}</h4><p style="font-size: 14px">${text}</p></blockquote><p>&nbsp;</p>`
       editorInstance.setContent(html)
     },
-    setEmotion (url) {
+    // 插入表情
+    insertEmotion (url) {
       editorInstance.insertContent(`<img src="${url}" alt="" style="width: 20px;height: 20px;vertical-align: middle;">`)
     },
+    // 插入选中的用户
     insertSelectUser (selectUser) {
+      for (let i = 0; i <= this.usernamePinyin.length; i++) {
+        tinymce.activeEditor.execCommand('Delete')
+      }
+      this.usernamePinyin = ''
       this.showMemberListPanel = false
-      tinymce.activeEditor.execCommand('Delete')
-      editorInstance.insertContent(`<span class="mceNonEditable" data-uid="${selectUser.uid}">@${selectUser.name} </span>`)
+      editorInstance.insertContent(`<span class="mceNonEditable" data-uid="${selectUser.uid}">@${selectUser.username} </span>`)
     },
     sendMsg () {
       const html = editorInstance.getContent()
@@ -106,12 +147,12 @@ export default {
               sendHtml = true
             }
             if (sendHtml) {
-              const text = filterBlankMessage(textMessage)
-              const uids = getAllMentionUid(text)
-              if (text !== '') {
+              const sendHtml = filterBlankMessage(textMessage)
+              const uids = getAllMentionUid(sendHtml)
+              if (sendHtml !== '') {
                 textMessage = ''
                 eventBus.emit('sendWordMessage', {
-                  text: text,
+                  text: sendHtml,
                   userIds: uids.join(','),
                   replyData: this.replyData
                 })
@@ -167,16 +208,32 @@ export default {
           })
         })
         editor.on('input', (event) => {
-          if (event.data === '@' && this.$store.state.chattingTarget.type == 666) {
+          if (this.showMemberListPanel) {
+            const text = editorInstance.getContent({ format: 'text' })
+            const index = text.lastIndexOf('@') + 1
+            this.usernamePinyin = text.substring(index, text.length)
+          } else if (event.data === '@' && this.$store.state.chattingTarget.type == 666) {
             this.showMemberListPanel = true
           }
         })
+        // 编辑器键盘事件处理
         editor.on('keydown', event => {
           if (event.code === 'Backspace') {
+            const text = editorInstance.getContent({ format: 'text' })
+            if (text.endsWith('@')) {
+              this.showMemberListPanel = false
+            } else if (text.substring(0, text.length - 1).endsWith('@') && this.showMemberListPanel === false) {
+              this.showMemberListPanel = true
+            }
+          } else if (event.code === 'Escape') {
             this.showMemberListPanel = false
           } else if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
-            event.preventDefault()
-            this.$refs.memberListRef.keydownEvent(event)
+            if (this.showMemberListPanel) {
+              event.preventDefault()
+              this.$refs.memberListRef.keydownEvent(event)
+            }
+          } else if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
+            if (this.showMemberListPanel) event.preventDefault()
           } else if ((!event.ctrlKey && !event.altKey) && event.code === 'Enter') {
             event.preventDefault()
             if (this.showMemberListPanel) {
@@ -184,8 +241,6 @@ export default {
             } else {
               this.sendMsg()
             }
-          } else if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
-            if (this.showMemberListPanel) event.preventDefault()
           }
         })
         editor.ui.registry.addButton('myImage', {
