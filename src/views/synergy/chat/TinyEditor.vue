@@ -29,7 +29,6 @@ const imageMap = new Map() // 存放图片文件
 const audioMap = new Map() // 存放音频文件
 const videoMap = new Map() // 存放视频文件
 const fileMap = new Map() // 存放其他类型文件
-let editorInstance // 编辑器实例
 
 export default {
   components: {
@@ -78,7 +77,7 @@ export default {
   methods: {
     // 插入表情
     insertEmotion (url) {
-      editorInstance.insertContent(`<img src="${url}" alt="" style="width: 20px;height: 20px;vertical-align: middle;">`)
+      this.$store.state.editorInstance.insertContent(`<img src="${url}" alt="" style="width: 20px;height: 20px;vertical-align: middle;">`)
     },
     // 插入选中的用户
     insertSelectUser (selectUser) {
@@ -87,20 +86,20 @@ export default {
       }
       this.usernamePinyin = ''
       this.showMemberListPanel = false
-      editorInstance.insertContent(`<span class="mceNonEditable" data-uid="${selectUser.uid}">@${selectUser.username} </span>`)
+      this.$store.state.editorInstance.insertContent(`<span class="mceNonEditable" data-uid="${selectUser.uid}">@${selectUser.username} </span>`)
     },
     // 插入回复消息，设置引用样式
     insertReplyMsg (msg) {
       this.replyData = msg
       const text = msg.content.replace(/<p>/gi, '').replace(/<\/p>/gi, '')
       const html = `<blockquote class="mceNonEditable" data-id="${msg.id}"><h4>${msg.username}</h4><p style="font-size: 14px">${text}</p></blockquote><p>&nbsp;</p>`
-      editorInstance.setContent(html)
-      editorInstance.execCommand('selectAll')
-      editorInstance.selection.getRng().collapse(true)
-      editorInstance.focus()
+      this.$store.state.editorInstance.setContent(html)
+      this.$store.state.editorInstance.execCommand('selectAll')
+      this.$store.state.editorInstance.selection.getRng().collapse(true)
+      this.$store.state.editorInstance.focus()
     },
     sendMsg () {
-      const html = editorInstance.getContent()
+      const html = this.$store.state.editorInstance.getContent()
       const frag = document.createElement('div')
       frag.innerHTML = html
       const nodes = frag.children
@@ -176,7 +175,7 @@ export default {
           })
         }
       }
-      editorInstance.setContent('')
+      this.$store.state.editorInstance.setContent('')
     }
   },
   mounted () {
@@ -213,12 +212,12 @@ export default {
           // 保存草稿
           this.$store.commit('setDraftMessage', {
             groupId: this.groupId,
-            message: editorInstance.getContent()
+            message: this.$store.state.editorInstance.getContent()
           })
         })
         editor.on('input', (event) => {
           if (this.showMemberListPanel) {
-            const text = editorInstance.getContent({ format: 'text' })
+            const text = this.$store.state.editorInstance.getContent({ format: 'text' })
             const index = text.lastIndexOf('@') + 1
             this.usernamePinyin = text.substring(index, text.length)
             this.memberListPostion = editor.selection.getRng().getBoundingClientRect()
@@ -230,7 +229,7 @@ export default {
         // 编辑器键盘事件处理
         editor.on('keydown', event => {
           if (event.code === 'Backspace') {
-            const text = editorInstance.getContent({ format: 'text' }).replace(/\n/g, '')
+            const text = this.$store.state.editorInstance.getContent({ format: 'text' }).replace(/\n/g, '')
             if (text.endsWith('@')) {
               this.showMemberListPanel = false
             } else if (text.substring(0, text.length - 1).endsWith('@') && this.showMemberListPanel === false) {
@@ -303,7 +302,7 @@ export default {
         })
       },
       init_instance_callback: (editor) => {
-        editorInstance = editor
+        this.$store.state.editorInstance = editor
         // 插入草稿信息
         this.$nextTick(() => {
           // 拷贝当前群聊分组id，防止点击其他分组触发change事件设置草稿时插入的是新groupId
@@ -319,7 +318,8 @@ export default {
     })
   },
   destroyed () {
-    editorInstance.destroy()
+    this.$store.state.editorInstance.destroy()
+    this.$store.state.editorInstance = null
   }
 }
 

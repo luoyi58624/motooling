@@ -36,7 +36,7 @@
               </div>
               <div v-else-if="item.contentType === 4" style="text-align: left;">
                 <video preload="meta" :src="fileAddressFormatFunc(item.content)" controls="controls"
-                       width="200" height="112"></video>
+                       width="250" height="140"></video>
               </div>
               <div v-else-if="item.contentType === 5" class="system-message">{{ item.content }}</div>
               <template v-else-if="item.contentType === 7">
@@ -335,7 +335,7 @@ export default {
   height: calc(100vh - 195px);
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px;
+  padding: 8px 4px 8px 8px;
 
   & > ul > li {
     font-size: 12px;
@@ -386,7 +386,7 @@ export default {
     }
 
     & > .file-message {
-      width: 200px;
+      width: 250px;
       margin-top: 4px;
       padding: 6px 8px;
       background-color: white;
@@ -411,7 +411,7 @@ export default {
           //word-wrap: break-word;
           //word-break: break-all;
           //overflow: hidden;
-          width: 140px;
+          width: 180px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -563,7 +563,7 @@ export default {
 }
 
 audio {
-  width: 230px;
+  width: 250px;
   height: 48px;
 }
 </style>

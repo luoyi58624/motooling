@@ -114,13 +114,18 @@
                               @contextmenu="openContextMenu($event,item)"/>
                   </div>
                   <div class="audio-message message" v-else-if="item.contentType == 3">
-                    <audio :src="fileAddressFormatFunc(item)" controls="controls"/>
+                    <audio :src="fileAddressFormatFunc(item)"
+                           controls="controls"
+                           @contextmenu="openContextMenu($event,item)"/>
                   </div>
                   <div class="video-message message" v-else-if="item.contentType == 4">
-                    <video :src="fileAddressFormatFunc(item)" controls="controls" width="250" height="140"/>
+                    <video :src="fileAddressFormatFunc(item)"
+                           controls="controls"
+                           width="250" height="140"
+                           @contextmenu="openContextMenu($event,item)"/>
                   </div>
                   <div class="file-message-container" v-if="item.contentType == 9">
-                    <div class="file-message">
+                    <div class="file-message" @contextmenu="openContextMenu($event,item)">
                       <div class="file-info">
                         <div class="name">{{ item.content.fileName }}</div>
                         <div class="size">{{ item.content.fileSize }}</div>
@@ -215,7 +220,15 @@
 
 <script>
 import { mapState } from 'vuex'
-import { fileAddressFormat, htmlToText, isOffice, loadFileIcon, requestNotification, uuid } from '@/utils/utils.js'
+import {
+  fileAddressFormat,
+  htmlToText,
+  isOffice,
+  isUrl,
+  loadFileIcon,
+  requestNotification,
+  uuid
+} from '@/utils/utils.js'
 import { time } from '@/utils/time.js'
 import shortid from 'shortid'
 import {
@@ -948,14 +961,16 @@ export default {
       this.$refs.TinymceEditorRef.insertReplyMsg(item)
     },
     againEdit (item) {
-      // this.$store.state.wordContent = item.content
+      this.$store.state.editorInstance.insertContent(item.content)
     },
     showAgainEdit (item) {
+      const start = Date.now()
       let sendTime = item.sendTime
-      if (item.sendTime.length <= 5) {
-        sendTime = new Date(formatDate(Date.now(), 'YYYY-MM-DD') + item.sendTime)
+      if (item.sendTime.length <= 6) {
+        sendTime = new Date(formatDate(start, 'YYYY-MM-DD') + ' ' + item.sendTime)
       }
-      return new Date(sendTime).getTime() + (5 * 60 * 1000) > Date.now()
+      const end = new Date(sendTime).getTime() + (10 * 60 * 1000)
+      return end > start && !isUrl(item.content)
     },
     // 获取已读消息用户记录
     getReadMessage () {
