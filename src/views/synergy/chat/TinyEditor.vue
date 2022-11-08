@@ -320,6 +320,15 @@ export default {
   destroyed () {
     this.$store.state.editorInstance.destroy()
     this.$store.state.editorInstance = null
+
+    var rectHeight = 0
+    var maxHeight = 100
+    var clear = setInterval(() => {
+      rectHeight++
+      if (rectHeight >= maxHeight) {
+        clearInterval(clear)
+      }
+    }, 100)
   }
 }
 

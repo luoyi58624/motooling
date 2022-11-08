@@ -646,9 +646,11 @@ export default {
         this.recordList.forEach(item => {
           if (item.id == message.data.id) {
             item.contentType = 8
+            delete item.readMessageUsers
           }
         })
       }
+      // 处理已读
       const lastRecordId = Math.max.apply(Math, this.recordList.map(item => +item.id))
       if (lastRecordId != null && !isNaN(lastRecordId)) {
         alreadyRead({
@@ -995,6 +997,18 @@ export default {
             }
           }
         })
+      }).catch(e => {
+        if (e.code == '999999') {
+          Notify({
+            message: '您被移除群聊',
+            type: 'warning',
+            duration: 0,
+            onClick: () => {
+              Notify.clear()
+            }
+          })
+          this.$store.state.groupId = null
+        }
       })
     },
     // 设置已读、未读用户
