@@ -385,15 +385,15 @@ function insertFile (editor, files) {
     if (/image/.test(file.type)) {
       imageMap.set(id, files[i])
       const blobUrl = window.URL.createObjectURL(files[i])
-      editor.insertContent(`<p><img src="${blobUrl}" alt="" data-id="${id}" style="width: 64px;object-fit: contain"></p>`)
+      editor.insertContent(`<p class="mceNonEditable"><img src="${blobUrl}" alt="" data-id="${id}" style="width: 64px;object-fit: contain"></p>`)
     } else if (/audio/.test(file.type)) {
       audioMap.set(id, files[i])
       const blobUrl = window.URL.createObjectURL(files[i])
-      editor.insertContent(`<p><audio src="${blobUrl}" controls data-id="${id}"></p>`)
+      editor.insertContent(`<p class="mceNonEditable"><audio src="${blobUrl}" controls data-id="${id}"></p>`)
     } else if (/video/.test(file.type)) {
       videoMap.set(id, files[i])
       const blobUrl = window.URL.createObjectURL(files[i])
-      editor.insertContent(`<p><video src="${blobUrl}" controls data-id="${id}" style="width: 320px;aspect-ratio: 16/9;"></p>`)
+      editor.insertContent(`<p class="mceNonEditable"><video src="${blobUrl}" controls data-id="${id}" style="width: 320px;aspect-ratio: 16/9;"></p>`)
     } else {
       fileMap.set(id, files[i])
       const name = hideLongText(files[i].name, 20, 'center')

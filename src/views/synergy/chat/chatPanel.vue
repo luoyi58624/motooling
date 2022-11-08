@@ -775,7 +775,10 @@ export default {
             recordList.forEach(item => {
               if (item.data.senderId == this.uid) item.data.readMessageUsers = []
               if (item.data.contentType == 7 || item.data.contentType == 9) {
-                item.data.content = JSON.parse(item.data.content)
+                try {
+                  item.data.content = JSON.parse(item.data.content)
+                } catch (e) {
+                }
               }
             })
             let _recordList = time(recordList)
