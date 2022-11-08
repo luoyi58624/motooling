@@ -453,7 +453,7 @@ export default {
       font-size: 12px;
 
       & > span:nth-child(1) {
-        width: 130px;
+        width: 120px;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
@@ -461,6 +461,8 @@ export default {
 
       & > span:nth-child(2) {
         width: 64px;
+        padding:0 4px;
+        box-sizing: content-box;
       }
     }
   }

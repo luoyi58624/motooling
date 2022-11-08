@@ -40,6 +40,8 @@ export default {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scrollbar-color: rgba(159, 162, 169, 0.7) #f7f7f9; /* 滑块颜色  滚动条背景颜色 */
+  scrollbar-width: thin; /* 滚动条宽度有三种：thin、auto、none */
 }
 
 html,
