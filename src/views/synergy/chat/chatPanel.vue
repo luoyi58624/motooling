@@ -222,7 +222,6 @@
 import { mapState } from 'vuex'
 import {
   fileAddressFormat,
-  htmlToText,
   isOffice,
   isUrl,
   loadFileIcon,
@@ -970,7 +969,14 @@ export default {
         sendTime = new Date(formatDate(start, 'YYYY-MM-DD') + ' ' + item.sendTime)
       }
       const end = new Date(sendTime).getTime() + (10 * 60 * 1000)
-      return end > start && !isUrl(item.content)
+      let isObj = true
+      try {
+        JSON.parse(item.content)
+        isObj = true
+      } catch (e) {
+        isObj = false
+      }
+      return end > start && !isUrl(item.content) && !isObj
     },
     // 获取已读消息用户记录
     getReadMessage () {
