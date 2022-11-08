@@ -96,7 +96,7 @@ export default {
       const html = `<blockquote class="mceNonEditable" data-id="${msg.id}"><h4>${msg.username}</h4><p style="font-size: 14px">${text}</p></blockquote><p>&nbsp;</p>`
       editorInstance.setContent(html)
       editorInstance.execCommand('selectAll')
-      editorInstance.selection.getRng().collapse(false)
+      editorInstance.selection.getRng().collapse(true)
       editorInstance.focus()
     },
     sendMsg () {

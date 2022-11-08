@@ -1291,14 +1291,19 @@ nav {
     justify-content: space-between;
 
     & > .name {
-      width: 100%;
-      padding: 2px 0;
-      display: flex;
-      align-items: center;
+      //width: 100%;
+      //padding: 2px 0;
+      //display: flex;
+      //align-items: center;
       // 文字超出换行
-      word-wrap: break-word;
-      word-break: break-all;
+      //word-wrap: break-word;
+      //word-break: break-all;
+      //overflow: hidden;
+      width: 180px;
+      padding: 2px 0;
       overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     & > .size {

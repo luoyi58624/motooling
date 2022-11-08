@@ -130,7 +130,7 @@
             </div>
             <div style="width:100%; display: flex;justify-content: space-between;padding-left:8px;font-size: 12px;">
               <div style="display: flex;flex-direction: column">
-                <div style="margin-bottom: 4px">{{ item.content.fileName }}</div>
+                <div class="file-name">{{ item.content.fileName }}</div>
                 <div style="display: flex;color: #7f8c8d">
                   <div>{{ item.content.fileSize }}</div>
                   <div style="margin-left: 4px">{{ item.username }}</div>
@@ -403,14 +403,18 @@ export default {
 
         & > .name {
           text-align: left;
-          width: 100%;
+          //width: 100%;
           padding: 2px 0;
-          display: flex;
-          align-items: center;
-          // 文字超出换行
-          word-wrap: break-word;
-          word-break: break-all;
+          //display: flex;
+          //align-items: center;
+          //// 文字超出换行
+          //word-wrap: break-word;
+          //word-break: break-all;
+          //overflow: hidden;
+          width: 140px;
           overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
         }
 
         & > .size {
@@ -444,6 +448,14 @@ export default {
     display: flex;
     align-items: center;
     padding: 8px;
+
+    .file-name{
+      width: 140px;
+      margin-bottom: 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
 
     .show-source-message {
       color: #3498db;
