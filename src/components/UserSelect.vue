@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="人员选择" :visible.sync="$store.state.showUserSelectPanel" width="60%"
+  <el-dialog :title='title' :visible.sync="$store.state.showUserSelectPanel" width="60%"
              @open="openHandler" @close="closeHandler">
     <el-tree ref="tree" node-key="id" show-checkbox accordion highlight-current
              :data="allData" :props="defaultProps"/>
@@ -28,6 +28,9 @@ export default {
   computed: {
     selectedList () {
       return this.$store.state.userSelectedList
+    },
+    title () {
+      return this.$store.state.isChatAddUser ? '添加成员' : '创建群聊'
     }
   },
   methods: {
