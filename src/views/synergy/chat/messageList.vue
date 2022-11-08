@@ -1,5 +1,5 @@
 <template>
-  <div class="list">
+  <div class="chat-left-list">
     <div class="search">
       <div class="enter-keyword">
         <div>
@@ -328,14 +328,14 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
 @import url("./common.less");
 
 .active {
   background-color: #c3c5c7;
 }
 
-.list {
+.chat-left-list {
   position: relative;
   height: 100%;
   overflow: hidden;
@@ -457,13 +457,20 @@ export default {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+
+        & > img {
+          width: 20px;
+          height: 20px;
+          vertical-align: middle;
+        }
       }
 
       & > span:nth-child(2) {
         width: 64px;
-        padding:0 4px;
+        padding: 0 4px;
         box-sizing: content-box;
       }
+
     }
   }
 }

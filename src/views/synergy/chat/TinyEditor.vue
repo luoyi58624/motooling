@@ -77,7 +77,8 @@ export default {
   methods: {
     // 插入表情
     insertEmotion (url) {
-      this.$store.state.editorInstance.insertContent(`<img src="${url}" alt="" style="width: 20px;height: 20px;vertical-align: middle;">`)
+      // .message-emotion-img 在 App.vue 中有该class处理
+      this.$store.state.editorInstance.insertContent(`<img src="${url}" alt="">`)
     },
     // 插入选中的用户
     insertSelectUser (selectUser) {
@@ -200,6 +201,7 @@ export default {
           this.showEmotionPanel = false
         })
         editor.on('paste', (event) => {
+          console.log(event)
           if (event.clipboardData.files.length > 0) insertFile(editor, event.clipboardData.files)
         })
         editor.on('drop', event => {
@@ -320,15 +322,6 @@ export default {
   destroyed () {
     this.$store.state.editorInstance.destroy()
     this.$store.state.editorInstance = null
-
-    var rectHeight = 0
-    var maxHeight = 100
-    var clear = setInterval(() => {
-      rectHeight++
-      if (rectHeight >= maxHeight) {
-        clearInterval(clear)
-      }
-    }, 100)
   }
 }
 

@@ -383,6 +383,12 @@ export default {
       user-select: text;
       word-break: break-all;
       white-space: pre-line;
+
+      /deep/img{
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+      }
     }
 
     & > .file-message {

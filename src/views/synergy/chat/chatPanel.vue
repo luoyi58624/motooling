@@ -1168,6 +1168,12 @@ nav {
         white-space: pre-line;
         display: inline-block;
         overflow: hidden;
+
+        img{
+          width: 20px;
+          height: 20px;
+          vertical-align: middle;
+        }
       }
 
       /deep/ .el-image__inner {
