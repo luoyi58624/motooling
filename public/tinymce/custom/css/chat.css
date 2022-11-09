@@ -21,12 +21,12 @@ blockquote {
     margin: 4px 0;
     padding: 4px 12px;
     border-left: 2px solid #ccc;
-    background-color: rgb(242, 243, 245);
+    background-color: rgb(230, 233, 237);
 }
 
 .file-wrapper {
-    width: 300px;
-    height: 80px;
+    width: 200px;
+    height: 48px;
     margin-top: 4px;
     background-color: white;
     border: 1px solid #cccccc;
@@ -36,26 +36,28 @@ blockquote {
 
 .file-wrapper img {
     position: absolute;
-    top: 20px;
-    right: 25px;
-    width: 36px;
-    height: 36px;
+    top: 6px;
+    right: 12px;
+    width: 36px !important;
+    height: 36px !important;
 }
 
 .file-wrapper::before {
     width: 200px;
     content: attr(data-name);
     position: absolute;
-    left: 20px;
-    top: 12px;
+    left: 8px;
+    top: 4px;
+    font-size: 12px;
 }
 
 .file-wrapper::after {
     width: 100%;
     content: attr(data-size);
     position: absolute;
-    left: 20px;
-    bottom: 12px;
+    left: 8px;
+    bottom: 8px;
+    font-size: 12px;
 }
 
 img:not(.mceNonEditable) {

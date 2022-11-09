@@ -1,6 +1,6 @@
 <template>
   <div class="my-editor-container">
-    <div id="default"></div>
+    <textarea id="tinymce-editor"></textarea>
     <EmotionPanel v-model="showEmotionPanel" @change="insertEmotion"/>
     <MemberList ref="memberListRef"
                 v-model="showMemberListPanel"
@@ -16,7 +16,9 @@ import tinymce from 'tinymce'
 import 'tinymce/themes/silver/theme' // 主题文件
 import 'tinymce/icons/default'
 import 'tinymce/models/dom'
+import 'tinymce/plugins/code'
 import 'tinymce/plugins/fullscreen'
+// import '@/plugins/tinymce/powerpaste'
 
 import eventBus from '@/utils/mitt'
 import EmotionPanel from './EmotionPanel.vue'
@@ -37,15 +39,21 @@ export default {
   },
   data () {
     return {
-      showEmotionPanel: false,
-      showMemberListPanel: false,
+      showEmotionPanel: false, // 是否显示表情面板
+      showMemberListPanel: false, // 是否显示@弹窗
+      showContextMenu: false, // 是否显示右键菜单
+      contextMenuPosition: { // 右键菜单定位
+        left: 0,
+        top: 0
+      },
       groupId: '', // 当前聊天分组id
       replyData: null, // 回复的消息
       usernamePinyin: '', // 用户名字拼音搜索过滤
-      memberListPostion: {}
+      memberListPostion: {} // @弹窗定位属性，包含left、top、right、bottom等属性
     }
   },
   computed: {
+    // 计算@可选用户列表，支持拼音搜索过滤
     groupMember () {
       const datas = [
         {
@@ -58,11 +66,12 @@ export default {
         return datas.map((item, index) => {
           return {
             ...item,
-            index
+            index // 列表需要添加index下标索引，方便键盘控制上一个下一个
           }
         })
       } else {
         return datas.filter(item => {
+          // 匹配名字拼音以及中文名字
           return PinyinMatch.match(item.username, this.usernamePinyin) !== false ||
             item.username.indexOf(this.usernamePinyin) !== -1
         }).map((item, index) => {
@@ -77,7 +86,6 @@ export default {
   methods: {
     // 插入表情
     insertEmotion (url) {
-      // .message-emotion-img 在 App.vue 中有该class处理
       this.$store.state.editorInstance.insertContent(`<img src="${url}" alt="">`)
     },
     // 插入选中的用户
@@ -90,13 +98,31 @@ export default {
       this.$store.state.editorInstance.insertContent(`<span class="mceNonEditable" data-uid="${selectUser.uid}">@${selectUser.username} </span>`)
     },
     // 插入回复消息，设置引用样式
-    insertReplyMsg (msg) {
-      this.replyData = msg
-      const text = msg.content.replace(/<p>/gi, '').replace(/<\/p>/gi, '')
-      const html = `<blockquote class="mceNonEditable" data-id="${msg.id}"><h4>${msg.username}</h4><p style="font-size: 14px">${text}</p></blockquote><p>&nbsp;</p>`
+    insertReplyMsg (item) {
+      let text = ''
+      switch (item.contentType) {
+        case 1:
+          text = `<p style="font-size: 14px">${item.content.replace(/<p>/gi, '').replace(/<\/p>/gi, '')}</p>`
+          break
+        case 2:
+        case 6:
+          text = `<p><img src="${item.content}" alt="" style="width: 56px;height:56px;object-fit: contain"></p>`
+          break
+        case 3:
+          text = `<p><audio src="${item.content}" controls></p>`
+          break
+        case 4:
+          text = `<p><video src="${item.content}" style="width: 100px;aspect-ratio: 16/9;"></p>`
+          break
+        case 9:
+          text = `<div class="file-wrapper" data-name="${hideLongText(item.content.fileName, 20, 'center')}" data-size="${item.content.fileSize}"><img src="${loadFileIcon(item.content.fileName)}" alt=""></div>`
+          break
+      }
+      this.replyData = item
+      const html = `<blockquote class="mceNonEditable" data-id="${item.id}"><h4>${item.username}</h4>${text}</blockquote><p>&nbsp;</p>`
       this.$store.state.editorInstance.setContent(html)
       this.$store.state.editorInstance.execCommand('selectAll')
-      this.$store.state.editorInstance.selection.getRng().collapse(true)
+      this.$store.state.editorInstance.selection.getRng().collapse(false)
       this.$store.state.editorInstance.focus()
     },
     sendMsg () {
@@ -181,7 +207,7 @@ export default {
   },
   mounted () {
     tinymce.init({
-      selector: 'div#default',
+      selector: '#tinymce-editor',
       base_url: '/mthtml/tinymce',
       // skin_url: '/tinymce/skins/ui/oxide',
       // language_url: '/tinymce/langs/zh-Hans.js',
@@ -192,16 +218,18 @@ export default {
       branding: false,
       menubar: false,
       statusbar: false,
+      // contextmenu: false,
+      contextmenu: 'bold copy paste',
       object_resizing: false, // 禁止拉伸图片、视频
-      paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
-      plugins: 'fullscreen',
-      toolbar: 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage',
+      paste_data_images: true, // 禁止tinymce默认事件-粘贴图片
+      plugins: 'code fullscreen',
+      toolbar: 'myImage myVideo myFile myEmoticons myHistory code fullscreen mySendMessage',
       setup: (editor) => {
         editor.on('click', () => {
           this.showEmotionPanel = false
+          this.showContextMenu = false
         })
         editor.on('paste', (event) => {
-          console.log(event)
           if (event.clipboardData.files.length > 0) insertFile(editor, event.clipboardData.files)
         })
         editor.on('drop', event => {
@@ -320,8 +348,10 @@ export default {
     })
   },
   destroyed () {
-    this.$store.state.editorInstance.destroy()
-    this.$store.state.editorInstance = null
+    if (this.$store.state.editorInstance != null) {
+      this.$store.state.editorInstance.destroy()
+      this.$store.state.editorInstance = null
+    }
   }
 }
 
@@ -420,6 +450,7 @@ function insertFile (editor, files) {
 }
 
 .tox.tox-tinymce {
+  border: none !important;
   border-radius: 0 !important;
 }
 

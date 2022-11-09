@@ -177,7 +177,7 @@
             </div>
             <div v-if="item.contentType == 8">
               <div class="sys-notifacation">
-                <span v-if="uid == item.senderId" class="content">
+                <span v-if="uid == item.senderId" class="content" contenteditable="true">
                   你撤回了一条消息
                   <span v-if="showAgainEdit(item)">
                     ，<span class="text-blue" @click="againEdit(item)">重新编辑</span>
