@@ -1,11 +1,11 @@
 <template>
   <Teleport to="body">
     <ul class="chat-message-context-menu" v-show="showMenu" :style="{left: left+'px',top: top+'px'}">
-      <!--      <li class="chat-message-context-menu-copy"-->
-      <!--          data-clipboard-action="copy" :data-clipboard-text="messageItem.content">-->
-      <!--        <img :src="require('@/assets/svg/copy.svg')" alt=""/>-->
-      <!--        <span>复制</span>-->
-      <!--      </li>-->
+<!--      <li class="chat-message-context-menu-copy"-->
+<!--          data-clipboard-action="copy" :data-clipboard-text="messageItem.content">-->
+<!--        <img :src="require('@/assets/svg/copy.svg')" alt=""/>-->
+<!--        <span>复制</span>-->
+<!--      </li>-->
       <li @click="sendMsg">
         <img :src="require('@/assets/svg/send.svg')" alt=""/>
         <span>转发</span>

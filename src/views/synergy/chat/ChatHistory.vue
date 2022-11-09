@@ -533,7 +533,7 @@ export default {
 }
 
 .file-message {
-  width: 250px;
+  width: 245px;
   margin-top: 4px;
   padding: 6px 8px;
   background-color: white;

@@ -13,7 +13,7 @@
       <div class="message-list-wrapper" :class="{ active: item.groupId == currentConversation }"
            v-for="item in newsList" :key="item.groupId">
         <div class="message-list-item" v-clickoutside="visible"
-             @click.left="startChatting(item)" @click.right="handleGroup(item, $event)">
+             @click="startChatting(item)" @contextmenu="handleGroup(item, $event)">
           <div class="file-picture">
             <img :src="item.avatar" v-if="item.relationType === 66"/>
             <img :src="require('@/assets/group.png')" v-else/>
