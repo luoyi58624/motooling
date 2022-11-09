@@ -26,6 +26,7 @@ import PinyinMatch from 'pinyin-match'
 import MemberList from '@/views/synergy/chat/memberList'
 import { hideLongText, loadFileIcon, readFile, renderSize, uuid } from '@/utils/utils'
 import { cloneDeep } from 'lodash'
+import { Notify } from 'vant'
 
 export default {
   components: {
@@ -122,6 +123,13 @@ export default {
     },
     // 插入各种文件
     insertFile (editor, files) {
+      if (this.hasReplyData()) {
+        Notify({
+          message: '编辑器存在回复消息，禁止插入文件！',
+          type: 'warning'
+        })
+        return
+      }
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         const id = uuid()
@@ -152,13 +160,33 @@ export default {
         }
       }
     },
-    sendMsg () {
+    // 获取编辑器所有内容节点
+    getEditorNodes () {
       const html = this.$store.state.editorInstance.getContent()
       const frag = document.createElement('div')
       frag.innerHTML = html
-      const nodes = frag.children
-      let sendHtml = false // 是否拼接html文字消息,如果为false，则发送文字消息
-      let textMessage = ''
+      return frag.children
+    },
+    // 判断编辑器消息是否是否存在回复消息
+    hasReplyData () {
+      const nodes = this.getEditorNodes()
+      let flag = false
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].localName === 'blockquote' && nodes[i].dataset.id) {
+          flag = true
+          break
+        }
+      }
+      return flag
+    },
+    sendMsg () {
+      const nodes = this.getEditorNodes()
+      // 是否发送文字信息，如果为false，则对文字消息进行拼接
+      // 由于tinymce是以p标签进行换行，所以我们需要对其进行遍历
+      // 如果当前p标签包含了媒体，则需要对其进行单独处理，直接发送
+      // 下面逻辑仿造企业微信，如果用户输入两端文字，中间插着其他文件，则进行三段处理，拆分成3条消息依次发送
+      let sendTextMessage = false
+      let textMessage = '' // 文字信息
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i]
         if (node.localName === 'p') {
@@ -190,25 +218,29 @@ export default {
                 delete this.$store.state.videoFiles[node.children[0].dataset.id]
                 break
             }
-            sendHtml = false
+            sendTextMessage = false
           } else {
             // 处理文字消息
             textMessage += node.outerHTML
-            // 如果已经是最后一条消息或者下一条消息是媒体类型消息，则发送文字消息
-            if (i === nodes.length - 1 || isMediaNode(nodes[i + 1])) {
-              sendHtml = true
+            // 如果已经是最后一条消息或者下一条消息是媒体类型、其他文件类型消息，则发送文字消息
+            if (i === nodes.length - 1 || isMediaNode(nodes[i + 1]) || isOtherFileNode(nodes[i + 1])) {
+              sendTextMessage = true
             }
-            if (sendHtml) {
-              const sendHtml = filterBlankMessage(textMessage)
-              const uids = getAllMentionUid(sendHtml)
-              if (sendHtml !== '') {
-                textMessage = ''
+            // 开始发送文字消息
+            if (sendTextMessage) {
+              const text = filterBlankMessage(textMessage) // 过滤掉首尾空白消息的p标签，防止出现空白消息体
+              const uids = getAllMentionUid(text) // 拿到所有的@用户id
+              if (text !== '') {  // 如果消息体不为空
+                textMessage = '' // 重置累计拼接的消息
+                if (!this.hasReplyData()) { // 如果没有回复消息，则将回复消息对象置为空
+                  this.replyData = null
+                }
                 eventBus.emit('sendWordMessage', {
-                  text: sendHtml,
+                  text,
                   userIds: uids.join(','),
                   replyData: this.replyData
                 })
-                this.replyData = null
+                this.replyData = null  // 重置回复的消息对象
               }
             }
           }
@@ -384,6 +416,11 @@ export default {
 // 判断当前节点是否是包含媒体文件
 function isMediaNode (node) {
   return node.childNodes.length === 1 && node.children.length === 1 && node.children[0].dataset.id
+}
+
+// 判断当前节点是否是其他文件类型节点
+function isOtherFileNode (node) {
+  return node.localName === 'div' && node.className.indexOf('file-wrapper') !== -1
 }
 
 // 过滤掉【&nbsp;】空格，排除首尾空白消息
