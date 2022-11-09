@@ -1,6 +1,6 @@
 <template>
   <div class="my-editor-container">
-    <textarea id="tinymce-editor"></textarea>
+    <textarea class="tinymce-editor"></textarea>
     <EmotionPanel v-model="showEmotionPanel" @change="insertEmotion"/>
     <MemberList ref="memberListRef"
                 v-model="showMemberListPanel"
@@ -207,7 +207,7 @@ export default {
   },
   mounted () {
     tinymce.init({
-      selector: '#tinymce-editor',
+      selector: '.tinymce-editor',
       base_url: '/mthtml/tinymce',
       // skin_url: '/tinymce/skins/ui/oxide',
       // language_url: '/tinymce/langs/zh-Hans.js',
@@ -218,8 +218,8 @@ export default {
       branding: false,
       menubar: false,
       statusbar: false,
-      // contextmenu: false,
-      contextmenu: 'bold copy paste',
+      contextmenu: false,
+      // contextmenu: 'bold copy paste',
       object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: true, // 禁止tinymce默认事件-粘贴图片
       plugins: 'code fullscreen',
@@ -332,6 +332,10 @@ export default {
         })
       },
       init_instance_callback: (editor) => {
+        if(this.$store.state.editorInstance != null){
+          this.$store.state.editorInstance.destroy()
+          this.$store.state.editorInstance = null
+        }
         this.$store.state.editorInstance = editor
         // 插入草稿信息
         this.$nextTick(() => {
@@ -343,6 +347,9 @@ export default {
           if (messageDraft) {
             editor.setContent(messageDraft.message)
           }
+          editor.execCommand('selectAll')
+          editor.selection.getRng().collapse(false)
+          editor.focus()
         })
       }
     })
