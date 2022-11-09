@@ -2,7 +2,7 @@
   <div class="chat-panel" v-show="groupId">
     <nav>
       <div class="chatting-name">
-        <input style="width: 580px" type="text" v-if="chattingTarget.type == 666" :value="chattingTarget.name"
+        <input style="width: 580px;height: 40px" type="text" v-if="chattingTarget.type == 666" :value="chattingTarget.name"
                maxlength="50" @blur="setGroupName($event.target.value)"/>
         <span v-else-if="chattingTarget.type == 66">{{ chattingTarget.name }}</span>
         <span v-else>{{ talkMember }}</span>
@@ -449,7 +449,6 @@ export default {
               })
             }
           }
-
           this.im()
           this.getReadMessage()
         })

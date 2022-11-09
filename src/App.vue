@@ -52,6 +52,7 @@ body {
 
 body {
   overflow: hidden;
+  border: 1px solid #cccccc;
 }
 
 #app {

@@ -30,12 +30,12 @@
             </div>
           </div>
         </div>
-        <div class="popover" v-if="item.groupId === groupId && item.relationType === 666">
+        <div class="popover" v-if="showContextMenu && item.groupId === groupId && item.relationType === 666">
           <p @click.stop="clearChattingRecords(item)">清空聊天记录</p>
           <p @click.stop="signOutGroup(item)">退出群聊</p>
         </div>
         <div class="popover"
-             v-if="item.groupId == groupId && item.groupId == currentConversation && item.relationType === 66">
+             v-if="showContextMenu && item.groupId == groupId && item.groupId == currentConversation && item.relationType === 66">
           <p @click.stop="handleBeat(item)">找一找</p>
         </div>
       </div>
@@ -78,6 +78,7 @@ export default {
     return {
       socket: {},
       value: '',
+      showContextMenu: false,
       groupId: null,
       group_id: null,
       interval: null,
@@ -186,10 +187,12 @@ export default {
       if (e) {
         e.preventDefault()
       }
+      this.showContextMenu = true
       this.groupId = data.groupId
       this.group_id = data.groupId
     },
     visible () {
+      this.showContextMenu = false
       this.groupId = null
     },
     showSearch () {
