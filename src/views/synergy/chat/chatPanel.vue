@@ -1284,7 +1284,6 @@ nav {
     width: 121px;
     font-size: 12px;
     border-left: 1px solid #dadcdf;
-    border-bottom: 1px solid #dadcdf;
 
     .group-members-title {
       padding: 10px;

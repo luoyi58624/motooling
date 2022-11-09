@@ -36,6 +36,10 @@ export default new Vuex.Store({
     chattingTarget: {}, // 聊天目标
     editorInstance: null, // tinymce编辑器实例
     editorFullScreen: false, // 编辑器是否进入全屏
+    imageFiles: {}, // 聊天编辑器-存放图片文件
+    audioFiles: {}, // 聊天编辑器-存放音频文件
+    videoFiles: {}, // 聊天编辑器-存放视频文件
+    otherFiles: {}, // 聊天编辑器-存放其他类型文件
     /**
      * 保存所有群聊消息
      * messageRecord: [

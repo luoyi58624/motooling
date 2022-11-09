@@ -27,11 +27,6 @@ import MemberList from '@/views/synergy/chat/memberList'
 import { hideLongText, loadFileIcon, readFile, renderSize, uuid } from '@/utils/utils'
 import { cloneDeep } from 'lodash'
 
-const imageMap = new Map() // 存放图片文件
-const audioMap = new Map() // 存放音频文件
-const videoMap = new Map() // 存放视频文件
-const fileMap = new Map() // 存放其他类型文件
-
 export default {
   components: {
     EmotionPanel,
@@ -125,6 +120,38 @@ export default {
       this.$store.state.editorInstance.selection.getRng().collapse(false)
       this.$store.state.editorInstance.focus()
     },
+    // 插入各种文件
+    insertFile (editor, files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const id = uuid()
+        if (/image/.test(file.type)) {
+          this.$store.state.imageFiles[id] = file
+          const blobUrl = window.URL.createObjectURL(file)
+          editor.insertContent(`<p class="mceNonEditable"><img src="${blobUrl}" alt="" data-id="${id}"></p>`)
+        } else if (/audio/.test(file.type)) {
+          this.$store.state.audioFiles[id] = file
+          const blobUrl = window.URL.createObjectURL(file)
+          editor.insertContent(`<p class="mceNonEditable"><audio src="${blobUrl}" controls data-id="${id}"></p>`)
+        } else if (/video/.test(file.type)) {
+          this.$store.state.videoFiles[id] = file
+          const blobUrl = window.URL.createObjectURL(file)
+          editor.insertContent(`<p class="mceNonEditable"><video src="${blobUrl}" controls data-id="${id}"></p>`)
+        } else {
+          this.$store.state.otherFiles[id] = file
+          const name = hideLongText(file.name, 20, 'center')
+          const size = renderSize(file.size)
+          const img = loadFileIcon(file.name)
+          editor.insertContent(`<div class="file-wrapper mceNonEditable" data-name="${name}" data-size="${size}" data-id="${id}"><img src="${img}" alt=""></div>`)
+        }
+        editor.execCommand('selectAll')
+        editor.selection.getRng().collapse(false)
+        editor.focus()
+        if (i === files.length - 1) {
+          editor.insertContent('<p>&nbsp;</p>')
+        }
+      }
+    },
     sendMsg () {
       const html = this.$store.state.editorInstance.getContent()
       const frag = document.createElement('div')
@@ -132,15 +159,6 @@ export default {
       const nodes = frag.children
       let sendHtml = false // 是否拼接html文字消息,如果为false，则发送文字消息
       let textMessage = ''
-      // let replyId = null
-      //
-      // const blockquoteDoms = frag.querySelectorAll('blockquote')
-      // for (let i = 0; i < blockquoteDoms.length; i++) {
-      //   if (blockquoteDoms[i].dataset.id) {
-      //     replyId = +blockquoteDoms[i].dataset.id
-      //     break
-      //   }
-      // }
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i]
         if (node.localName === 'p') {
@@ -151,22 +169,25 @@ export default {
                 eventBus.emit('sendMediaMessage', {
                   contentType: 2,
                   content: node.children[0].src,
-                  file: imageMap.get(node.children[0].dataset.id)
+                  file: this.$store.state.imageFiles[node.children[0].dataset.id]
                 })
+                delete this.$store.state.imageFiles[node.children[0].dataset.id]
                 break
               case 'audio':
                 eventBus.emit('sendMediaMessage', {
                   contentType: 3,
                   content: node.children[0].src,
-                  file: audioMap.get(node.children[0].dataset.id)
+                  file: this.$store.state.audioFiles[node.children[0].dataset.id]
                 })
+                delete this.$store.state.audioFiles[node.children[0].dataset.id]
                 break
               case 'video':
                 eventBus.emit('sendMediaMessage', {
                   contentType: 4,
                   content: node.children[0].src,
-                  file: videoMap.get(node.children[0].dataset.id)
+                  file: this.$store.state.videoFiles[node.children[0].dataset.id]
                 })
+                delete this.$store.state.videoFiles[node.children[0].dataset.id]
                 break
             }
             sendHtml = false
@@ -198,8 +219,9 @@ export default {
               fileName: node.dataset.name,
               fileSize: node.dataset.size
             },
-            file: fileMap.get(node.dataset.id)
+            file: this.$store.state.otherFiles[node.dataset.id]
           })
+          delete this.$store.state.otherFiles[node.dataset.id]
         }
       }
       this.$store.state.editorInstance.setContent('')
@@ -209,8 +231,6 @@ export default {
     tinymce.init({
       selector: '.tinymce-editor',
       base_url: '/mthtml/tinymce',
-      // skin_url: '/tinymce/skins/ui/oxide',
-      // language_url: '/tinymce/langs/zh-Hans.js',
       content_css: '/mthtml/tinymce/custom/css/chat.css',
       noneditable_class: 'mceNonEditable', // 设置不可编辑元素class
       language: 'zh-Hans',
@@ -219,9 +239,8 @@ export default {
       menubar: false,
       statusbar: false,
       contextmenu: false,
-      // contextmenu: 'bold copy paste',
       object_resizing: false, // 禁止拉伸图片、视频
-      paste_data_images: true, // 禁止tinymce默认事件-粘贴图片
+      paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
       plugins: 'code fullscreen',
       toolbar: 'myImage myVideo myFile myEmoticons myHistory code fullscreen mySendMessage',
       setup: (editor) => {
@@ -230,10 +249,10 @@ export default {
           this.showContextMenu = false
         })
         editor.on('paste', (event) => {
-          if (event.clipboardData.files.length > 0) insertFile(editor, event.clipboardData.files)
+          if (event.clipboardData.files.length > 0) this.insertFile(editor, event.clipboardData.files)
         })
         editor.on('drop', event => {
-          if (event.dataTransfer && event.dataTransfer.files.length > 0) insertFile(editor, event.dataTransfer.files)
+          if (event.dataTransfer && event.dataTransfer.files.length > 0) this.insertFile(editor, event.dataTransfer.files)
         })
         editor.on('FullscreenStateChanged', value => {
           this.$store.state.editorFullScreen = value.state
@@ -288,7 +307,7 @@ export default {
           tooltip: '上传图片',
           onAction: (e) => {
             readFile('image/*').then((files) => {
-              insertFile(editor, files)
+              this.insertFile(editor, files)
             })
           }
         })
@@ -297,7 +316,7 @@ export default {
           tooltip: '上传视频',
           onAction: () => {
             readFile('audio/*,video/*').then((files) => {
-              insertFile(editor, files)
+              this.insertFile(editor, files)
             })
           }
         })
@@ -306,7 +325,7 @@ export default {
           tooltip: '上传文件',
           onAction: () => {
             readFile().then((files) => {
-              insertFile(editor, files)
+              this.insertFile(editor, files)
             })
           }
         })
@@ -332,7 +351,7 @@ export default {
         })
       },
       init_instance_callback: (editor) => {
-        if(this.$store.state.editorInstance != null){
+        if (this.$store.state.editorInstance != null) {
           this.$store.state.editorInstance.destroy()
           this.$store.state.editorInstance = null
         }
@@ -414,39 +433,6 @@ function getAllMentionUid (html) {
     if (doms[i].dataset.uid) uids.push(doms[i].dataset.uid)
   }
   return uids
-}
-
-// 插入各种文件
-function insertFile (editor, files) {
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i]
-    const id = uuid()
-    if (/image/.test(file.type)) {
-      imageMap.set(id, files[i])
-      const blobUrl = window.URL.createObjectURL(files[i])
-      editor.insertContent(`<p class="mceNonEditable"><img src="${blobUrl}" alt="" data-id="${id}" style="width: 64px;object-fit: contain"></p>`)
-    } else if (/audio/.test(file.type)) {
-      audioMap.set(id, files[i])
-      const blobUrl = window.URL.createObjectURL(files[i])
-      editor.insertContent(`<p class="mceNonEditable"><audio src="${blobUrl}" controls data-id="${id}"></p>`)
-    } else if (/video/.test(file.type)) {
-      videoMap.set(id, files[i])
-      const blobUrl = window.URL.createObjectURL(files[i])
-      editor.insertContent(`<p class="mceNonEditable"><video src="${blobUrl}" controls data-id="${id}" style="width: 320px;aspect-ratio: 16/9;"></p>`)
-    } else {
-      fileMap.set(id, files[i])
-      const name = hideLongText(files[i].name, 20, 'center')
-      const size = renderSize(files[i].size)
-      const img = loadFileIcon(files[i].name)
-      editor.insertContent(`<div class="file-wrapper mceNonEditable" data-name="${name}" data-size="${size}" data-id="${id}"><img src="${img}" alt=""></div>`)
-    }
-    editor.execCommand('selectAll')
-    editor.selection.getRng().collapse(false)
-    editor.focus()
-    if (i === files.length - 1) {
-      editor.insertContent('<p>&nbsp;</p>')
-    }
-  }
 }
 </script>
 
