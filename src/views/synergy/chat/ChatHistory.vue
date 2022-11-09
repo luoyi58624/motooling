@@ -17,8 +17,25 @@
               <template v-if="item.contentType === 1">
                 <div v-if="item.replyData" class="reply-message">
                   <blockquote>
-                    <p style="font-weight: bold;margin-bottom: 6px">{{item.replyData.username}}:</p>
-                    <p v-html="item.replyData.content"></p>
+                    <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
+                    <p v-if="item.replyData.contentType==1" v-html="item.replyData.content"></p>
+                    <el-image v-else-if="item.replyData.contentType==2||item.replyData.contentType==6"
+                              style="width: 160px; height: 90px;" fit="scale-down"
+                              :src="fileAddressFormatFunc(item.replyData)"></el-image>
+                    <audio v-else-if="item.replyData.contentType==3" :src="fileAddressFormatFunc(item.replyData)"
+                           controls="controls" style="width: 245px;height: 40px"/>
+                    <video v-else-if="item.replyData.contentType==4" :src="fileAddressFormatFunc(item.replyData)"
+                           controls="controls" width="245" height="140"/>
+                    <div v-else-if="item.replyData.contentType==9" class="file-message">
+                      <div class="file-info">
+                        <div class="name">{{ item.replyData.content.fileName }}</div>
+                        <div class="size">{{ item.replyData.content.fileSize }}</div>
+                      </div>
+                      <div class="file-icon">
+                        <el-image style="width: 36px;height: 36px;"
+                                  :src="fileIcon(item.replyData.content.fileName)"/>
+                      </div>
+                    </div>
                   </blockquote>
                   <span class="word-message" v-html="item.content"></span>
                 </div>
@@ -27,15 +44,15 @@
 
               <div v-if="item.contentType === 2 || item.contentType === 6" style="text-align: left;">
                 <el-image style="width: 160px; height: 90px;" fit="scale-down" :z-index="3000"
-                          :src="fileAddressFormatFunc(item.content)"/>
+                          :src="fileAddressFormatFunc(item)"/>
               </div>
               <div v-else-if="item.contentType === 3" class="audio-message" style="text-align: left;">
-                <audio :src="fileAddressFormatFunc(item.content)" controls="controls">
+                <audio :src="fileAddressFormatFunc(item)" controls="controls">
                   Your browser does not support the audio element.
                 </audio>
               </div>
               <div v-else-if="item.contentType === 4" style="text-align: left;">
-                <video preload="meta" :src="fileAddressFormatFunc(item.content)" controls="controls"
+                <video preload="meta" :src="fileAddressFormatFunc(item)" controls="controls"
                        width="250" height="140"></video>
               </div>
               <div v-else-if="item.contentType === 5" class="system-message">{{ item.content }}</div>
@@ -75,7 +92,7 @@
             <div class="images-array">
               <div v-for="item in image.datas" :key="item.id" class="image-item">
                 <el-image style="width: 100%; height: 100%" fit="contain" :z-index="3000"
-                          :src="fileAddressFormatFunc(item.content)"
+                          :src="fileAddressFormatFunc(item)"
                           :preview-src-list="imagePreviews"/>
                 <div class="show-source-message" @click="emitSkipEvent(item)">查看原消息</div>
               </div>
@@ -93,7 +110,7 @@
                 <h3 class="username" :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
                   {{ item.username }} {{ item.sendTime }}
                 </h3>
-                <video preload="meta" :src="fileAddressFormatFunc(item.content)"
+                <video preload="meta" :src="fileAddressFormatFunc(item)"
                        width="200" height="112" controls="controls"></video>
               </li>
             </ul>
@@ -111,7 +128,7 @@
                   {{ item.username }} {{ item.sendTime }}
                 </h3>
                 <div class="audio-message" style="text-align: left;">
-                  <audio :src="fileAddressFormatFunc(item.content)" controls="controls">
+                  <audio :src="fileAddressFormatFunc(item)" controls="controls">
                     Your browser does not support the audio element.
                   </audio>
                 </div>
@@ -124,7 +141,7 @@
         <ul class="file-container">
           <div v-if="allFiles.length===0">没有文件</div>
           <li v-for="item in allFiles" :key="item.id"
-              @click="downloadFile(fileAddressFormatFunc(item.content.fileUrl),item.content.fileName)">
+              @click="downloadFile(fileAddressFormatFunc(item),item.content.fileName)">
             <div>
               <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
             </div>
@@ -153,7 +170,14 @@
 import { mapState } from 'vuex'
 import { synergyRecordPage } from '@/api/synergy/synergy'
 import { Dialog } from 'vant'
-import { chatDataHandler, fileAddressFormat, heightLight, htmlToText, loadFileIcon } from '@/utils/utils'
+import {
+  chatDataHandler,
+  fileAddressFormat,
+  fileAddressFormatUtil,
+  heightLight,
+  htmlToText,
+  loadFileIcon
+} from '@/utils/utils'
 import { formatDate, timeToFullTime } from '@/utils/time'
 import { saveAs } from 'file-saver'
 import { cloneDeep } from 'lodash'
@@ -209,7 +233,7 @@ export default {
     imagePreviews () {
       return this.allMessage
         .filter(item => item.contentType === 2 || item.contentType === 6)
-        .map(item => this.fileAddressFormatFunc(item.content)).reverse()
+        .map(item => this.fileAddressFormatFunc(item)).reverse()
     }
   },
   watch: {
@@ -244,8 +268,8 @@ export default {
           groupId: this.currentGroupId,
           pageSize: 1000000
         }).then(res => {
-          chatDataHandler(res.recordList).reverse()
-          const data = res.recordList.reverse()
+          chatDataHandler(res.recordList)
+          const data = res.recordList.map(item => item.data).reverse()
           const lastData = cloneDeep(this.initDate[this.initDate.length - 1])
           lastData.sendTime = timeToFullTime(lastData.sendTime)
           data.push(lastData)
@@ -288,8 +312,8 @@ export default {
     closePanel () {
       this.searchValue = ''
     },
-    fileAddressFormatFunc (url) {
-      return fileAddressFormat(url)
+    fileAddressFormatFunc (item) {
+      return fileAddressFormatUtil(item)
     },
     fileIcon (fileName) {
       return loadFileIcon(fileName)
@@ -358,19 +382,27 @@ export default {
     }
 
     .reply-message {
-      text-align: left;
       margin: 4px 0;
       padding: 8px 10px 6px 10px;
-      background-color: rgb(242, 243, 245);
+      border-radius: 6px;
+      background-color: rgb(230, 233, 237);
+      text-align: left;
 
-      blockquote{
+      blockquote {
+        margin-bottom: 6px;
         padding: 4px 4px 4px 8px;
         border-left: 2px solid #ccc;
         font-size: 12px;
         color: #57606f;
+        cursor: pointer;
+
+        /deep/ .el-image {
+          display: flex;
+          justify-content: flex-start;
+        }
       }
 
-      .word-message{
+      .word-message {
         background-color: transparent;
         padding: 0;
         color: black;
@@ -385,59 +417,10 @@ export default {
       word-break: break-all;
       white-space: pre-line;
 
-      /deep/img{
+      /deep/ img {
         width: 20px;
         height: 20px;
         vertical-align: middle;
-      }
-    }
-
-    & > .file-message {
-      width: 250px;
-      margin-top: 4px;
-      padding: 6px 8px;
-      background-color: white;
-      border: 1px solid #cccccc;
-      border-radius: 6px;
-      display: flex;
-      justify-content: space-between;
-
-      & > .file-info {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-
-        & > .name {
-          text-align: left;
-          //width: 100%;
-          padding: 2px 0;
-          //display: flex;
-          //align-items: center;
-          //// 文字超出换行
-          //word-wrap: break-word;
-          //word-break: break-all;
-          //overflow: hidden;
-          width: 180px;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-        }
-
-        & > .size {
-          color: #636e72;
-          font-size: 12px;
-          margin-top: 2px;
-          display: flex;
-          align-items: center;
-        }
-      }
-
-      & > .file-icon {
-        margin: 0 8px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
       }
     }
   }
@@ -456,7 +439,7 @@ export default {
     align-items: center;
     padding: 8px;
 
-    .file-name{
+    .file-name {
       width: 140px;
       margin-bottom: 4px;
       overflow: hidden;
@@ -546,6 +529,55 @@ export default {
         background-color: var(--hover-bg);
       }
     }
+  }
+}
+
+.file-message {
+  width: 250px;
+  margin-top: 4px;
+  padding: 6px 8px;
+  background-color: white;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+
+  & > .file-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    & > .name {
+      text-align: left;
+      //width: 100%;
+      padding: 2px 0;
+      //display: flex;
+      //align-items: center;
+      //// 文字超出换行
+      //word-wrap: break-word;
+      //word-break: break-all;
+      //overflow: hidden;
+      width: 180px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    & > .size {
+      color: #636e72;
+      font-size: 12px;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  & > .file-icon {
+    margin: 0 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 

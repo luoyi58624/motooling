@@ -100,7 +100,7 @@
                         <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
                         <p v-if="item.replyData.contentType==1" v-html="item.replyData.content"></p>
                         <el-image v-else-if="item.replyData.contentType==2||item.replyData.contentType==6"
-                                  style="width: 160px; height: 90px;" fit="scale-down"
+                                  style="width: 160px; height: 90px;text-align: left" fit="scale-down"
                                   :src="fileAddressFormatFunc(item.replyData)"></el-image>
                         <audio v-else-if="item.replyData.contentType==3" :src="fileAddressFormatFunc(item.replyData)"
                                controls="controls"/>
@@ -239,7 +239,7 @@
 import { mapState } from 'vuex'
 import {
   chatDataHandler,
-  fileAddressFormat,
+  fileAddressFormatUtil,
   isOffice,
   isUrl,
   loadFileIcon,
@@ -597,15 +597,7 @@ export default {
       }
     },
     fileAddressFormatFunc (item) {
-      if (item.isTemp) {
-        return item.content
-      } else {
-        if (item.contentType === 9) {
-          return fileAddressFormat(item.content.fileUrl)
-        } else {
-          return fileAddressFormat(item.content)
-        }
-      }
+      return fileAddressFormatUtil(item)
     },
     receiveMessage (message) {
       console.log(message)
@@ -1077,7 +1069,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style scoped lang="less">
 @import url("./common.less");
 
 .chat-panel {
@@ -1152,8 +1144,10 @@ nav {
         padding: 8px 10px 6px 10px;
         border-radius: 6px;
         background-color: rgb(230, 233, 237);
+        text-align: left;
 
         blockquote {
+          margin-bottom: 6px;
           padding: 4px 4px 4px 8px;
           border-left: 2px solid #ccc;
           font-size: 12px;
@@ -1180,7 +1174,7 @@ nav {
         display: inline-block;
         overflow: hidden;
 
-        img {
+        /deep/ img {
           width: 20px;
           height: 20px;
           vertical-align: middle;
@@ -1437,10 +1431,15 @@ nav {
 }
 
 .my-content {
-
   /deep/ .el-image {
     display: flex;
     justify-content: flex-end;
+  }
+
+  blockquote{
+    /deep/ .el-image {
+      justify-content: flex-start;
+    }
   }
 }
 
