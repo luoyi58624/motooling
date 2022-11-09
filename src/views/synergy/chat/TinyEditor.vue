@@ -102,7 +102,7 @@ export default {
       let text = ''
       switch (item.contentType) {
         case 1:
-          text = `<p style="font-size: 14px">${item.content.replace(/<p>/gi, '').replace(/<\/p>/gi, '')}</p>`
+          text = item.content
           break
         case 2:
         case 6:

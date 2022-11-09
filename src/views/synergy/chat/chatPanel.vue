@@ -98,7 +98,24 @@
                     <div v-if="item.replyData" class="reply-message">
                       <blockquote>
                         <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
-                        <p v-html="item.replyData.content"></p>
+                        <p v-if="item.replyData.contentType==1" v-html="item.replyData.content"></p>
+                        <el-image v-else-if="item.replyData.contentType==2||item.replyData.contentType==6"
+                                  style="width: 160px; height: 90px;" fit="scale-down"
+                                  :src="fileAddressFormatFunc(item.replyData)"></el-image>
+                        <audio v-else-if="item.replyData.contentType==3" :src="fileAddressFormatFunc(item.replyData)"
+                               controls="controls"/>
+                        <video v-else-if="item.replyData.contentType==4" :src="fileAddressFormatFunc(item.replyData)"
+                               controls="controls" width="250" height="140"/>
+                        <div v-else-if="item.replyData.contentType==9" class="file-message">
+                          <div class="file-info">
+                            <div class="name">{{ item.replyData.content.fileName }}</div>
+                            <div class="size">{{ item.replyData.content.fileSize }}</div>
+                          </div>
+                          <div class="file-icon">
+                            <el-image style="width: 36px;height: 36px;"
+                                      :src="fileIcon(item.replyData.content.fileName)"/>
+                          </div>
+                        </div>
                       </blockquote>
                       <span class="word-message" @contextmenu="openContextMenu($event,item)"
                             v-html="item.content"></span>
@@ -221,6 +238,7 @@
 <script>
 import { mapState } from 'vuex'
 import {
+  chatDataHandler,
   fileAddressFormat,
   isOffice,
   isUrl,
@@ -412,13 +430,9 @@ export default {
           recordList.forEach(item => {
             // 自己发送的消息添加已读用户列表
             if (item.data.senderId == this.uid) item.data.readMessageUsers = []
-            if (item.data.contentType == 7 || item.data.contentType == 9) {
-              try {
-                item.data.content = JSON.parse(item.data.content)
-              } catch (e) {
-              }
-            }
           })
+
+          chatDataHandler(recordList)
           this.recordList = time(recordList)
           this.scrolltoButtom()
 
@@ -1136,7 +1150,8 @@ nav {
       .reply-message {
         margin: 4px 0;
         padding: 8px 10px 6px 10px;
-        background-color: rgb(242, 243, 245);
+        border-radius: 6px;
+        background-color: rgb(230, 233, 237);
 
         blockquote {
           padding: 4px 4px 4px 8px;
@@ -1144,10 +1159,6 @@ nav {
           font-size: 12px;
           color: #57606f;
           cursor: pointer;
-
-          &:hover {
-            color: #3498db;
-          }
         }
 
         .word-message {
@@ -1169,7 +1180,7 @@ nav {
         display: inline-block;
         overflow: hidden;
 
-        img{
+        img {
           width: 20px;
           height: 20px;
           vertical-align: middle;

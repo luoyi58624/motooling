@@ -244,7 +244,8 @@ export default {
           groupId: this.currentGroupId,
           pageSize: 1000000
         }).then(res => {
-          const data = chatDataHandler(res.recordList).reverse()
+          chatDataHandler(res.recordList).reverse()
+          const data = res.recordList.reverse()
           const lastData = cloneDeep(this.initDate[this.initDate.length - 1])
           lastData.sendTime = timeToFullTime(lastData.sendTime)
           data.push(lastData)
