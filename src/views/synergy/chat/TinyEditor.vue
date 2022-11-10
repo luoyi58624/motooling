@@ -411,7 +411,6 @@ export default {
           icon: 'emoji',
           tooltip: '表情包',
           onAction: () => {
-            console.log(this.$store.state.editorInstance.getContent({ format: 'text' }))
             this.showEmotionPanel = !this.showEmotionPanel
           }
         })
