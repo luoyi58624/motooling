@@ -200,7 +200,7 @@ export default {
         return html
           .replace(/\n/g, '')
           .replace(/<blockquote.*<\/blockquote>/g, '')
-          .replace(/<.*?>/g, '')
+          .replace(/<(?!img).*?>/g, '')
           .replace(/(&nbsp;)*/g, '')
           .trim() != ''
       }
