@@ -637,7 +637,6 @@ export default {
       if (message.data.contentType == 7 || message.data.contentType == 9) {
         message.data.content = JSON.parse(message.data.content)
       }
-      this.recordList.push({ ...message.data, sendTime })
 
       if (message.responseType == '666666') {
         // 服务器主动推送
@@ -654,6 +653,8 @@ export default {
             delete item.readMessageUsers
           }
         })
+      }else{
+        this.recordList.push({ ...message.data, sendTime })
       }
       // 处理已读
       const lastRecordId = Math.max.apply(Math, this.recordList.map(item => +item.id))
