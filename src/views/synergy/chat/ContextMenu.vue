@@ -84,8 +84,7 @@ export default {
       document.removeEventListener('click', this.closeContextMenu)
     },
     copyMsg(e){
-      console.log(e)
-      navigator.clipboard.writeText(this.messageItem.content)
+      // navigator.clipboard.writeText(this.messageItem.content.replace(//))
     },
     sendMsg () {
       Toast('暂未实现此功能')

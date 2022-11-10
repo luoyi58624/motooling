@@ -194,7 +194,7 @@
             </div>
             <div v-if="item.contentType == 8">
               <div class="sys-notifacation">
-                <span v-if="uid == item.senderId" class="content" contenteditable="true">
+                <span v-if="uid == item.senderId" class="content">
                   你撤回了一条消息
                   <span v-if="showAgainEdit(item)">
                     ，<span class="text-blue" @click="againEdit(item)">重新编辑</span>
@@ -696,7 +696,8 @@ export default {
         contentType: 1,
         content: text,
         smallImg: userIds || undefined,
-        replyId: replyId || undefined
+        replyId: replyId || undefined,
+        deviceType: 'h5'
       }).then((res) => {
         this.recordList.forEach(item => {
           if (item.msgUUID == msgUUID) {
@@ -875,7 +876,8 @@ export default {
         senderId: this.uid,
         contentType,
         content,
-        smallImg
+        smallImg,
+        deviceType: 'h5'
       }).then((res) => {
         this.recordList.forEach(item => {
           if (item.msgUUID == msgUUID) {

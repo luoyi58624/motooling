@@ -24,7 +24,7 @@ import EmotionPanel from './EmotionPanel.vue'
 import PinyinMatch from 'pinyin-match'
 import MemberList from '@/views/synergy/chat/memberList'
 import { hideLongText, loadFileIcon, readFile, renderSize, uuid, WEBURL } from '@/utils/utils'
-import { cloneDeep, replace } from 'lodash'
+import { cloneDeep } from 'lodash'
 import { Notify } from 'vant'
 
 export default {
@@ -275,27 +275,13 @@ export default {
       contextmenu: false,
       object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
-      // paste_as_text: true,
       plugins: 'code fullscreen',
       toolbar: 'myImage myVideo myFile myEmoticons myHistory code fullscreen mySendMessage',
       paste_preprocess: (editor, args) => {
-        console.log(args.content)
         args.content = args.content
           .replace(/<div>/g, '<p>')
           .replace(/<\/div>/g, '</p>')
           .replace(/<(?!img|br|p>|\/p).*?>/g, '')
-        // args.content=args.content.replace(/<(?!p>|\/p).*?>/g, "")
-        // args.content=args.content.replace(/<.*?>/g, "")
-        // args.content = args.content.replace(/<.*?>/g,"")
-        // replace(pasteText, /\[.*?\]/g, str => {
-        //   // const url = str.substring(1, str.length - 1).replace(/<.*?>/g,"")
-        //   const url = str.substring(1, str.length - 1)
-        //   if (url.indexOf(WEBURL()) !== -1) {
-        //     return `<img src="${url}" alt="${url}">`
-        //   } else {
-        //     return str
-        //   }
-        // })
       },
       setup: (editor) => {
         editor.on('click', () => {
