@@ -116,9 +116,7 @@ export default {
       this.replyData = item
       const html = `<blockquote class="mceNonEditable" data-id="${item.id}"><h4>${item.username}</h4>${text}</blockquote><p>&nbsp;</p>`
       this.$store.state.editorInstance.setContent(html)
-      this.$store.state.editorInstance.execCommand('selectAll')
-      this.$store.state.editorInstance.selection.getRng().collapse(false)
-      this.$store.state.editorInstance.focus()
+      this.endFocus()
     },
     // 插入各种文件
     insertFile (editor, files) {
@@ -151,9 +149,7 @@ export default {
           const img = loadFileIcon(file.name)
           editor.insertContent(`<div class="file-wrapper mceNonEditable" data-name="${name}" data-size="${size}" data-id="${id}"><img src="${img}" alt=""></div>`)
         }
-        editor.execCommand('selectAll')
-        editor.selection.getRng().collapse(false)
-        editor.focus()
+        this.endFocus()
         if (i === files.length - 1) {
           editor.insertContent('<p>&nbsp;</p>')
         }
@@ -181,7 +177,49 @@ export default {
       }
       return flag
     },
+    // 判断编辑器是否存在消息。如果没有则弹出警告
+    hasMsg () {
+      let hasMedia = false
+      const html = this.$store.state.editorInstance.getContent()
+      const frag = document.createElement('div')
+      frag.innerHTML = html
+      const nodes = frag.children
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i]
+        if (node.localName === 'p' && isMediaNode(node)) {
+          hasMedia = true
+          break
+        } else if (node.localName === 'div' && node.className.indexOf('file-wrapper') !== -1) {
+          hasMedia = true
+          break
+        }
+      }
+      if (hasMedia) {
+        return true
+      } else {
+        return html
+          .replace(/\n/g, '')
+          .replace(/<blockquote.*<\/blockquote>/g, '')
+          .replace(/<.*?>/g, '')
+          .replace(/(&nbsp;)*/g, '')
+          .trim() != ''
+      }
+    },
+    // 在最后一行获得焦点
+    endFocus () {
+      this.$store.state.editorInstance.execCommand('selectAll')
+      this.$store.state.editorInstance.selection.getRng().collapse(false)
+      this.$store.state.editorInstance.focus()
+    },
     sendMsg () {
+      if (!this.hasMsg()) {
+        Notify({
+          message: '不能发送空白消息',
+          type: 'warning'
+        })
+        this.endFocus()
+        return
+      }
       const nodes = this.getDomNodes()
       // 是否发送文字信息，如果为false，则对文字消息进行拼接
       // 由于tinymce是以p标签进行换行，所以我们需要对其进行遍历
@@ -407,9 +445,7 @@ export default {
           if (messageDraft) {
             editor.setContent(messageDraft.message)
           }
-          editor.execCommand('selectAll')
-          editor.selection.getRng().collapse(false)
-          editor.focus()
+          this.endFocus()
         })
       }
     })

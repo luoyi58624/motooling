@@ -6,10 +6,10 @@
 <!--        <img :src="require('@/assets/svg/copy.svg')" alt=""/>-->
 <!--        <span>复制</span>-->
 <!--      </li>-->
-      <li class="chat-message-context-menu-copy" @click="copyMsg">
-        <img :src="require('@/assets/svg/copy.svg')" alt=""/>
-        <span>复制</span>
-      </li>
+<!--      <li class="chat-message-context-menu-copy" @click="copyMsg">-->
+<!--        <img :src="require('@/assets/svg/copy.svg')" alt=""/>-->
+<!--        <span>复制</span>-->
+<!--      </li>-->
       <li @click="sendMsg">
         <img :src="require('@/assets/svg/send.svg')" alt=""/>
         <span>转发</span>
