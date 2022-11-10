@@ -629,7 +629,7 @@
     const r = t + '/wordimport.js' + (e => O.from(e).filter(e => e.length !== 0).map(e => (e.indexOf('?') === -1 ? '?' : '') + e).getOr(''))(n || 'v=9.1.1')
     const o = e.loadScript('ephox.wimp', r)
     return o.catch(e => {
-      console.error('Unable to load word import: ', e)
+      // console.error('Unable to load word import: ', e)
     }
     ),
     {

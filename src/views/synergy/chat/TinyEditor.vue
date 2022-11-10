@@ -18,14 +18,13 @@ import 'tinymce/icons/default'
 import 'tinymce/models/dom'
 import 'tinymce/plugins/code'
 import 'tinymce/plugins/fullscreen'
-// import '@/plugins/tinymce/powerpaste'
 
 import eventBus from '@/utils/mitt'
 import EmotionPanel from './EmotionPanel.vue'
 import PinyinMatch from 'pinyin-match'
 import MemberList from '@/views/synergy/chat/memberList'
-import { hideLongText, loadFileIcon, readFile, renderSize, uuid } from '@/utils/utils'
-import { cloneDeep } from 'lodash'
+import { hideLongText, loadFileIcon, readFile, renderSize, uuid, WEBURL } from '@/utils/utils'
+import { cloneDeep, replace } from 'lodash'
 import { Notify } from 'vant'
 
 export default {
@@ -82,7 +81,7 @@ export default {
   methods: {
     // 插入表情
     insertEmotion (url) {
-      this.$store.state.editorInstance.insertContent(`<img src="${url}" alt="">`)
+      this.$store.state.editorInstance.insertContent(`<img src="${url}">`)
     },
     // 插入选中的用户
     insertSelectUser (selectUser) {
@@ -160,16 +159,19 @@ export default {
         }
       }
     },
-    // 获取编辑器所有内容节点
-    getEditorNodes () {
-      const html = this.$store.state.editorInstance.getContent()
+    // 解析html代码，获取内容节点
+    getDomNodes (html) {
+      // 如果没有输入html代码，则默认获取编辑器的html文本
+      if (html == null) {
+        html = this.$store.state.editorInstance.getContent()
+      }
       const frag = document.createElement('div')
       frag.innerHTML = html
       return frag.children
     },
     // 判断编辑器消息是否是否存在回复消息
     hasReplyData () {
-      const nodes = this.getEditorNodes()
+      const nodes = this.getDomNodes()
       let flag = false
       for (let i = 0; i < nodes.length; i++) {
         if (nodes[i].localName === 'blockquote' && nodes[i].dataset.id) {
@@ -180,7 +182,7 @@ export default {
       return flag
     },
     sendMsg () {
-      const nodes = this.getEditorNodes()
+      const nodes = this.getDomNodes()
       // 是否发送文字信息，如果为false，则对文字消息进行拼接
       // 由于tinymce是以p标签进行换行，所以我们需要对其进行遍历
       // 如果当前p标签包含了媒体，则需要对其进行单独处理，直接发送
@@ -273,8 +275,28 @@ export default {
       contextmenu: false,
       object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
+      // paste_as_text: true,
       plugins: 'code fullscreen',
       toolbar: 'myImage myVideo myFile myEmoticons myHistory code fullscreen mySendMessage',
+      paste_preprocess: (editor, args) => {
+        console.log(args.content)
+        args.content = args.content
+          .replace(/<div>/g, '<p>')
+          .replace(/<\/div>/g, '</p>')
+          .replace(/<(?!img|br|p>|\/p).*?>/g, '')
+        // args.content=args.content.replace(/<(?!p>|\/p).*?>/g, "")
+        // args.content=args.content.replace(/<.*?>/g, "")
+        // args.content = args.content.replace(/<.*?>/g,"")
+        // replace(pasteText, /\[.*?\]/g, str => {
+        //   // const url = str.substring(1, str.length - 1).replace(/<.*?>/g,"")
+        //   const url = str.substring(1, str.length - 1)
+        //   if (url.indexOf(WEBURL()) !== -1) {
+        //     return `<img src="${url}" alt="${url}">`
+        //   } else {
+        //     return str
+        //   }
+        // })
+      },
       setup: (editor) => {
         editor.on('click', () => {
           this.showEmotionPanel = false
@@ -365,6 +387,7 @@ export default {
           icon: 'emoji',
           tooltip: '表情包',
           onAction: () => {
+            console.log(this.$store.state.editorInstance.getContent({ format: 'text' }))
             this.showEmotionPanel = !this.showEmotionPanel
           }
         })
