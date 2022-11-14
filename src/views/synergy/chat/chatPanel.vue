@@ -209,7 +209,8 @@
         </div>
         <tiny-editor ref="TinymceEditorRef"/>
       </div>
-      <div class="group-members" v-if="!recordPanel && chattingTarget.type == 666">
+      <div class="group-members" :style="{width: groupMembersWidth+'px'}"
+           v-if="!recordPanel && chattingTarget.type == 666">
         <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
         <div class="group-members-wrapper">
           <div class="group-members-item" v-for="item in groupMember" :key="item.uid"
@@ -312,6 +313,7 @@ export default {
       groupOwnerUid: '',
       timeout: null,
       groupMember: [],
+      groupMembersWidth: 160,
       currentAudio: '',
       loadedScrollTop: 0,
       beforeLoadedScrollTop: 0,
@@ -365,7 +367,7 @@ export default {
       return this.$route.query.relationId * 1
     },
     chatContainerWidth () {
-      return this.recordPanel ? { width: `calc(100% - 250px)` } : { width: 'calc(100% - 122px)' }
+      return this.recordPanel ? { width: `calc(100% - 250px)` } : { width: `calc(100% - ${this.groupMembersWidth}px)` }
     },
     allImages () {
       return this.recordList
@@ -1284,9 +1286,9 @@ nav {
   }
 
   .group-members {
-    width: 121px;
     font-size: 12px;
     border-left: 1px solid #dadcdf;
+
 
     .group-members-title {
       padding: 10px;
@@ -1299,6 +1301,8 @@ nav {
 
     .group-members-item {
       padding: 4px 0 4px 10px;
+      display: flex;
+      align-items: center;
 
       img {
         width: 15px;
@@ -1308,7 +1312,11 @@ nav {
       }
 
       span {
+        display: inline-block;
         padding-left: 5px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
       }
 
       &:hover {
