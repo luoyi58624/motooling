@@ -6,7 +6,8 @@
           <el-input placeholder="搜索" prefix-icon="el-icon-search" size="mini" v-model="value" :clearable="true"
                     @input="search"></el-input>
         </div>
-        <i class="el-icon-plus" @click="$emit('add-user')"></i>
+        <i class="el-icon-plus" style="margin-left: 8px;cursor: pointer;"
+           @click="$emit('add-user')"></i>
       </div>
     </div>
     <div class="message-list">
@@ -376,11 +377,6 @@ export default {
     .enter-keyword {
       display: flex;
       align-items: center;
-    }
-
-    i {
-      margin-left: 8px;
-      cursor: pointer;
     }
   }
 }
