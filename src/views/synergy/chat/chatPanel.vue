@@ -370,7 +370,7 @@ export default {
     allImages () {
       return this.recordList
         .filter(item => item.contentType == 2 || item.constructor == 6)
-        .map(item => this.fileAddressFormatFunc(item)).reverse()
+        .map(item => this.fileAddressFormatFunc(item))
     }
   },
   created () {
