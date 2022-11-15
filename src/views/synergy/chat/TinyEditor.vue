@@ -354,6 +354,7 @@ export default {
         })
         // 编辑器键盘事件处理
         editor.on('keydown', event => {
+          console.log(event.code)
           if (event.code === 'Backspace') {
             const text = this.$store.state.editorInstance.getContent({ format: 'text' }).replace(/\n/g, '')
             if (text.endsWith('@')) {
