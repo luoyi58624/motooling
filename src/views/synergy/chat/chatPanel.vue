@@ -2,7 +2,8 @@
   <div class="chat-panel" v-show="groupId">
     <nav>
       <div class="chatting-name">
-        <input style="width: 580px;height: 40px" type="text" v-if="chattingTarget.type == 666" :value="chattingTarget.name"
+        <input style="width: 580px;height: 40px" type="text" v-if="chattingTarget.type == 666"
+               :value="chattingTarget.name"
                maxlength="50" @blur="setGroupName($event.target.value)"/>
         <span v-else-if="chattingTarget.type == 66">{{ chattingTarget.name }}</span>
         <span v-else>{{ talkMember }}</span>
@@ -10,12 +11,26 @@
       <div class="add-member" v-if="chattingTarget.type == 666" @click="$emit('add-user', true)"></div>
     </nav>
     <div class="chat-content">
-      <div class="talk-wrapper" :style="[chatContainerWidth]">
+      <div class="talk-wrapper" :style="chatContainerWidth">
         <div class="talk-content" ref="talkContent">
-          <!--          <div>-->
-          <!--            <svg t="1666936950881" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2153" width="32" height="32"><path d="M862 465.3h-81c-4.6 0-9 2-12.1 5.5L550 723.1V160c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8v563.1L255.1 470.8c-3-3.5-7.4-5.5-12.1-5.5h-81c-6.8 0-10.5 8.1-6 13.2L487.9 861c12.7 14.7 35.5 14.7 48.3 0L868 478.5c4.5-5.2 0.8-13.2-6-13.2z" p-id="2154"></path></svg>-->
-          <!--            回到最新位置-->
-          <!--          </div>-->
+          <div v-show="alreadyLoad && noReadyCount>recordList.length" class="skip-new-message" @click="skipNewMessage">
+            <svg t="1668490953822" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                 p-id="2966" width="16" height="16">
+              <path
+                d="M533.333333 593.066667L358.4 768 298.666667 708.266667l234.666666-234.666667 234.666667 234.666667-59.733333 59.733333-174.933334-174.933333z m0-256L358.4 512 298.666667 448 533.333333 213.333333l234.666667 234.666667-59.733333 59.733333-174.933334-170.666666z"
+                fill="#1e90ff" p-id="2967"></path>
+            </svg>
+            <span style="margin-left: 4px">{{ noReadyCount }}条新消息</span>
+          </div>
+          <div v-show="showSkipBottomButton" class="skip-bottom-message" @click="skipBottom">
+            <svg t="1668492139947" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                 p-id="3601" width="16" height="16">
+              <path
+                d="M533.333333 388.266667L358.4 213.333333 298.666667 277.333333l234.666666 234.666667L768 277.333333 708.266667 213.333333l-174.933334 174.933334z m0 260.266666l-174.933333-174.933333L298.666667 533.333333l234.666666 234.666667 234.666667-234.666667-59.733333-59.733333-174.933334 174.933333z"
+                fill="#1e90ff" p-id="3602"></path>
+            </svg>
+            回到底部
+          </div>
           <div v-for="(item, index) in recordList" :key="index" class="talk-item" :data-id="item.id">
             <div :class="uid == item.senderId ? 'my-content' : 'others-content'"
                  v-if="item.contentType !== 5 && item.contentType!==7 && item.contentType!==8">
@@ -92,6 +107,9 @@
                     </svg>
                   </div>
                 </template>
+                <div v-if="item.contentType==-1" class="new-message-start">
+                  -----------------------以下消息为最新消息--------------------------
+                </div>
                 <!--消息内容-->
                 <div class="message-content">
                   <div class="message" v-if="item.contentType == 1">
@@ -252,7 +270,8 @@ import shortid from 'shortid'
 import {
   alreadyRead,
   at,
-  deleteGroupMember, getGroupMemberNewRecord,
+  deleteGroupMember,
+  getGroupMemberNewRecord,
   getNewsList,
   getOpenSynergy,
   sendMessage,
@@ -298,7 +317,9 @@ export default {
   },
   data () {
     return {
+      alreadyLoad: false,    // 聊天页面是否已加载完成
       isClose: false,
+      showSkipBottomButton: false,  // 显示跳转到底部按钮
       imurl: localStorage.imurl,
       socket: {},
       synergyGroup: {},
@@ -315,6 +336,7 @@ export default {
       groupMember: [],
       groupMembersWidth: 160,
       currentAudio: '',
+      noReadyCount: 0,
       loadedScrollTop: 0,
       beforeLoadedScrollTop: 0,
       noMorePullUpRecords: false, // 聊天数据是否已到顶
@@ -339,6 +361,7 @@ export default {
     groupId: {
       handler: function (val) {
         if (val) {
+          this.noReadyCount = cloneDeep(this.$store.state.newsList.find(item => item.groupId == val).notReadCount)
           this.init()
           clearReaderMessage = setInterval(() => {
             this.getReadMessage()
@@ -453,6 +476,7 @@ export default {
           }
           this.im()
           this.getReadMessage()
+          this.alreadyLoad = true
         })
     },
     im () {
@@ -655,7 +679,7 @@ export default {
             delete item.readMessageUsers
           }
         })
-      }else{
+      } else {
         this.recordList.push({ ...message.data, sendTime })
       }
       // 处理已读
@@ -789,6 +813,7 @@ export default {
     // 获取聊天记录
     loadMoreRecordList () {
       if (this.$refs.talkContent == null) return
+      this.showSkipBottomButton = this.$refs.talkContent.scrollHeight - this.$refs.talkContent.scrollTop > 1500;
       if (this.$refs.talkContent.scrollTop == 0) {
         this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
         synergyRecordPage({ id: this.recordList[0].id, groupId: this.groupId }).then((res) => {
@@ -797,13 +822,8 @@ export default {
             let recordList = result.reverse()
             recordList.forEach(item => {
               if (item.data.senderId == this.uid) item.data.readMessageUsers = []
-              if (item.data.contentType == 7 || item.data.contentType == 9) {
-                try {
-                  item.data.content = JSON.parse(item.data.content)
-                } catch (e) {
-                }
-              }
             })
+            chatDataHandler(recordList)
             let _recordList = time(recordList)
             this.recordList = _recordList.concat(this.recordList)
             this.getReadMessage()
@@ -1068,6 +1088,42 @@ export default {
           })
         }
       })
+    },
+    skipNewMessage () {
+      synergyRecordPage({
+        id: this.recordList[this.recordList.length - 1].id,
+        groupId: this.groupId,
+        pageSize: this.noReadyCount + 1
+      }).then((res) => {
+        const result = res.recordList
+        if (result.length !== 0) {
+          let recordList = result.reverse()
+          recordList.forEach(item => {
+            if (item.data.senderId == this.uid) item.data.readMessageUsers = []
+          })
+          chatDataHandler(recordList)
+          let _recordList = time(recordList)
+          _recordList.push(this.recordList[this.recordList.length - 1])
+          _recordList.splice(1, 0, {
+            contentType: -1
+          })
+          this.recordList = _recordList
+          this.getReadMessage()
+          this.$nextTick(() => {
+            this.$refs.talkContent.scrollTo({
+              top: 2,
+              behavior: 'smooth'
+            })
+          })
+        }
+      })
+    },
+    skipBottom () {
+      this.$refs.talkContent.scrollTo({
+        top: this.$refs.talkContent.scrollHeight,
+        behavior: 'smooth'
+      })
+
     }
   }
 }
@@ -1075,6 +1131,10 @@ export default {
 
 <style scoped lang="less">
 @import url("./common.less");
+
+.vue-splitter-container {
+  width: 100%;
+}
 
 .chat-panel {
   position: relative;
@@ -1122,6 +1182,49 @@ nav {
   .talk-wrapper {
     flex: auto;
     height: 100%;
+    position: relative;
+
+    .skip-new-message {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      background-color: white;
+      color: #1e90ff;
+      box-shadow: 0px 0px 1.1px rgba(0, 0, 0, 0.028),
+      0px 0px 3.6px rgba(0, 0, 0, 0.042),
+      0px 0px 16px rgba(0, 0, 0, 0.07);
+      transition: background-color 0.3s ease-in-out;
+
+      &:hover {
+        background-color: #f1f3f5;
+      }
+    }
+
+    .skip-bottom-message {
+      position: absolute;
+      bottom: 200px;
+      right: 15px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      background-color: white;
+      color: #1e90ff;
+      box-shadow: 0px 0px 1.1px rgba(0, 0, 0, 0.028),
+      0px 0px 3.6px rgba(0, 0, 0, 0.042),
+      0px 0px 16px rgba(0, 0, 0, 0.07);
+      transition: background-color 0.3s ease-in-out;
+
+      &:hover {
+        background-color: #f1f3f5;
+      }
+    }
 
     .talk-content {
       width: 100%;
@@ -1132,6 +1235,10 @@ nav {
       overflow-x: hidden;
       padding-bottom: 10px;
       box-sizing: border-box;
+
+      .new-message-start {
+        margin: 0 auto;
+      }
 
       .time-name {
         padding-top: 8px;
@@ -1286,9 +1393,9 @@ nav {
   }
 
   .group-members {
+    width: 100%;
     font-size: 12px;
     border-left: 1px solid #dadcdf;
-
 
     .group-members-title {
       padding: 10px;
@@ -1315,8 +1422,8 @@ nav {
         display: inline-block;
         padding-left: 5px;
         overflow: hidden;
-        text-overflow:ellipsis;
-        white-space:nowrap;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       &:hover {
@@ -1445,7 +1552,7 @@ nav {
     justify-content: flex-end;
   }
 
-  blockquote{
+  blockquote {
     /deep/ .el-image {
       justify-content: flex-start;
     }

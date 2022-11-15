@@ -9,6 +9,7 @@ import { Stepper } from 'vant'
 import element from './element'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'vant/lib/index.css'
+import splitPane from '@/components/SplitPanel'
 import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
 
 import wx from 'weixin-js-sdk'
@@ -73,6 +74,7 @@ Vue.prototype.showLoading = showLoading
 Vue.prototype.hideLoading = hideLoading
 Vue.prototype.showDialog = showDialog
 Vue.prototype.$eventBus = new Vue()
+Vue.component('split-pane', splitPane);
 
 if (/MicroMessenger/.test(window.navigator.userAgent)) {
   getwechat().then(config => {
