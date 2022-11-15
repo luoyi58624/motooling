@@ -178,16 +178,14 @@
                               p-id="19952"></path>
                           </svg>
                         </div>
-                        <a class="file-preview" v-if="officeFile(item.content.fileName)"
-                           :href="'https://view.officeapps.live.com/op/view.aspx?src='+fileAddressFormatFunc(item)"
-                           target="_blank">
+                        <div class="file-preview" @click="skipReviewUrl(item)">
                           <svg t="1666683919758" class="icon" viewBox="0 0 1331 1024" version="1.1"
                                xmlns="http://www.w3.org/2000/svg" p-id="1430" width="32" height="32">
                             <path
                               d="M665.6 1023.0784C298.2912 1023.0784 37.5808 694.5792 0.6144 512 37.4784 329.5232 298.2912 0.9216 665.6 0.9216c367.3088 0 628.0192 328.6016 664.9856 511.0784-36.864 182.5792-297.6768 511.0784-664.9856 511.0784z m0-912.5888C375.6032 110.4896 159.744 363.8272 114.688 512c45.056 148.1728 260.9152 401.6128 550.912 401.6128S1171.456 660.1728 1216.512 512c-45.056-148.1728-260.9152-401.5104-550.912-401.5104z m0 620.544C543.1296 731.136 443.904 633.0368 443.904 512s99.328-219.0336 221.696-219.0336c122.4704 0 221.696 97.9968 221.696 219.0336S787.968 731.136 665.6 731.136z m0-328.6016c-61.1328 0-110.7968 49.152-110.7968 109.568 0 60.416 49.664 109.568 110.7968 109.568 61.1328 0 110.7968-49.152 110.7968-109.568 0-60.416-49.664-109.568-110.7968-109.568z"
                               p-id="1431"></path>
                           </svg>
-                        </a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -251,6 +249,11 @@
       <li @click.stop="beat(selectedGroupUser)" v-if="selectedGroupUser.uid !== uid">找一找</li>
       <li @click.stop="removeFromGroup(selectedGroupUser)" v-if="groupOwnerUid == uid">移出群聊</li>
     </ul>
+    <el-dialog title="文件预览" :visible.sync="showPreviewDialog" width="90%" @close="previewText=''">
+      <textarea style="width: 100%;height: 500px;" readonly disabled>
+        {{previewText}}
+      </textarea>
+    </el-dialog>
   </div>
 </template>
 
@@ -258,8 +261,7 @@
 import { mapState } from 'vuex'
 import {
   chatDataHandler,
-  fileAddressFormatUtil,
-  isOffice,
+  fileAddressFormatUtil, getFileSuffix,
   isUrl,
   loadFileIcon,
   requestNotification,
@@ -290,6 +292,7 @@ import ChatHistory from '@/views/synergy/chat/ChatHistory'
 import { cloneDeep } from 'lodash'
 import TinyEditor from '@/views/synergy/chat/TinyEditor'
 import { fileUpload, imgUpload } from '@/api/upload/upload'
+import axios from 'axios'
 
 let debounceLoadMoreMessage
 let clearReaderMessage
@@ -320,6 +323,8 @@ export default {
       alreadyLoad: false,    // 聊天页面是否已加载完成
       isClose: false,
       showSkipBottomButton: false,  // 显示跳转到底部按钮
+      showPreviewDialog: false,
+      previewText: '',
       imurl: localStorage.imurl,
       socket: {},
       synergyGroup: {},
@@ -813,7 +818,7 @@ export default {
     // 获取聊天记录
     loadMoreRecordList () {
       if (this.$refs.talkContent == null) return
-      this.showSkipBottomButton = this.$refs.talkContent.scrollHeight - this.$refs.talkContent.scrollTop > 1500;
+      this.showSkipBottomButton = this.$refs.talkContent.scrollHeight - this.$refs.talkContent.scrollTop > 1500
       if (this.$refs.talkContent.scrollTop == 0) {
         this.beforeLoadedScrollTop = this.$refs.talkContent.scrollHeight
         synergyRecordPage({ id: this.recordList[0].id, groupId: this.groupId }).then((res) => {
@@ -911,6 +916,7 @@ export default {
             Object.keys(res.data).forEach(key => {
               item[key] = res.data[key]
               item.loading = false
+              item.isTemp = false
             })
           }
         })
@@ -972,9 +978,6 @@ export default {
     },
     fileIcon (fileName) {
       return loadFileIcon(fileName)
-    },
-    officeFile (fileName) {
-      return isOffice(fileName)
     },
     openContextMenu (event, messageItem) {
       this.$refs.ContextMenu.openContextMenu(event, messageItem)
@@ -1123,7 +1126,42 @@ export default {
         top: this.$refs.talkContent.scrollHeight,
         behavior: 'smooth'
       })
-
+    },
+    // 预览地址跳转
+    skipReviewUrl (item) {
+      const fileSuffix = getFileSuffix(item.content.fileName)
+      switch (fileSuffix) {
+        case 'doc':
+        case 'docx':
+        case 'xls':
+        case 'xlsx':
+        case 'ppt':
+        case 'pptx':
+          window.open('https://view.officeapps.live.com/op/view.aspx?src=' + this.fileAddressFormatFunc(item))
+          break
+        case 'pdf':
+          window.open(this.fileAddressFormatFunc(item))
+          break
+        case 'txt':
+        case 'text':
+        case 'sql':
+        case 'js':
+        case 'css':
+        case 'html':
+        case 'vue':
+        case 'jsx':
+        case 'tsx':
+          this.showPreviewDialog = true
+          axios.get(this.fileAddressFormatFunc(item)).then(res => {
+            this.previewText = res.data
+          })
+          break
+        default:
+          Notify({
+            message: '不支持预览该文件',
+            type: 'warning'
+          })
+      }
     }
   }
 }
