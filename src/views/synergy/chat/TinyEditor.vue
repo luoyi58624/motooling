@@ -361,7 +361,7 @@ export default {
             } else if (text.substring(0, text.length - 1).endsWith('@') && this.showMemberListPanel === false) {
               this.showMemberListPanel = true
             }
-          } else if (event.code === 'Escape') {
+          } else if (event.code === 'Escape' || event.code === 'Space') {
             this.showMemberListPanel = false
           } else if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
             if (this.showMemberListPanel) {
