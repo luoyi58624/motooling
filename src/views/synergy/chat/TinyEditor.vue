@@ -219,6 +219,13 @@ export default {
         this.endFocus()
         return
       }
+      if (this.$parent.synergyGroup.workState && this.$parent.synergyGroup.workState === 0) {
+        Notify({
+          message: '该员工已离职，无法发送消息',
+          type: 'warning'
+        })
+        return
+      }
       const nodes = this.getDomNodes()
       // 是否发送文字信息，如果为false，则对文字消息进行拼接
       // 由于tinymce是以p标签进行换行，所以我们需要对其进行遍历
