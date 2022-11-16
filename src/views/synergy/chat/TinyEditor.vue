@@ -219,7 +219,11 @@ export default {
         this.endFocus()
         return
       }
-      if (this.$parent.synergyGroup.workState && this.$parent.synergyGroup.workState === 0) {
+      if (
+        this.$parent.synergyGroup
+        && Object.keys(this.$parent.synergyGroup).length > 0
+        && this.$parent.synergyGroup.workState == 0
+      ) {
         Notify({
           message: '该员工已离职，无法发送消息',
           type: 'warning'
