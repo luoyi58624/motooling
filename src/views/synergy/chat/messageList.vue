@@ -115,7 +115,7 @@ export default {
   },
   destroyed () {
     this.isClose = true
-    if(this.socket) this.socket.close()
+    if (this.socket) this.socket.close()
   },
   methods: {
     im () {
@@ -134,15 +134,13 @@ export default {
                 JSON.stringify({ requestType: 'ping', serialNumber: null })
               )
             } else {
-              if(this.socket) this.socket.close()
+              if (this.socket) this.socket.close()
               this.im()
             }
           }, 10000)
         }
         this.socket.onclose = () => {
           if (this.isClose === false) {
-            console.log('xx')
-            console.log('xx')
             this.im()
           } else {
             clearInterval(this.interval)
@@ -168,18 +166,10 @@ export default {
             })
           }
 
-          getNewsList()
-            .then((res) => {
-              this.newList = res.newList
-              this.$store.dispatch('newsList', res.newsList)
-            })
-            .catch((err) => {
-              this.$createToast({
-                time: 2000,
-                txt: err.msg || '获取消息列表失败',
-                type: 'error'
-              }).show()
-            })
+          getNewsList().then((res) => {
+            this.newList = res.newList
+            this.$store.dispatch('newsList', res.newsList)
+          })
         }
       }
     },
@@ -302,7 +292,6 @@ export default {
     },
     // 拍一拍
     handleBeat ({ memberList }) {
-      console.log(memberList)
       const receiver = memberList.find((item) => {
         return item.uid !== +this.uid
       })

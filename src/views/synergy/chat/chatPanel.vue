@@ -696,6 +696,10 @@ export default {
         })
       }
 
+      if (this.groupId == message.data.groupId) {
+        this.$store.state.hasNewMessage = true
+      }
+
       this.$nextTick(() => {
         if (this.$refs.talkContent) {
           this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
@@ -740,6 +744,7 @@ export default {
             })
           }
         })
+        this.$store.state.hasNewMessage = true
         this.handleDebounce(function () {
           getNewsList().then((res) => {
             this.$store.dispatch('newsList', res.newsList)
@@ -920,6 +925,7 @@ export default {
             })
           }
         })
+        this.$store.state.hasNewMessage = true
         getNewsList().then((res) => {
           this.$store.dispatch('newsList', res.newsList)
         })
@@ -1337,6 +1343,13 @@ nav {
           font-size: 12px;
           color: #57606f;
           cursor: pointer;
+
+          /deep/ .el-image {
+            img {
+              width: 160px;
+              height: 90px;
+            }
+          }
         }
 
         .word-message {
@@ -1344,6 +1357,12 @@ nav {
           padding: 0;
           color: black;
           border-radius: 0;
+        }
+
+        /deep/ img {
+          width: 20px;
+          height: 20px;
+          vertical-align: middle;
         }
       }
 

@@ -34,23 +34,13 @@ export default new Vuex.Store({
     groupId: null, // 当前群组ID
     messageDraft: [], // 消息草稿
     chattingTarget: {}, // 聊天目标
+    hasNewMessage: false, // 当前聊天框是否出现新消息，如果有，点击历史记录需要重新查询一次
     editorInstance: null, // tinymce编辑器实例
     editorFullScreen: false, // 编辑器是否进入全屏
     imageFiles: {}, // 聊天编辑器-存放图片文件
     audioFiles: {}, // 聊天编辑器-存放音频文件
     videoFiles: {}, // 聊天编辑器-存放视频文件
-    otherFiles: {}, // 聊天编辑器-存放其他类型文件
-    /**
-     * 保存所有群聊消息
-     * messageRecord: [
-     *   {
-     *     groupId: Number  // 群组ID
-     *     messages: []     // 当前群聊所有消息
-     *     historyMessages: []
-     *   }
-     * ]
-     */
-    messageRecord: []
+    otherFiles: {} // 聊天编辑器-存放其他类型文件
   },
   getters: {
     getWechatSignUrl: state => state.wxSignUrl,

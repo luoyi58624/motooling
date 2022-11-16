@@ -20,7 +20,7 @@
                     <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
                     <p v-if="item.replyData.contentType==1" v-html="item.replyData.content"></p>
                     <el-image v-else-if="item.replyData.contentType==2||item.replyData.contentType==6"
-                              style="width: 160px; height: 90px;" fit="scale-down"
+                              style="width: 160px; height: 90px;text-align: left" fit="scale-down"
                               :src="fileAddressFormatFunc(item.replyData)"></el-image>
                     <audio v-else-if="item.replyData.contentType==3" :src="fileAddressFormatFunc(item.replyData)"
                            controls="controls" style="width: 245px;height: 40px"/>
@@ -261,7 +261,11 @@ export default {
   methods: {
     // 获取全部数据
     openPanel () {
-      if (this.currentGroupId === '' || this.currentGroupId !== this.$store.state.groupId) {
+      if (
+        this.currentGroupId === ''
+        || this.currentGroupId !== this.$store.state.groupId
+        || this.$store.state.hasNewMessage
+      ) {
         this.currentGroupId = this.$store.state.groupId
         synergyRecordPage({
           id: this.initDate[this.initDate.length - 1].id,
@@ -381,6 +385,10 @@ export default {
       background-color: #e5e3e3;
     }
 
+    /deep/ .el-image__inner {
+      width: auto !important;
+    }
+
     .reply-message {
       margin: 4px 0;
       padding: 8px 10px 6px 10px;
@@ -396,17 +404,27 @@ export default {
         color: #57606f;
         cursor: pointer;
 
+        .word-message {
+          background-color: transparent;
+          padding: 0;
+          color: black;
+          border-radius: 0;
+        }
+
         /deep/ .el-image {
           display: flex;
           justify-content: flex-start;
+          img {
+            width: 160px;
+            height: 90px;
+          }
         }
       }
 
-      .word-message {
-        background-color: transparent;
-        padding: 0;
-        color: black;
-        border-radius: 0;
+      /deep/ img {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
       }
     }
 
