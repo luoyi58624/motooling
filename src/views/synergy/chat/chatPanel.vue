@@ -113,7 +113,7 @@
                 <!--消息内容-->
                 <div class="message-content">
                   <div class="message" v-if="item.contentType == 1">
-                    <div v-if="item.replyData" class="reply-message">
+                    <div v-if="item.replyData" class="reply-message" @click="skipReplyData(item)">
                       <blockquote>
                         <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
                         <p v-if="item.replyData.contentType==1" v-html="item.replyData.content"></p>
@@ -1161,6 +1161,41 @@ export default {
             message: '不支持预览该文件',
             type: 'warning'
           })
+      }
+    },
+    skipReplyData (item) {
+      let flag = true
+      const talkItems = document.getElementsByClassName('talk-item')
+      for (let i = 0; i < talkItems.length; i++) {
+        if (+item.replyData.id == +talkItems[i].dataset.id) {
+          this.$refs.talkContent.scrollTo({
+            top: talkItems[i].offsetTop - 2,
+            behavior: 'smooth'
+          })
+          flag = false
+          break
+        }
+      }
+      if (flag) {
+        synergyRecordPage({ maxId: item.replyData.id, groupId: this.groupId, pageSize: 10000000 }).then((res) => {
+          const result = [{
+            data: item.replyData
+          }].concat(res.recordList)
+          if (result.length !== 0) {
+            let recordList = result
+            recordList.forEach(item => {
+              if (item.data.senderId == this.uid) item.data.readMessageUsers = []
+            })
+            chatDataHandler(recordList)
+            this.recordList = time(recordList)
+            this.getReadMessage()
+            this.$nextTick(() => {
+              this.$refs.talkContent.scrollTo({
+                top: 2
+              })
+            })
+          }
+        })
       }
     }
   }
