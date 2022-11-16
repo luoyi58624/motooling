@@ -1267,6 +1267,7 @@ nav {
       position: absolute;
       top: 10px;
       right: 15px;
+      z-index: 5;
       padding: 8px 12px;
       border-radius: 8px;
       display: flex;
@@ -1288,6 +1289,7 @@ nav {
       position: absolute;
       bottom: 200px;
       right: 15px;
+      z-index: 5;
       padding: 8px 12px;
       border-radius: 8px;
       display: flex;
