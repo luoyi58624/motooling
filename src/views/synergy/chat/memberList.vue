@@ -156,6 +156,7 @@ html.tox-fullscreen {
   overflow: auto;
   background-color: #ffffff;
   border-radius: 6px;
+  font-size: 14px;
   box-shadow: 0 0 1.1px rgba(0, 0, 0, 0.065),
   0 0 3.6px rgba(0, 0, 0, 0.095),
   0 0 16px rgba(0, 0, 0, 0.16);
