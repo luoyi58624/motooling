@@ -185,7 +185,8 @@ export function getNewsList (params = {}) {
     token: token(),
     md5: getMd5String(),
     timestamp: timestamp,
-    data: params
+    data: params,
+    noRepeat: true
   }
 
   return request({
