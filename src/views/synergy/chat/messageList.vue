@@ -72,6 +72,7 @@ import {
 import clickoutside from '@/utils/clickoutside'
 import { formatDate } from '@/utils/time'
 import { htmlToText } from '@/utils/utils'
+import { cloneDeep } from 'lodash'
 
 export default {
   directives: { clickoutside },
@@ -100,37 +101,28 @@ export default {
       uid: (state) => state.userInfo.uid
     })
   },
-  created () {
-    getUserInfo().then((res) => {
-      this.$store.commit('USER_INFO', res)
-      localStorage.setItem('fileServerUrl', res.fileServerUrl)
-    })
-  },
   mounted () {
     getNewsList()
       .then((res) => {
         this.newList = res.newList
         this.$store.dispatch('newsList', res.newsList)
       })
-    setInterval(() => {
-      getNewsList()
-        .then((res) => {
-          this.newList = res.newList
-          this.$store.dispatch('newsList', res.newsList)
-        })
-    }, 3000)
-    // this.im()
+    getUserInfo().then((res) => {
+      this.$store.commit('USER_INFO', res)
+      localStorage.setItem('fileServerUrl', res.fileServerUrl)
+      this.im()
+    })
   },
   beforeDestroy () {
     this.isClose = true
-    // this.socket.close()
+    this.socket.close()
   },
   methods: {
     im () {
       let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
       if (this.isClose === false || (this.socket && this.socket.readyState === 3)) {
         this.socket = new WebSocket(
-          `${prefix}${this.imurl}/MtMsgWebSocket/${this.companyId}/H5/${this.uid * 1}`
+          `${prefix}${this.imurl}/MtMsgWebSocket/${this.companyId}/H5/${this.uid}`
         )
         this.socket.onopen = () => {
           console.log('开启消息列表socket')
@@ -155,6 +147,7 @@ export default {
           console.log('收到消息：消息列表socket')
           console.log(msg)
           let receivedMessage = JSON.parse(msg.data)
+
           if (this.socket.readyState === 1) {
             this.socket.send(
               JSON.stringify({
@@ -172,6 +165,7 @@ export default {
 
           getNewsList()
             .then((res) => {
+              this.newList = res.newList
               this.$store.dispatch('newsList', res.newsList)
             })
             .catch((err) => {
