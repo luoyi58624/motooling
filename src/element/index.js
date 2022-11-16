@@ -10,11 +10,13 @@ import {
   Icon,
   Dialog,
   Pagination,
-  Image,
   Popover,
   Tabs,
   TabPane
 } from 'element-ui'
+
+import { Image } from 'luoyi-element-ui'
+
 const element = {
   install: function (Vue) {
     Vue.use(Button)

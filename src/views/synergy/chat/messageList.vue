@@ -78,7 +78,7 @@ export default {
   directives: { clickoutside },
   data () {
     return {
-      socket: {},
+      socket: null,
       value: '',
       showContextMenu: false,
       groupId: null,
@@ -113,12 +113,13 @@ export default {
       this.im()
     })
   },
-  beforeDestroy () {
+  destroyed () {
     this.isClose = true
-    this.socket.close()
+    if(this.socket) this.socket.close()
   },
   methods: {
     im () {
+      console.log('创建im')
       let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
       if (this.isClose === false || (this.socket && this.socket.readyState === 3)) {
         this.socket = new WebSocket(
@@ -127,17 +128,21 @@ export default {
         this.socket.onopen = () => {
           console.log('开启消息列表socket')
           this.interval = setInterval(() => {
+            // console.log(this.socket)
             if (this.socket.readyState === 1) {
               this.socket.send(
                 JSON.stringify({ requestType: 'ping', serialNumber: null })
               )
             } else {
+              if(this.socket) this.socket.close()
               this.im()
             }
           }, 10000)
         }
         this.socket.onclose = () => {
           if (this.isClose === false) {
+            console.log('xx')
+            console.log('xx')
             this.im()
           } else {
             clearInterval(this.interval)
