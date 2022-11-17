@@ -139,7 +139,7 @@
                     </div>
                     <span v-else class="word-message" v-html="item.content"></span>
                   </div>
-                  <div class="message" v-else-if="item.contentType == 2 || item.contentType == 6">
+                  <div class="image-message message" v-else-if="item.contentType == 2 || item.contentType == 6">
                     <el-image style="width: 160px; height: 90px;"
                               fit="scale-down"
                               :src="fileAddressFormatFunc(item)"
@@ -1821,7 +1821,17 @@ audio {
     background-color: rgb(254, 213, 177) !important;
   }
 
-  .message {
+  .image-message.message {
+    border: 2px solid rgba(254, 213, 177) !important;
+    background-color: rgba(254, 213, 177, 0.5) !important;
+  }
+
+  .video-message.message {
+    border: 2px solid rgba(254, 213, 177) !important;
+    background-color: rgba(254, 213, 177, 0.5) !important;
+  }
+
+  .audio-message.message {
     border: 2px solid rgba(254, 213, 177) !important;
     background-color: rgba(254, 213, 177, 0.5) !important;
   }

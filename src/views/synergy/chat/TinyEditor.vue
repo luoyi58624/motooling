@@ -325,7 +325,7 @@ export default {
       object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
       plugins: 'code fullscreen',
-      toolbar: 'myImage myVideo myFile myEmoticons myHistory code fullscreen mySendMessage',
+      toolbar: 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage',
       paste_preprocess: (editor, args) => {
         args.content = args.content
           .replace(/<div>/g, '<p>')
