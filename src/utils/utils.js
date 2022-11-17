@@ -72,7 +72,7 @@ export function urlToPath (url) {
 }
 
 export function htmlToText (html) {
-  return html.replace(/<.*?>/g, '')
+  return html.replace(/<.*?>/g, '').replace(/&nbsp;/g, '').trim()
 }
 
 // 聊天界面消息发送的时间处理

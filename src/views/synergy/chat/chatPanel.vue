@@ -113,8 +113,8 @@
                 <!--消息内容-->
                 <div class="message-content">
                   <div class="message" v-if="item.contentType == 1" @contextmenu="openContextMenu($event,item)">
-                    <div v-if="item.replyData" class="reply-message" @click="skipReplyData(item)">
-                      <blockquote>
+                    <div v-if="item.replyData" class="reply-message">
+                      <blockquote @click="skipReplyData(item)">
                         <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
                         <p v-if="item.replyData.contentType==1" v-html="item.replyData.content"></p>
                         <el-image v-else-if="item.replyData.contentType==2||item.replyData.contentType==6"
@@ -228,6 +228,7 @@
         <p class="group-members-title">群成员 · {{ groupMember.length }}</p>
         <div class="group-members-wrapper">
           <div class="group-members-item" v-for="item in groupMember" :key="item.uid"
+               :title="item.username"
                @click.right="handleGroupMember(item, $event)">
             <img :src="item.avatar" alt=""/>
             <span v-if="item.memberType == 1">{{ item.username }} · 群主</span>
@@ -1185,6 +1186,7 @@ export default {
           })
       }
     },
+    // 跳转到指定的回复消息
     skipReplyData (item) {
       let flag = true
       const talkItems = document.getElementsByClassName('talk-item')

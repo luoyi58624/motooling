@@ -248,7 +248,7 @@ export default {
             (item.username && item.username.indexOf(newValue) !== -1)
           )
           .map(item => {
-            if (item.contentType === 1) item.content = heightLight(item.content, newValue)
+            if (item.contentType === 1) item.content = heightLight(htmlToText(item.content), newValue)
             if (item.username) item.username = heightLight(item.username, newValue)
             return item
           })
