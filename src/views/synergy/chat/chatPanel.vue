@@ -1098,10 +1098,12 @@ export default {
       }))
 
       this.$nextTick(() => {
+        const talkItems = document.getElementsByClassName('talk-item')
+        this.clearActiveMessageClass()
         if ($message.length <= 15) {
-          const talkItems = document.getElementsByClassName('talk-item')
           for (let i = 0; i < talkItems.length; i++) {
             if (+item.id == +talkItems[i].dataset.id) {
+              this.addActiveMessageClass(talkItems[i])
               this.$refs.talkContent.scrollTo({
                 top: talkItems[i].offsetTop - 67
               })
@@ -1109,6 +1111,7 @@ export default {
             }
           }
         } else {
+          this.addActiveMessageClass(talkItems[0])
           this.$refs.talkContent.scrollTo({
             top: 2
           })
@@ -1190,8 +1193,10 @@ export default {
     skipReplyData (item) {
       let flag = true
       const talkItems = document.getElementsByClassName('talk-item')
+      this.clearActiveMessageClass()
       for (let i = 0; i < talkItems.length; i++) {
         if (+item.replyData.id == +talkItems[i].dataset.id) {
+          this.addActiveMessageClass(talkItems[i])
           this.$refs.talkContent.scrollTo({
             top: talkItems[i].offsetTop - 2,
             behavior: 'smooth'
@@ -1213,6 +1218,7 @@ export default {
             chatDataHandler(recordList)
             this.recordList = time(recordList)
             this.getReadMessage()
+            this.addActiveMessageClass(document.getElementsByClassName('talk-item')[0])
             this.$nextTick(() => {
               this.$refs.talkContent.scrollTo({
                 top: 2
@@ -1302,6 +1308,16 @@ export default {
           }
         }
       })
+    },
+    // 给目标消息添加激活样式
+    addActiveMessageClass (targetDom) {
+      targetDom.classList.add('message-selected-active')
+    },
+    clearActiveMessageClass () {
+      const talkItems = document.getElementsByClassName('talk-item')
+      for (let i = 0; i < talkItems.length; i++) {
+        talkItems[i].classList.remove('message-selected-active')
+      }
     }
   }
 }
@@ -1797,6 +1813,22 @@ nav {
 audio {
   width: 250px;
   height: 48px;
+}
+
+.talk-item.message-selected-active {
+  .word-message {
+    background-color: rgb(254, 213, 177) !important;
+  }
+
+  .message {
+    border: 2px solid rgba(254, 213, 177) !important;
+    background-color: rgba(254, 213, 177, 0.5) !important;
+  }
+
+  .file-message{
+    border: 2px solid rgba(254, 213, 177) !important;
+    background-color: rgba(254, 213, 177, 0.5) !important;
+  }
 }
 
 </style>
