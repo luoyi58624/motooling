@@ -889,6 +889,7 @@ export default {
             let _recordList = time(recordList)
             this.recordList = _recordList.concat(this.recordList)
             this.getReadMessage()
+            this.clearActiveMessageClass()
             this.$nextTick(() => {
               this.loadedScrollTop = this.$refs.talkContent.scrollHeight
               this.$refs.talkContent.scrollTop =
