@@ -112,7 +112,7 @@
                 </div>
                 <!--消息内容-->
                 <div class="message-content">
-                  <div class="message" v-if="item.contentType == 1">
+                  <div class="message" v-if="item.contentType == 1" @contextmenu="openContextMenu($event,item)">
                     <div v-if="item.replyData" class="reply-message" @click="skipReplyData(item)">
                       <blockquote>
                         <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
@@ -135,11 +135,9 @@
                           </div>
                         </div>
                       </blockquote>
-                      <span class="word-message" @contextmenu="openContextMenu($event,item)"
-                            v-html="item.content"></span>
+                      <span class="word-message" v-html="item.content"></span>
                     </div>
-                    <span v-else class="word-message" @contextmenu="openContextMenu($event,item)"
-                          v-html="item.content"></span>
+                    <span v-else class="word-message" v-html="item.content"></span>
                   </div>
                   <div class="message" v-else-if="item.contentType == 2 || item.contentType == 6">
                     <el-image style="width: 160px; height: 90px;"
@@ -254,6 +252,7 @@
         {{previewText}}
       </textarea>
     </el-dialog>
+    <transpond-msg @sendMsg="sendTranspondMsg"/>
   </div>
 </template>
 
@@ -293,6 +292,7 @@ import { cloneDeep } from 'lodash'
 import TinyEditor from '@/views/synergy/chat/TinyEditor'
 import { fileUpload, imgUpload } from '@/api/upload/upload'
 import axios from 'axios'
+import TranspondMsg from '@/views/synergy/chat/TranspondMsg'
 
 let debounceLoadMoreMessage
 let clearReaderMessage
@@ -300,6 +300,7 @@ let clearReaderMessage
 export default {
   directives: { clickoutside },
   components: {
+    TranspondMsg,
     TinyEditor,
     ChatHistory,
     ContextMenu
@@ -707,60 +708,69 @@ export default {
       })
     },
     // 发送文字消息
-    sendWordMessage ({ text, userIds, replyData }) {
+    sendWordMessage ({ text, userIds, replyData, groupId }) {
       const msgUUID = uuid()
       const currentTime = new Date()
       const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
-      let _message = {
-        contentType: 1,
-        content: text,
-        senderId: this.uid,
-        sendTime,
-        username: this.senderName,
-        readMessageUsers: [],
-        loading: true,
-        msgUUID,
-        replyData
+      // 如果传了分组id，则不会直接发送消息
+      if (groupId == null) {
+        let _message = {
+          contentType: 1,
+          content: text,
+          senderId: this.uid,
+          sendTime,
+          username: this.senderName,
+          readMessageUsers: [],
+          loading: true,
+          msgUUID,
+          replyData
+        }
+        this.recordList.push(_message)
+        this.scrolltoButtom()
       }
-      this.recordList.push(_message)
-      this.scrolltoButtom()
       let replyId = null
       if (replyData) replyId = replyData.id
-      sendMessage({
-        groupId: this.groupId,
-        senderId: this.uid,
-        contentType: 1,
-        content: text,
-        smallImg: userIds || undefined,
-        replyId: replyId || undefined,
-        deviceType: 'h5'
-      }).then((res) => {
-        this.recordList.forEach(item => {
-          if (item.msgUUID == msgUUID) {
-            delete res.data.sendTime
-            Object.keys(res.data).forEach(key => {
-              item[key] = res.data[key]
-              item.loading = false
+      return new Promise((resolve, reject) => {
+        sendMessage({
+          groupId: groupId || this.groupId,
+          senderId: this.uid,
+          contentType: 1,
+          content: text,
+          smallImg: userIds || undefined,
+          replyId: replyId || undefined,
+          deviceType: 'h5'
+        }).then((res) => {
+          if (groupId == null) {
+            this.recordList.forEach(item => {
+              if (item.msgUUID == msgUUID) {
+                delete res.data.sendTime
+                Object.keys(res.data).forEach(key => {
+                  item[key] = res.data[key]
+                  item.loading = false
+                })
+              }
             })
           }
-        })
-        this.$store.state.hasNewMessage = true
-        this.handleDebounce(function () {
-          getNewsList().then((res) => {
-            this.$store.dispatch('newsList', res.newsList)
+          this.$store.state.hasNewMessage = true
+          this.handleDebounce(function () {
+            getNewsList().then((res) => {
+              this.$store.dispatch('newsList', res.newsList)
+            })
+          }, 1000)
+          at({ groupId: this.groupId, imUrl: this.imurl, uList: this.uList }).then(() => {
+            this.uList = []
+          }).catch(() => {
+            this.uList = []
           })
-        }, 1000)
-        at({ groupId: this.groupId, imUrl: this.imurl, uList: this.uList }).then(() => {
-          this.uList = []
-        }).catch(() => {
-          this.uList = []
+          resolve(res)
+        }).catch((err) => {
+          this.$createToast({
+            time: 2000,
+            txt: err.msg || '发送失败，请检查网络',
+            type: 'error'
+          }).show()
+          reject(err)
         })
-      }).catch((err) => {
-        this.$createToast({
-          time: 2000,
-          txt: err.msg || '发送失败，请检查网络',
-          type: 'error'
-        }).show()
       })
     },
     /**
@@ -791,22 +801,63 @@ export default {
       delete message.readMessageUsers
       if (/image/.test(file.type)) {
         imgUpload(file).then((res) => {
-          this.handleMessage({ msgUUID, contentType: 2, smallImg: res.imgUrl, content: res.rawUrl })
+          this.handleMessage({ msgUUID, contentType, smallImg: res.imgUrl, content: res.rawUrl })
         })
       } else if (/audio/.test(file.type)) {
         fileUpload(file).then((res) => {
-          this.handleMessage({ msgUUID, contentType: 3, smallImg: '', content: res.url })
+          this.handleMessage({ msgUUID, contentType, smallImg: '', content: res.url })
         })
       } else if (/video/.test(file.type)) {
         fileUpload(file).then((res) => {
-          this.handleMessage({ msgUUID, contentType: 4, smallImg: '', content: res.url })
+          this.handleMessage({ msgUUID, contentType, smallImg: '', content: res.url })
         })
       } else {
         fileUpload(file).then((res) => {
           delete res.url
-          this.handleMessage({ msgUUID, contentType: 9, smallImg: '', content: res })
+          this.handleMessage({ msgUUID, contentType, smallImg: '', content: res })
         })
       }
+    },
+    handleMessage ({ msgUUID, contentType, smallImg, content, groupId } = {}) {
+      return new Promise((resolve, reject) => {
+        if (contentType === 9) content = JSON.stringify(content)
+        sendMessage({
+          groupId: groupId || this.groupId,
+          senderId: this.uid,
+          contentType,
+          content,
+          smallImg,
+          deviceType: 'h5'
+        }).then((res) => {
+          if (groupId == null) {
+            this.recordList.forEach(item => {
+              if (item.msgUUID == msgUUID) {
+                delete res.data.sendTime
+                if (res.data.contentType === 7 || res.data.contentType === 9) {
+                  res.data.content = JSON.parse(res.data.content)
+                }
+                Object.keys(res.data).forEach(key => {
+                  item[key] = res.data[key]
+                  item.loading = false
+                  item.isTemp = false
+                })
+              }
+            })
+          }
+          this.$store.state.hasNewMessage = true
+          getNewsList().then((res) => {
+            this.$store.dispatch('newsList', res.newsList)
+          })
+          resolve(res)
+        }).catch((err) => {
+          this.$createToast({
+            time: 2000,
+            txt: err.message || '发送失败，请重试',
+            type: 'warn'
+          }).show()
+          reject(err)
+        })
+      })
     },
     // 防抖
     handleDebounce (func, wait) {
@@ -901,41 +952,6 @@ export default {
           }).show()
         })
       this.selectedGroupUser = {}
-    },
-    handleMessage ({ msgUUID, contentType, smallImg, content } = {}) {
-      if (contentType === 9) content = JSON.stringify(content)
-      sendMessage({
-        groupId: this.groupId,
-        senderId: this.uid,
-        contentType,
-        content,
-        smallImg,
-        deviceType: 'h5'
-      }).then((res) => {
-        this.recordList.forEach(item => {
-          if (item.msgUUID == msgUUID) {
-            delete res.data.sendTime
-            if (res.data.contentType === 7 || res.data.contentType === 9) {
-              res.data.content = JSON.parse(res.data.content)
-            }
-            Object.keys(res.data).forEach(key => {
-              item[key] = res.data[key]
-              item.loading = false
-              item.isTemp = false
-            })
-          }
-        })
-        this.$store.state.hasNewMessage = true
-        getNewsList().then((res) => {
-          this.$store.dispatch('newsList', res.newsList)
-        })
-      }).catch((err) => {
-        this.$createToast({
-          time: 2000,
-          txt: err.message || '发送失败，请重试',
-          type: 'warn'
-        }).show()
-      })
     },
     beat (data) {
       const senderName = this.senderName
@@ -1203,6 +1219,87 @@ export default {
           }
         })
       }
+    },
+    // 发送转发消息
+    sendTranspondMsg (groupList, msg, leaveWord) {
+      groupList.forEach(item => {
+        if (item.groupId == this.groupId) {
+          // 转发文字消息
+          if (msg.contentType == 1) {
+            this.sendWordMessage({
+              text: msg.content
+            }).then(() => {
+              if (leaveWord && leaveWord.trim() != '') {
+                this.sendWordMessage({
+                  text: leaveWord
+                })
+              }
+            })
+          } else {
+            // 转发文件消息
+            const currentTime = new Date()
+            const sendTime = currentTime.getHours() + ':' + currentTime.getMinutes()
+            const msgUUID = uuid()
+            let message = [
+              {
+                contentType: msg.contentType,
+                content: msg.content,
+                sendTime,
+                username: this.senderName,
+                senderId: this.uid,
+                readMessageUsers: [],
+                loading: true,
+                isTemp: true,
+                msgUUID
+              }
+            ]
+            this.recordList = this.recordList.concat(message)
+            this.scrolltoButtom()
+            this.handleMessage({
+              msgUUID,
+              contentType: msg.contentType,
+              smallImg: msg.smallImg,
+              content: msg.content
+            }).then(() => {
+              if (leaveWord && leaveWord.trim() != '') {
+                this.sendWordMessage({
+                  text: leaveWord
+                })
+              }
+            })
+          }
+        } else {
+          // 转发到其他群
+          if (msg.contentType == 1) {
+            this.sendWordMessage({
+              text: msg.content,
+              groupId: item.groupId
+            }).then(() => {
+              if (leaveWord && leaveWord.trim() != '') {
+                this.sendWordMessage({
+                  text: leaveWord,
+                  groupId: item.groupId
+                })
+              }
+            })
+          } else {
+            this.handleMessage({
+              msgUUID: uuid(),
+              contentType: msg.contentType,
+              smallImg: msg.smallImg,
+              content: msg.content,
+              groupId: item.groupId
+            }).then(() => {
+              if (leaveWord && leaveWord.trim() != '') {
+                this.sendWordMessage({
+                  text: leaveWord,
+                  groupId: item.groupId
+                })
+              }
+            })
+          }
+        }
+      })
     }
   }
 }

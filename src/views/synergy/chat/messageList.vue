@@ -74,6 +74,8 @@ import { formatDate } from '@/utils/time'
 import { htmlToText } from '@/utils/utils'
 import { cloneDeep } from 'lodash'
 
+let interval
+
 export default {
   directives: { clickoutside },
   data () {
@@ -85,7 +87,6 @@ export default {
       group_id: null,
       interval: null,
       timeout: null,
-      isClose: false,
       signOut: '',
       contacts: [],
       newList: [],
@@ -107,21 +108,28 @@ export default {
         this.newList = res.newList
         this.$store.dispatch('newsList', res.newsList)
       })
+    interval =setInterval(()=>{
+      getNewsList()
+        .then((res) => {
+          this.newList = res.newList
+          this.$store.dispatch('newsList', res.newsList)
+        })
+    },3000)
     getUserInfo().then((res) => {
       this.$store.commit('USER_INFO', res)
       localStorage.setItem('fileServerUrl', res.fileServerUrl)
-      this.im()
+      // this.im()
     })
   },
-  destroyed () {
-    this.isClose = true
-    if (this.socket) this.socket.close()
+  beforeDestroy () {
+    clearInterval(interval)
+    // if (this.socket) this.socket.close()
   },
   methods: {
     im () {
       console.log('创建im')
       let prefix = location.protocol === 'https:' ? 'wss://' : 'ws://'
-      if (this.isClose === false || (this.socket && this.socket.readyState === 3)) {
+      if ((this.socket && this.socket.readyState === 3)) {
         this.socket = new WebSocket(
           `${prefix}${this.imurl}/MtMsgWebSocket/${this.companyId}/H5/${this.uid}`
         )
@@ -139,12 +147,11 @@ export default {
             }
           }, 10000)
         }
+        this.socket.onerror = ()=>{
+          console.log('连接失败')
+        }
         this.socket.onclose = () => {
-          if (this.isClose === false) {
-            this.im()
-          } else {
-            clearInterval(this.interval)
-          }
+          clearInterval(this.interval)
         }
         this.socket.onmessage = async (msg) => {
           console.log('收到消息：消息列表socket')

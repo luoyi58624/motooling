@@ -40,7 +40,9 @@ export default new Vuex.Store({
     imageFiles: {}, // 聊天编辑器-存放图片文件
     audioFiles: {}, // 聊天编辑器-存放音频文件
     videoFiles: {}, // 聊天编辑器-存放视频文件
-    otherFiles: {} // 聊天编辑器-存放其他类型文件
+    otherFiles: {}, // 聊天编辑器-存放其他类型文件
+    showTranspondMsgPanel: false, // 是否显示转发消息弹窗
+    transpondMsg: null // 转发的消息对象
   },
   getters: {
     getWechatSignUrl: state => state.wxSignUrl,

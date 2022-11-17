@@ -12,9 +12,12 @@ import {
   Pagination,
   Popover,
   Tabs,
-  TabPane
+  TabPane,
+  CheckboxGroup,
+  Checkbox
 } from 'element-ui'
 
+// 重写element-ui源码，el-image预览禁止无限循环
 import { Image } from 'luoyi-element-ui'
 
 const element = {
@@ -34,6 +37,8 @@ const element = {
     Vue.use(Popover)
     Vue.use(Tabs)
     Vue.use(TabPane)
+    Vue.use(CheckboxGroup)
+    Vue.use(Checkbox)
   }
 }
 

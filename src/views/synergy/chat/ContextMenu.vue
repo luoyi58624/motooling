@@ -1,25 +1,25 @@
 <template>
   <Teleport to="body">
     <ul class="chat-message-context-menu" v-show="showMenu" :style="{left: left+'px',top: top+'px'}">
-<!--      <li class="chat-message-context-menu-copy"-->
-<!--          data-clipboard-action="copy" :data-clipboard-text="messageItem.content">-->
-<!--        <img :src="require('@/assets/svg/copy.svg')" alt=""/>-->
-<!--        <span>复制</span>-->
-<!--      </li>-->
-<!--      <li class="chat-message-context-menu-copy" @click="copyMsg">-->
-<!--        <img :src="require('@/assets/svg/copy.svg')" alt=""/>-->
-<!--        <span>复制</span>-->
-<!--      </li>-->
-      <li @click="sendMsg">
+      <!--      <li class="chat-message-context-menu-copy"-->
+      <!--          data-clipboard-action="copy" :data-clipboard-text="selectedMessage.content">-->
+      <!--        <img :src="require('@/assets/svg/copy.svg')" alt=""/>-->
+      <!--        <span>复制</span>-->
+      <!--      </li>-->
+      <!--      <li class="chat-message-context-menu-copy" @click="copyMsg">-->
+      <!--        <img :src="require('@/assets/svg/copy.svg')" alt=""/>-->
+      <!--        <span>复制</span>-->
+      <!--      </li>-->
+      <li @click="transpondMsg">
         <img :src="require('@/assets/svg/send.svg')" alt=""/>
         <span>转发</span>
       </li>
-      <li v-if="messageItem.senderId!==$store.state.userInfo.uid" @click="replyMsg">
+      <li v-if="selectedMessage.senderId!==$store.state.userInfo.uid" @click="replyMsg">
         <img :src="require('@/assets/svg/reply.svg')" alt=""/>
         <span>回复</span>
       </li>
-      <li @click="revocationMsg" :class="{disabled: messageItem.loading}"
-          v-if="messageItem.senderId===$store.state.userInfo.uid">
+      <li @click="revocationMsg" :class="{disabled: selectedMessage.loading}"
+          v-if="selectedMessage.senderId===$store.state.userInfo.uid">
         <!--        <img :src="require('@/assets/svg/return.svg')" alt=""/>-->
         <svg t="1666174869020" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
              p-id="4356" width="16" height="16">
@@ -55,7 +55,7 @@ export default {
       showMenu: false,
       left: 0,
       top: 0,
-      messageItem: {},
+      selectedMessage: {},
       event: null
     }
   },
@@ -71,36 +71,37 @@ export default {
     }
   },
   methods: {
-    openContextMenu (event, messageItem) {
+    openContextMenu (event, selectedMessage) {
       this.event = event
       event.preventDefault()
       this.showMenu = true
       this.left = event.clientX + 192 > window.innerWidth ? event.clientX - 192 : event.clientX
       this.top = event.clientY + 112 > window.innerWidth ? event.clientY - 112 : event.clientY
-      this.messageItem = messageItem
+      this.selectedMessage = selectedMessage
     },
     closeContextMenu () {
       this.showMenu = false
       document.removeEventListener('click', this.closeContextMenu)
     },
-    copyMsg(e){
-      // navigator.clipboard.writeText(this.messageItem.content.replace(//))
+    copyMsg (e) {
+      // navigator.clipboard.writeText(this.selectedMessage.content.replace(//))
     },
-    sendMsg () {
-      Toast('暂未实现此功能')
+    transpondMsg () {
+      this.$store.state.showTranspondMsgPanel = true
+      this.$store.state.transpondMsg = this.selectedMessage
     },
     replyMsg () {
-      this.$emit('replyMsg', this.messageItem)
+      this.$emit('replyMsg', this.selectedMessage)
     },
     // 撤回消息
     revocationMsg () {
-      if (!this.messageItem.loading) {
+      if (!this.selectedMessage.loading) {
         sendMessage({
           groupId: this.$store.state.groupId,
           senderId: this.$store.state.userInfo.uid,
           contentType: 8,
           content: '',
-          id: this.messageItem.id
+          id: this.selectedMessage.id
         }).then((res) => {
           this.$emit('revocationMsg', res)
         })

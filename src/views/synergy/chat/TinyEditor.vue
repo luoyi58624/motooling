@@ -16,6 +16,7 @@ import tinymce from 'tinymce'
 import 'tinymce/themes/silver/theme' // 主题文件
 import 'tinymce/icons/default'
 import 'tinymce/models/dom'
+import 'tinymce/plugins/code'
 import 'tinymce/plugins/fullscreen'
 
 import eventBus from '@/utils/mitt'
@@ -323,8 +324,8 @@ export default {
       contextmenu: false,
       object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
-      plugins: 'fullscreen',
-      toolbar: 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage',
+      plugins: 'code fullscreen',
+      toolbar: 'myImage myVideo myFile myEmoticons myHistory code fullscreen mySendMessage',
       paste_preprocess: (editor, args) => {
         args.content = args.content
           .replace(/<div>/g, '<p>')
