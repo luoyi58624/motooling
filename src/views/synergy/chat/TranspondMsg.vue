@@ -1,5 +1,6 @@
 <template>
-  <el-dialog title='选择需要转发的群聊' :visible.sync="$store.state.showTranspondMsgPanel" width="60%"
+  <el-dialog title='选择需要转发的群聊' :visible.sync="$store.state.showTranspondMsgPanel"
+             width="60%" top="3vh"
              @open="openHandler" @close="colseHandler">
     <div class="container">
       <div class="user-group-container">
@@ -20,7 +21,7 @@
         <div class="title">
           分别转发给 * 已选择 {{ checkList.length }} 个聊天
         </div>
-        <ul :style="{height: (310-messageContentHeight)+'px'}">
+        <ul :style="{height: (220-messageContentHeight)+'px'}">
           <li v-for="item in checkList" :key="item.groupId">
             <img v-if="item.relationType === 66" :src="item.avatar"/>
             <img v-else :src="require('@/assets/group.png')"/>
@@ -138,7 +139,7 @@ export default {
 
 <style scoped lang="less">
 .container {
-  height: 400px;
+  height: 310px;
   display: flex;
 
   .user-group-container {
