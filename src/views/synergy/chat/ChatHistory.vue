@@ -421,6 +421,7 @@ export default {
   --hover-bg: #faf9f9;
   width: 320px;
   height: 100%;
+  border-left: 1px solid #dadcdf;
 }
 
 .title {
