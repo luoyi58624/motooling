@@ -345,8 +345,6 @@ export default {
       noReadyCount: 0,
       loadedScrollTop: 0,
       beforeLoadedScrollTop: 0,
-      noMorePullUpRecords: false, // 聊天数据是否已到顶
-      noMorePullDownRecords: false, // 聊天数据是否已到底
       uList: [],
       recordPanel: false, // 是否显示聊天历史记录面板，如果为true -> 隐藏群成员，显示聊天历史
       showContextMenu: false,
@@ -1198,7 +1196,7 @@ export default {
         if (+item.replyData.id == +talkItems[i].dataset.id) {
           this.addActiveMessageClass(talkItems[i])
           this.$refs.talkContent.scrollTo({
-            top: talkItems[i].offsetTop - 2,
+            top: talkItems[i].offsetTop + 2,
             behavior: 'smooth'
           })
           flag = false
@@ -1461,7 +1459,7 @@ nav {
           color: #57606f;
           cursor: pointer;
 
-          &:hover{
+          &:hover {
             color: #0078d4;
           }
 
@@ -1819,23 +1817,32 @@ audio {
     background-color: rgb(254, 213, 177) !important;
   }
 
+  .reply-message {
+    outline: 2px solid rgba(254, 213, 177);
+    background-color: rgba(254, 213, 177, 0.5) !important;
+
+    .word-message{
+      background-color: transparent !important;
+    }
+  }
+
   .image-message.message {
-    border: 2px solid rgba(254, 213, 177) !important;
+    outline: 2px solid rgba(254, 213, 177);
     background-color: rgba(254, 213, 177, 0.5) !important;
   }
 
   .video-message.message {
-    border: 2px solid rgba(254, 213, 177) !important;
+    outline: 2px solid rgba(254, 213, 177);
     background-color: rgba(254, 213, 177, 0.5) !important;
   }
 
   .audio-message.message {
-    border: 2px solid rgba(254, 213, 177) !important;
+    outline: 2px solid rgba(254, 213, 177);
     background-color: rgba(254, 213, 177, 0.5) !important;
   }
 
   .file-message {
-    border: 2px solid rgba(254, 213, 177) !important;
+    outline: 2px solid rgba(254, 213, 177);
     background-color: rgba(254, 213, 177, 0.5) !important;
   }
 }
