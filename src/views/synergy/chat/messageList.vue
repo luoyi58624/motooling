@@ -71,8 +71,6 @@ import {
 } from '@/api/synergy/synergy.js'
 import clickoutside from '@/utils/clickoutside'
 import { formatDate } from '@/utils/time'
-import { htmlToText } from '@/utils/utils'
-import { cloneDeep } from 'lodash'
 
 let interval
 

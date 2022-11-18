@@ -71,14 +71,10 @@ export function urlToPath (url) {
   }
 }
 
-// 过滤所有html标签以及空格符&nbsp;
-export function htmlToText (html) {
-  return html.replace(/<.*?>/g, '').replace(/&nbsp;/g, '').trim()
-}
-
+// 过滤所有html标签
 export function filterHtmlTag (html, options = {
-  clearBlank: false, // 是否清除空格
-  excludeImg: false  // 是否排除图片
+  clearBlank: true, // 是否清除空格
+  excludeImg: false  // 是否排除过滤图片
 }) {
   let content
   if (options.excludeImg) {

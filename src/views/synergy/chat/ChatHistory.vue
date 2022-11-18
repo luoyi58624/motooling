@@ -147,19 +147,19 @@
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
         </div>
-        <ul class="file-container">
+        <div class="file-container">
           <div v-if="allFiles.length===0">没有文件</div>
-          <li v-for="item in allFiles" :key="item.id"
-              @dblclick="downloadFile(fileAddressFormatFunc(item),item.content.fileName)">
+          <div v-for="item in showFiles" :key="item.id" class="file-item"
+               @dblclick="downloadFile(fileAddressFormatFunc(item),item.content.fileName)">
             <div>
               <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
             </div>
             <div style="width:100%; display: flex;justify-content: space-between;padding-left:8px;font-size: 12px;">
               <div style="display: flex;flex-direction: column">
-                <div class="file-name">{{ item.content.fileName }}</div>
+                <div class="file-name" v-html="item.content.fileName"></div>
                 <div style="display: flex;color: #7f8c8d">
                   <div>{{ item.content.fileSize }}</div>
-                  <div style="margin-left: 4px">{{ item.username }}</div>
+                  <div style="margin-left: 4px" v-html="item.username"></div>
                 </div>
               </div>
               <div style="width: 60px;display: flex;flex-direction: column;justify-content: space-between">
@@ -167,8 +167,8 @@
                 <div class="show-source-message" @click.self.stop="emitSkipEvent(item)">查看原消息</div>
               </div>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
       </van-tab>
     </van-tabs>
     <audio :src="currentAudio" ref="audio"></audio>
@@ -181,13 +181,11 @@ import { synergyRecordPage } from '@/api/synergy/synergy'
 import { Dialog } from 'vant'
 import {
   chatDataHandler,
-  fileAddressFormat,
   fileAddressFormatUtil, filterHtmlTag,
   heightLight,
-  htmlToText,
   loadFileIcon
 } from '@/utils/utils'
-import { formatDate, time, timeToFullTime } from '@/utils/time'
+import { formatDate, timeToFullTime } from '@/utils/time'
 import { saveAs } from 'file-saver'
 import { cloneDeep } from 'lodash'
 
@@ -203,10 +201,11 @@ export default {
     return {
       currentGroupId: '',
       active: 0,
-      searchValue: '',     // 搜索聊天记录关键字
-      searchFileValue: '', // 搜索文件名
-      allMessage: [], // 所有的聊天记录
-      showMessage: [], // 需要展示的聊天记录
+      searchValue: '',        // 搜索聊天记录关键字
+      searchFileValue: '',    // 搜索文件名
+      allMessage: [],         // 所有的聊天记录
+      showMessage: [],        // 过滤后显示的聊天记录
+      showFiles: [],          // 过滤后显示的文件
       currentAudio: ''
     }
   },
@@ -227,7 +226,7 @@ export default {
       return this.mediaDataHandler(this.allMessage.filter(item => item.contentType === 3))
     },
     allFiles () {
-      return cloneDeep(this.allMessage)
+      const data = cloneDeep(this.allMessage)
         .filter(item => item.contentType === 9)
         .map(item => {
           if (item.sendTime && item.sendTime.length > 5) {
@@ -239,6 +238,8 @@ export default {
           }
           return item
         }).reverse()
+      this.showFiles = data
+      return data
     },
     imagePreviews () {
       return this.allMessage
@@ -254,26 +255,39 @@ export default {
         // 过滤出搜索关键字内容，同时对关键字进行高亮处理
         this.showMessage = cloneDeep(this.allMessage)
           .filter(item =>
-            (item.contentType === 1 && htmlToText(item.content).indexOf(newValue) !== -1) ||
+            (item.contentType === 1 && filterHtmlTag(item.content).indexOf(newValue) !== -1) ||
             (item.username && item.username.indexOf(newValue) !== -1)
           )
           .map(item => {
             if (item.contentType === 1) {
               item.content = heightLight(filterHtmlTag(item.content, {
-                clearBlank: true,
                 excludeImg: true
               }), newValue)
             }
             if (item.username) item.username = heightLight(item.username, newValue)
             return item
           })
-        this.$nextTick(() => {
-          this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
-        })
       }
       this.$nextTick(() => {
         this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
       })
+    },
+    searchFileValue (newValue) {
+      if (newValue === '') {
+        this.showFiles = this.allFiles
+      } else {
+        // 过滤出搜索关键字内容，同时对关键字进行高亮处理
+        this.showFiles = cloneDeep(this.allFiles)
+          .filter(item =>
+            item.content.fileName.indexOf(newValue) !== -1 ||
+            (item.username && item.username.indexOf(newValue) !== -1)
+          )
+          .map(item => {
+            item.content.fileName = heightLight(item.content.fileName, newValue)
+            if (item.username) item.username = heightLight(item.username, newValue)
+            return item
+          })
+      }
     }
   },
   methods: {
@@ -468,51 +482,12 @@ export default {
   }
 }
 
-.file-container {
-  height: calc(100vh - 150px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-top: 10px;
-  padding: 8px;
-
-  & > li {
-    min-height: 50px;
-    display: flex;
-    align-items: center;
-    padding: 8px;
-
-    .file-name {
-      width: 140px;
-      margin-bottom: 4px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    .show-source-message {
-      color: #3498db;
-      opacity: 0;
-      cursor: pointer;
-      transition: opacity 0.28s;
-      white-space: nowrap;
-    }
-
-    &:hover {
-      background-color: var(--hover-bg);
-
-      .show-source-message {
-        opacity: 1;
-      }
-    }
-  }
-}
-
 .image-container {
   height: calc(100vh - 150px);
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 10px;
-  padding: 8px;
+  padding: 8px 16px;
 
   .images-array {
     display: flex;
@@ -555,7 +530,7 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 10px;
-  padding: 8px;
+  padding: 8px 16px;
 
   ul {
     font-size: 12px;
@@ -569,6 +544,44 @@ export default {
 
       &:hover {
         background-color: var(--hover-bg);
+      }
+    }
+  }
+}
+
+.file-container {
+  height: calc(100vh - 185px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 10px 8px 16px;
+
+  & > .file-item {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+
+    .file-name {
+      width: 160px;
+      margin-bottom: 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .show-source-message {
+      color: #3498db;
+      opacity: 0;
+      cursor: pointer;
+      transition: opacity 0.28s;
+      white-space: nowrap;
+    }
+
+    &:hover {
+      background-color: var(--hover-bg);
+
+      .show-source-message {
+        opacity: 1;
       }
     }
   }
