@@ -311,6 +311,15 @@ export default {
     }
   },
   mounted () {
+    let plugins
+    let toolbar
+    if (process.env.NODE_ENV === 'development') {
+      plugins = 'code fullscreen'
+      toolbar = 'myImage myVideo myFile myEmoticons myHistory code fullscreen mySendMessage'
+    } else {
+      plugins = 'fullscreen'
+      toolbar = 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage'
+    }
     tinymce.init({
       selector: '.tinymce-editor',
       base_url: '/mthtml/tinymce',
@@ -324,8 +333,8 @@ export default {
       contextmenu: false,
       object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
-      plugins: 'code fullscreen',
-      toolbar: 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage',
+      plugins,
+      toolbar,
       paste_preprocess: (editor, args) => {
         args.content = args.content
           .replace(/<div>/g, '<p>')
