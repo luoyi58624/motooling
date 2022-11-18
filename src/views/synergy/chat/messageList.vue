@@ -432,6 +432,7 @@ export default {
 
     & > .group-name {
       width: 160px;
+      height: 20px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
