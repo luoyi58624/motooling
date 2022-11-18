@@ -236,9 +236,8 @@
           </div>
         </div>
       </div>
-      <div class="chat-history" v-show="recordPanel">
-        <chat-history ref="ChatHistory" :init-date="recordList" @skip-target-message="skipTargetMessage"/>
-      </div>
+      <chat-history v-show="recordPanel" ref="ChatHistory" :init-date="recordList"
+                    @skip-target-message="skipTargetMessage"/>
     </div>
     <audio :src="currentAudio" ref="audio"></audio>
     <context-menu ref="ContextMenu" @revocationMsg="revocationMsg" @replyMsg="insertReplyMsg"/>
@@ -397,7 +396,7 @@ export default {
       return this.$route.query.relationId * 1
     },
     chatContainerWidth () {
-      return this.recordPanel ? { width: `calc(100% - 250px)` } : { width: `calc(100% - ${this.groupMembersWidth}px)` }
+      return this.recordPanel ? { width: `calc(100% - 320px)` } : { width: `calc(100% - ${this.groupMembersWidth}px)` }
     },
     allImages () {
       return this.recordList
@@ -1641,11 +1640,6 @@ nav {
       }
     }
   }
-
-  .chat-history {
-    width: 300px;
-    height: 100%;
-  }
 }
 
 .file-message {
@@ -1836,7 +1830,7 @@ audio {
     background-color: rgba(254, 213, 177, 0.5) !important;
   }
 
-  .file-message{
+  .file-message {
     border: 2px solid rgba(254, 213, 177) !important;
     background-color: rgba(254, 213, 177, 0.5) !important;
   }

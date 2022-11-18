@@ -71,8 +71,26 @@ export function urlToPath (url) {
   }
 }
 
+// 过滤所有html标签以及空格符&nbsp;
 export function htmlToText (html) {
   return html.replace(/<.*?>/g, '').replace(/&nbsp;/g, '').trim()
+}
+
+export function filterHtmlTag (html, options = {
+  clearBlank: false, // 是否清除空格
+  excludeImg: false  // 是否排除图片
+}) {
+  let content
+  if (options.excludeImg) {
+    content = html.replace(/<(?!img).*?>/g, '')
+  } else {
+    content = html.replace(/<.*?>/g, '')
+  }
+
+  if (options.clearBlank) {
+    content = content.replace(/&nbsp;/g, '').trim()
+  }
+  return content
 }
 
 // 聊天界面消息发送的时间处理

@@ -4,7 +4,11 @@
     <h2 class="title">历史记录</h2>
     <van-tabs v-model="active" type="card" color="#3498db">
       <van-tab title="全部">
-        <van-search v-model="searchValue" placeholder="搜索聊天记录"/>
+        <div class="search-wrapper">
+          <el-input v-model="searchValue" size="mini" placeholder="搜索聊天记录" clearable>
+            <i slot="prefix" class="el-input__icon el-icon-search"></i>
+          </el-input>
+        </div>
         <div ref="talkContent" class="talk-content">
           <ul>
             <li v-for="(item, index) in showMessage" :key="index" @click="emitSkipEvent(item)">
@@ -138,6 +142,11 @@
         </div>
       </van-tab>
       <van-tab title="文件">
+        <div class="search-wrapper">
+          <el-input v-model="searchFileValue" size="mini" placeholder="搜索文件" clearable>
+            <i slot="prefix" class="el-input__icon el-icon-search"></i>
+          </el-input>
+        </div>
         <ul class="file-container">
           <div v-if="allFiles.length===0">没有文件</div>
           <li v-for="item in allFiles" :key="item.id"
@@ -173,7 +182,7 @@ import { Dialog } from 'vant'
 import {
   chatDataHandler,
   fileAddressFormat,
-  fileAddressFormatUtil,
+  fileAddressFormatUtil, filterHtmlTag,
   heightLight,
   htmlToText,
   loadFileIcon
@@ -194,7 +203,8 @@ export default {
     return {
       currentGroupId: '',
       active: 0,
-      searchValue: '',
+      searchValue: '',     // 搜索聊天记录关键字
+      searchFileValue: '', // 搜索文件名
       allMessage: [], // 所有的聊天记录
       showMessage: [], // 需要展示的聊天记录
       currentAudio: ''
@@ -248,7 +258,12 @@ export default {
             (item.username && item.username.indexOf(newValue) !== -1)
           )
           .map(item => {
-            if (item.contentType === 1) item.content = heightLight(htmlToText(item.content), newValue)
+            if (item.contentType === 1) {
+              item.content = heightLight(filterHtmlTag(item.content, {
+                clearBlank: true,
+                excludeImg: true
+              }), newValue)
+            }
             if (item.username) item.username = heightLight(item.username, newValue)
             return item
           })
@@ -256,6 +271,9 @@ export default {
           this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
         })
       }
+      this.$nextTick(() => {
+        this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
+      })
     }
   },
   methods: {
@@ -350,8 +368,8 @@ export default {
 
 .chat-history-container {
   --hover-bg: #faf9f9;
+  width: 320px;
   height: 100%;
-  width: 100%;
 }
 
 .title {
@@ -360,11 +378,15 @@ export default {
   font-weight: bold;
 }
 
+.search-wrapper {
+  padding: 8px 16px;
+}
+
 .talk-content {
   height: calc(100vh - 195px);
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 8px 4px 8px 8px;
+  padding: 8px 8px 8px 16px;
 
   & > ul > li {
     font-size: 12px;
@@ -414,6 +436,7 @@ export default {
         /deep/ .el-image {
           display: flex;
           justify-content: flex-start;
+
           img {
             width: 160px;
             height: 90px;
@@ -434,6 +457,7 @@ export default {
       user-select: text;
       word-break: break-all;
       white-space: pre-line;
+      line-height: 1.2;
 
       /deep/ img {
         width: 20px;
