@@ -8,6 +8,11 @@
           <el-input v-model="searchValue" size="mini" placeholder="搜索聊天记录" clearable>
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
+          <div class="control-item" @click="switchMessageTimeSort">
+            <span>时间</span>
+            <i v-if="messageTimeSort" class="el-icon-arrow-up"></i>
+            <i v-else class="el-icon-arrow-down"></i>
+          </div>
         </div>
         <div ref="talkContent" class="talk-content">
           <ul>
@@ -146,6 +151,11 @@
           <el-input v-model="searchFileValue" size="mini" placeholder="搜索文件" clearable>
             <i slot="prefix" class="el-input__icon el-icon-search"></i>
           </el-input>
+          <div class="control-item" @click="switchFileTimeSort">
+            <span>时间</span>
+            <i v-if="fileTimeSort" class="el-icon-arrow-up"></i>
+            <i v-else class="el-icon-arrow-down"></i>
+          </div>
         </div>
         <div class="file-container">
           <div v-if="allFiles.length===0">没有文件</div>
@@ -163,7 +173,7 @@
                 </div>
               </div>
               <div style="width: 60px;display: flex;flex-direction: column;justify-content: space-between">
-                <div style="margin-bottom: 4px;text-align: right">{{ item.sendTime }}</div>
+                <div style="margin-bottom: 4px;text-align: right">{{ item.showSendTime }}</div>
                 <div class="show-source-message" @click.self.stop="emitSkipEvent(item)">查看原消息</div>
               </div>
             </div>
@@ -171,7 +181,6 @@
         </div>
       </van-tab>
     </van-tabs>
-    <audio :src="currentAudio" ref="audio"></audio>
   </div>
 </template>
 
@@ -201,12 +210,14 @@ export default {
     return {
       currentGroupId: '',
       active: 0,
-      searchValue: '',        // 搜索聊天记录关键字
-      searchFileValue: '',    // 搜索文件名
       allMessage: [],         // 所有的聊天记录
+      allFiles: [],            // 所有的文件
       showMessage: [],        // 过滤后显示的聊天记录
       showFiles: [],          // 过滤后显示的文件
-      currentAudio: ''
+      searchValue: '',        // 搜索聊天记录关键字
+      searchFileValue: '',    // 搜索文件名
+      messageTimeSort: true,  // 聊天记录时间排序
+      fileTimeSort: true      // 文件时间排序
     }
   },
   computed: {
@@ -224,22 +235,6 @@ export default {
     },
     allAudio () {
       return this.mediaDataHandler(this.allMessage.filter(item => item.contentType === 3))
-    },
-    allFiles () {
-      const data = cloneDeep(this.allMessage)
-        .filter(item => item.contentType === 9)
-        .map(item => {
-          if (item.sendTime && item.sendTime.length > 5) {
-            if (new Date(item.sendTime).getFullYear() < new Date().getFullYear()) {
-              item.sendTime = formatDate(item.sendTime, 'YYYY/MM/DD')
-            } else {
-              item.sendTime = formatDate(item.sendTime, 'MM/DD')
-            }
-          }
-          return item
-        }).reverse()
-      this.showFiles = data
-      return data
     },
     imagePreviews () {
       return this.allMessage
@@ -269,15 +264,20 @@ export default {
           })
       }
       this.$nextTick(() => {
-        this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
+        if(this.messageTimeSort){
+          this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
+        }else{
+          this.$refs.talkContent.scrollTop = 0
+        }
       })
     },
     searchFileValue (newValue) {
+      let data
       if (newValue === '') {
-        this.showFiles = this.allFiles
+        data = this.allFiles
       } else {
         // 过滤出搜索关键字内容，同时对关键字进行高亮处理
-        this.showFiles = cloneDeep(this.allFiles)
+        data = cloneDeep(this.allFiles)
           .filter(item =>
             item.content.fileName.indexOf(newValue) !== -1 ||
             (item.username && item.username.indexOf(newValue) !== -1)
@@ -288,6 +288,12 @@ export default {
             return item
           })
       }
+      if (this.fileTimeSort) {
+        data.sort((a, b) => a.sendTime < b.sendTime ? 1 : -1)
+      } else {
+        data.sort((a, b) => a.sendTime < b.sendTime ? -1 : 1)
+      }
+      this.showFiles = data
     }
   },
   methods: {
@@ -309,13 +315,30 @@ export default {
           const lastData = cloneDeep(this.initDate[this.initDate.length - 1])
           lastData.sendTime = timeToFullTime(lastData.sendTime)
           data.push(lastData)
-          this.showMessage = data
-          this.allMessage = data
+          this.showMessage = cloneDeep(data)
+          this.allMessage = cloneDeep(data)
+          this.setAllFile()
           this.$nextTick(() => {
             this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
           })
         })
       }
+    },
+    setAllFile () {
+      const data = cloneDeep(this.allMessage)
+        .filter(item => item.contentType === 9)
+        .map(item => {
+          if (item.sendTime && item.sendTime.length > 5) {
+            if (new Date(item.sendTime).getFullYear() < new Date().getFullYear()) {
+              item.showSendTime = formatDate(item.sendTime, 'YYYY/MM/DD')
+            } else {
+              item.showSendTime = formatDate(item.sendTime, 'MM/DD')
+            }
+          }
+          return item
+        }).reverse()
+      this.showFiles = cloneDeep(data)
+      this.allFiles = cloneDeep(data)
     },
     // 媒体类型数据处理
     mediaDataHandler (datas) {
@@ -344,6 +367,20 @@ export default {
         item.datas.reverse()
       })
       return newDatas.reverse()
+    },
+    switchMessageTimeSort(){
+      this.messageTimeSort = !this.messageTimeSort
+      this.$nextTick(() => {
+        if(this.messageTimeSort){
+          this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
+        }else{
+          this.$refs.talkContent.scrollTop = 0
+        }
+      })
+    },
+    switchFileTimeSort () {
+      this.fileTimeSort = !this.fileTimeSort
+      this.showFiles.reverse()
     },
     closePanel () {
       this.searchValue = ''
@@ -394,6 +431,16 @@ export default {
 
 .search-wrapper {
   padding: 8px 16px;
+  display: flex;
+  align-items: center;
+
+  .control-item {
+    width: 54px;
+    font-size: 12px;
+    margin-left: 12px;
+    color: #0078d4;
+    cursor: pointer;
+  }
 }
 
 .talk-content {
