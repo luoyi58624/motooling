@@ -141,7 +141,7 @@
         <ul class="file-container">
           <div v-if="allFiles.length===0">没有文件</div>
           <li v-for="item in allFiles" :key="item.id"
-              @click="downloadFile(fileAddressFormatFunc(item),item.content.fileName)">
+              @dblclick="downloadFile(fileAddressFormatFunc(item),item.content.fileName)">
             <div>
               <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
             </div>
@@ -178,7 +178,7 @@ import {
   htmlToText,
   loadFileIcon
 } from '@/utils/utils'
-import { formatDate, timeToFullTime } from '@/utils/time'
+import { formatDate, time, timeToFullTime } from '@/utils/time'
 import { saveAs } from 'file-saver'
 import { cloneDeep } from 'lodash'
 

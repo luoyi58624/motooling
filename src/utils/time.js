@@ -35,21 +35,21 @@ export function time (record) {
         // 月相等
         if (sendTimeDay === currentDay) {
           // 日相等
-          item.data.sendTime = sendTime.slice(11, -3)
+          item.data.showSendTime = sendTime.slice(11, -3)
         } else {
           // 日不相等
           if (currentDay - sendTimeDay === 1) {
-            item.data.sendTime = '昨天' + sendTime.slice(11, -3)
+            item.data.showSendTime = '昨天' + sendTime.slice(11, -3)
           } else {
-            item.data.sendTime = sendTime.slice(5, -3)
+            item.data.showSendTime = sendTime.slice(5, -3)
           }
         }
       } else {
         // 月不相等
-        item.data.sendTime = sendTime.slice(5, -3)
+        item.data.showSendTime = sendTime.slice(5, -3)
       }
     } else {
-      item.data.sendTime = sendTime.slice(0, -3)
+      item.data.showSendTime = sendTime.slice(0, -3)
     }
     return item.data
   })

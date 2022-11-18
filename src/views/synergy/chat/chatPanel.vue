@@ -35,12 +35,12 @@
             <div :class="uid == item.senderId ? 'my-content' : 'others-content'"
                  v-if="item.contentType !== 5 && item.contentType!==7 && item.contentType!==8">
               <div class="time-name" v-if="uid == item.senderId">
-                <span class="time">{{ item.sendTime }}</span>
+                <span class="time">{{ item.showSendTime }}</span>
                 <span class="name">{{ item.username }}</span>
               </div>
               <div class="time-name" v-else>
                 <span class="name">{{ item.username }}</span>
-                <span class="time">{{ item.sendTime }}</span>
+                <span class="time">{{ item.showSendTime }}</span>
               </div>
               <div class="message-container">
                 <div v-if="item.loading">...</div>
