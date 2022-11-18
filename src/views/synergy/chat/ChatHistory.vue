@@ -25,7 +25,7 @@
               <!--渲染消息内容-->
               <template v-if="item.contentType === 1">
                 <div v-if="item.replyData" class="reply-message">
-                  <blockquote>
+                  <blockquote @click.stop="emitSkipEvent(item.replyData)">
                     <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
                     <p v-if="item.replyData.contentType==1" v-html="item.replyData.content"></p>
                     <el-image v-else-if="item.replyData.contentType==2||item.replyData.contentType==6"
@@ -486,6 +486,10 @@ export default {
         font-size: 12px;
         color: #57606f;
         cursor: pointer;
+
+        &:hover{
+          color: #0078d4;
+        }
 
         .word-message {
           background-color: transparent;

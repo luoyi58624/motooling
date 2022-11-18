@@ -1461,6 +1461,10 @@ nav {
           color: #57606f;
           cursor: pointer;
 
+          &:hover{
+            color: #0078d4;
+          }
+
           /deep/ .el-image {
             img {
               width: 160px;
