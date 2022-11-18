@@ -308,6 +308,11 @@ export default {
         }
       }
       this.$store.state.editorInstance.setContent('')
+    },
+    bindGlobalKeyword (event) {
+      if (event.altKey && event.code === 'KeyH') {
+        eventBus.emit('showChatHistoryPanel')
+      }
     }
   },
   mounted () {
@@ -398,6 +403,8 @@ export default {
             } else {
               this.sendMsg()
             }
+          } else if (event.altKey && event.code === 'KeyH') {
+            eventBus.emit('showChatHistoryPanel')
           }
         })
         editor.ui.registry.addButton('myImage', {
@@ -436,7 +443,7 @@ export default {
         })
         editor.ui.registry.addButton('myHistory', {
           icon: 'insert-time',
-          tooltip: '历史记录',
+          tooltip: '历史记录 Alt+H',
           onAction: () => {
             eventBus.emit('showChatHistoryPanel')
           }
@@ -468,12 +475,14 @@ export default {
         })
       }
     })
+    document.addEventListener('keydown', this.bindGlobalKeyword)
   },
   destroyed () {
     if (this.$store.state.editorInstance != null) {
       this.$store.state.editorInstance.destroy()
       this.$store.state.editorInstance = null
     }
+    document.removeEventListener('keydown', this.bindGlobalKeyword)
   }
 }
 
