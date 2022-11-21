@@ -319,7 +319,7 @@ export default {
       }
     },
     filterHtmlTag (val) {
-      return val.replace(/<p>/gi, '').replace(/<\/p>/gi, '')
+      return val.replace(/<p>/gi, '').replace(/<\/p>/gi, '').replace(/<br>/gi, '')
     }
   }
 }
