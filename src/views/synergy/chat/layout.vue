@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <div class="aside">
-      <message-list @add-user="createNewChatting"/>
+      <message-list ref="messageListRef" @add-user="createNewChatting"/>
     </div>
     <div class="chat-panel">
       <chat-panel v-if="groupId!==null && resetChatPanel"
@@ -136,7 +136,8 @@ export default {
     // 获取所有部门用户
     getAllDepUser () {
       depUserList().then(res => {
-        const depList = res.list || []
+        let depList = []
+        if(res && res.list) depList = res.list
         // 对数据做 el-tree 兼容处理 -> UserSelect.vue
         this.$store.state.allDepUser = depList.map(item => {
           item.id = item.depId // el-tree -> row-id
@@ -147,10 +148,40 @@ export default {
           return item
         })
       })
+    },
+    async createPrivateChatting (uid) {
+      await getOpenSynergy({
+        relationId: uid,
+        relationType: 66
+      })
+        .then(async (res) => {
+          const { newsList } = await getNewsList()
+          this.$store.dispatch('newsList', newsList)
+          this.$store.commit('currentConversation', {
+            groupId: res.synergyGroup.id,
+            relationType: res.synergyGroup.relationType
+          })
+          this.$nextTick(()=>{
+            this.$refs.messageListRef.skipActiveGroup()
+          })
+        })
+        .catch((err) => {
+          this.$createToast({
+            time: 2000,
+            txt: err.msg || '互动消息开启失败,请检查网络',
+            type: 'error'
+          }).show()
+        })
     }
   },
   created () {
     this.getAllDepUser()
+  },
+  mounted () {
+    const relationId = this.$route.query.relationId * 1
+    if (relationId) {
+      this.createPrivateChatting(relationId)
+    }
   }
 }
 </script>

@@ -410,7 +410,8 @@ export default {
         editor.ui.registry.addButton('myImage', {
           icon: 'image',
           tooltip: '上传图片',
-          onAction: (e) => {
+          onAction: () => {
+            this.showEmotionPanel = false
             readFile('image/*').then((files) => {
               this.insertFile(editor, files)
             })
@@ -420,6 +421,7 @@ export default {
           icon: 'embed',
           tooltip: '上传视频',
           onAction: () => {
+            this.showEmotionPanel = false
             readFile('audio/*,video/*').then((files) => {
               this.insertFile(editor, files)
             })
@@ -429,6 +431,7 @@ export default {
           icon: 'document-properties',
           tooltip: '上传文件',
           onAction: () => {
+            this.showEmotionPanel = false
             readFile().then((files) => {
               this.insertFile(editor, files)
             })
@@ -445,6 +448,7 @@ export default {
           icon: 'insert-time',
           tooltip: '历史记录 Alt+H',
           onAction: () => {
+            this.showEmotionPanel = false
             eventBus.emit('showChatHistoryPanel')
           }
         })
@@ -558,7 +562,7 @@ function getAllMentionUid (html) {
 }
 
 .tox-editor-header {
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04) !important;
   padding: 0 !important;
 
   svg {
@@ -568,6 +572,7 @@ function getAllMentionUid (html) {
 
 .tox-toolbar__group {
   width: 100% !important;
+  padding: 0 8px 0 8px !important;
 
   & > .tox-tbtn:nth-last-child(1) {
     margin-left: auto;

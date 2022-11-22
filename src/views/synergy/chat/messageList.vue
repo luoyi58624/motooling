@@ -10,9 +10,9 @@
            @click="$emit('add-user')"></i>
       </div>
     </div>
-    <div class="message-list">
+    <div class="message-list" ref="mesageListRef">
       <div class="message-list-wrapper" :class="{ active: item.groupId == currentConversation }"
-           v-for="item in newsList" :key="item.groupId">
+           v-for="item in newsList" :key="item.groupId" :data-id="item.groupId">
         <div class="message-list-item" v-clickoutside="visible"
              @click="startChatting(item)" @contextmenu="handleGroup(item, $event)">
           <div class="file-picture">
@@ -279,6 +279,9 @@ export default {
           relationType: data.relationType
         })
         this.value = ''
+        this.$nextTick(()=>{
+          this.skipActiveGroup()
+        })
       }
     },
     // 选择聊天对象，开启聊天
@@ -320,6 +323,18 @@ export default {
     },
     filterHtmlTag (val) {
       return val.replace(/<p>/gi, '').replace(/<\/p>/gi, '').replace(/<br>/gi, '')
+    },
+    // 自动滚动到激活的群聊
+    skipActiveGroup(){
+      const doms = document.getElementsByClassName('message-list-wrapper')
+      for (let i = 0; i < doms.length; i++) {
+        if (+this.$store.state.groupId == +doms[i].dataset.id) {
+          this.$refs.mesageListRef.scrollTo({
+            top: doms[i].offsetTop - 72
+          })
+          break
+        }
+      }
     }
   }
 }

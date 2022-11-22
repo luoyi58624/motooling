@@ -390,9 +390,6 @@ export default {
       senderName: (state) => state.userInfo.username,
       chattingTarget: (state) => state.chattingTarget
     }),
-    relationId () {
-      return this.$route.query.relationId * 1
-    },
     chatContainerWidth () {
       return this.recordPanel ? { width: `calc(100% - 320px)` } : { width: `calc(100% - ${this.groupMembersWidth}px)` }
     },
@@ -400,11 +397,6 @@ export default {
       return this.recordList
         .filter(item => item.contentType == 2 || item.constructor == 6)
         .map(item => this.fileAddressFormatFunc(item))
-    }
-  },
-  created () {
-    if (this.relationId) {
-      this.createPrivateChatting(this.relationId)
     }
   },
   mounted () {
