@@ -15,8 +15,7 @@
           </div>
         </div>
         <div ref="talkContent" class="talk-content">
-          <ul>
-            <li v-for="(item, index) in showMessage" :key="index" @click="emitSkipEvent(item)">
+          <div v-for="(item, index) in showMessage" :key="index" class="talk-item" @click="emitSkipEvent(item)">
               <!--渲染用户名和时间-->
               <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8" class="username"
                   :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
@@ -89,8 +88,7 @@
                   <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
                 </div>
               </div>
-            </li>
-          </ul>
+            </div>
         </div>
       </van-tab>
       <van-tab title="图片">
@@ -449,8 +447,10 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px 8px 8px 16px;
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px;
 
-  & > ul > li {
+  & > .talk-item {
     font-size: 12px;
     text-align: center;
     padding: 8px 6px;

@@ -61,13 +61,25 @@ blockquote {
     font-size: 12px;
 }
 
-p:not(.mceNonEditable) img{
+/*p:not(.mceNonEditable) img{*/
+/*    width: 20px;*/
+/*    height: 20px;*/
+/*    vertical-align: middle;*/
+/*}*/
+
+
+/*p.mceNonEditable > img {*/
+/*    height: 72px;*/
+/*    object-fit: contain;*/
+/*}*/
+
+img.emotion{
     width: 20px;
     height: 20px;
     vertical-align: middle;
 }
 
-p.mceNonEditable > img {
+p > img:not(.emotion) {
     height: 72px;
     object-fit: contain;
 }

@@ -137,13 +137,13 @@
                       </blockquote>
                       <span class="word-message" v-html="item.content"></span>
                     </div>
-                    <span v-else class="word-message" v-html="item.content"></span>
+                    <span v-else class="word-message" v-html="item.content" @click="showImagePreview"></span>
                   </div>
                   <div class="image-message message" v-else-if="item.contentType == 2 || item.contentType == 6">
                     <el-image style="width: 160px; height: 90px;"
                               fit="scale-down"
                               :src="fileAddressFormatFunc(item)"
-                              :preview-src-list="allImages"
+                              @click="showImagePreview"
                               @contextmenu="openContextMenu($event,item)"/>
                   </div>
                   <div class="audio-message message" v-else-if="item.contentType == 3">
@@ -253,6 +253,10 @@
       </textarea>
     </el-dialog>
     <transpond-msg @sendMsg="sendTranspondMsg"/>
+    <image-preview v-if="allImages.length>0" v-model="imgPreview.show"
+                   :z-index="9999"
+                   :initial-index="imgPreview.index"
+                   :url-list="allImages"/>
   </div>
 </template>
 
@@ -293,6 +297,7 @@ import TinyEditor from '@/views/synergy/chat/TinyEditor'
 import { fileUpload, imgUpload } from '@/api/upload/upload'
 import axios from 'axios'
 import TranspondMsg from '@/views/synergy/chat/TranspondMsg'
+import ImagePreview from '@/components/ImagePreview'
 
 let debounceLoadMoreMessage
 let clearReaderMessage
@@ -303,7 +308,8 @@ export default {
     TranspondMsg,
     TinyEditor,
     ChatHistory,
-    ContextMenu
+    ContextMenu,
+    ImagePreview
   },
   props: {
     invitedMembers: {
@@ -349,7 +355,11 @@ export default {
       recordPanel: false, // 是否显示聊天历史记录面板，如果为true -> 隐藏群成员，显示聊天历史
       showContextMenu: false,
       readMessageUsers: [], // 已读用户
-      unReadMessageUsers: [] // 未读用户
+      unReadMessageUsers: [], // 未读用户
+      imgPreview: {
+        index: 0,
+        show: false
+      }
     }
   },
   watch: {
@@ -394,9 +404,18 @@ export default {
       return this.recordPanel ? { width: `calc(100% - 320px)` } : { width: `calc(100% - ${this.groupMembersWidth}px)` }
     },
     allImages () {
-      return this.recordList
-        .filter(item => item.contentType == 2 || item.constructor == 6)
-        .map(item => this.fileAddressFormatFunc(item))
+      const images = []
+      this.recordList
+        .forEach(item => {
+          if (item.contentType == 1) {
+            item.content.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/g, function (match, capture) {
+              if (match.indexOf('emotion') == -1) images.push(capture)
+            })
+          } else if (item.contentType == 2 || item.contentType == 6) {
+            images.push(this.fileAddressFormatFunc(item))
+          }
+        })
+      return images
     }
   },
   mounted () {
@@ -1308,6 +1327,16 @@ export default {
       for (let i = 0; i < talkItems.length; i++) {
         talkItems[i].classList.remove('message-selected-active')
       }
+    },
+    // 显示预览图片
+    showImagePreview (e) {
+      if (e.target.localName === 'img') {
+        const srcIndex = this.allImages.indexOf(e.target.src)
+        if (srcIndex >= 0) {
+          this.imgPreview.index = srcIndex
+          this.imgPreview.show = true
+        }
+      }
     }
   }
 }
@@ -1482,16 +1511,23 @@ nav {
         padding: 8px 10px 6px 10px;
         line-height: 1.5;
         border-radius: 6px;
-        user-select: text;
         word-break: break-all;
         white-space: pre-line;
         display: inline-block;
         overflow: hidden;
+        user-select: text;
 
         /deep/ img {
+          height: 72px;
+          object-fit: contain;
+          cursor: pointer;
+        }
+
+        /deep/ img.emotion {
           width: 20px;
           height: 20px;
           vertical-align: middle;
+          pointer-events: none;
         }
       }
 
@@ -1813,7 +1849,7 @@ audio {
     outline: 2px solid rgba(254, 213, 177);
     background-color: rgba(254, 213, 177, 0.5) !important;
 
-    .word-message{
+    .word-message {
       background-color: transparent !important;
     }
   }

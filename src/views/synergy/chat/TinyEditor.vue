@@ -81,7 +81,7 @@ export default {
   methods: {
     // 插入表情
     insertEmotion (url) {
-      this.$store.state.editorInstance.insertContent(`<img src="${url}">`)
+      this.$store.state.editorInstance.insertContent(`<img src="${url}" class="emotion">`)
     },
     // 插入选中的用户
     insertSelectUser (selectUser) {
@@ -329,7 +329,7 @@ export default {
       selector: '.tinymce-editor',
       base_url: '/mthtml/tinymce',
       content_css: '/mthtml/tinymce/custom/css/chat.css',
-      noneditable_class: 'mceNonEditable', // 设置不可编辑元素class
+      noneditable_class: 'mceNonEditable emotion', // 设置不可编辑元素class
       language: 'zh-Hans',
       height: 180,
       branding: false,
@@ -341,10 +341,15 @@ export default {
       plugins,
       toolbar,
       paste_preprocess: (editor, args) => {
+        // 1.将div替换成p标签
+        // 2.过滤掉除p、br、img之外的其他标签
+        // 3.过滤掉非http格式的图片，将其替换为[图片]字符
         args.content = args.content
           .replace(/<div>/g, '<p>')
           .replace(/<\/div>/g, '</p>')
+          .replace(/[(title)|(alt)|(width)|(height)]=['"].*?['"]/g,'')
           .replace(/<(?!img|br|p>|\/p).*?>/g, '')
+          .replace(/<img[^>]*? (src)=['"][^(http)].*?>/g, '[图片]')
       },
       setup: (editor) => {
         editor.on('click', () => {
@@ -355,6 +360,7 @@ export default {
           if (event.clipboardData.files.length > 0) this.insertFile(editor, event.clipboardData.files)
         })
         editor.on('drop', event => {
+          console.log(event)
           if (event.dataTransfer && event.dataTransfer.files.length > 0) this.insertFile(editor, event.dataTransfer.files)
         })
         editor.on('FullscreenStateChanged', value => {
