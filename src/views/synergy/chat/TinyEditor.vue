@@ -329,7 +329,7 @@ export default {
       selector: '.tinymce-editor',
       base_url: '/mthtml/tinymce',
       content_css: '/mthtml/tinymce/custom/css/chat.css',
-      noneditable_class: 'mceNonEditable emotion', // 设置不可编辑元素class
+      noneditable_class: 'mceNonEditable', // 设置不可编辑元素class
       language: 'zh-Hans',
       height: 180,
       branding: false,
@@ -369,7 +369,6 @@ export default {
           if (event.clipboardData.files.length > 0) this.insertFile(editor, event.clipboardData.files)
         })
         editor.on('drop', event => {
-          console.log(event)
           if (event.dataTransfer && event.dataTransfer.files.length > 0) this.insertFile(editor, event.dataTransfer.files)
         })
         editor.on('FullscreenStateChanged', value => {

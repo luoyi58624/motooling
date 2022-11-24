@@ -279,7 +279,7 @@ export default {
     prev () {
       if (this.isFirst && !this.infinite) {
         Notify({
-          message: '已经第一张了',
+          message: '这是第一张了',
           type: 'success',
           duration: 1000
         })
@@ -291,7 +291,7 @@ export default {
     next () {
       if (this.isLast && !this.infinite) {
         Notify({
-          message: '已经最后一张了',
+          message: '已经是最后一张了',
           type: 'success',
           duration: 1000
         })
