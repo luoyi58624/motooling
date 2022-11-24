@@ -97,7 +97,7 @@
           <div v-for="(image,index) in showImages" :key="index">
             <div class="media-time">----- {{ image.time }} -----</div>
             <div class="images-array">
-              <div v-for="item in image.datas" :key="item.id" class="image-item">
+              <div v-for="(item,index) in image.datas" :key="index" class="image-item">
                 <el-image style="width: 100%; height: 100%" fit="contain" :z-index="3000"
                           :src="fileAddressFormatFunc(item)"
                           :preview-src-list="imagePreviews"/>
@@ -259,6 +259,19 @@ export default {
     }
   },
   watch: {
+    active(newValue){
+      if(newValue==0){
+        this.$nextTick(() => {
+          if (this.messageTimeSort) {
+            setTimeout(()=>{
+              this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
+            },0)
+          } else {
+            this.$refs.talkContent.scrollTop = 0
+          }
+        })
+      }
+    },
     searchValue (newValue) {
       if (newValue === '') {
         this.showMessage = this.allMessage
