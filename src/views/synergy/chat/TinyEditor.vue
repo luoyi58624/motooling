@@ -133,7 +133,7 @@ export default {
         if (/image/.test(file.type)) {
           this.$store.state.imageFiles[id] = file
           const blobUrl = window.URL.createObjectURL(file)
-          editor.insertContent(`<p class="mceNonEditable"><img src="${blobUrl}" alt="" data-id="${id}"></p>`)
+          editor.insertContent(`<img src="${blobUrl}" alt="" data-id="${id}">`)
         } else if (/audio/.test(file.type)) {
           this.$store.state.audioFiles[id] = file
           const blobUrl = window.URL.createObjectURL(file)
@@ -149,8 +149,8 @@ export default {
           const img = loadFileIcon(file.name)
           editor.insertContent(`<div class="file-wrapper mceNonEditable" data-name="${name}" data-size="${size}" data-id="${id}"><img src="${img}" alt=""></div>`)
         }
-        this.endFocus()
-        if (i === files.length - 1) {
+        if (i === files.length - 1 && !(/image/.test(file.type))) {
+          this.endFocus()
           editor.insertContent('<p>&nbsp;</p>')
         }
       }
@@ -366,7 +366,11 @@ export default {
           this.showContextMenu = false
         })
         editor.on('paste', (event) => {
-          if (event.clipboardData.files.length > 0) this.insertFile(editor, event.clipboardData.files)
+          let flag = true
+          const pasteHtml = event.clipboardData.getData('text/html')
+          // 如果粘贴的html包含了图片标签，则禁止插入文件，因为 paste_preprocess 会插入html网络图片地址
+          if(pasteHtml.indexOf('<img')!==-1) flag = false
+          if (flag && event.clipboardData.files.length > 0) this.insertFile(editor, event.clipboardData.files)
         })
         editor.on('drop', event => {
           if (event.dataTransfer && event.dataTransfer.files.length > 0) this.insertFile(editor, event.dataTransfer.files)
