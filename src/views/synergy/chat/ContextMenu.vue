@@ -37,7 +37,6 @@
 import Teleport from 'vue2-teleport'
 import ClipboardJS from 'clipboard'
 import { sendMessage } from '@/api/synergy/synergy'
-import { Toast } from 'vant'
 
 export default {
   name: 'ContextMenu',

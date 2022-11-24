@@ -1519,7 +1519,7 @@ nav {
         user-select: text;
 
         /deep/ img {
-          height: 72px;
+          max-height: 72px;
           object-fit: contain;
           cursor: pointer;
         }

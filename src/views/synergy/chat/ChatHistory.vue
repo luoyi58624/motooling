@@ -16,79 +16,79 @@
         </div>
         <div ref="talkContent" class="talk-content">
           <div v-for="(item, index) in showMessage" :key="index" class="talk-item" @click="emitSkipEvent(item)">
-              <!--渲染用户名和时间-->
-              <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8" class="username"
-                  :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
-                <span v-html="item.username"/> {{ item.sendTime }}
-              </h3>
-              <!--渲染消息内容-->
-              <template v-if="item.contentType === 1">
-                <div v-if="item.replyData" class="reply-message">
-                  <blockquote @click.stop="emitSkipEvent(item.replyData)">
-                    <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
-                    <p v-if="item.replyData.contentType==1" v-html="item.replyData.content"></p>
-                    <el-image v-else-if="item.replyData.contentType==2||item.replyData.contentType==6"
-                              style="width: 160px; height: 90px;text-align: left" fit="scale-down"
-                              :src="fileAddressFormatFunc(item.replyData)"></el-image>
-                    <audio v-else-if="item.replyData.contentType==3" :src="fileAddressFormatFunc(item.replyData)"
-                           controls="controls" style="width: 245px;height: 40px"/>
-                    <video v-else-if="item.replyData.contentType==4" :src="fileAddressFormatFunc(item.replyData)"
-                           controls="controls" width="245" height="140"/>
-                    <div v-else-if="item.replyData.contentType==9" class="file-message">
-                      <div class="file-info">
-                        <div class="name">{{ item.replyData.content.fileName }}</div>
-                        <div class="size">{{ item.replyData.content.fileSize }}</div>
-                      </div>
-                      <div class="file-icon">
-                        <el-image style="width: 36px;height: 36px;"
-                                  :src="fileIcon(item.replyData.content.fileName)"/>
-                      </div>
+            <!--渲染用户名和时间-->
+            <h3 v-if="item.contentType!==5 && item.contentType!==7 && item.contentType!==8" class="username"
+                :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
+              <span v-html="item.username"/> {{ item.sendTime }}
+            </h3>
+            <!--渲染消息内容-->
+            <template v-if="item.contentType === 1">
+              <div v-if="item.replyData" class="reply-message">
+                <blockquote @click.stop="emitSkipEvent(item.replyData)">
+                  <p style="font-weight: bold;margin-bottom: 6px">{{ item.replyData.username }}:</p>
+                  <p v-if="item.replyData.contentType==1" v-html="item.replyData.content"></p>
+                  <el-image v-else-if="item.replyData.contentType==2||item.replyData.contentType==6"
+                            style="width: 160px; height: 90px;text-align: left" fit="scale-down"
+                            :src="fileAddressFormatFunc(item.replyData)"></el-image>
+                  <audio v-else-if="item.replyData.contentType==3" :src="fileAddressFormatFunc(item.replyData)"
+                         controls="controls" style="width: 245px;height: 40px"/>
+                  <video v-else-if="item.replyData.contentType==4" :src="fileAddressFormatFunc(item.replyData)"
+                         controls="controls" width="245" height="140"/>
+                  <div v-else-if="item.replyData.contentType==9" class="file-message">
+                    <div class="file-info">
+                      <div class="name">{{ item.replyData.content.fileName }}</div>
+                      <div class="size">{{ item.replyData.content.fileSize }}</div>
                     </div>
-                  </blockquote>
-                  <span class="word-message" v-html="item.content"></span>
-                </div>
-                <p v-else class="content" v-html="item.content"></p>
-              </template>
+                    <div class="file-icon">
+                      <el-image style="width: 36px;height: 36px;"
+                                :src="fileIcon(item.replyData.content.fileName)"/>
+                    </div>
+                  </div>
+                </blockquote>
+                <span class="word-message" v-html="item.content"></span>
+              </div>
+              <p v-else class="content" v-html="item.content"></p>
+            </template>
 
-              <div v-if="item.contentType === 2 || item.contentType === 6" style="text-align: left;">
-                <el-image style="width: 160px; height: 90px;" fit="scale-down" :z-index="3000"
-                          :src="fileAddressFormatFunc(item)"/>
+            <div v-if="item.contentType === 2 || item.contentType === 6" style="text-align: left;">
+              <el-image style="width: 160px; height: 90px;" fit="scale-down" :z-index="3000"
+                        :src="fileAddressFormatFunc(item)"/>
+            </div>
+            <div v-else-if="item.contentType === 3" class="audio-message" style="text-align: left;">
+              <audio :src="fileAddressFormatFunc(item)" controls="controls">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+            <div v-else-if="item.contentType === 4" style="text-align: left;">
+              <video preload="meta" :src="fileAddressFormatFunc(item)" controls="controls"
+                     width="250" height="140"></video>
+            </div>
+            <div v-else-if="item.contentType === 5" class="system-message">{{ item.content }}</div>
+            <template v-else-if="item.contentType === 7">
+              <div class="system-message" v-if="item.content.senderId == uid">
+                {{ item.content.sendeContent }}
               </div>
-              <div v-else-if="item.contentType === 3" class="audio-message" style="text-align: left;">
-                <audio :src="fileAddressFormatFunc(item)" controls="controls">
-                  Your browser does not support the audio element.
-                </audio>
+              <div class="system-message" v-else-if="item.content.receiverId == uid">
+                {{ item.content.receiverContent }}
               </div>
-              <div v-else-if="item.contentType === 4" style="text-align: left;">
-                <video preload="meta" :src="fileAddressFormatFunc(item)" controls="controls"
-                       width="250" height="140"></video>
+              <div class="system-message" v-else>
+                {{ item.content.otherContent }}
               </div>
-              <div v-else-if="item.contentType === 5" class="system-message">{{ item.content }}</div>
-              <template v-else-if="item.contentType === 7">
-                <div class="system-message" v-if="item.content.senderId == uid">
-                  {{ item.content.sendeContent }}
-                </div>
-                <div class="system-message" v-else-if="item.content.receiverId == uid">
-                  {{ item.content.receiverContent }}
-                </div>
-                <div class="system-message" v-else>
-                  {{ item.content.otherContent }}
-                </div>
-              </template>
-              <template v-else-if="item.contentType === 8">
-                <div class="system-message" v-if="uid === item.senderId">你撤回了一条消息</div>
-                <div v-else class="system-message">{{ `${item.username}撤回了一条消息` }}</div>
-              </template>
-              <div class="file-message" v-else-if="item.contentType === 9">
-                <div class="file-info">
-                  <div class="name">{{ item.content.fileName }}</div>
-                  <div class="size">{{ item.content.fileSize }}</div>
-                </div>
-                <div class="file-icon">
-                  <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
-                </div>
+            </template>
+            <template v-else-if="item.contentType === 8">
+              <div class="system-message" v-if="uid === item.senderId">你撤回了一条消息</div>
+              <div v-else class="system-message">{{ `${item.username}撤回了一条消息` }}</div>
+            </template>
+            <div class="file-message" v-else-if="item.contentType === 9">
+              <div class="file-info">
+                <div class="name">{{ item.content.fileName }}</div>
+                <div class="size">{{ item.content.fileSize }}</div>
+              </div>
+              <div class="file-icon">
+                <el-image style="width: 36px;height: 36px;" :src="fileIcon(item.content.fileName)"/>
               </div>
             </div>
+          </div>
         </div>
       </van-tab>
       <van-tab title="图片">
@@ -224,9 +224,26 @@ export default {
       groupId: (state) => state.groupId
     }),
     allImage () {
-      return this.mediaDataHandler(
-        this.allMessage.filter(item => item.contentType === 2 || item.contentType === 6)
-      )
+      const imageItems = []
+      this.allMessage
+        .forEach(item => {
+          if (item.contentType == 1) {
+            item.content.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/g, function (match, capture) {
+              if (match.indexOf('emotions') == -1) {
+                imageItems.push({
+                  ...item,
+                  content: capture
+                })
+              }
+            })
+          } else if (item.contentType == 2 || item.contentType == 6) {
+            imageItems.push({
+              ...item,
+              content: this.fileAddressFormatFunc(item)
+            })
+          }
+        })
+      return this.mediaDataHandler(imageItems)
     },
     allVideo () {
       return this.mediaDataHandler(this.allMessage.filter(item => item.contentType === 4))
@@ -262,9 +279,9 @@ export default {
           })
       }
       this.$nextTick(() => {
-        if(this.messageTimeSort){
+        if (this.messageTimeSort) {
           this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
-        }else{
+        } else {
           this.$refs.talkContent.scrollTop = 0
         }
       })
@@ -366,12 +383,12 @@ export default {
       })
       return newDatas.reverse()
     },
-    switchMessageTimeSort(){
+    switchMessageTimeSort () {
       this.messageTimeSort = !this.messageTimeSort
       this.$nextTick(() => {
-        if(this.messageTimeSort){
+        if (this.messageTimeSort) {
           this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
-        }else{
+        } else {
           this.$refs.talkContent.scrollTop = 0
         }
       })
@@ -488,7 +505,7 @@ export default {
         color: #57606f;
         cursor: pointer;
 
-        &:hover{
+        &:hover {
           color: #0078d4;
         }
 
@@ -511,9 +528,16 @@ export default {
       }
 
       /deep/ img {
+        max-height: 72px;
+        object-fit: contain;
+        cursor: pointer;
+      }
+
+      /deep/ img.emotion {
         width: 20px;
         height: 20px;
         vertical-align: middle;
+        pointer-events: none;
       }
     }
 
@@ -526,9 +550,16 @@ export default {
       line-height: 1.2;
 
       /deep/ img {
+        max-height: 72px;
+        object-fit: contain;
+        cursor: pointer;
+      }
+
+      /deep/ img.emotion {
         width: 20px;
         height: 20px;
         vertical-align: middle;
+        pointer-events: none;
       }
     }
   }
