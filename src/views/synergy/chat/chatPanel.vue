@@ -1013,6 +1013,7 @@ export default {
     openContextMenu (event, messageItem) {
       this.$refs.ContextMenu.openContextMenu(event, messageItem)
     },
+    // 撤回消息
     revocationMsg (res) {
       this.recordList.forEach(item => {
         if (item.id == res.data.id) {
@@ -1021,6 +1022,7 @@ export default {
           })
         }
       })
+      this.$store.state.hasNewMessage = true
     },
     insertReplyMsg (item) {
       this.$refs.TinymceEditorRef.insertReplyMsg(item)
