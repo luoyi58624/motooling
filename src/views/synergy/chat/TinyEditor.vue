@@ -23,7 +23,7 @@ import eventBus from '@/utils/mitt'
 import EmotionPanel from './EmotionPanel.vue'
 import PinyinMatch from 'pinyin-match'
 import MemberList from '@/views/synergy/chat/memberList'
-import { hideLongText, loadFileIcon, readFile, renderSize, uuid, WEBURL } from '@/utils/utils'
+import { hideLongText, loadFileIcon, readFile, renderSize, uuid } from '@/utils/utils'
 import { cloneDeep } from 'lodash'
 import { Notify } from 'vant'
 
@@ -81,7 +81,7 @@ export default {
   methods: {
     // 插入表情
     insertEmotion (url) {
-      this.$store.state.editorInstance.insertContent(`<img src="${url}" class="emotion">`)
+      this.$store.state.editorInstance.insertContent(`<img src="${url}" style="width: 20px;height: 20px;vertical-align: middle;">`)
     },
     // 插入选中的用户
     insertSelectUser (selectUser) {
@@ -338,18 +338,27 @@ export default {
       contextmenu: false,
       object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
+      paste_webkit_styles: 'width height vertical-align',
+      paste_as_text: false,
+      paste_merge_formats: true,
       plugins,
       toolbar,
       paste_preprocess: (editor, args) => {
-        // 1.将div替换成p标签
-        // 2.过滤掉除p、br、img之外的其他标签
-        // 3.过滤掉非http格式的图片，将其替换为[图片]字符
+        // console.log(args.content)
         args.content = args.content
-          .replace(/<div>/g, '<p>')
-          .replace(/<\/div>/g, '</p>')
-          .replace(/[(title)|(alt)|(width)|(height)]=['"].*?['"]/g,'')
+          .replace(/(<div>)/g, '<p>')
+          .replace(/(<\/div>)/g, '</p>')
+          .replace(/(<h\d>)/g, '<p>')
+          .replace(/(<\/h\d>)/g, '</p>')
+          .replace(/(<li>)/g, '<p>')
+          .replace(/(<\/li>)/g, '<p>')
           .replace(/<(?!img|br|p>|\/p).*?>/g, '')
+          .replace(/(\s\w+-\w+?=["|']?.*?["|'])|(\s(?!(style|src))\w+=["|']?.*?["|'])/g, '')
           .replace(/<img[^>]*? (src)=['"][^(http)].*?>/g, '[图片]')
+          .replace(/\n/g, '<br>')
+          .replaceAll('  ', '&nbsp; ')
+        // console.log('================')
+        // console.log(args.content)
       },
       setup: (editor) => {
         editor.on('click', () => {

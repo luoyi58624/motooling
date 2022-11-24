@@ -15,7 +15,7 @@ h1, h2, h3, h4, h5, h6 {
 
 p {
     margin: 4px 0;
-    line-height: 20px;
+    font-size: 14px;
 }
 
 blockquote {
@@ -80,7 +80,7 @@ img.emotion{
 }
 
 p > img:not(.emotion) {
-    height: 72px;
+    max-height: 72px;
     object-fit: contain;
 }
 

@@ -254,7 +254,6 @@
     </el-dialog>
     <transpond-msg @sendMsg="sendTranspondMsg"/>
     <image-preview v-if="allImages.length>0" v-model="imgPreview.show"
-                   :z-index="9999"
                    :initial-index="imgPreview.index"
                    :url-list="allImages"/>
   </div>
@@ -409,7 +408,7 @@ export default {
         .forEach(item => {
           if (item.contentType == 1) {
             item.content.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/g, function (match, capture) {
-              if (match.indexOf('emotion') == -1) images.push(capture)
+              if (match.indexOf('emotions') == -1) images.push(capture)
             })
           } else if (item.contentType == 2 || item.contentType == 6) {
             images.push(this.fileAddressFormatFunc(item))

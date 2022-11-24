@@ -252,6 +252,10 @@ export const heightLight = (str, key) => {
   })
 }
 
+export function formatHtmlTag(content,tags,target){
+  content.replace(/<div>/)
+}
+
 // 获取字符串长度，中文为2，英文为1
 export function getStringLength (str) {
   let len = 0

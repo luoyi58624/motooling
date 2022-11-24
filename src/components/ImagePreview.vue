@@ -54,6 +54,7 @@
 import { on, off } from 'element-ui/src/utils/dom'
 import { rafThrottle, isFirefox } from 'element-ui/src/utils/util'
 import { PopupManager } from 'element-ui/src/utils/popup'
+import { Notify } from 'vant'
 
 const Mode = {
   CONTAIN: {
@@ -276,12 +277,26 @@ export default {
       this.reset()
     },
     prev () {
-      if (this.isFirst && !this.infinite) return
+      if (this.isFirst && !this.infinite) {
+        Notify({
+          message: '已经第一张了',
+          type: 'success',
+          duration: 1000
+        })
+        return
+      }
       const len = this.urlList.length
       this.index = (this.index - 1 + len) % len
     },
     next () {
-      if (this.isLast && !this.infinite) return
+      if (this.isLast && !this.infinite) {
+        Notify({
+          message: '已经最后一张了',
+          type: 'success',
+          duration: 1000
+        })
+        return
+      }
       const len = this.urlList.length
       this.index = (this.index + 1) % len
     },
