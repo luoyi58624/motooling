@@ -93,8 +93,8 @@
       </van-tab>
       <van-tab title="图片">
         <div class="image-container">
-          <div v-if="allImage.length===0">没有图片</div>
-          <div v-for="(image,index) in allImage" :key="index">
+          <div v-if="showImages.length===0">没有图片</div>
+          <div v-for="(image,index) in showImages" :key="index">
             <div class="media-time">----- {{ image.time }} -----</div>
             <div class="images-array">
               <div v-for="item in image.datas" :key="item.id" class="image-item">
@@ -243,7 +243,10 @@ export default {
             })
           }
         })
-      return this.mediaDataHandler(imageItems)
+      return imageItems
+    },
+    showImages () {
+      return this.mediaDataHandler(this.allImage)
     },
     allVideo () {
       return this.mediaDataHandler(this.allMessage.filter(item => item.contentType === 4))
@@ -252,9 +255,7 @@ export default {
       return this.mediaDataHandler(this.allMessage.filter(item => item.contentType === 3))
     },
     imagePreviews () {
-      return this.allMessage
-        .filter(item => item.contentType === 2 || item.contentType === 6)
-        .map(item => this.fileAddressFormatFunc(item)).reverse()
+      return this.allImage.map(item => this.fileAddressFormatFunc(item)).reverse()
     }
   },
   watch: {
