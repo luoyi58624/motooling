@@ -16,6 +16,8 @@ import tinymce from 'tinymce'
 import 'tinymce/themes/silver/theme' // 主题文件
 import 'tinymce/icons/default'
 import 'tinymce/models/dom'
+import 'tinymce/plugins/link'
+import 'tinymce/plugins/autolink'
 import 'tinymce/plugins/code'
 import 'tinymce/plugins/fullscreen'
 
@@ -279,13 +281,14 @@ export default {
             }
             // 开始发送文字消息
             if (sendTextMessage) {
-              const text = filterBlankMessage(textMessage) // 过滤掉首尾空白消息的p标签，防止出现空白消息体
+              let text = filterBlankMessage(textMessage) // 过滤掉首尾空白消息的p标签，防止出现空白消息体
               const uids = getAllMentionUid(text) // 拿到所有的@用户id
               if (text !== '') {  // 如果消息体不为空
                 textMessage = '' // 重置累计拼接的消息
                 if (!this.hasReplyData()) { // 如果没有回复消息，则将回复消息对象置为空
                   this.replyData = null
                 }
+                text = resetLink(text)
                 eventBus.emit('sendWordMessage', {
                   text,
                   userIds: uids.join(','),
@@ -319,8 +322,8 @@ export default {
     let plugins
     let toolbar
     if (process.env.NODE_ENV === 'development') {
-      plugins = 'code fullscreen'
-      toolbar = 'myImage myVideo myFile myEmoticons myHistory code fullscreen mySendMessage'
+      plugins = 'link autolink code fullscreen'
+      toolbar = 'myImage myVideo myFile myEmoticons myHistory link code fullscreen mySendMessage'
     } else {
       plugins = 'fullscreen'
       toolbar = 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage'
@@ -333,14 +336,16 @@ export default {
       language: 'zh-Hans',
       height: 180,
       branding: false,
-      menubar: false,
-      statusbar: false,
-      contextmenu: false,
+      menubar: false, // 禁止显示菜单栏
+      statusbar: false, // 禁止显示状态栏
+      contextmenu: false, // 禁止编辑器右键菜单
       object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
-      paste_webkit_styles: 'width height vertical-align',
-      paste_as_text: false,
-      paste_merge_formats: true,
+      paste_webkit_styles: 'width height vertical-align', // 粘贴html代码保留的样式
+      keep_styles: false, // 不要保持样式
+      convert_urls: false, // 不要转换url
+      link_target_list: false, // 去除选择跳转行为
+      link_title: false, // 去除用户输入title属性输入框
       plugins,
       toolbar,
       paste_preprocess: (editor, args) => {
@@ -352,8 +357,8 @@ export default {
           .replace(/(<\/h\d>)/g, '</p>')
           .replace(/(<li>)/g, '<p>')
           .replace(/(<\/li>)/g, '<p>')
-          .replace(/<(?!img|br|p>|\/p).*?>/g, '')
-          .replace(/(\s\w+-\w+?=["|']?.*?["|'])|(\s(?!(style|src))\w+=["|']?.*?["|'])/g, '')
+          .replace(/<(?!img|br|a|p>|\/p|\/a).*?>/g, '')
+          .replace(/(\s\w+-\w+?=["|']?.*?["|'])|(\s(?!(style|src|href))\w+=["|']?.*?["|'])/g, '')
           .replace(/<img[^>]*? (src)=['"][^(http)].*?>/g, '[图片]')
           .replace(/\n/g, '<br>')
           .replaceAll('  ', '&nbsp; ')
@@ -369,7 +374,7 @@ export default {
           let flag = true
           const pasteHtml = event.clipboardData.getData('text/html')
           // 如果粘贴的html包含了图片标签，则禁止插入文件，因为 paste_preprocess 会插入html网络图片地址
-          if(pasteHtml.indexOf('<img')!==-1) flag = false
+          if (pasteHtml.indexOf('<img') !== -1) flag = false
           if (flag && event.clipboardData.files.length > 0) this.insertFile(editor, event.clipboardData.files)
         })
         editor.on('drop', event => {
@@ -565,6 +570,13 @@ function getAllMentionUid (html) {
     if (doms[i].dataset.uid) uids.push(doms[i].dataset.uid)
   }
   return uids
+}
+
+// 重置a标签跳转行为
+function resetLink (html) {
+  return html.replace(/<a.*?>/, function (item) {
+    return item.replace('>', ' target="_blank">')
+  })
 }
 </script>
 

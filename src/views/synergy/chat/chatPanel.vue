@@ -1518,6 +1518,14 @@ nav {
         overflow: hidden;
         user-select: text;
 
+        /deep/ a{
+          color: rgb(36, 64, 179);
+
+          &:visited {
+            color: rgb(119, 28, 170);
+          }
+        }
+
         /deep/ img {
           max-height: 72px;
           object-fit: contain;
