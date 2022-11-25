@@ -343,7 +343,7 @@ export default {
       contextmenu: false, // 禁止编辑器右键菜单
       object_resizing: false, // 禁止拉伸图片、视频
       paste_data_images: false, // 禁止tinymce默认事件-粘贴图片
-      paste_webkit_styles: 'width height vertical-align', // 粘贴html代码保留的样式
+      // paste_webkit_styles: 'width height vertical-align', // 粘贴html代码保留的样式
       keep_styles: false, // 不要保持样式
       convert_urls: false, // 不要转换url
       link_target_list: false, // 去除选择跳转行为
@@ -353,19 +353,16 @@ export default {
       paste_preprocess: (editor, args) => {
         // console.log(args.content)
         args.content = args.content
-          .replace(/(<div>)/g, '<p>')
-          .replace(/(<\/div>)/g, '</p>')
-          .replace(/(<h\d>)/g, '<p>')
-          .replace(/(<\/h\d>)/g, '</p>')
-          .replace(/(<li>)/g, '<p>')
-          .replace(/(<\/li>)/g, '<p>')
-          .replace(/<(?!img|br|a|p>|\/p|\/a).*?>/g, '')
-          .replace(/(\s\w+-\w+?=["|']?.*?["|'])|(\s(?!(style|src|href))\w+=["|']?.*?["|'])/g, '')
-          .replace(/<img[^>]*? (src)=['"][^(http)].*?>/g, '[图片]')
-          .replace(/\n/g, '<br>')
-          .replaceAll('  ', '&nbsp; ')
+          .replace(/<((h\d)|(pre)|(li)).*?>/g, '<p>')  // 将部分标签替换成p标签
+          .replace(/<\/((h\d)|(pre)|(li))>/g, '</p>')
+          .replace(/<(?!img|br|a|p|\/p|\/a).*?>/g, '') // 将其他标签全部删除
+          .replace(/<([a-z]+?)(?:\s+?[^>]*?)?>\s*?<\/\1>/ig, '') // 删除空标签
+          .replace(/(\s\w+-\w+?=["|']?.*?["|'])|(\s(?!(src|href))\w+=["|']?.*?["|'])/g, '') // 删除不需要的属性
+          .replace(/<img[^>]*? (src)=['"][^(http)].*?>/g, '') // 将非http链接的图片替换成文字
+          .replace(/\n/g, '<br>') // 将换行符变成html换行标签
+          .replace(/(&#32;)|(\s(?=\s))/g, '&nbsp;') // 将多余的空格变成html空格标签
         // console.log('================')
-        console.log(args.content)
+        // console.log(args.content)
       },
       setup: (editor) => {
         editor.on('click', () => {
