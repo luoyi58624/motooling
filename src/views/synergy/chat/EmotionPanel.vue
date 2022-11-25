@@ -68,7 +68,7 @@ html.tox-fullscreen {
   .chat-editor-emotion-panel {
     position: fixed;
     top: 50px;
-    left: 120px;
+    left: 8px;
     z-index: 10000;
   }
 }
@@ -76,7 +76,7 @@ html.tox-fullscreen {
 .chat-editor-emotion-panel {
   position: absolute;
   bottom: 190px;
-  left: 125px;
+  left: 8px;
   width: 300px;
   height: 300px;
   padding: 4px 4px 4px 4px;

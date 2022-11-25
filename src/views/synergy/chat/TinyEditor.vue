@@ -323,15 +323,17 @@ export default {
     let toolbar
     if (process.env.NODE_ENV === 'development') {
       plugins = 'link autolink code fullscreen'
-      toolbar = 'myImage myVideo myFile myEmoticons myHistory link code fullscreen mySendMessage'
+      toolbar = 'myEmoticons link myImage myVideo myFile myHistory code fullscreen mySendMessage'
     } else {
-      plugins = 'fullscreen'
-      toolbar = 'myImage myVideo myFile myEmoticons myHistory fullscreen mySendMessage'
+      plugins = 'link autolink fullscreen'
+      toolbar = 'myEmoticons link myImage myVideo myFile myHistory fullscreen mySendMessage'
     }
     tinymce.init({
       selector: '.tinymce-editor',
       base_url: '/mthtml/tinymce',
       content_css: '/mthtml/tinymce/custom/css/chat.css',
+      icons_url: '/mthtml/tinymce/icons/custom/icons.js',
+      icons: 'custom',
       noneditable_class: 'mceNonEditable', // 设置不可编辑元素class
       language: 'zh-Hans',
       height: 180,
@@ -363,7 +365,7 @@ export default {
           .replace(/\n/g, '<br>')
           .replaceAll('  ', '&nbsp; ')
         // console.log('================')
-        // console.log(args.content)
+        console.log(args.content)
       },
       setup: (editor) => {
         editor.on('click', () => {
@@ -441,7 +443,7 @@ export default {
           }
         })
         editor.ui.registry.addButton('myVideo', {
-          icon: 'embed',
+          icon: 'video',
           tooltip: '上传视频',
           onAction: () => {
             this.showEmotionPanel = false
@@ -451,7 +453,7 @@ export default {
           }
         })
         editor.ui.registry.addButton('myFile', {
-          icon: 'document-properties',
+          icon: 'fold',
           tooltip: '上传文件',
           onAction: () => {
             this.showEmotionPanel = false
@@ -468,7 +470,7 @@ export default {
           }
         })
         editor.ui.registry.addButton('myHistory', {
-          icon: 'insert-time',
+          icon: 'history',
           tooltip: '历史记录 Alt+H',
           onAction: () => {
             this.showEmotionPanel = false
@@ -476,7 +478,8 @@ export default {
           }
         })
         editor.ui.registry.addButton('mySendMessage', {
-          text: '发送（Enter）',
+          icon: 'send',
+          tooltip: '发送消息 Enter',
           onAction: () => {
             this.sendMsg()
           }
@@ -604,8 +607,19 @@ function resetLink (html) {
   width: 100% !important;
   padding: 0 8px 0 8px !important;
 
+  .tox-tbtn {
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+      background-color: rgb(235, 235, 235) !important;
+    }
+  }
+
   & > .tox-tbtn:nth-last-child(1) {
     margin-left: auto;
+    margin-right: 8px;
+    width: 48px;
+    cursor: pointer;
   }
 }
 
