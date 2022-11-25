@@ -137,13 +137,14 @@
                       </blockquote>
                       <span class="word-message" v-html="item.content"></span>
                     </div>
-                    <span v-else class="word-message" v-html="item.content" @click="showImagePreview"></span>
+                    <span v-else class="word-message" v-html="item.content"
+                          @click="showImagePreview($event,item)"></span>
                   </div>
                   <div class="image-message message" v-else-if="item.contentType == 2 || item.contentType == 6">
                     <el-image style="width: 160px; height: 90px;"
                               fit="scale-down"
                               :src="fileAddressFormatFunc(item)"
-                              @click="showImagePreview"
+                              @click="showImagePreview($event,item)"
                               @contextmenu="openContextMenu($event,item)"/>
                   </div>
                   <div class="audio-message message" v-else-if="item.contentType == 3">
@@ -254,8 +255,7 @@
     </el-dialog>
     <transpond-msg @sendMsg="sendTranspondMsg"/>
     <image-preview v-if="allImages.length>0" v-model="imgPreview.show"
-                   :initial-index="imgPreview.index"
-                   :url-list="allImages"/>
+                   :initial-index="imgPreview.index" :image-list="allImages" url-key="url"/>
   </div>
 </template>
 
@@ -408,10 +408,18 @@ export default {
         .forEach(item => {
           if (item.contentType == 1) {
             item.content.replace(/<img [^>]*src=['"]([^'"]+)[^>]*>/g, function (match, capture) {
-              if (match.indexOf('emotions') == -1) images.push(capture)
+              if (match.indexOf('emotions') == -1) {
+                images.push({
+                  id: item.id,
+                  url: capture
+                })
+              }
             })
           } else if (item.contentType == 2 || item.contentType == 6) {
-            images.push(this.fileAddressFormatFunc(item))
+            images.push({
+              id: item.id,
+              url: this.fileAddressFormatFunc(item)
+            })
           }
         })
       return images
@@ -1330,9 +1338,10 @@ export default {
       }
     },
     // 显示预览图片
-    showImagePreview (e) {
+    showImagePreview (e, item) {
       if (e.target.localName === 'img') {
-        const srcIndex = this.allImages.indexOf(e.target.src)
+        const srcIndex = this.allImages.findIndex(image => image.id == item.id && image.url == e.target.src)
+        console.log(srcIndex)
         if (srcIndex >= 0) {
           this.imgPreview.index = srcIndex
           this.imgPreview.show = true
@@ -1518,7 +1527,7 @@ nav {
         overflow: hidden;
         user-select: text;
 
-        /deep/ a{
+        /deep/ a {
           color: rgb(36, 64, 179);
 
           &:visited {

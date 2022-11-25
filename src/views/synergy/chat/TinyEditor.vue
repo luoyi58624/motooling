@@ -20,6 +20,7 @@ import 'tinymce/plugins/link'
 import 'tinymce/plugins/autolink'
 import 'tinymce/plugins/code'
 import 'tinymce/plugins/fullscreen'
+import 'tinymce/plugins/help'
 
 import eventBus from '@/utils/mitt'
 import EmotionPanel from './EmotionPanel.vue'
@@ -322,8 +323,8 @@ export default {
     let plugins
     let toolbar
     if (process.env.NODE_ENV === 'development') {
-      plugins = 'link autolink code fullscreen'
-      toolbar = 'myEmoticons link myImage myVideo myFile myHistory code fullscreen mySendMessage'
+      plugins = 'link autolink code fullscreen help'
+      toolbar = 'myEmoticons link myImage myVideo myFile myHistory code fullscreen help mySendMessage'
     } else {
       plugins = 'link autolink fullscreen'
       toolbar = 'myEmoticons link myImage myVideo myFile myHistory fullscreen mySendMessage'
@@ -402,6 +403,7 @@ export default {
         })
         // 编辑器键盘事件处理
         editor.on('keydown', event => {
+          console.log(event)
           if (event.code === 'Backspace') {
             const text = this.$store.state.editorInstance.getContent({ format: 'text' }).replace(/\n/g, '')
             if (text.endsWith('@')) {

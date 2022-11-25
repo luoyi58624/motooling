@@ -77,9 +77,14 @@ export default {
       type: Boolean,
       default: false
     },
-    urlList: {
+    imageList: {
       type: Array,
       default: () => []
+    },
+    // 如果urlList传递的是对象数组，则必须配置urlKey用户访问其图片
+    urlKey:{
+      type: String,
+      default: null
     },
     zIndex: {
       type: Number,
@@ -119,6 +124,14 @@ export default {
     }
   },
   computed: {
+    urlList(){
+      console.log(this.imageList)
+      if(this.urlKey){
+        return this.imageList.map(item=>item[this.urlKey])
+      }else{
+        return this.imageList
+      }
+    },
     isSingle () {
       return this.urlList.length <= 1
     },
