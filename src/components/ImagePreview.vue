@@ -125,7 +125,6 @@ export default {
   },
   computed: {
     urlList(){
-      console.log(this.imageList)
       if(this.urlKey){
         return this.imageList.map(item=>item[this.urlKey])
       }else{

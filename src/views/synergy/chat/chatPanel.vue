@@ -1341,7 +1341,6 @@ export default {
     showImagePreview (e, item) {
       if (e.target.localName === 'img') {
         const srcIndex = this.allImages.findIndex(image => image.id == item.id && image.url == e.target.src)
-        console.log(srcIndex)
         if (srcIndex >= 0) {
           this.imgPreview.index = srcIndex
           this.imgPreview.show = true
@@ -1528,6 +1527,7 @@ nav {
         user-select: text;
 
         /deep/ a {
+          text-decoration: underline;
           color: rgb(36, 64, 179);
 
           &:visited {
@@ -1757,6 +1757,7 @@ nav {
 
       svg {
         fill: #fff;
+        transition: fill 0.2s;
 
         &:hover {
           fill: #3498db;

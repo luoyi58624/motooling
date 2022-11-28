@@ -259,13 +259,13 @@ export default {
     }
   },
   watch: {
-    active(newValue){
-      if(newValue==0){
+    active (newValue) {
+      if (newValue == 0) {
         this.$nextTick(() => {
           if (this.messageTimeSort) {
-            setTimeout(()=>{
+            setTimeout(() => {
               this.$refs.talkContent.scrollTop = this.$refs.talkContent.scrollHeight
-            },0)
+            }, 0)
           } else {
             this.$refs.talkContent.scrollTop = 0
           }
@@ -344,6 +344,11 @@ export default {
           const lastData = cloneDeep(this.initDate[this.initDate.length - 1])
           lastData.sendTime = timeToFullTime(lastData.sendTime)
           data.push(lastData)
+          data.forEach(item => {
+            if (item.contentType == 1) {
+              item.content = item.content.replace(/href=["|'].*?["|']/, '')
+            }
+          })
           this.showMessage = cloneDeep(data)
           this.allMessage = cloneDeep(data)
           this.setAllFile()
@@ -563,7 +568,8 @@ export default {
       white-space: pre-line;
       line-height: 1.2;
 
-      /deep/ a{
+      /deep/ a {
+        text-decoration: underline;
         color: rgb(36, 64, 179);
 
         &:visited {
