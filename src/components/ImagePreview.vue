@@ -223,12 +223,12 @@ export default {
         const delta = e.wheelDelta ? e.wheelDelta : -e.detail
         if (delta > 0) {
           this.handleActions('zoomIn', {
-            zoomRate: 0.015,
+            zoomRate: 0.1,
             enableTransition: false
           })
         } else {
           this.handleActions('zoomOut', {
-            zoomRate: 0.015,
+            zoomRate: 0.1,
             enableTransition: false
           })
         }
