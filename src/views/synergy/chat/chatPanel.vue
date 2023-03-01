@@ -263,7 +263,7 @@
 import { mapState } from 'vuex'
 import {
   chatDataHandler,
-  fileAddressFormatUtil, getFileSuffix,
+  fileAddressFormatUtil, getFileSuffix, getVideoBase64,
   isUrl,
   loadFileIcon,
   requestNotification,
@@ -426,6 +426,12 @@ export default {
     }
   },
   mounted () {
+    /*
+* 调用方法
+*/
+    // getVideoBase64("https://fld-wenzhi-1305125648.cos.ap-guangzhou.myqcloud.com/file/2.mp4").then(res => {
+    //   console.log(res);
+    // })
     eventBus.on('handleMessage', this.handleMessage)
     eventBus.on('showChatHistoryPanel', this.showChatHistoryPanel)
     eventBus.on('sendWordMessage', this.sendWordMessage)
@@ -735,6 +741,7 @@ export default {
           content: text,
           senderId: this.uid,
           sendTime,
+          showSendTime: sendTime,
           username: this.senderName,
           readMessageUsers: [],
           loading: true,
@@ -804,6 +811,7 @@ export default {
           contentType,
           content,
           sendTime,
+          showSendTime: sendTime,
           username: this.senderName,
           senderId: this.uid,
           readMessageUsers: [],
@@ -1750,14 +1758,14 @@ nav {
     justify-content: space-around;
     align-items: center;
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.3s ease-out;
 
     & > .file-download, .file-preview {
       cursor: pointer;
 
       svg {
         fill: #fff;
-        transition: fill 0.2s;
+        transition: fill 0.2s ease-out;
 
         &:hover {
           fill: #3498db;
