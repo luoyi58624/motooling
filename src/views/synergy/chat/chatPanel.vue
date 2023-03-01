@@ -279,7 +279,7 @@ import {
   getNewsList,
   getOpenSynergy,
   sendMessage,
-  signOutGroup,
+  signOutGroup, synergyGroupMember,
   synergyRecordPage,
   updateGroupInfo
 } from '@/api/synergy/synergy.js'
@@ -665,6 +665,15 @@ export default {
           break
         case 4:
           messageContent = '[ 视频 ]'
+          break
+        case 5:
+          // 拉人刷新群成员
+          synergyGroupMember({groupId: this.groupId}).then(res=>{
+            this.groupMember = []
+            res.memberList.forEach(item=>{
+              this.groupMember.push(item)
+            })
+          })
           break
         case 7:
           messageContent = ' 拍一拍 '

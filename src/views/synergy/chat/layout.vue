@@ -4,7 +4,7 @@
       <message-list ref="messageListRef" @add-user="createNewChatting"/>
     </div>
     <div class="chat-panel">
-      <chat-panel v-if="groupId!==null && resetChatPanel"
+      <chat-panel ref="chatPanelRef" v-if="groupId!==null && resetChatPanel"
                   :invitedMembers="invitedMembers"
                   :invidedMembersInfo="invidedMembersInfo"
                   @add-user="addGroupMember"></chat-panel>
@@ -15,7 +15,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { getOpenSynergy, synergyAddMember, getNewsList } from '@/api/synergy/synergy.js'
+import { getOpenSynergy, synergyAddMember, getNewsList, synergyGroupMember } from '@/api/synergy/synergy.js'
 import UserSelect from '@/components/UserSelect'
 import messageList from './messageList'
 import chatPanel from './chatPanel.vue'
@@ -72,7 +72,14 @@ export default {
         synergyAddMember(data)
           .then(res => {
             this.invitedMembers = res.successList.map(item => item.username).join('、')
-            this.invidedMembersInfo = res.successList
+            // this.invidedMembersInfo = res.successList
+            // 刷新群成员
+            synergyGroupMember({groupId: this.groupId}).then(res=>{
+              this.$refs.chatPanelRef.groupMember = []
+              res.memberList.forEach(item=>{
+                this.$refs.chatPanelRef.groupMember.push(item)
+              })
+            })
           })
           .catch(() => {
             this.$createToast({
