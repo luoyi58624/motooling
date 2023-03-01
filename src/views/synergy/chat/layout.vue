@@ -61,6 +61,7 @@ export default {
     },
     confirm () {
       this.$store.state.showUserSelectPanel = false
+      // 在群聊中邀请其他用户
       if (this.isGroup) {
         this.isGroup = false
         let data = {
@@ -68,28 +69,33 @@ export default {
           inviterId: +localStorage.getItem('uid'),
           uList: this.userSelectedList.map(item => ({ uid: item.uid }))
         }
-        synergyAddMember(data).then(res => {
-          this.invitedMembers = res.successList.map(item => item.username).join('、')
-          this.invidedMembersInfo = res.successList
-        }).catch(() => {
-          this.$createToast({
-            time: 2000,
-            txt: '邀请失败，请重试',
-            type: 'error'
-          }).show()
-          this.$store.dispatch('getNewGroupMember', this.initMembers)
-        })
+        synergyAddMember(data)
+          .then(res => {
+            this.invitedMembers = res.successList.map(item => item.username).join('、')
+            this.invidedMembersInfo = res.successList
+          })
+          .catch(() => {
+            this.$createToast({
+              time: 2000,
+              txt: '邀请失败，请重试',
+              type: 'error'
+            }).show()
+            this.$store.dispatch('getNewGroupMember', this.initMembers)
+          })
       } else {
+        // 开启一个新的群聊
         let parameter = this.shiftParameter(this.userSelectedList)
         getOpenSynergy(
           parameter
-        ).then(res => {
-          this.$store.commit('currentConversation', {
-            groupId: res.synergyGroup.id,
-            relationType: res.synergyGroup.relationType
-          })
-          getNewsList().then(res => {
-            this.$store.dispatch('newsList', res.newsList)
+        ).then(res1 => {
+
+          getNewsList().then(res2 => {
+            this.$store.dispatch('newsList', res2.newsList)
+
+            this.$store.commit('currentConversation', {
+              groupId: res1.synergyGroup.id,
+              relationType: res1.synergyGroup.relationType
+            })
           }).catch(err => {
             this.$createToast({
               time: 2000,
@@ -137,7 +143,7 @@ export default {
     getAllDepUser () {
       depUserList().then(res => {
         let depList = []
-        if(res && res.list) depList = res.list
+        if (res && res.list) depList = res.list
         // 对数据做 el-tree 兼容处理 -> UserSelect.vue
         this.$store.state.allDepUser = depList.map(item => {
           item.id = item.depId // el-tree -> row-id
@@ -161,7 +167,7 @@ export default {
             groupId: res.synergyGroup.id,
             relationType: res.synergyGroup.relationType
           })
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.$refs.messageListRef.skipActiveGroup()
           })
         })
