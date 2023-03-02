@@ -12,7 +12,7 @@ const instance = axios.create({
   // baseURL: 'http://192.168.2.136:8808',
   // baseURL: 'http://www.motooling.com:8080',
   // baseURL:'http://192.168.2.247:8808',
-  timeout: 10000
+  timeout: 30000
 })
 
 instance.interceptors.request.use(

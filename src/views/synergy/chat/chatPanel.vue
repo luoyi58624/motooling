@@ -47,10 +47,10 @@
                   <van-loading color="#1989fa" size="16"></van-loading>
                 </div>
                 <div v-if="item.isError">
-                  <van-icon name="warning-o" color="#ea4300" />
+                  <van-icon name="warning-o" color="#ea4300"/>
                 </div>
                 <!--如果是群聊，自己发送的消息需要知道哪些人已读、未读-->
-                <template v-else-if="chattingTarget.type == 666">
+                <template v-if="!item.loading && !item.isError && chattingTarget.type == 666">
                   <el-popover v-if="uid == item.senderId" placement="left" width="400" trigger="click">
                     <div class="read-popover" style="width: 380px;height: 360px">
                       <van-tabs color="#3498db">
@@ -100,7 +100,7 @@
                     </template>
                   </el-popover>
                 </template>
-                <template v-else-if="uid == item.senderId">
+                <template v-if="!item.loading && !item.isError && chattingTarget.type != 666 && uid == item.senderId">
                   <div v-if="item.readMessageUsers.length==0" class="read-mark" slot="reference"
                        @click="setReadMessageUser(item)"></div>
                   <div v-else class="read-mark all-read" slot="reference" @click="setReadMessageUser(item)">
@@ -673,9 +673,9 @@ export default {
           break
         case 5:
           // 拉人刷新群成员
-          synergyGroupMember({groupId: this.groupId}).then(res=>{
+          synergyGroupMember({ groupId: this.groupId }).then(res => {
             this.groupMember = []
-            res.memberList.forEach(item=>{
+            res.memberList.forEach(item => {
               this.groupMember.push(item)
             })
           })
@@ -806,12 +806,7 @@ export default {
             type: 'warning'
           })
           if (groupId == null) {
-            this.recordList.forEach(item => {
-              if (item.msgUUID == msgUUID) {
-                item.loading = false
-                item.isError = true
-              }
-            })
+            this.sendMessageErrorHandler(msgUUID)
           }
           reject(err)
         })
@@ -848,19 +843,43 @@ export default {
       if (/image/.test(file.type)) {
         imgUpload(file).then((res) => {
           this.handleMessage({ msgUUID, contentType, smallImg: res.imgUrl, content: res.rawUrl })
+        }).catch(() => {
+          Notify({
+            message: '文件上传失败',
+            type: 'warning'
+          })
+          this.sendMessageErrorHandler(msgUUID)
         })
       } else if (/audio/.test(file.type)) {
         fileUpload(file).then((res) => {
           this.handleMessage({ msgUUID, contentType, smallImg: '', content: res.url })
+        }).catch(() => {
+          Notify({
+            message: '文件上传失败',
+            type: 'warning'
+          })
+          this.sendMessageErrorHandler(msgUUID)
         })
       } else if (/video/.test(file.type)) {
         fileUpload(file).then((res) => {
           this.handleMessage({ msgUUID, contentType, smallImg: '', content: res.url })
+        }).catch(() => {
+          Notify({
+            message: '文件上传失败',
+            type: 'warning'
+          })
+          this.sendMessageErrorHandler(msgUUID)
         })
       } else {
         fileUpload(file).then((res) => {
           delete res.url
           this.handleMessage({ msgUUID, contentType, smallImg: '', content: res })
+        }).catch(() => {
+          Notify({
+            message: '文件上传失败',
+            type: 'warning'
+          })
+          this.sendMessageErrorHandler(msgUUID)
         })
       }
     },
@@ -901,15 +920,19 @@ export default {
             type: 'warning'
           })
           if (groupId == null) {
-            this.recordList.forEach(item => {
-              if (item.msgUUID == msgUUID) {
-                item.loading = false
-                item.isError = true
-              }
-            })
+            this.sendMessageErrorHandler(msgUUID)
           }
           reject(err)
         })
+      })
+    },
+    // 消息发送失败错误处理
+    sendMessageErrorHandler (msgUUID) {
+      this.recordList.forEach(item => {
+        if (item.msgUUID == msgUUID) {
+          item.loading = false
+          item.isError = true
+        }
       })
     },
     // 防抖
