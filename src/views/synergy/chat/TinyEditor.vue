@@ -132,6 +132,14 @@ export default {
       }
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
+        // 限制文件大小在200M
+        if (file.size > 1024 * 1024 * 200) {
+          Notify({
+            message: '请选择200M以下的文件！',
+            type: 'warning'
+          })
+          continue
+        }
         const id = uuid()
         if (/image/.test(file.type)) {
           this.$store.state.imageFiles[id] = file
@@ -352,7 +360,6 @@ export default {
       plugins,
       toolbar,
       paste_preprocess: (editor, args) => {
-        // console.log(args.content)
         args.content = args.content
           .replace(/<((h\d)|(pre)|(li)).*?>/g, '<p>')  // 将部分标签替换成p标签
           .replace(/<\/((h\d)|(pre)|(li))>/g, '</p>')
@@ -362,8 +369,6 @@ export default {
           .replace(/<img[^>]*? (src)=['"][^(http)].*?>/g, '') // 将非http链接的图片替换成文字
           .replace(/\n/g, '<br>') // 将换行符变成html换行标签
           .replace(/(&#32;)|(\s(?=\s))/g, '&nbsp;') // 将多余的空格变成html空格标签
-        // console.log('================')
-        // console.log(args.content)
       },
       setup: (editor) => {
         editor.on('click', () => {

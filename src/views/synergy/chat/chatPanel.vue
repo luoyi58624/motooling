@@ -43,7 +43,12 @@
                 <span class="time">{{ item.showSendTime }}</span>
               </div>
               <div class="message-container">
-                <div v-if="item.loading">...</div>
+                <div v-if="item.loading">
+                  <van-loading color="#1989fa" size="16"></van-loading>
+                </div>
+                <div v-if="item.isError">
+                  <van-icon name="warning-o" color="#ea4300" />
+                </div>
                 <!--如果是群聊，自己发送的消息需要知道哪些人已读、未读-->
                 <template v-else-if="chattingTarget.type == 666">
                   <el-popover v-if="uid == item.senderId" placement="left" width="400" trigger="click">
@@ -796,11 +801,18 @@ export default {
           })
           resolve(res)
         }).catch((err) => {
-          this.$createToast({
-            time: 2000,
-            txt: err.msg || '发送失败，请检查网络',
-            type: 'error'
-          }).show()
+          Notify({
+            message: '消息发送失败',
+            type: 'warning'
+          })
+          if (groupId == null) {
+            this.recordList.forEach(item => {
+              if (item.msgUUID == msgUUID) {
+                item.loading = false
+                item.isError = true
+              }
+            })
+          }
           reject(err)
         })
       })
@@ -825,6 +837,7 @@ export default {
           senderId: this.uid,
           readMessageUsers: [],
           loading: true,
+          isError: false, // 消息发送是否失败
           isTemp: true,
           msgUUID
         }
@@ -883,11 +896,18 @@ export default {
           })
           resolve(res)
         }).catch((err) => {
-          this.$createToast({
-            time: 2000,
-            txt: err.message || '发送失败，请重试',
-            type: 'warn'
-          }).show()
+          Notify({
+            message: '消息发送失败',
+            type: 'warning'
+          })
+          if (groupId == null) {
+            this.recordList.forEach(item => {
+              if (item.msgUUID == msgUUID) {
+                item.loading = false
+                item.isError = true
+              }
+            })
+          }
           reject(err)
         })
       })
