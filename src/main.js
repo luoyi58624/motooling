@@ -9,6 +9,7 @@ import { Stepper } from 'vant'
 import element from './element'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'vant/lib/index.css'
+import 'video.js/dist/video-js.min.css'
 import splitPane from '@/components/SplitPanel'
 import { getJsSDKConfigInfo, getAppid } from '@/api/wechat.js'
 

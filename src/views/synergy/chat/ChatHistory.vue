@@ -32,8 +32,7 @@
                             :src="fileAddressFormatFunc(item.replyData)"></el-image>
                   <audio v-else-if="item.replyData.contentType==3" :src="fileAddressFormatFunc(item.replyData)"
                          controls="controls" style="width: 245px;height: 40px"/>
-                  <video v-else-if="item.replyData.contentType==4" :src="fileAddressFormatFunc(item.replyData)"
-                         controls="controls" width="245" height="140"/>
+                  <video-player v-else-if="item.replyData.contentType==4" :src="fileAddressFormatFunc(item.replyData)" width="245" height="140"/>
                   <div v-else-if="item.replyData.contentType==9" class="file-message">
                     <div class="file-info">
                       <div class="name">{{ item.replyData.content.fileName }}</div>
@@ -60,8 +59,7 @@
               </audio>
             </div>
             <div v-else-if="item.contentType === 4" style="text-align: left;">
-              <video preload="meta" :src="fileAddressFormatFunc(item)" controls="controls"
-                     width="250" height="140"></video>
+              <video-player :src="fileAddressFormatFunc(item)" width="250" height="140" @click="$event.stopPropagation()"/>
             </div>
             <div v-else-if="item.contentType === 5" class="system-message">{{ item.content }}</div>
             <template v-else-if="item.contentType === 7">
@@ -117,8 +115,7 @@
                 <h3 class="username" :style="{color: uid===item.senderId ? '#3498db':'#34495e'}">
                   {{ item.username }} {{ item.sendTime }}
                 </h3>
-                <video preload="meta" :src="fileAddressFormatFunc(item)"
-                       width="200" height="112" controls="controls"></video>
+                <video-player :src="fileAddressFormatFunc(item)" width="250" height="140" @click="$event.stopPropagation()"/>
               </li>
             </ul>
           </div>
@@ -195,9 +192,11 @@ import {
 import { formatDate, timeToFullTime } from '@/utils/time'
 import { saveAs } from 'file-saver'
 import { cloneDeep } from 'lodash'
+import VideoPlayer from '@/components/VideoPlayer'
 
 export default {
   name: 'ChatHistory',
+  components: { VideoPlayer },
   props: {
     initDate: {
       type: Array,

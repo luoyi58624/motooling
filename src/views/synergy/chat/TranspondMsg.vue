@@ -42,7 +42,7 @@
               <audio :src="fileAddressFormatFunc(transpondMsg)" controls="controls"/>
             </div>
             <div class="message" v-else-if="transpondMsg.contentType == 4">
-              <video :src="fileAddressFormatFunc(transpondMsg)" controls="controls" width="250" height="90"/>
+              <video-player :src="fileAddressFormatFunc(transpondMsg)" width="250" height="90"/>
             </div>
             <div class="message" v-else-if="transpondMsg.contentType == 9">
               <div class="file-message-container">
@@ -74,9 +74,12 @@ import { mapState } from 'vuex'
 import { fileAddressFormatUtil, loadFileIcon } from '@/utils/utils'
 import { cloneDeep } from 'lodash'
 import { Notify } from 'vant'
+import VideoPlayer from '@/components/VideoPlayer'
 
 export default {
   name: 'TranspondMsg',
+  components: { VideoPlayer },
+
   computed: {
     ...mapState({
       transpondMsg: (state) => state.transpondMsg,

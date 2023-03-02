@@ -54,6 +54,7 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "terser-webpack-plugin": "^2.2.2",
+    "video.js": "^8.0.4",
     "vue-cli-plugin-cube-ui": "^0.2.5",
     "vue-template-compiler": "^2.6.14"
   },

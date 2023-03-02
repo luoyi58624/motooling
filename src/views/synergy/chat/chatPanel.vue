@@ -158,10 +158,12 @@
                            @contextmenu="openContextMenu($event,item)"/>
                   </div>
                   <div class="video-message message" v-else-if="item.contentType == 4">
-                    <video :src="fileAddressFormatFunc(item)"
-                           controls="controls"
-                           width="250" height="140"
-                           @contextmenu="openContextMenu($event,item)"/>
+                    <video-player :src="fileAddressFormatFunc(item)" width="250" height="140"
+                                  @contextmenu.stop="openContextMenu($event,item)"/>
+<!--                    <video :src="fileAddressFormatFunc(item)"-->
+<!--                           controls="controls"-->
+<!--                           width="250" height="140"-->
+<!--                           @contextmenu="openContextMenu($event,item)"/>-->
                   </div>
                   <div class="file-message-container" v-if="item.contentType == 9">
                     <div class="file-message" @contextmenu="openContextMenu($event,item)">
@@ -302,6 +304,7 @@ import { fileUpload, imgUpload } from '@/api/upload/upload'
 import axios from 'axios'
 import TranspondMsg from '@/views/synergy/chat/TranspondMsg'
 import ImagePreview from '@/components/ImagePreview'
+import VideoPlayer from '@/components/VideoPlayer'
 
 let debounceLoadMoreMessage
 let clearReaderMessage
@@ -309,6 +312,7 @@ let clearReaderMessage
 export default {
   directives: { clickoutside },
   components: {
+    VideoPlayer,
     TranspondMsg,
     TinyEditor,
     ChatHistory,
