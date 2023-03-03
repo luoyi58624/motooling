@@ -1083,6 +1083,7 @@ export default {
       return loadFileIcon(fileName)
     },
     openContextMenu (event, messageItem) {
+      console.log(messageItem)
       this.$refs.ContextMenu.openContextMenu(event, messageItem)
     },
     // 撤回消息

@@ -18,6 +18,10 @@
         <img :src="require('@/assets/svg/reply.svg')" alt=""/>
         <span>回复</span>
       </li>
+      <li v-if="selectedMessage.contentType==4" @click="openVideo">
+        <img :src="require('@/assets/svg/video.svg')" alt=""/>
+        <span>在新窗口播放视频</span>
+      </li>
       <li @click="revocationMsg" :class="{disabled: selectedMessage.loading}"
           v-if="selectedMessage.senderId===$store.state.userInfo.uid">
         <!--        <img :src="require('@/assets/svg/return.svg')" alt=""/>-->
@@ -91,6 +95,9 @@ export default {
     },
     replyMsg () {
       this.$emit('replyMsg', this.selectedMessage)
+    },
+    openVideo(){
+      window.open(this.selectedMessage.content)
     },
     // 撤回消息
     revocationMsg () {
