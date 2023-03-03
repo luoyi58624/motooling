@@ -41,7 +41,8 @@ export default {
       controls: true,
       sources: [
         {
-          src: this.src
+          src: this.src,
+          type: "video/webm"
         }
       ]
     }, () => {
