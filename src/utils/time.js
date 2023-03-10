@@ -23,13 +23,15 @@ export function time (record) {
   const currentTime = new Date()
   const currentYear = currentTime.getFullYear()
   const currentMonth = currentTime.getMonth()
-  const currentDay = currentTime.getDay()
+  const currentDay = currentTime.getDate()
   let recordTimeList = record.map(item => {
+    // 懒得做时间转换的处理，直接返回原样时间
+    item.data.showSendTime = item.data.sendTime
     const sendTime = item.data.sendTime
     let _sendTime = new Date(sendTime)
     const sendTimeYear = _sendTime.getFullYear()
     const sendTimeMonth = _sendTime.getMonth()
-    const sendTimeDay = _sendTime.getDay()
+    const sendTimeDay = _sendTime.getDate()
     if (sendTimeYear === currentYear) {
       if (sendTimeMonth === currentMonth) {
         // 月相等

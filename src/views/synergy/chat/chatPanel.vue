@@ -494,6 +494,7 @@ export default {
             if (item.data.senderId == this.uid) item.data.readMessageUsers = []
           })
 
+          console.log(cloneDeep(recordList.map(item=>item.data)))
           chatDataHandler(recordList)
           this.recordList = time(recordList)
           this.scrolltoButtom()
@@ -1083,7 +1084,6 @@ export default {
       return loadFileIcon(fileName)
     },
     openContextMenu (event, messageItem) {
-      console.log(messageItem)
       this.$refs.ContextMenu.openContextMenu(event, messageItem)
     },
     // 撤回消息
