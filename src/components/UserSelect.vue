@@ -1,7 +1,7 @@
 <template>
   <el-dialog :title='title' :visible.sync="$store.state.showUserSelectPanel" width="60%"
              @open="openHandler" @close="closeHandler">
-    <el-tree ref="tree" node-key="id" show-checkbox accordion highlight-current
+    <el-tree ref="tree" node-key="id" show-checkbox accordion highlight-current check-on-click-node
              :data="allData" :props="defaultProps"/>
     <div slot="footer" class="dialog-footer">
       <el-button @click="cancel">取 消</el-button>

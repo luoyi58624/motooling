@@ -494,7 +494,6 @@ export default {
             if (item.data.senderId == this.uid) item.data.readMessageUsers = []
           })
 
-          console.log(cloneDeep(recordList.map(item=>item.data)))
           chatDataHandler(recordList)
           this.recordList = time(recordList)
           this.scrolltoButtom()
